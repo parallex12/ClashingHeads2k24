@@ -12,11 +12,14 @@ import { useState } from "react";
 import { getPercent } from "../middleware";
 
 const CountryCodeField = (props) => {
-  let { customStyles,onChangeText } = props;
+  let { customStyles, onChangeText, setCountry } = props;
   let { width, height } = useWindowDimensions();
   let styles = CountryCodeFieldStyles({ width, height });
   const [show, setShow] = useState(false);
-  const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
+  const [countryDetails, setCountryDetails] = useState({
+    dial_code: "+1",
+    flag: "🇺🇸",
+  });
 
   return (
     <View style={[styles.container, customStyles]}>
@@ -26,7 +29,7 @@ const CountryCodeField = (props) => {
       >
         <Text
           style={styles.codeText}
-        >{`${country?.flag} ${country?.dial_code}`}</Text>
+        >{`${countryDetails?.flag} ${countryDetails?.dial_code}`}</Text>
       </TouchableOpacity>
       <TextInput
         style={styles.inputField}
@@ -46,7 +49,8 @@ const CountryCodeField = (props) => {
         // when picker button press you will get the country object with dial code
         pickerButtonOnPress={(item) => {
           console.log(item);
-          setCountry(item);
+          setCountryDetails(item);
+          setCountry({ dial_code: item?.dial_code, flag: item?.flag });
           setShow(false);
         }}
       />

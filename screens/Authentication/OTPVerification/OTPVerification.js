@@ -17,13 +17,18 @@ import { useState } from "react";
 import PinCodeInput from "../../../globalComponents/PinCodeInput";
 
 const OTPVerification = (props) => {
-  let {} = props;
+  let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [otpCode, setOtpCode] = useState(null);
 
+  let phone = route?.params?.phone;
+
   const onContinue = () => {
-    props?.navigation?.navigate("CommunityGuidelines");
+    props?.navigation?.navigate("CommunityGuidelines", {
+      phone,
+      otpVerified: true,
+    });
   };
 
   return (
@@ -44,9 +49,9 @@ const OTPVerification = (props) => {
             <PinCodeInput setOtpCode={setOtpCode} />
           </View>
           <Text style={font(10, "#252525", "Regular", 3, 20)}>
-            You will receive your verification code on your given number +1 123
-            2123 1221. If you didn’t get the number then you can change or edit
-            the number.{" "}
+            You will receive your verification code on your given number {phone}
+            . If you didn’t get the number then you can change or edit the
+            number.{" "}
             <Text style={font(10, "#8E70F5", "Regular", 3)}>Change</Text>
           </Text>
           <StandardButton

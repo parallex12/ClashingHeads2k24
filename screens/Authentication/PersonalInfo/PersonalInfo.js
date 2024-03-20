@@ -1,5 +1,6 @@
 import {
   Image,
+  KeyboardAvoidingView,
   ScrollView,
   Text,
   TextInput,
@@ -11,26 +12,41 @@ import { connect } from "react-redux";
 import { styles as _styles } from "../../../styles/PersonalInfo/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
-import { getPercent } from "../../../middleware";
+import { getPercent, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
+import StandardInput from "../../../globalComponents/StandardInput";
 
 const PersonalInfo = (props) => {
-  let {} = props;
+  let { route } = props;
+  let { prevData } = route?.params;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [otpCode, setOtpCode] = useState(null);
+  const [form, setForm] = useState({ ...prevData });
 
   const onContinue = () => {
-    console.log(otpCode);
-    props?.navigation?.navigate("PersonalInfo");
+    props?.navigation?.navigate("VoiceRecording", { prevData: form });
+  };
+
+  const onChangeText = (val, info) => {
+    let { key } = info;
+    setForm((prev) => {
+      return { ...prev, [key]: val };
+    });
+  };
+
+  const onRemoveField = (key) => {
+    setForm((prev) => {
+      return { ...prev, [key]: null };
+    });
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView behavior="padding" style={styles.container}>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
           <BackButton />
@@ -41,6 +57,19 @@ const PersonalInfo = (props) => {
             <Text style={font(12, "#4B5563", "Regular", 7)}>
               This will help us to create your profile
             </Text>
+            <View style={styles.formWrapper}>
+              {registrationFields?.map((item, index) => {
+                return (
+                  <StandardInput
+                    value={form[item["key"]]}
+                    key={index}
+                    data={item}
+                    onChangeText={(val) => onChangeText(val, item)}
+                    onRemoveField={onRemoveField}
+                  />
+                );
+              })}
+            </View>
           </View>
           <StandardButton
             title="Continue"
@@ -52,7 +81,7 @@ const PersonalInfo = (props) => {
           />
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

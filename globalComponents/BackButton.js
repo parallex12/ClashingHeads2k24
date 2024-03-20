@@ -6,7 +6,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from '@react-navigation/native';
 
 const BackButton = (props) => {
-  let { customStyles, textStyles, title } = props;
+  let { customStyles,color, textStyles, title } = props;
   let { width, height } = useWindowDimensions();
   let styles = BackButtonStyles({ width, height });
   let navigation = useNavigation()
@@ -20,7 +20,7 @@ const BackButton = (props) => {
       style={[styles.container, customStyles]}
       onPress={onPress}
     >
-      <Entypo name="chevron-thin-left" size={RFValue(20)} color="#292D32" />
+      <Entypo name="chevron-thin-left" size={RFValue(20)} color={color || "#292D32"} />
     </TouchableOpacity>
   );
 };

@@ -19,6 +19,95 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//StandardInput Styles starts here
+export const StandardInputStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      minHeight: getPercent(10, height),
+      justifyContent: "space-around",
+      marginVertical: getPercent(1, height),
+    },
+    titleText: {
+      fontSize: rf(12),
+      fontFamily: "Medium",
+      color: "#111827",
+    },
+    inputWrapper: {
+      width: "100%",
+      height: getPercent(15, width),
+      borderRadius: 100,
+      borderColor: "#E5E7EB",
+      borderWidth: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: getPercent(4, width),
+      marginTop: 10,
+      position: "relative",
+    },
+    input: {
+      flex: 1,
+      height: "100%",
+      fontSize: rf(10),
+      fontFamily: "Regular",
+      color: "#111827",
+      justifyContent: "center",
+      alignItems: "flex-start",
+    },
+    inputText: {
+      fontSize: rf(10),
+      fontFamily: "Regular",
+      color: "#111827",
+    },
+    dropDownContainer: {
+      width: "100%",
+      minHeight: getPercent(20, height),
+      maxHeight: getPercent(40, height),
+      backgroundColor: "#fff",
+      position: "absolute",
+      zIndex: 999999,
+      bottom: getPercent(10, height),
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: "#E5E7EB",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+      alignSelf: "center",
+      paddingVertical: getPercent(3, width),
+      justifyContent: "space-between",
+    },
+    dropDownItem: {
+      width: "92%",
+      alignSelf: "center",
+      height: getPercent(5, height),
+      backgroundColor: "#E5E7EB",
+      alignItems: "center",
+      paddingHorizontal: getPercent(3, width),
+      marginBottom: 5,
+      borderRadius:5,
+      flexDirection:'row'
+    },
+    dropDownItemText: {
+      fontSize: rf(12),
+      fontFamily: "Medium",
+      color: "#111827",
+      marginLeft:10
+    },
+    radioCircle:{
+      width:getPercent(4,width),
+      height:getPercent(4,width),
+      borderWidth:1,
+      borderRadius:100,
+      backgroundColor:'#e5e5e5',
+    }
+  });
+
 //BackButton Styles  starts here
 export const BackButtonStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -52,8 +141,8 @@ export const PinCodeInputStyles = ({ width, height }) =>
       textAlign: "center",
     },
     otpCompWrapper: {
-      flex:1,
-      flexDirection:'row',
+      flex: 1,
+      flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
     },

@@ -16,14 +16,16 @@ import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 
 const CommunityGuidelines = (props) => {
-  let {} = props;
+  let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [otpCode, setOtpCode] = useState(null);
 
+  let prevData = route?.params;
+  
   const onContinue = () => {
     console.log(otpCode);
-    props?.navigation?.navigate("PersonalInfo");
+    props?.navigation?.navigate("PersonalInfo", { prevData });
   };
 
   return (
@@ -38,7 +40,7 @@ const CommunityGuidelines = (props) => {
             <Text style={font(20, "#120D26", "Semibold", 3)}>
               Community Guidelines
             </Text>
-            <Text style={font(12, "#4B5563", "Regular",7)}>
+            <Text style={font(12, "#4B5563", "Regular", 7)}>
               Last updated 26 Dec 2023
             </Text>
 
