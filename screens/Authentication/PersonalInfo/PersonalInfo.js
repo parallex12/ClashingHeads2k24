@@ -16,16 +16,18 @@ import { getPercent, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
+import { useRecoilState } from "recoil";
+import { registrationForm } from "../../../state-management/atoms/atoms";
 
 const PersonalInfo = (props) => {
   let { route } = props;
-  let { prevData } = route?.params;
+  let { prevData } = { name: "ella" };
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [form, setForm] = useState({ ...prevData });
+  const [form, setForm] = useRecoilState(registrationForm);
 
   const onContinue = () => {
-    props?.navigation?.navigate("VoiceRecording", { prevData: form });
+    props?.navigation?.navigate("VoiceRecording");
   };
 
   const onChangeText = (val, info) => {
@@ -85,7 +87,4 @@ const PersonalInfo = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
-export default connect(mapStateToProps, {})(PersonalInfo);
+export default PersonalInfo;

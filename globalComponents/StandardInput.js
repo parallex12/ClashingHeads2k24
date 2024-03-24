@@ -116,7 +116,4 @@ const StandardInput = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
-export default connect(mapStateToProps, {})(StandardInput);
+export default StandardInput

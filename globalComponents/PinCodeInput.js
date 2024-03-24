@@ -72,8 +72,5 @@ const PinCodeInput = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
 
-export default connect(mapStateToProps, {})(PinCodeInput);
+export default PinCodeInput

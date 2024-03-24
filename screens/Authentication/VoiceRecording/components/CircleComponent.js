@@ -2,7 +2,7 @@ import React from "react";
 import { View, useWindowDimensions } from "react-native";
 import ProgressCircle from "./ProgressCircle"; // Path to your ProgressCircle component
 import { getPercent } from "../../../../middleware";
-import { styles as _styles } from "../../../../styles/PersonalInfo copy/main";
+import { styles as _styles } from "../../../../styles/VoiceRecording/main";
 
 const CircleComponent = (props) => {
   let { progress, gap } = props;

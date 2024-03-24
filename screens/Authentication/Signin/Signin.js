@@ -11,18 +11,25 @@ import { font } from "../../../styles/Global/main";
 import CountryCodeField from "../../../globalComponents/CountryCodeField";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
+import {
+  RecoilRoot,
+  atom,
+  selector,
+  useRecoilState,
+  useRecoilValue,
+} from 'recoil';
 
 const Signin = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
-  const onSignup=()=>{
-    props?.navigation?.navigate("Signup")
-  }
+  const onSignup = () => {
+    props?.navigation?.navigate("Signup");
+  };
 
   const onContinue = () => {
-    // props?.navigation?.navigate("Dashboard");
+    props?.navigation?.navigate("Home");
   };
 
   return (
@@ -64,7 +71,9 @@ const Signin = (props) => {
               style={font(13, "#252525", "Regular", 3, null, styles.signupText)}
             >
               Don’t have an account?{" "}
-              <Text onPress={onSignup} style={font(13, "#DB2727", "Medium", 3)}>Sign Up</Text>
+              <Text onPress={onSignup} style={font(13, "#DB2727", "Medium", 3)}>
+                Sign Up
+              </Text>
             </Text>
           </View>
         </View>
@@ -73,7 +82,4 @@ const Signin = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
-export default connect(mapStateToProps, {})(Signin);
+export default Signin;

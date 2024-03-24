@@ -19,13 +19,9 @@ const CommunityGuidelines = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [otpCode, setOtpCode] = useState(null);
 
-  let prevData = route?.params;
-  
   const onContinue = () => {
-    console.log(otpCode);
-    props?.navigation?.navigate("PersonalInfo", { prevData });
+    props?.navigation?.navigate("PersonalInfo");
   };
 
   return (
@@ -91,7 +87,4 @@ const CommunityGuidelines = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
-export default connect(mapStateToProps, {})(CommunityGuidelines);
+export default CommunityGuidelines;

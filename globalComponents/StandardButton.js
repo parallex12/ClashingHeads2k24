@@ -16,7 +16,5 @@ const StandardButton = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
-export default connect(mapStateToProps, {})(StandardButton);
+
+export default StandardButton

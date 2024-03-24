@@ -19,6 +19,76 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//PostCardStyles starts here
+export const PostCardStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      minHeight: getPercent(15, height),
+      backgroundColor: "#222",
+      paddingHorizontal: getPercent(3, width),
+      paddingTop:10
+    },
+  });
+
+//BottomMenu Styles starts here
+export const BottomMenuStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      height: getPercent(9.5, height),
+      alignItems: "center",
+      justifyContent: "space-around",
+      position: "absolute",
+      bottom: 0,
+      borderColor: "#EEECEC",
+      borderWidth: 1,
+      borderRadius: 20,
+      flexDirection: "row",
+      paddingHorizontal: getPercent(2, width),
+      paddingBottom: 5,
+    },
+    bottomMenuItem: {
+      height: getPercent(5, height),
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    itemIconWrapper: {
+      width: getPercent(3, height),
+      height: getPercent(3, height),
+    },
+  });
+
+//StandardHeader Styles starts here
+export const StandardHeaderStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      height: getPercent(18, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingTop: StatusBar.currentHeight + getPercent(2.5, height),
+      paddingHorizontal: getPercent(4, width),
+    },
+  });
+
+//RecordingButton Stylesstarts here
+export const RecordingButtonStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      height: getPercent(5, height),
+      backgroundColor: "#DB2727",
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    text: {
+      fontSize: rf(13),
+      fontFamily: "Medium",
+      color: "#fff",
+    },
+  });
+
 //StandardInput Styles starts here
 export const StandardInputStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -90,22 +160,22 @@ export const StandardInputStyles = ({ width, height }) =>
       alignItems: "center",
       paddingHorizontal: getPercent(3, width),
       marginBottom: 5,
-      borderRadius:5,
-      flexDirection:'row'
+      borderRadius: 5,
+      flexDirection: "row",
     },
     dropDownItemText: {
       fontSize: rf(12),
       fontFamily: "Medium",
       color: "#111827",
-      marginLeft:10
+      marginLeft: 10,
     },
-    radioCircle:{
-      width:getPercent(4,width),
-      height:getPercent(4,width),
-      borderWidth:1,
-      borderRadius:100,
-      backgroundColor:'#e5e5e5',
-    }
+    radioCircle: {
+      width: getPercent(4, width),
+      height: getPercent(4, width),
+      borderWidth: 1,
+      borderRadius: 100,
+      backgroundColor: "#e5e5e5",
+    },
   });
 
 //BackButton Styles  starts here

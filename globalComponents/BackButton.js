@@ -25,7 +25,4 @@ const BackButton = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
-export default connect(mapStateToProps, {})(BackButton);
+export default BackButton

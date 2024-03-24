@@ -61,4 +61,4 @@ const CountryCodeField = (props) => {
 const mapStateToProps = (state) => ({
   errors: state.errors.errors,
 });
-export default connect(mapStateToProps, {})(CountryCodeField);
+export default CountryCodeField

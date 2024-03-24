@@ -15,20 +15,18 @@ import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 import PinCodeInput from "../../../globalComponents/PinCodeInput";
+import { registrationForm } from "../../../state-management/atoms/atoms";
+import {  useRecoilValue } from "recoil";
 
 const OTPVerification = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [otpCode, setOtpCode] = useState(null);
-
-  let phone = route?.params?.phone;
+  const form = useRecoilValue(registrationForm);
 
   const onContinue = () => {
-    props?.navigation?.navigate("CommunityGuidelines", {
-      phone,
-      otpVerified: true,
-    });
+    props?.navigation?.navigate("CommunityGuidelines");
   };
 
   return (
@@ -49,7 +47,7 @@ const OTPVerification = (props) => {
             <PinCodeInput setOtpCode={setOtpCode} />
           </View>
           <Text style={font(10, "#252525", "Regular", 3, 20)}>
-            You will receive your verification code on your given number {phone}
+            You will receive your verification code on your given number {form?.phone}
             . If you didn’t get the number then you can change or edit the
             number.{" "}
             <Text style={font(10, "#8E70F5", "Regular", 3)}>Change</Text>
@@ -71,4 +69,4 @@ const OTPVerification = (props) => {
 const mapStateToProps = (state) => ({
   errors: state.errors.errors,
 });
-export default connect(mapStateToProps, {})(OTPVerification);
+export default OTPVerification;

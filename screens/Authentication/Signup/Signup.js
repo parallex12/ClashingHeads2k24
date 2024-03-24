@@ -12,11 +12,14 @@ import CountryCodeField from "../../../globalComponents/CountryCodeField";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useState } from "react";
+import { useRecoilState } from "recoil";
+import { registrationForm } from "../../../state-management/atoms/atoms";
 
 const Signup = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  const [form, setForm] = useRecoilState(registrationForm);
   const [phone, setPhone] = useState(null);
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
 
@@ -25,9 +28,7 @@ const Signup = (props) => {
   };
 
   const onContinue = () => {
-    props?.navigation?.navigate("OTPVerification", {
-      phone: country?.dial_code + phone,
-    });
+    props?.navigation?.navigate("OTPVerification");
   };
 
   return (
@@ -51,7 +52,7 @@ const Signup = (props) => {
             </Text>
             <CountryCodeField
               setCountry={setCountry}
-              onChangeText={(val) => setPhone(val)}
+              onChangeText={(val) => setForm({ phone: val })}
             />
             <Text style={font(10, "#252525", "Regular", 3, 20)}>
               We will send a text with a verification code. Message and date
@@ -83,7 +84,4 @@ const Signup = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
-export default connect(mapStateToProps, {})(Signup);
+export default Signup;

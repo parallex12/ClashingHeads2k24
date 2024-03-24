@@ -10,18 +10,22 @@ import {
   View,
 } from "react-native";
 import { connect } from "react-redux";
-import { styles as _styles } from "../../../styles/PersonalInfo copy/main";
+import { styles as _styles } from "../../../styles/VoiceRecording/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
-import AudioRecorderPlayer from "react-native-audio-recorder-player"; // Import the audio recorder player library
 import CircleComponent from "./components/CircleComponent";
+import RecordingButton from "../../../globalComponents/RecordingButton";
+import { useRecoilState } from "recoil";
+import { registrationForm } from "../../../state-management/atoms/atoms";
+import RecordingPlayer from "../../../globalComponents/RecordingPlayer";
 
 const VoiceRecording = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  const [form, setForm] = useRecoilState(registrationForm);
 
   let iconImages = [
     require("../../../assets/icons/recorderVector.png"),
@@ -29,23 +33,18 @@ const VoiceRecording = (props) => {
     require("../../../assets/icons/bgPause.png"),
   ];
 
+  const [recording, setRecording] = useState(false);
+  const [sound, setSound] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [timer, setTimer] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
-  const audioRecorderPlayer = new AudioRecorderPlayer(); // Initialize the audio recorder player
 
-  const recordingRef = useRef(null);
   const timerRef = useRef(null);
-
-  useEffect(() => {
-    audioRecorderPlayer.setSubscriptionDuration(0.1); // Set the subscription duration for audio recording
-  }, []);
 
   const startRecording = async () => {
     try {
-      const result = await audioRecorderPlayer.startRecorder(); // Start recording
-      console.log(audioRecorderPlayer);
       setIsRecording(true);
       setTimer(0);
       setProgress(0);
@@ -69,10 +68,23 @@ const VoiceRecording = (props) => {
 
   const stopRecording = async () => {
     try {
-      const result = await audioRecorderPlayer.stopRecorder(); // Stop recording
       setIsRecording(false);
       setIsRecordingCompleted(true);
       clearInterval(timerRef.current);
+    } catch (error) {
+      console.log("Error stopping recording:", error);
+    }
+  };
+
+  const onConfirm = async () => {
+    try {
+      if (recording) {
+        setForm((prev) => {
+          return { ...prev, about_voice: recording };
+        });
+        clearInterval(timerRef.current);
+        props?.navigation?.navigate("ProfilePhoto");
+      }
     } catch (error) {
       console.log("Error stopping recording:", error);
     }
@@ -97,19 +109,29 @@ const VoiceRecording = (props) => {
             <View style={styles.recorderWrapper}>
               <CircleComponent gap={1} progress={progress}>
                 <CircleComponent gap={1.12} progress={null}>
-                  <CircleComponent gap={1.3} progress={null}>
-                    <Image
-                      source={
-                        isRecording
-                          ? iconImages[2]
-                          : isRecordingCompleted
-                          ? iconImages[1]
-                          : iconImages[0]
-                      }
-                      resizeMode="contain"
-                      style={{ width: "100%", height: "100%" }}
-                    />
-                  </CircleComponent>
+                  <RecordingPlayer
+                    setSound={setSound}
+                    sound={sound}
+                    setProgress={setProgress}
+                    isAudioPlaying={isAudioPlaying}
+                    source={recording}
+                    setIsAudioPlaying={setIsAudioPlaying}
+                    setTimer={setTimer}
+                  >
+                    <CircleComponent gap={1.3} progress={null}>
+                      <Image
+                        source={
+                          isAudioPlaying
+                            ? iconImages[2]
+                            : isRecordingCompleted
+                            ? iconImages[1]
+                            : iconImages[0]
+                        }
+                        resizeMode="contain"
+                        style={{ width: "100%", height: "100%" }}
+                      />
+                    </CircleComponent>
+                  </RecordingPlayer>
                 </CircleComponent>
               </CircleComponent>
               <View style={styles.textWrapper}>
@@ -118,52 +140,54 @@ const VoiceRecording = (props) => {
                     timer % 60
                   }`}
                 </Text>
-                <Text style={font(12, "#ffffff", "Regular", 0)}>
-                  Record your max 15-second opinion on this post
+                <Text style={font(14, "#ffffff", "Regular", 0)}>
+                  {recording
+                    ? "Confirm your opinion and Post"
+                    : "Record your max 15-second opinion on this post"}
                 </Text>
               </View>
             </View>
           </View>
-          <StandardButton
-            title={
-              isRecording
-                ? "Stop Recording"
-                : isRecordingCompleted
-                ? "Confirm"
-                : "Start Recording"
-            }
-            customStyles={{
-              width: getPercent(50, width),
-              height: getPercent(7, height),
-              marginVertical: getPercent(3, height),
-              backgroundColor: isRecording
-                ? "rgba(255,255,255,0.3)"
-                : "rgba(255,255,255,1)",
-              alignSelf: "center",
-            }}
-            textStyles={{
-              color: isRecording
-                ? "#fff"
-                : isRecordingCompleted
-                ? "#DB2727"
-                : "#4B4EFC",
-              fontFamily: "Semibold",
-            }}
-            onPress={
-              isRecording
-                ? stopRecording
-                : isRecordingCompleted
-                ? () => setIsRecordingCompleted(false)
-                : startRecording
-            }
-          />
+          <RecordingButton
+            setRecording={setRecording}
+            recording={recording}
+            isRecording={isRecording}
+            isRecordingCompleted={isRecordingCompleted}
+            start={startRecording}
+            stop={stopRecording}
+            onConfirm={onConfirm}
+          >
+            <StandardButton
+              title={
+                isRecording
+                  ? "Stop Recording"
+                  : isRecordingCompleted
+                  ? "Confirm"
+                  : "Start Recording"
+              }
+              customStyles={{
+                width: getPercent(50, width),
+                height: getPercent(7, height),
+                marginVertical: getPercent(3, height),
+                backgroundColor: isRecording
+                  ? "rgba(255,255,255,0.3)"
+                  : "rgba(255,255,255,1)",
+                alignSelf: "center",
+              }}
+              textStyles={{
+                color: isRecording
+                  ? "#fff"
+                  : isRecordingCompleted
+                  ? "#DB2727"
+                  : "#4B4EFC",
+                fontFamily: "Semibold",
+              }}
+            />
+          </RecordingButton>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
-export default connect(mapStateToProps, {})(VoiceRecording);
+export default VoiceRecording;
