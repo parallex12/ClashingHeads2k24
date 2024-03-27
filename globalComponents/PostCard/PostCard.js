@@ -6,12 +6,14 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { connect } from "react-redux";
-import { PostCardStyles, font } from "../styles/Global/main";
+import { PostCardStyles, font } from "../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import Profile from "./StandardHeader/components/Profile";
+import Header from "./components/Header";
+import Content from "./components/Content";
+import ActionMenu from "./components/ActionMenu";
 
 const PostCard = (props) => {
   let {} = props;
@@ -21,7 +23,14 @@ const PostCard = (props) => {
 
   return (
     <View style={styles.container}>
-      <Profile />
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={() => navigation?.navigate("ClashDetails")}
+        style={styles.bgTouchable}
+      ></TouchableOpacity>
+      <Header />
+      <Content />
+      <ActionMenu />
     </View>
   );
 };

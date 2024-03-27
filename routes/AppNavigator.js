@@ -9,6 +9,7 @@ import PersonalInfo from "../screens/Authentication/PersonalInfo/PersonalInfo";
 import VoiceRecording from "../screens/Authentication/VoiceRecording/VoiceRecording";
 import ProfilePhoto from "../screens/Authentication/ProfilePhoto/ProfilePhoto";
 import Home from "../screens/Home/Home";
+import ClashDetails from "../screens/ClashDetail/ClashDetail";
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -23,6 +24,7 @@ function AppNavigation() {
       <Screen name="VoiceRecording" component={VoiceRecording} />
       <Screen name="ProfilePhoto" component={ProfilePhoto} />
       <Screen name="Home" component={Home} />
+      <Screen name="ClashDetails" component={ClashDetails} />
     </Navigator>
   );
 }

@@ -19,6 +19,7 @@ export default function App() {
 
   return (
     <RecoilRoot>
+      <StatusBar style="auto"  />
       <AppNavigator />
     </RecoilRoot>
   );

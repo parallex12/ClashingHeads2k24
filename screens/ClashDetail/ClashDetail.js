@@ -1,10 +1,10 @@
 import { ScrollView, Text, View, useWindowDimensions } from "react-native";
-import { styles as _styles } from "../../styles/Home/main";
+import { styles as _styles } from "../../styles/ClashDetails/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 
-const Home = (props) => {
+const ClashDetails = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
@@ -24,4 +24,4 @@ const Home = (props) => {
   );
 };
 
-export default Home;
+export default ClashDetails;

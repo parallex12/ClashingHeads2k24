@@ -25,9 +25,18 @@ export const PostCardStyles = ({ width, height }) =>
     container: {
       width: "100%",
       minHeight: getPercent(15, height),
-      backgroundColor: "#222",
+      backgroundColor: "#ffffff",
       paddingHorizontal: getPercent(3, width),
-      paddingTop:10
+      paddingTop:10,
+      alignItems:'center',
+      justifyContent:'center',
+      borderBottomWidth:10,
+      borderColor:'#F7F8F8'
+    },
+    bgTouchable: {
+      width: "100%",
+      height: "100%",
+      position: "absolute",
     },
   });
 
@@ -47,6 +56,8 @@ export const BottomMenuStyles = ({ width, height }) =>
       flexDirection: "row",
       paddingHorizontal: getPercent(2, width),
       paddingBottom: 5,
+      zIndex:99999,
+      backgroundColor:'#ffffff'
     },
     bottomMenuItem: {
       height: getPercent(5, height),
