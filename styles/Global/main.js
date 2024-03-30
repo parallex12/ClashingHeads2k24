@@ -19,6 +19,95 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//SearchBar Styles  starts here
+export const SearchBarStyles = ({ width, height }) =>
+  StyleSheet.create({
+    searchRow: {
+      flex: 0.9,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    searchInputWrapper: {
+      flex: 1,
+      height: getPercent(5.5, height),
+      backgroundColor: "#F6F7F8",
+      borderRadius: 100,
+      paddingHorizontal: getPercent(3, width),
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 5,
+    },
+  });
+
+//SideMenu Styles  starts here
+export const SideMenuStyles = ({ width, height }) =>
+  StyleSheet.create({
+    listWrapper: {
+      flex: 1,
+    },
+    listContainer: {
+      flex: 1,
+    },
+    footerWrapper: {},
+    listItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      width: "100%",
+      height: getPercent(5, height),
+      marginVertical: getPercent(0.5, height),
+    },
+    listIcon: {
+      width: "7%",
+      height: "100%",
+      marginRight: 12,
+    },
+    profileView: {
+      width: "100%",
+      height: getPercent(10, height),
+      flexDirection: "row",
+      paddingVertical: 10,
+      alignItems: "center",
+      justifyContent: "flex-start",
+    },
+    profile: {
+      width: getPercent(10, width),
+      height: getPercent(10, width),
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: 10,
+      overflow: "hidden",
+    },
+    info: {},
+  });
+
+//ClashCard Styles starts here
+export const ClashCardStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      backgroundColor: "#ffffff",
+    },
+    content: {
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    contentCardWrapper: {
+      width: "87%",
+      alignSelf: "flex-end",
+      marginTop: getPercent(1, height),
+      marginBottom: getPercent(2, height),
+    },
+    hrLine: {
+      width: 1,
+      height: "100%",
+      backgroundColor: "#E5E7EB",
+      position: "absolute",
+      left: "5%",
+    },
+  });
+
 //PostCardStyles starts here
 export const PostCardStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -26,17 +115,24 @@ export const PostCardStyles = ({ width, height }) =>
       width: "100%",
       minHeight: getPercent(15, height),
       backgroundColor: "#ffffff",
-      paddingHorizontal: getPercent(3, width),
-      paddingTop:10,
-      alignItems:'center',
-      justifyContent:'center',
-      borderBottomWidth:10,
-      borderColor:'#F7F8F8'
+      paddingTop: 10,
+      borderColor: "#F7F8F8",
     },
-    bgTouchable: {
+    content: {
+      paddingHorizontal: getPercent(3, width),
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    postDateAndViews: {
       width: "100%",
-      height: "100%",
-      position: "absolute",
+      height: getPercent(5, height),
+      borderBottomWidth: 1,
+      borderTopWidth: 1,
+      borderColor: "#F7F8F8",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: getPercent(3, width),
     },
   });
 
@@ -56,8 +152,8 @@ export const BottomMenuStyles = ({ width, height }) =>
       flexDirection: "row",
       paddingHorizontal: getPercent(2, width),
       paddingBottom: 5,
-      zIndex:99999,
-      backgroundColor:'#ffffff'
+      zIndex: 99999,
+      backgroundColor: "#ffffff",
     },
     bottomMenuItem: {
       height: getPercent(5, height),
@@ -81,6 +177,22 @@ export const StandardHeaderStyles = ({ width, height }) =>
       paddingTop: StatusBar.currentHeight + getPercent(2.5, height),
       paddingHorizontal: getPercent(4, width),
     },
+    col1: {
+      flex: 0.5,
+      alignItems: "flex-start",
+      justifyContent: "center",
+    },
+    col2: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    col3: {
+      flex: 0.5,
+      alignItems: "flex-end",
+      justifyContent: "center",
+    },
+    title: font(17, "#FFFFFF", "Semibold"),
   });
 
 //RecordingButton Stylesstarts here

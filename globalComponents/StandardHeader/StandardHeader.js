@@ -13,26 +13,39 @@ import { useNavigation } from "@react-navigation/native";
 import Profile from "./components/Profile";
 import SearchIcon from "./components/SearchIcon";
 import Logo from "./components/Logo";
+import BackButton from "../BackButton";
 
 const StandardHeader = (props) => {
-  let { customStyles, color, textStyles, title } = props;
+  let {
+    containerStyles,
+    rightIcon,
+    backButton,
+    searchIcon,
+    title,
+    profile,
+    logo,
+  } = props;
   let { width, height } = useWindowDimensions();
   let styles = StandardHeaderStyles({ width, height });
-  let navigation = useNavigation();
-
-  const onBack = () => {
-    navigation?.goBack();
-  };
 
   return (
     <ImageBackground
-      style={styles.container}
+      style={[styles.container, containerStyles]}
       source={require("../../assets/images/headerBg.png")}
       resizeMode="cover"
     >
-      <Profile />
-      <Logo />
-      <SearchIcon />
+      <View style={styles.col1}>
+        {profile && <Profile />}
+        {backButton && <BackButton color="#FFFFFF" />}
+      </View>
+      <View style={styles.col2}>
+        {logo && <Logo />}
+        {title && <Text style={styles.title}>{title}</Text>}
+      </View>
+      <View style={styles.col3}>
+        {searchIcon && <SearchIcon />}
+        {rightIcon && rightIcon}
+      </View>
     </ImageBackground>
   );
 };

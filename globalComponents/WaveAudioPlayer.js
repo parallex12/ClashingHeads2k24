@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   Image,
   StyleSheet,
@@ -17,45 +18,51 @@ const WaveAudioPlayer = (props) => {
   let { source } = props;
   let { width, height } = useWindowDimensions();
   const waveAnime = useRef(new Animated.Value(0)).current;
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [shouldPlay, setShouldPlay] = useState(false);
+  const [SoundObj, setSoundObj] = useState(null);
   const [sound, setSound] = useState(null);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(null);
   let styles = _styles({ width, height });
 
   const onPlay = async () => {
+    setSoundObj({isBuffering:true})
     const { sound } = await Audio.Sound.createAsync({ uri: source });
     setSound(sound);
     await sound.playAsync();
     sound.setOnPlaybackStatusUpdate((onLoad) => {
       let totalDuration = onLoad.durationMillis; // Total duration of the sound
-      setIsPlaying(onLoad?.isPlaying);
+      setSoundObj(onLoad);
       if (onLoad?.didJustFinish) {
         setDuration(0);
         waveAnime.setValue(0);
-        console.log("yes")
+        setSoundObj(null)
+        console.log("yes");
       } else {
         setDuration(totalDuration / 1000);
       }
     });
   };
 
+  const onStop = () => {
+    sound.stopAsync();
+    setDuration(0);
+    setSoundObj(null);
+    waveAnime.setValue(0);
+  };
+
   useEffect(() => {
-    if (isPlaying) {
-      console.log(duration);
+    if (SoundObj?.isPlaying) {
       Animated.timing(waveAnime, {
         toValue: 1,
         duration: duration * 1050, // Adjust the duration as needed
         useNativeDriver: false,
       }).start(() => {
-        setIsPlaying(false);
         sound.unloadAsync();
-        setShouldPlay(false);
         setDuration(0);
+        setSoundObj(null);
       });
     }
-  }, [isPlaying]);
+  }, [SoundObj?.isPlaying]);
 
   const wavePosition = waveAnime.interpolate({
     inputRange: [0, 1],
@@ -65,14 +72,13 @@ const WaveAudioPlayer = (props) => {
   let animeWidthStyles = [
     styles.waveRedWrapper,
     {
-      width:wavePosition,
+      width: wavePosition,
     },
   ];
 
   useEffect(() => {
     return sound
       ? () => {
-          console.log("Unloading Sound");
           sound.unloadAsync();
         }
       : undefined;
@@ -80,12 +86,19 @@ const WaveAudioPlayer = (props) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.btn} onPress={onPlay}>
-        <FontAwesome5
-          name={isPlaying ? "pause" : "play"}
-          size={20}
-          color="#DB2727"
-        />
+      <TouchableOpacity
+        style={styles.btn}
+        onPress={SoundObj?.isPlaying ? onStop : onPlay}
+      >
+        {SoundObj?.isBuffering ? (
+          <ActivityIndicator />
+        ) : (
+          <FontAwesome5
+            name={SoundObj?.isPlaying ? "pause" : "play"}
+            size={20}
+            color="#DB2727"
+          />
+        )}
       </TouchableOpacity>
       <MaskedView
         style={{ flex: 1, flexDirection: "row", height: "100%" }}
@@ -100,9 +113,7 @@ const WaveAudioPlayer = (props) => {
         }
       >
         {/* Shows behind the mask, you can put anything here, such as an image */}
-        <Animated.View
-          style={animeWidthStyles}
-        ></Animated.View>
+        <Animated.View style={animeWidthStyles}></Animated.View>
         <View
           style={{
             width: "100%",
@@ -127,8 +138,9 @@ const _styles = ({ width, height }) =>
       borderRadius: 10,
       borderColor: "#E5E7EB",
       paddingHorizontal: 5,
-      zIndex:2,
-      backgroundColor:'#ffffff'
+      zIndex: 2,
+      backgroundColor: "#ffffff",
+      marginVertical: getPercent(1, height),
     },
     btn: {
       width: "10%",
@@ -148,11 +160,11 @@ const _styles = ({ width, height }) =>
       width: "100%",
       height: "100%",
     },
-    waveRedWrapper:{
+    waveRedWrapper: {
       width: "100%",
       height: "100%",
       backgroundColor: "#DB2727",
-    }
+    },
   });
 
 export default WaveAudioPlayer;

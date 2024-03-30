@@ -6,14 +6,15 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
+import { Entypo } from "@expo/vector-icons";
 import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
 
-const Header = (props) => {
-  let {author} = props;
+const MessageCard = (props) => {
+  let { data } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+
   const Profile = ({ source }) => {
     return (
       <View style={styles.container}>
@@ -30,40 +31,34 @@ const Header = (props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} activeOpacity={0.6}>
       <Profile
         source={{
           uri: "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
         }}
       />
       <View style={styles.infoWrapper}>
-        <View style={styles.infoTitleRow}>
-          <Text style={styles.titleName}>Lefty Al</Text>
-          <Image
-            source={require("../../../assets/icons/mStarIcon.png")}
-            resizeMode="contain"
-            style={{
-              width: getPercent(2, height),
-              height: getPercent(2, height),
-            }}
-          />
-        </View>
-        <Text style={styles.slugText}>Democrat - Los Angles,CA  20h</Text>
+        <Text style={styles.titleName}>Corey Press</Text>
+        <Text style={styles.slugText}>This is demo message text</Text>
       </View>
-      <TouchableOpacity>
-        <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />
-      </TouchableOpacity>
-    </View>
+      <View style={styles.rightActions}>
+        <Text style={styles.timeText}>12:00 PM</Text>
+        <View style={styles.counterWrapper}>
+          <Text style={styles.counterText} >50</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
 const _styles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      height: getPercent(5, height),
+      minHeight: getPercent(6, height),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
+      marginVertical: getPercent(0.6, height),
     },
     profileWrapper: {
       width: getPercent(5.4, height),
@@ -91,12 +86,26 @@ const _styles = ({ width, height }) =>
       flex: 1,
       paddingHorizontal: getPercent(5, width),
     },
-    infoTitleRow: {
-      flexDirection: "row",
-      alignItems: "center",
+    titleName: font(14, "#111827", "Medium", 5, null, { marginRight: 10 }),
+    slugText: font(12, "#111827", "Regular", 3),
+    rightActions: {
+      flex: 0.3,
+      height: getPercent(6, height),
+      alignItems: "flex-end",
+      justifyContent: "space-between",
+      paddingVertical: 1,
     },
-    titleName: font(14, "#111827", "Medium", 2, null, { marginRight: 10 }),
-    slugText: font(12, "#6B7280", "Regular"),
+    timeText: font(11, "#6B7280", "Regular", 0),
+    counterWrapper: {
+      minWidth: getPercent(5, width),
+      minHeight: getPercent(5, width),
+      backgroundColor: "#DB2727",
+      borderRadius: 100,
+      padding: 4,
+      alignItems:'center',
+      justifyContent:'center'
+    },
+    counterText: font(10, "#FFFFFF", "Medium"),
   });
 
-export default Header;
+export default MessageCard;

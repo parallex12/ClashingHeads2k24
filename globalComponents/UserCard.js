@@ -6,14 +6,15 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { getPercent } from "../../../middleware";
-import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
+import { getPercent } from "../middleware";
+import { font } from "../styles/Global/main";
 
-const Header = (props) => {
-  let {author} = props;
+const UserCard = (props) => {
+  let { author } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+
   const Profile = ({ source }) => {
     return (
       <View style={styles.container}>
@@ -30,7 +31,7 @@ const Header = (props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} activeOpacity={0.6}>
       <Profile
         source={{
           uri: "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
@@ -40,7 +41,7 @@ const Header = (props) => {
         <View style={styles.infoTitleRow}>
           <Text style={styles.titleName}>Lefty Al</Text>
           <Image
-            source={require("../../../assets/icons/mStarIcon.png")}
+            source={require("../assets/icons/mStarIcon.png")}
             resizeMode="contain"
             style={{
               width: getPercent(2, height),
@@ -48,22 +49,21 @@ const Header = (props) => {
             }}
           />
         </View>
-        <Text style={styles.slugText}>Democrat - Los Angles,CA  20h</Text>
+        <Text style={styles.slugText}>Democrat - Los Angles,CA 20h</Text>
       </View>
-      <TouchableOpacity>
-        <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />
-      </TouchableOpacity>
-    </View>
+      <Entypo name="chevron-right" size={20} color="#7A8085" />
+    </TouchableOpacity>
   );
 };
 
 const _styles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      height: getPercent(5, height),
+      minHeight: getPercent(6, height),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
+      marginVertical: getPercent(0.6, height),
     },
     profileWrapper: {
       width: getPercent(5.4, height),
@@ -99,4 +99,4 @@ const _styles = ({ width, height }) =>
     slugText: font(12, "#6B7280", "Regular"),
   });
 
-export default Header;
+export default UserCard;

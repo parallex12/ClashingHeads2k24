@@ -1,5 +1,6 @@
 import {
   Image,
+  Pressable,
   Text,
   TouchableOpacity,
   View,
@@ -16,22 +17,37 @@ import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
 
 const PostCard = (props) => {
-  let {} = props;
+  let { data, divider, postDateAndViews } = props;
   let { width, height } = useWindowDimensions();
   let styles = PostCardStyles({ width, height });
   let navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        activeOpacity={1}
-        onPress={() => navigation?.navigate("ClashDetails")}
-        style={styles.bgTouchable}
-      ></TouchableOpacity>
-      <Header />
-      <Content />
-      <ActionMenu />
-    </View>
+    <Pressable
+      style={[
+        styles.container,
+        {
+          borderBottomWidth: divider ? 10 : 0,
+        },
+      ]}
+      onPress={() => navigation?.navigate("ClashDetails", { data })}
+    >
+      <View style={styles.content}>
+        <Header author={data?.author} />
+        <Content {...data} />
+        <ActionMenu {...data} />
+      </View>
+      {postDateAndViews && (
+        <View style={styles.postDateAndViews}>
+          <Text style={font(10, "#9CA3AF", "Regular")}>
+            Posted on Tue 9 Jan 8:35 AM
+          </Text>
+          <Text style={font(10, "#111827", "Bold")}>
+            23k <Text style={font(10, "#9CA3AF", "Regular")}>Views</Text>
+          </Text>
+        </View>
+      )}
+    </Pressable>
   );
 };
 

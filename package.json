@@ -12,7 +12,7 @@
     "@react-native-community/datetimepicker": "7.6.1",
     "@react-native-masked-view/masked-view": "0.3.0",
     "@react-native-picker/picker": "2.6.1",
-    "@react-navigation/native": "^6.1.7",
+    "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/stack": "^6.3.17",
     "base64-js": "^1.5.1",
     "expo": "~50.0.13",
@@ -38,7 +38,8 @@
     "react-redux": "^8.1.2",
     "recoil": "^0.7.7",
     "redux": "^4.2.1",
-    "redux-thunk": "^2.4.2"
+    "redux-thunk": "^2.4.2",
+    "react-native-reanimated": "~3.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

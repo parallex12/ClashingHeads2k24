@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import { BottomMenuStyles, font } from "../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
 
 let navArr = [
@@ -32,10 +32,10 @@ let navArr = [
     route: "Post",
   },
   {
-    title: "Chats",
+    title: "Chat",
     icon: require("../../assets/BottomMenuIcons/chat.png"),
     activeIcon: require("../../assets/BottomMenuIcons/chatActive.png"),
-    route: "Chats",
+    route: "Messages",
   },
   {
     title: "Notifications",
@@ -50,19 +50,20 @@ const BottomMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = BottomMenuStyles({ width, height });
   let navigation = useNavigation();
-  const [activeIndex, setActiveIndex] = useState(0);
+  const route = useRoute();
+  // Extract the route name from the route object
+  const currentRouteName = route.name;
 
-  const onPressItem = (index) => {
-    setActiveIndex(index);
-    // navigation.navigate(item.route); // Navigate to the specified route
+  const onPressItem = (item) => {
+    navigation.navigate(item.route); // Navigate to the specified route
   };
 
   const BottomMenuItem = ({ item, index }) => {
-    let isActiveItem = index === activeIndex;
+    let isActiveItem = currentRouteName == item?.route;
     return (
       <TouchableOpacity
         style={styles.bottomMenuItem}
-        onPress={() => onPressItem(index)}
+        onPress={() => onPressItem(item, index)}
       >
         <View style={styles.itemIconWrapper}>
           <Image
