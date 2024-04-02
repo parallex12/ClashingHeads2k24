@@ -46,20 +46,19 @@ let navArr = [
 ];
 
 const BottomMenu = (props) => {
-  let {} = props;
+  let {active} = props;
   let { width, height } = useWindowDimensions();
   let styles = BottomMenuStyles({ width, height });
   let navigation = useNavigation();
   const route = useRoute();
   // Extract the route name from the route object
   const currentRouteName = route.name;
-
   const onPressItem = (item) => {
     navigation.navigate(item.route); // Navigate to the specified route
   };
-
+  
   const BottomMenuItem = ({ item, index }) => {
-    let isActiveItem = currentRouteName == item?.route;
+    let isActiveItem = currentRouteName == item?.route || active== item?.route;
     return (
       <TouchableOpacity
         style={styles.bottomMenuItem}

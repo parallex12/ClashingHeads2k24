@@ -46,9 +46,7 @@ export const styles = ({ width, height }) =>
       justifyContent: "center",
       paddingHorizontal: getPercent(5, width),
     },
-    cardsWrapper: {
-      // backgroundColor:'red',
-    },
+    
   });
 //ClashCardStyles starts here
 export const ClashCardStyles = ({ width, height }) =>
