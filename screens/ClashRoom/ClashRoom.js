@@ -7,6 +7,7 @@ import { useState } from "react";
 import { font } from "../../styles/Global/main";
 import ClashersCard from "./components/ClashersCard";
 import TranscriptCard from "./components/TranscriptCard";
+import BottomActionsMenu from "./components/BottomActionsMenu";
 
 const ClashRoom = (props) => {
   let {} = props;
@@ -37,12 +38,20 @@ const ClashRoom = (props) => {
               </View>
             </ScrollView>
           </View>
-          <View style={styles.clashersContainer}>
-            <TranscriptCard />
+          <View style={styles.transcript_clashersContainer}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={styles.clashersInnerContainer}>
+                <TranscriptCard />
+                <TranscriptCard />
+                <TranscriptCard />
+                <TranscriptCard />
+              </View>
+            </ScrollView>
           </View>
         </View>
       </ScrollView>
-      <BottomMenu active="Clashes" />
+
+      <BottomActionsMenu />
     </View>
   );
 };

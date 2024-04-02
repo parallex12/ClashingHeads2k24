@@ -29,20 +29,11 @@ const TranscriptCard = (props) => {
         />
       </View>
       <View style={styles.infoWrapper}>
-      <Text style={font(12, "#000000", "Bold", 3, null, { marginLeft: 10 })}>
-        Username
-      </Text>
+        <Text style={font(12, "#000000", "Bold", 3)}>Username</Text>
         <Text
           style={font(12, "#000000", "Regular", 3, null, styles.transcriptText)}
         >
-          This is demo text for transcript This is demo text for transcript This
-          is demo text for transcriptThis is demo text for transcript This is
-          demo text for transcript This is demo text for transcriptThis is demo
-          text for transcript This is demo text for transcript This is demo text
-          for transcriptThis is demo text for transcript This is demo text for
-          transcript This is demo text for transcriptThis is demo text for
-          transcript This is demo text for transcript This is demo text for
-          transcript
+          This is demo text for transcript This is
         </Text>
       </View>
     </View>
