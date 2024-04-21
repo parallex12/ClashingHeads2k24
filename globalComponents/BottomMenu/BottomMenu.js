@@ -26,10 +26,10 @@ let navArr = [
     route: "Clashes",
   },
   {
-    title: "Post",
-    icon: require("../../assets/BottomMenuIcons/post.png"),
-    activeIcon: require("../../assets/BottomMenuIcons/postActive.png"),
-    route: "Post",
+    title: "News",
+    icon: require("../../assets/BottomMenuIcons/news.png"),
+    activeIcon: require("../../assets/BottomMenuIcons/newsActive.png"),
+    route: "News",
   },
   {
     title: "Chat",
