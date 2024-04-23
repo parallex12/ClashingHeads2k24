@@ -5,14 +5,18 @@ import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { getPercent } from "../../middleware";
 import ClashCard from "./components/ClashCard";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import VoiceRecorderBottomSheet from "../../globalComponents/VoiceRecorderBottomSheet/VoiceRecorderBottomSheet";
+import { useRecoilState } from "recoil";
+import { isVoiceModalOpen_Recoil } from "../../state-management/atoms/atoms";
 
 const ClashDetails = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let prevData = props?.route?.params?.data;
-  const [postClashes, setPostClashes] = useState([1, 2, 3,4]);
+  const [postClashes, setPostClashes] = useState([1, 2, 3, 4]);
+  const bottomVoiceSheetRef = useRef(null);
 
   return (
     <View style={styles.container}>
@@ -24,7 +28,12 @@ const ClashDetails = (props) => {
       />
       <ScrollView>
         <View style={styles.content}>
-          <PostCard postDateAndViews data={prevData} />
+          <PostCard
+            postDateAndViews
+            data={prevData}
+            postClashes={postClashes?.length}
+            onPostClashesPress={() => bottomVoiceSheetRef.current?.present()}
+          />
           <View style={styles.clashes_wrapper}>
             {postClashes.map((item, index) => {
               let showHrLine = index + 1 == postClashes?.length;
@@ -40,6 +49,7 @@ const ClashDetails = (props) => {
           </View>
         </View>
       </ScrollView>
+      <VoiceRecorderBottomSheet bottomVoiceSheetRef={bottomVoiceSheetRef} />
       <BottomMenu />
     </View>
   );

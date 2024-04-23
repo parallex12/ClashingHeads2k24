@@ -17,7 +17,7 @@ import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
 
 const PostCard = (props) => {
-  let { data, divider, postDateAndViews } = props;
+  let { data,onPostClashesPress, postClashes,divider, postDateAndViews } = props;
   let { width, height } = useWindowDimensions();
   let styles = PostCardStyles({ width, height });
   let navigation = useNavigation();
@@ -35,7 +35,7 @@ const PostCard = (props) => {
       <View style={styles.content}>
         <Header author={data?.author} />
         <Content {...data} />
-        <ActionMenu {...data} />
+        <ActionMenu {...data} postClashes={postClashes} onPostClashesPress={onPostClashesPress} />
       </View>
       {postDateAndViews && (
         <View style={styles.postDateAndViews}>

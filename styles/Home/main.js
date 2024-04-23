@@ -15,4 +15,18 @@ export const styles = ({ width, height }) =>
       zIndex: 9,
       paddingBottom: getPercent(12, height),
     },
+    header2Wrapper: {
+      paddingHorizontal: getPercent(3, width),
+      flexDirection: "row",
+      borderBottomWidth: 1,
+      paddingVertical: getPercent(2, height),
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderColor: "#F7F8F8",
+    },
+    header2WrapperBtn: {
+      width: getPercent(40, width),
+      height: getPercent(4, height),
+      paddingHorizontal: getPercent(4, width),
+    },
   });

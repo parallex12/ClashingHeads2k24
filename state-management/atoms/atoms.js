@@ -6,6 +6,11 @@ export const registrationForm = atom({
   default: {},
 });
 
+export const isVoiceModalOpen_Recoil = atom({
+  key: "isVoiceModalOpen",
+  default: false,
+});
+
 export const global_posts = atom({
   key: "global_posts",
   default: [

@@ -12,15 +12,16 @@ import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
 const ActionMenu = (props) => {
-  let {} = props;
+  let { postClashes, onPostClashesPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
-  const FooterItem = ({ item, index }) => {
+
+  const FooterItem = ({ item, index, post_clashes_count }) => {
     return (
       <TouchableOpacity
         style={styles.FooterItem}
-        onPress={() => item?.onPress(item)}
+        onPress={() => item?.onPress(item, post_clashes_count)}
       >
         <View style={styles.iconImage}>
           <Image
@@ -29,7 +30,9 @@ const ActionMenu = (props) => {
             style={{ width: "100%", height: "100%" }}
           />
         </View>
-        <Text style={styles.actionText}>{item?.title}</Text>
+        <Text style={styles.actionText}>
+          {post_clashes_count || item?.title}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -48,7 +51,10 @@ const ActionMenu = (props) => {
     {
       title: "Clashes",
       iconImg: require("../../../assets/icons/post_cards/sound.png"),
-      onPress: () => navigation?.navigate("ClashDetails"),
+      onPress: (item, post_clashes_count) =>
+        post_clashes_count
+          ? onPostClashesPress()
+          : navigation?.navigate("ClashDetails"),
     },
     {
       title: "Report",
@@ -69,7 +75,15 @@ const ActionMenu = (props) => {
   return (
     <View style={styles.container}>
       {actions.map((item, index) => {
-        return <FooterItem index={index} item={item} key={index} />;
+        let post_clashes_count = item?.title == "Clashes" ? postClashes : null;
+        return (
+          <FooterItem
+            index={index}
+            item={item}
+            key={index}
+            post_clashes_count={post_clashes_count}
+          />
+        );
       })}
     </View>
   );

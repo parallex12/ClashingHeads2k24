@@ -19,6 +19,20 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//VoiceRecorderBottomSheet  Styles starts here
+export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 24,
+      backgroundColor: "grey",
+    },
+    contentContainer: {
+      flex: 1,
+      alignItems: "center",
+    },
+  });
+
 //SearchBar Styles  starts here
 export const SearchBarStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -394,7 +408,7 @@ export const loaderStyles = ({ width, height }) =>
   });
 export const font = (s, c, fm, mv, lh, extras) => {
   return {
-    fontSize: RFValue(s),
+    fontSize: RFValue(s) - 1,
     color: c,
     fontFamily: fm,
     marginVertical: mv,
