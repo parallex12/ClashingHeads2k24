@@ -24,13 +24,39 @@ export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      padding: 24,
-      backgroundColor: "grey",
     },
     contentContainer: {
       flex: 1,
-      alignItems: "center",
+      paddingHorizontal: getPercent(5, width),
+      alignItems: 'center',
+      justifyContent: 'flex-start'
     },
+    timerWrapper: {
+      width: '100%',
+      height:getPercent(5,height),
+      alignItems: 'center',
+      borderWidth:1,
+      justifyContent:'center'
+    },
+    timerText: font(16, "#222", "Regular"),
+    shareBtn: {
+      width: getPercent(11, width),
+      height: getPercent(11, width),
+      borderRadius: 100,
+      backgroundColor: 'rgba(0,0,0,0.1)',
+      alignSelf: 'flex-end',
+      position:'absolute'
+    },
+    micWrapper:{
+      width:'100%',
+      height:getPercent(30,width),
+      borderWidth:1
+    },
+    quickAudioWrapper:{
+      width:'100%',
+      minHeight:getPercent(5,width),
+      borderWidth:1
+    }
   });
 
 //SearchBar Styles  starts here

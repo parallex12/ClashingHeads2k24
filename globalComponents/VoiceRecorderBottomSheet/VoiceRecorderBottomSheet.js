@@ -14,6 +14,8 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isVoiceModalOpen_Recoil } from "../../state-management/atoms/atoms";
 import { useRecoilValue } from "recoil";
+import BackDrop from "./BackDrop";
+import { Image } from "react-native";
 
 const VoiceRecorderBottomSheet = (props) => {
   let { bottomVoiceSheetRef } = props;
@@ -30,9 +32,24 @@ const VoiceRecorderBottomSheet = (props) => {
           ref={bottomVoiceSheetRef}
           index={1}
           snapPoints={snapPoints}
+          backdropComponent={BackDrop}
         >
+
           <BottomSheetView style={styles.contentContainer}>
-            <Text>Awesome 🎉</Text>
+            <View style={styles.timerWrapper}>
+              <Text style={styles.timerText}>00:15</Text>
+              <TouchableOpacity style={styles.shareBtn}></TouchableOpacity>
+            </View>
+            <View style={styles.micWrapper}>
+              <Image
+                source={require("../../assets/images/MicRec.png")}
+                resizeMode="contain"
+                style={{ width: '100%', height: '100%' }}
+              />
+            </View>
+            <View style={styles.quickAudioWrapper}>
+
+            </View>
           </BottomSheetView>
         </BottomSheetModal>
       </View>
