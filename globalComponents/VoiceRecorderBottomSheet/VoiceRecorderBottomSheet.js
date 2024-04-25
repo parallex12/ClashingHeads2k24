@@ -16,14 +16,22 @@ import { isVoiceModalOpen_Recoil } from "../../state-management/atoms/atoms";
 import { useRecoilValue } from "recoil";
 import BackDrop from "./BackDrop";
 import { Image } from "react-native";
+import Emojis from "./Emojis";
+import WaveAudioPlayer from "../WaveAudioPlayer";
+import StandardButton from "../StandardButton";
+import WaveAudioRecorder from "../WaveAudioRecorder";
+import { formatDuration } from "../../utils";
 
 const VoiceRecorderBottomSheet = (props) => {
   let { bottomVoiceSheetRef } = props;
   let { width, height } = useWindowDimensions();
   let styles = VoiceRecorderBottomSheetStyles({ width, height });
-
+  const [recordedVoice, setRecordedVoice] = useState(null)
+  const [recordingDuration, setRecordingDuration] = useState(0)
   // variables
-  const snapPoints = useMemo(() => ["25%", "50%"], []);
+  const snapPoints = useMemo(() => ["25%", "55%"], []);
+  let duration = formatDuration(recordingDuration)
+  console.log(duration)
 
   return (
     <BottomSheetModalProvider>
@@ -37,7 +45,7 @@ const VoiceRecorderBottomSheet = (props) => {
 
           <BottomSheetView style={styles.contentContainer}>
             <View style={styles.timerWrapper}>
-              <Text style={styles.timerText}>00:15</Text>
+              <Text style={styles.timerText}>{duration || "00:00"}</Text>
               <TouchableOpacity style={styles.shareBtn}></TouchableOpacity>
             </View>
             <View style={styles.micWrapper}>
@@ -48,8 +56,18 @@ const VoiceRecorderBottomSheet = (props) => {
               />
             </View>
             <View style={styles.quickAudioWrapper}>
-
+              <Emojis onEmojiPress={(item) => console.log(item)} />
+              {recordedVoice ? <WaveAudioPlayer
+                source={recordedVoice?.getURI()}
+              />
+                :
+                <WaveAudioRecorder
+                  setRecordedVoice={setRecordedVoice}
+                  setRecordingDuration={setRecordingDuration}
+                />
+              }
             </View>
+            <StandardButton title="Post" customStyles={{ width: '50%', marginVertical: 20 }} />
           </BottomSheetView>
         </BottomSheetModal>
       </View>

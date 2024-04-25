@@ -19,6 +19,33 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//EmojisStyles   starts here
+export const EmojisStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      width: '100%',
+      height: getPercent(5, height),
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginVertical: getPercent(1, height)
+    },
+    emojiItemCont: {
+      width: getPercent(7, width),
+      height: getPercent(7, width),
+      borderRadius: 100,
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: "hidden",
+      marginHorizontal: 10
+    }
+  });
+
+
+
+
+
+
 //VoiceRecorderBottomSheet  Styles starts here
 export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -33,10 +60,9 @@ export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
     },
     timerWrapper: {
       width: '100%',
-      height:getPercent(5,height),
+      height: getPercent(5, height),
       alignItems: 'center',
-      borderWidth:1,
-      justifyContent:'center'
+      justifyContent: 'center'
     },
     timerText: font(16, "#222", "Regular"),
     shareBtn: {
@@ -45,17 +71,15 @@ export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
       borderRadius: 100,
       backgroundColor: 'rgba(0,0,0,0.1)',
       alignSelf: 'flex-end',
-      position:'absolute'
+      position: 'absolute'
     },
-    micWrapper:{
-      width:'100%',
-      height:getPercent(30,width),
-      borderWidth:1
+    micWrapper: {
+      width: '100%',
+      height: getPercent(30, width),
     },
-    quickAudioWrapper:{
-      width:'100%',
-      minHeight:getPercent(5,width),
-      borderWidth:1
+    quickAudioWrapper: {
+      width: '100%',
+      minHeight: getPercent(5, width),
     }
   });
 

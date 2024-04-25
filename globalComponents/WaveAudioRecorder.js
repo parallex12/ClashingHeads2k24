@@ -4,7 +4,6 @@ import {
   Animated,
   Image,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   useWindowDimensions,
@@ -14,56 +13,88 @@ import { getPercent } from "../middleware";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { Audio } from "expo-av";
 
-const WaveAudioPlayer = (props) => {
-  let { source } = props;
-  let { width, height } = useWindowDimensions();
+const WaveAudioRecorder = (props) => {
+  let { setRecordedVoice, setRecordingDuration } = props
+  const { width, height } = useWindowDimensions();
   const waveAnime = useRef(new Animated.Value(0)).current;
-  const [SoundObj, setSoundObj] = useState(null);
-  const [sound, setSound] = useState(null);
+  const [recording, setRecording] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [progress, setProgress] = useState(null);
-  let styles = _styles({ width, height });
+  const maxDuration = 3000; // 15 seconds
+  const styles = _styles({ width, height });
 
-  const onPlay = async () => {
-    if (!source) return alert("Require Source attr.")
-    setSoundObj({ isBuffering: true })
-    const { sound } = await Audio.Sound.createAsync({ uri: source });
-    setSound(sound);
-    await sound.playAsync();
-    sound.setOnPlaybackStatusUpdate((onLoad) => {
-      let totalDuration = onLoad.durationMillis; // Total duration of the sound
-      setSoundObj(onLoad);
-      if (onLoad?.didJustFinish) {
-        setDuration(0);
-        waveAnime.setValue(0);
-        setSoundObj(null)
-        console.log("yes");
-      } else {
-        setDuration(totalDuration / 1000);
-      }
-    });
-  };
+  const startRecording = async () => {
+    try {
+      setIsRecording(true);
 
-  const onStop = () => {
-    sound.stopAsync();
-    setDuration(0);
-    setSoundObj(null);
-    waveAnime.setValue(0);
-  };
+      await Audio.requestPermissionsAsync();
+      console.log("Requesting permissions..");
 
-  useEffect(() => {
-    if (SoundObj?.isPlaying) {
-      Animated.timing(waveAnime, {
-        toValue: 1,
-        duration: duration * 1050, // Adjust the duration as needed
-        useNativeDriver: false,
-      }).start(() => {
-        sound.unloadAsync();
-        setDuration(0);
-        setSoundObj(null);
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
       });
+      const { ios, android } =
+        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY ||
+        Audio.RecordingOptionsPresets.HIGH_QUALITY;
+
+
+      const recordingInstance = new Audio.Recording();
+      const recordingOptions = {
+        android: android,
+        ios: {
+          ...ios,
+          extension: ".mp4",
+          outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
+        },
+      };
+
+      await recordingInstance.prepareToRecordAsync(recordingOptions);
+
+      recordingInstance.setOnRecordingStatusUpdate(({ durationMillis }) => {
+        setDuration(durationMillis);
+        setRecordingDuration(durationMillis)
+        const animationProgress = durationMillis / maxDuration;
+        waveAnime.setValue(animationProgress);
+        // Check if the duration has exceeded the maximum duration
+        if (durationMillis >= maxDuration) {
+          stopRecording(); // Automatically stop recording
+          console.log("heyyy staaaaaaapppppp")
+        }
+      });
+
+      await recordingInstance.startAsync();
+      setRecording(recordingInstance);
+
+    } catch (error) {
+      console.error("Failed to start recording", error);
+      setIsRecording(false);
+      setRecording(null)
+      setRecordedVoice(null)
+      setDuration(0)
     }
-  }, [SoundObj?.isPlaying]);
+  };
+
+  const stopRecording = async () => {
+    console.log("Stopping recording...");
+    console.log(recording)
+    if (recording) {
+      console.log("hellowww")
+      try {
+        setIsRecording(false);
+        await recording.stopAndUnloadAsync();
+        setRecordedVoice(recording)
+        setRecordingDuration(duration)
+
+        setRecording(null);
+        waveAnime.stopAnimation();
+      } catch (error) {
+        console.error("Failed to stop recording", error);
+      }
+    }
+  };
+
+
 
   const wavePosition = waveAnime.interpolate({
     inputRange: [0, 1],
@@ -77,25 +108,21 @@ const WaveAudioPlayer = (props) => {
     },
   ];
 
-  useEffect(() => {
-    return sound
-      ? () => {
-        sound.unloadAsync();
-      }
-      : undefined;
-  }, [sound]);
-
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.btn}
-        onPress={SoundObj?.isPlaying ? onStop : onPlay}
+        onPress={isRecording ? stopRecording : startRecording}
       >
-        {SoundObj?.isBuffering ? (
-          <ActivityIndicator />
+        {isRecording ? (
+          <FontAwesome5
+            name="stop"
+            size={20}
+            color="#DB2727"
+          />
         ) : (
           <FontAwesome5
-            name={SoundObj?.isPlaying ? "pause" : "play"}
+            name="microphone"
             size={20}
             color="#DB2727"
           />
@@ -168,4 +195,4 @@ const _styles = ({ width, height }) =>
     },
   });
 
-export default WaveAudioPlayer;
+export default WaveAudioRecorder;
