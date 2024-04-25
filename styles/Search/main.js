@@ -35,7 +35,7 @@ export const ClashesResultStyles = ({ width, height }) =>
       borderRadius: 12,
       borderWidth: 1,
       borderColor: "#E5E7EB",
-      paddingTop: 10,
+      paddingTop: 20,
       marginVertical: 10,
       alignItems: "center",
       justifyContent: "center",
@@ -44,7 +44,7 @@ export const ClashesResultStyles = ({ width, height }) =>
     clashesCardTitle: font(16, "#1F2937", "Medium", 5),
     clashesCardUsersCont: {
       flex: 1,
-      paddingVertical: 10,
+      marginVertical: getPercent(2, height),
       width: "100%",
       flexDirection: "row",
       alignItems: "center",
@@ -56,14 +56,13 @@ export const ClashesResultStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: getPercent(1, width),
-      borderWidth: 1,
     },
     clashUserProfile: {
-      width: getPercent(15, width),
-      height: getPercent(15, width),
+      width: getPercent(16, width),
+      height: getPercent(16, width),
       borderRadius: 100,
-      borderWidth: 1,
       marginVertical: 4,
+      overflow:'hidden'
     },
     cardFooterWrapper: {
       width: "100%",

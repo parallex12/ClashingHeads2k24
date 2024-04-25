@@ -1,4 +1,5 @@
 import {
+  Image,
   ScrollView,
   Text,
   TextInput,
@@ -19,9 +20,15 @@ const ClashesResult = (props) => {
   const ClashUserCard = ({}) => {
     return (
       <View style={styles.clashUserItem}>
-        <View style={styles.clashUserProfile}></View>
-        <Text style={font(13,'#000000',"Semibold",2)}>Zeeshan Karim</Text>
-        <Text style={font(11,'#9CA3AF',"Medium",2)}>Challenger</Text>
+        <View style={styles.clashUserProfile}>
+          <Image
+            source={require("../../../assets/icon.png")}
+            resizeMode="contain"
+            style={{ width: "100%", height: "100%" }}
+          />
+        </View>
+        <Text style={font(14, "#000000", "Semibold",3)}>Zeeshan Karim</Text>
+        <Text style={font(12, "#9CA3AF", "Medium", 3)}>Challenger</Text>
         <WaveAudioPlayer iconSize={15} />
       </View>
     );

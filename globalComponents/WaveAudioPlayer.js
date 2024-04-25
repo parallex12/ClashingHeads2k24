@@ -13,6 +13,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { getPercent } from "../middleware";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { Audio } from "expo-av";
+import { font } from "../styles/Global/main";
 
 const WaveAudioPlayer = (props) => {
   let { source,iconSize } = props;
@@ -123,6 +124,7 @@ const WaveAudioPlayer = (props) => {
           }}
         ></View>
       </MaskedView>
+      <Text style={font(10,"#374151","Medium")}>02:20</Text>
     </View>
   );
 };
