@@ -15,6 +15,7 @@ import { global_posts } from "../../state-management/atoms/atoms";
 import { font } from "../../styles/Global/main";
 import ClashCard from "./components/ClashCard";
 import { useNavigation } from "@react-navigation/native";
+import DualClashCard from "../Search/components/DualClashCard";
 
 const Clashes = (props) => {
   let {} = props;
@@ -40,16 +41,20 @@ const Clashes = (props) => {
                   style={{ width: "100%", height: "100%" }}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.contentCreateBtn}>
+              <TouchableOpacity style={styles.contentCreateBtn} onPress={()=>navigation.navigate("CreateClash")}>
                 <Text style={font(13, "#FFFFFF", "Semibold")}>
                   Create Clash
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
+          <TouchableOpacity style={styles.contentCreateRoomBtn} onPress={()=>navigation.navigate("CreateRoom")}>
+            <Text style={font(13, "#FFFFFF", "Semibold")}>Create Room</Text>
+          </TouchableOpacity>
           {/* Clash cards here */}
           <View style={styles.cardsWrapper}>
             {new Array(10).fill("").map((item, index) => {
+              if (index % 2 == 1) return <DualClashCard key={index} />;
               return (
                 <ClashCard
                   onCardPress={() => navigation.navigate("ClashRoom")}

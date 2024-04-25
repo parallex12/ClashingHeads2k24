@@ -27,7 +27,7 @@ export const ClashesResultStyles = ({ width, height }) =>
     headerCont: {
       flexDirection: "row",
       alignItems: "center",
-      marginVertical: 10,
+      marginTop: 15,
     },
     clashesCardCont: {
       width: "100%",
@@ -62,16 +62,23 @@ export const ClashesResultStyles = ({ width, height }) =>
       height: getPercent(16, width),
       borderRadius: 100,
       marginVertical: 4,
-      overflow:'hidden'
+      overflow: "hidden",
     },
     cardFooterWrapper: {
       width: "100%",
-      height: getPercent(4, height),
+      height: getPercent(5, height),
       borderTopWidth: 1,
       borderColor: "#E5E7EB",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
+      padding: 10,
+    },
+    cardFooterItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      marginHorizontal: 10,
     },
   });
 
@@ -80,6 +87,20 @@ export const PostsResultStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       flex: 1,
+    },
+    container: {
+      flex: 1,
+    },
+    headerCont: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: 15,
+    },
+    content: {
+      flex: 1,
+      paddingTop: getPercent(1, height),
+      zIndex: 9,
+      paddingBottom: getPercent(12, height),
     },
   });
 
@@ -96,6 +117,57 @@ export const NewsResultStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       flex: 1,
+    },
+    headerCont: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: 15,
+    },
+    newsCardCont: {
+      width: "100%",
+      minHeight: getPercent(10, height),
+      borderBottomWidth: 1,
+      borderColor: "#F3F3F3",
+      paddingVertical: 10,
+      marginTop: 10,
+    },
+    cardRow: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+    },
+    newsCardThumbnailCont: {
+      width: "28%",
+      height: getPercent(12, height),
+      borderRadius: 10,
+      overflow: "hidden",
+    },
+    newsContentWrapper: {
+      flex: 1,
+      height: "100%",
+      paddingVertical: 5,
+      paddingHorizontal: getPercent(3, width),
+    },
+    cardFooterWrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      minHeight: getPercent(7, height),
+      marginTop:10
+    },
+    cardFootercompanyLogo: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-start",
+    },
+    companyLogo: {
+      width: getPercent(8, width),
+      height: getPercent(8, width),
+      borderRadius: 100,
+      overflow: "hidden",
+      marginRight: 10,
     },
   });
 

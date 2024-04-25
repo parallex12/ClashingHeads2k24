@@ -46,6 +46,15 @@ export const styles = ({ width, height }) =>
       justifyContent: "center",
       paddingHorizontal: getPercent(5, width),
     },
+    contentCreateRoomBtn:{
+      height: getPercent(4.5, height),
+      backgroundColor: "#DB2727",
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: getPercent(5, width),
+      marginBottom:15
+    }
     
   });
 //ClashCardStyles starts here

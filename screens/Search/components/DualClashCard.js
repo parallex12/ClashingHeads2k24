@@ -16,7 +16,7 @@ import {
 import { font } from "../../../styles/Global/main";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 
-const ClashesResult = (props) => {
+const DualClashCard = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
@@ -76,17 +76,7 @@ const ClashesResult = (props) => {
     );
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.headerCont}>
-        <MaterialCommunityIcons name="fire" size={24} color="#4B4EFC" />
-        <Text style={font(14, "#111827", "Medium")}>Trending Clashes</Text>
-      </View>
-      {[1, 2]?.map((item, index) => {
-        return <ClashesCard key={index} />;
-      })}
-    </View>
-  );
+  return <ClashesCard />;
 };
 
-export default ClashesResult;
+export default DualClashCard;

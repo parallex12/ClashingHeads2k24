@@ -11,14 +11,14 @@ import { font } from "../../../styles/Global/main";
 import { getPercent } from "../../../middleware";
 
 const BottomActionsMenu = (props) => {
-  let { data, index } = props;
+  let { data,onMicPress, index } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
   let actionsMenu = [
     {
       icon: require("../../../assets/ClashRoomIcons/mic.png"),
-      onPress: null,
+      onPress: onMicPress,
     },
     {
       icon: require("../../../assets/ClashRoomIcons/five.png"),
@@ -40,7 +40,7 @@ const BottomActionsMenu = (props) => {
 
   const MenuItem = ({ data }) => {
     return (
-      <TouchableOpacity style={styles.MenuItemWrapper}>
+      <TouchableOpacity style={styles.MenuItemWrapper} onPress={data?.onPress}>
         <Image
           source={data?.icon}
           resizeMode="contain"

@@ -3,17 +3,19 @@ import { styles as _styles } from "../../styles/ClashRoom/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import { getPercent } from "../../middleware";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { font } from "../../styles/Global/main";
 import ClashersCard from "./components/ClashersCard";
 import TranscriptCard from "./components/TranscriptCard";
 import BottomActionsMenu from "./components/BottomActionsMenu";
+import VoiceRecorderBottomSheet from "../../globalComponents/VoiceRecorderBottomSheet/VoiceRecorderBottomSheet";
 
 const ClashRoom = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [clashers, setClashers] = useState(new Array(20).fill(""));
+  const bottomVoiceSheetRef = useRef(null);
 
   return (
     <View style={styles.container}>
@@ -51,7 +53,8 @@ const ClashRoom = (props) => {
         </View>
       </ScrollView>
 
-      <BottomActionsMenu />
+      <BottomActionsMenu onMicPress={() => bottomVoiceSheetRef.current?.present()} />
+      <VoiceRecorderBottomSheet bottomVoiceSheetRef={bottomVoiceSheetRef} />
     </View>
   );
 };
