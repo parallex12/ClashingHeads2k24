@@ -15,7 +15,7 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { Audio } from "expo-av";
 
 const WaveAudioPlayer = (props) => {
-  let { source } = props;
+  let { source,iconSize } = props;
   let { width, height } = useWindowDimensions();
   const waveAnime = useRef(new Animated.Value(0)).current;
   const [SoundObj, setSoundObj] = useState(null);
@@ -96,7 +96,7 @@ const WaveAudioPlayer = (props) => {
         ) : (
           <FontAwesome5
             name={SoundObj?.isPlaying ? "pause" : "play"}
-            size={20}
+            size={iconSize|| 20}
             color="#DB2727"
           />
         )}
@@ -130,7 +130,7 @@ const WaveAudioPlayer = (props) => {
 const _styles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      minHeight: getPercent(6, height),
+      minHeight: getPercent(4, height),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
@@ -147,7 +147,7 @@ const _styles = ({ width, height }) =>
       width: "10%",
       alignItems: "center",
       justifyContent: "center",
-      marginRight: 2,
+      marginRight: 4,
     },
     waveForm: {
       width: "96%",
@@ -155,7 +155,6 @@ const _styles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
       overflow: "hidden",
-      height: 40, // Adjust height as needed
     },
     waveimg: {
       width: "100%",

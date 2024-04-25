@@ -65,13 +65,15 @@ export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
       justifyContent: 'center'
     },
     timerText: font(16, "#222", "Regular"),
-    shareBtn: {
+    changeModeBtn: {
       width: getPercent(11, width),
       height: getPercent(11, width),
       borderRadius: 100,
       backgroundColor: 'rgba(0,0,0,0.1)',
       alignSelf: 'flex-end',
-      position: 'absolute'
+      position: 'absolute',
+      alignItems:'center',
+      justifyContent:"center"
     },
     micWrapper: {
       width: '100%',

@@ -15,11 +15,10 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useState } from "react";
 
 const Header = (props) => {
-  let {} = props;
+  let {activeFilter, setActiveFilter} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [activeFilter, setActiveFilter] = useState(0);
-  let filtersOption = ["People", "Clashes", "Posts"];
+  let filtersOption = ["People", "Clashes", "Posts","News"];
 
   const FilterItem = ({ data, index }) => {
     let conditional_style = {
