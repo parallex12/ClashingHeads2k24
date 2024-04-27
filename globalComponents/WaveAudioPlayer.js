@@ -16,7 +16,7 @@ import { Audio } from "expo-av";
 import { font } from "../styles/Global/main";
 
 const WaveAudioPlayer = (props) => {
-  let { source,iconSize } = props;
+  let { source, iconSize, showDuration } = props;
   let { width, height } = useWindowDimensions();
   const waveAnime = useRef(new Animated.Value(0)).current;
   const [SoundObj, setSoundObj] = useState(null);
@@ -26,8 +26,8 @@ const WaveAudioPlayer = (props) => {
   let styles = _styles({ width, height });
 
   const onPlay = async () => {
-    if (!source) return alert("Require Source attr.")
-    setSoundObj({ isBuffering: true })
+    if (!source) return alert("Require Source attr.");
+    setSoundObj({ isBuffering: true });
     const { sound } = await Audio.Sound.createAsync({ uri: source });
     setSound(sound);
     await sound.playAsync();
@@ -37,7 +37,7 @@ const WaveAudioPlayer = (props) => {
       if (onLoad?.didJustFinish) {
         setDuration(0);
         waveAnime.setValue(0);
-        setSoundObj(null)
+        setSoundObj(null);
         console.log("yes");
       } else {
         setDuration(totalDuration / 1000);
@@ -81,8 +81,8 @@ const WaveAudioPlayer = (props) => {
   useEffect(() => {
     return sound
       ? () => {
-        sound.unloadAsync();
-      }
+          sound.unloadAsync();
+        }
       : undefined;
   }, [sound]);
 
@@ -97,7 +97,7 @@ const WaveAudioPlayer = (props) => {
         ) : (
           <FontAwesome5
             name={SoundObj?.isPlaying ? "pause" : "play"}
-            size={iconSize|| 20}
+            size={iconSize || 20}
             color="#DB2727"
           />
         )}
@@ -109,7 +109,7 @@ const WaveAudioPlayer = (props) => {
             <Image
               source={require("../assets/icons/post_cards/audioWave.png")}
               style={styles.waveimg}
-              resizeMode="contain"
+              resizeMode="cover"
             />
           </View>
         }
@@ -124,7 +124,7 @@ const WaveAudioPlayer = (props) => {
           }}
         ></View>
       </MaskedView>
-      <Text style={font(10,"#374151","Medium")}>02:20</Text>
+      {showDuration && <Text style={font(10, "#374151", "Medium")}>02:20</Text>}
     </View>
   );
 };

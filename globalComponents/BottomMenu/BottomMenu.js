@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import { BottomMenuStyles, font } from "../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { DrawerActions, useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
 
 let navArr = [
@@ -38,15 +38,15 @@ let navArr = [
     route: "Messages",
   },
   {
-    title: "Notifications",
-    icon: require("../../assets/BottomMenuIcons/notification.png"),
-    activeIcon: require("../../assets/BottomMenuIcons/notificationActive.png"),
-    route: "Notifications",
+    title: "Menu",
+    icon: require("../../assets/BottomMenuIcons/menuIcon.png"),
+    activeIcon: require("../../assets/BottomMenuIcons/menuIconActive.png"),
+    route: "menu",
   },
 ];
 
 const BottomMenu = (props) => {
-  let {active} = props;
+  let { active } = props;
   let { width, height } = useWindowDimensions();
   let styles = BottomMenuStyles({ width, height });
   let navigation = useNavigation();
@@ -54,11 +54,15 @@ const BottomMenu = (props) => {
   // Extract the route name from the route object
   const currentRouteName = route.name;
   const onPressItem = (item) => {
+    if (item?.route == "menu") {
+      navigation.dispatch(DrawerActions.openDrawer());
+      return;
+    }
     navigation.navigate(item.route); // Navigate to the specified route
   };
-  
+
   const BottomMenuItem = ({ item, index }) => {
-    let isActiveItem = currentRouteName == item?.route || active== item?.route;
+    let isActiveItem = currentRouteName == item?.route || active == item?.route;
     return (
       <TouchableOpacity
         style={styles.bottomMenuItem}

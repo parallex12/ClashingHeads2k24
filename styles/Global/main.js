@@ -19,32 +19,214 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//StandardSwitchStyles starts here
+export const StandardSwitchStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      height: getPercent(5, height),
+      backgroundColor: "#DB2727",
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  });
+
 //EmojisStyles   starts here
 export const EmojisStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      width: '100%',
+      width: "100%",
       height: getPercent(5, height),
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginVertical: getPercent(1, height)
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      marginVertical: getPercent(1, height),
     },
     emojiItemCont: {
       width: getPercent(7, width),
       height: getPercent(7, width),
       borderRadius: 100,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
       overflow: "hidden",
-      marginHorizontal: 10
-    }
+      marginHorizontal: 10,
+    },
   });
 
+//CalendarTimeBottomSheet Styles starts here
+export const CalendarTimeBottomSheetStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    contentContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "space-around",
+    },
+    titleWrapper: {
+      width: "100%",
+      paddingVertical: getPercent(2, height),
+      paddingHorizontal: getPercent(5, width),
+      marginBottom: getPercent(1, height),
+      borderColor: "#F7F8F8",
+      borderWidth: 1,
+    },
+    timerWrapper: {
+      width: "100%",
+      height: getPercent(5, height),
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    calendarTimeWrapper: {
+      flex: 0.8,
+    },
+    timerText: font(16, "#222", "Regular"),
+    changeModeBtn: {
+      width: getPercent(11, width),
+      height: getPercent(11, width),
+      borderRadius: 100,
+      backgroundColor: "rgba(0,0,0,0.1)",
+      alignSelf: "flex-end",
+      position: "absolute",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    micWrapper: {
+      width: "100%",
+      height: getPercent(30, width),
+    },
+    quickAudioWrapper: {
+      width: "100%",
+      minHeight: getPercent(5, width),
+    },
+    footerWrapper: {
+      width: "100%",
+      height: getPercent(10, height),
+      borderTopWidth: 1,
+      borderColor: "#F7F8F8",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: getPercent(5, width),
+    },
 
-
-
-
+    timeComponentWrapper: {
+      width: "100%",
+      minHeight: getPercent(5, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginVertical: getPercent(1, height),
+      paddingHorizontal: getPercent(5, width),
+      paddingVertical: 10,
+    },
+    hour_minutes_wrapper: {
+      flexDirection: "row",
+      width: getPercent(25, width),
+      height: getPercent(5, height),
+      backgroundColor: "#F5F6F7",
+      borderRadius: 6,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    hour_minutes_input_wrapper: {
+      flex:1,
+      fontSize: RFValue(12.5),
+      fontFamily: "Regular",
+      color: "#9CA3AF",
+      marginHorizontal:2,
+      textAlign:'center'
+    },
+    am_pm_wrapper: {
+      width: getPercent(30, width),
+      height: getPercent(5, height),
+      borderRadius: 100,
+      backgroundColor: "#F5F6F7",
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "space-between",
+      flexDirection: "row",
+      paddingHorizontal: 5,
+      paddingVertical: 2,
+    },
+    am_pm_active_wrapper: {
+      width: "48%",
+      height: "90%",
+      borderRadius: 100,
+      backgroundColor: "#DB2727",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    am_pm_disable_wrapper: {
+      width: "48%",
+      height: "90%",
+      borderRadius: 100,
+      backgroundColor: "transparent",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  });
+//CalendarBottomSheet  Styles starts here
+export const CalendarBottomSheetStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    contentContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    titleWrapper: {
+      width: "100%",
+      paddingVertical: getPercent(2, height),
+      paddingHorizontal: getPercent(5, width),
+      marginBottom: getPercent(1, height),
+      borderColor: "#F7F8F8",
+      borderBottomWidth: 1,
+    },
+    timerWrapper: {
+      width: "100%",
+      height: getPercent(5, height),
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    calendarWrapper: {
+      paddingHorizontal: getPercent(5, width),
+    },
+    timerText: font(16, "#222", "Regular"),
+    changeModeBtn: {
+      width: getPercent(11, width),
+      height: getPercent(11, width),
+      borderRadius: 100,
+      backgroundColor: "rgba(0,0,0,0.1)",
+      alignSelf: "flex-end",
+      position: "absolute",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    micWrapper: {
+      width: "100%",
+      height: getPercent(30, width),
+    },
+    quickAudioWrapper: {
+      width: "100%",
+      minHeight: getPercent(5, width),
+    },
+    footerWrapper: {
+      width: "100%",
+      height: getPercent(10, height),
+      borderTopWidth: 1,
+      borderColor: "#F7F8F8",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: getPercent(5, width),
+    },
+  });
 
 //VoiceRecorderBottomSheet  Styles starts here
 export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
@@ -55,34 +237,34 @@ export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
     contentContainer: {
       flex: 1,
       paddingHorizontal: getPercent(5, width),
-      alignItems: 'center',
-      justifyContent: 'flex-start'
+      alignItems: "center",
+      justifyContent: "flex-start",
     },
     timerWrapper: {
-      width: '100%',
+      width: "100%",
       height: getPercent(5, height),
-      alignItems: 'center',
-      justifyContent: 'center'
+      alignItems: "center",
+      justifyContent: "center",
     },
     timerText: font(16, "#222", "Regular"),
     changeModeBtn: {
       width: getPercent(11, width),
       height: getPercent(11, width),
       borderRadius: 100,
-      backgroundColor: 'rgba(0,0,0,0.1)',
-      alignSelf: 'flex-end',
-      position: 'absolute',
-      alignItems:'center',
-      justifyContent:"center"
+      backgroundColor: "rgba(0,0,0,0.1)",
+      alignSelf: "flex-end",
+      position: "absolute",
+      alignItems: "center",
+      justifyContent: "center",
     },
     micWrapper: {
-      width: '100%',
+      width: "100%",
       height: getPercent(30, width),
     },
     quickAudioWrapper: {
-      width: '100%',
+      width: "100%",
       minHeight: getPercent(5, width),
-    }
+    },
   });
 
 //SearchBar Styles  starts here
