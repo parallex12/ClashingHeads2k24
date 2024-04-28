@@ -26,6 +26,8 @@ import CreateClash from "../screens/CreateClash/CreateClash";
 import AddClashers from "../screens/AddClashers/AddClashers";
 import MyProfile from "../screens/MyProfile/MyProfile";
 import UserProfile from "../screens/UserProfile/UserProfile";
+import NewPost from "../screens/NewPost/NewPost";
+import AddPostDetails from "../screens/NewPost/AddPostDetails";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -51,6 +53,8 @@ const HomeScreens = () => {
       <HomeStack.Screen name="CreateClash" component={CreateClash} />
       <HomeStack.Screen name="MyProfile" component={MyProfile} />
       <HomeStack.Screen name="UserProfile" component={UserProfile} />
+      <HomeStack.Screen name="NewPost" component={NewPost} />
+      <HomeStack.Screen name="AddPostDetails" component={AddPostDetails} />
     </HomeStack.Navigator>
   );
 };

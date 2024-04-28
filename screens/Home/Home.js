@@ -24,7 +24,6 @@ const Home = (props) => {
 
   const bottomFlagSheetRef = useRef(null);
 
-
   return (
     <View style={styles.container}>
       <StandardHeader searchIcon profile logo />
@@ -34,6 +33,7 @@ const Home = (props) => {
           title="Create New Post"
           customStyles={styles.header2WrapperBtn}
           textStyles={font(12, "#FFFFFF", "Semibold")}
+          onPress={() => props?.navigation.navigate("NewPost")}
         />
       </View>
       <ScrollView>
@@ -45,7 +45,9 @@ const Home = (props) => {
                 data={item}
                 key={index}
                 onReportPress={() => bottomFlagSheetRef?.current?.present()}
-                onProfilePress={()=>props?.navigation?.navigate("UserProfile")}
+                onProfilePress={() =>
+                  props?.navigation?.navigate("UserProfile")
+                }
               />
             );
           })}

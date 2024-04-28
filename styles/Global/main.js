@@ -253,7 +253,7 @@ export const FlagReportBottomSheetStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "flex-start",
       paddingTop: getPercent(2, height),
-      paddingBottom:getPercent(10,height)
+      paddingBottom: getPercent(10, height),
     },
     categoriesWrapper: {
       width: "100%",
@@ -266,8 +266,8 @@ export const FlagReportBottomSheetStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "flex-start",
       borderBottomWidth: 1,
-      borderColor:'#F3F4F6',
-      paddingVertical:15,
+      borderColor: "#F3F4F6",
+      paddingVertical: 15,
     },
   });
 //VoiceRecorderBottomSheet  Styles starts here
@@ -456,6 +456,36 @@ export const BottomMenuStyles = ({ width, height }) =>
     },
   });
 
+//StandardHeader2 Styles starts here
+export const StandardHeader2Styles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      height: getPercent(15, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingTop: StatusBar.currentHeight + getPercent(4.5, height),
+      paddingHorizontal: getPercent(4, width),
+      borderBottomWidth:1,
+      borderColor:'#F7F8F8'
+    },
+    col1: {
+      flex: 0.5,
+      alignItems: "flex-start",
+      justifyContent: "center",
+    },
+    col2: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    col3: {
+      flex: 0.5,
+      alignItems: "flex-end",
+      justifyContent: "center",
+    },
+    title: font(17, "#111827", "Semibold"),
+  });
 //StandardHeader Styles starts here
 export const StandardHeaderStyles = ({ width, height }) =>
   StyleSheet.create({
