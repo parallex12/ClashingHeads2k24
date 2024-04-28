@@ -11,14 +11,22 @@ import {
 import { SideMenuStyles, font } from "../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { sideMenuOptions } from "../../middleware";
+import { useNavigation } from "@react-navigation/native";
 
 const SideMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = SideMenuStyles({ width, height });
 
+  const navigation = useNavigation();
+
   const ListItem = ({ data }) => {
     return (
-      <TouchableOpacity style={styles.listItem}>
+      <TouchableOpacity
+        style={styles.listItem}
+        onPress={() => {
+          data?.route && navigation?.navigate(data?.route);
+        }}
+      >
         <View style={styles.listIcon}>
           <Image
             resizeMode="contain"

@@ -11,13 +11,14 @@ import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 
 const Header = (props) => {
-  let {author} = props;
+  let {author,onProfilePress} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+
   const Profile = ({ source }) => {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.profileWrapper}>
+        <TouchableOpacity style={styles.profileWrapper} onPress={onProfilePress}>
           <Image
             source={source}
             resizeMode="cover"

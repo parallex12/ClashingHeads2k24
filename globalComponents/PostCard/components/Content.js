@@ -38,7 +38,7 @@ const Content = (props) => {
     <View style={styles.container} activeOpacity={1}>
       {title && <Text style={styles.title}>{title}</Text>}
       {postMedia?.images?.length > 0 && (
-        <PostImage url={postMedia?.images[0]} onPress={() => alert("Home")} />
+        <PostImage url={postMedia?.images[0]} />
       )}
       {postMedia?.audio && <WaveAudioPlayer source={postMedia?.audio} />}
       {postDesc && <Text style={styles.smallText}>{postDesc}</Text>}

@@ -20,6 +20,7 @@ import { getPercent } from "../../middleware";
 import { RFValue as rf } from "react-native-responsive-fontsize";
 import StandardButton from "../StandardButton";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useNavigation } from "@react-navigation/native";
 
 const CalendarTimeBottomSheet = (props) => {
   let { calendarTimeSheetRef } = props;
@@ -33,7 +34,7 @@ const CalendarTimeBottomSheet = (props) => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   // variables
   const snapPoints = useMemo(() => ["25%", "50%"], []);
-
+  const navigation = useNavigation();
   const TimeComponent = () => {
     const [selectedMode, setSelectedMode] = useState("AM");
 
@@ -53,7 +54,7 @@ const CalendarTimeBottomSheet = (props) => {
           <TextInput
             placeholderTextColor="#9CA3AF"
             maxLength={2}
-            keyboardType="decimal-pad"
+            keyboardType="default"
             placeholder="Hr"
             style={styles.hour_minutes_input_wrapper}
           />
@@ -97,37 +98,37 @@ const CalendarTimeBottomSheet = (props) => {
           backdropComponent={BackDrop}
         >
           <BottomSheetView style={styles.contentContainer}>
-              <View style={styles.titleWrapper}>
-                <Text style={font(17, "#000000", "Semibold", 0, null)}>
-                  Schedule this Room
-                </Text>
-              </View>
-              <View style={styles.calendarTimeWrapper}>
-                <TimeComponent />
-                <Text
-                  style={font(13, "#6B7280", "Regular", 10, null, {
-                    paddingHorizontal: getPercent(5, width),
-                  })}
-                >
-                  To
-                </Text>
-                <TimeComponent />
-              </View>
-              <View style={styles.footerWrapper}>
-                <TouchableOpacity
-                  onPress={() => calendarTimeSheetRef.current?.close()}
-                >
-                  <Text style={font(14, "#BDBDBD", "Medium")}>Cancel</Text>
-                </TouchableOpacity>
-                <StandardButton
-                  title="Done"
-                  customStyles={{ width: getPercent(25, width) }}
-                  onPress={() => {
-                    calendarTimeSheetRef.current.close();
-                    calendarTimeSheetRef.current = null;
-                  }}
-                />
-              </View>
+            <View style={styles.titleWrapper}>
+              <Text style={font(17, "#000000", "Semibold", 0, null)}>
+                Schedule this Room
+              </Text>
+            </View>
+            <View style={styles.calendarTimeWrapper}>
+              <TimeComponent />
+              <Text
+                style={font(13, "#6B7280", "Regular", 10, null, {
+                  paddingHorizontal: getPercent(5, width),
+                })}
+              >
+                To
+              </Text>
+              <TimeComponent />
+            </View>
+            <View style={styles.footerWrapper}>
+              <TouchableOpacity
+                onPress={() => calendarTimeSheetRef.current?.close()}
+              >
+                <Text style={font(14, "#BDBDBD", "Medium")}>Cancel</Text>
+              </TouchableOpacity>
+              <StandardButton
+                title="Done"
+                customStyles={{ width: getPercent(25, width) }}
+                onPress={() => {
+                  calendarTimeSheetRef.current.close();
+                  calendarTimeSheetRef.current = null;
+                }}
+              />
+            </View>
           </BottomSheetView>
         </BottomSheetModal>
       </View>

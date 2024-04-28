@@ -17,7 +17,7 @@ import Content from "../../../globalComponents/PostCard/components/Content";
 import ActionMenu from "./card_components/ActionMenu";
 
 const ClashCard = (props) => {
-  let { data, hrLine } = props;
+  let { data, hrLine,onReportPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = ClashCardStyles({ width, height });
   let navigation = useNavigation();
@@ -29,7 +29,7 @@ const ClashCard = (props) => {
         <Header author={data?.author} />
         <View style={styles.contentCardWrapper}>
           <Content {...data} postDesc={false} title={false} />
-          <ActionMenu {...data} />
+          <ActionMenu {...data} onReportPress={onReportPress} />
         </View>
       </View>
     </View>

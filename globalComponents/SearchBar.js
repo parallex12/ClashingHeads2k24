@@ -11,7 +11,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 
 const SearchBar = (props) => {
-  let { customStyles } = props;
+  let { customStyles, placeholder } = props;
   let { width, height } = useWindowDimensions();
   let styles = SearchBarStyles({ width, height });
   let navigation = useNavigation();
@@ -25,7 +25,7 @@ const SearchBar = (props) => {
             marginLeft: 8,
             flex: 1,
           })}
-          placeholder="Search"
+          placeholder={placeholder || "Search"}
           placeholderTextColor="#9CA3AF"
         />
       </View>

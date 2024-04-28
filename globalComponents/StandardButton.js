@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 import { connect } from "react-redux";
 import { standardButtonStyles } from "../styles/Global/main";
 const StandardButton = (props) => {
-  let { customStyles, textStyles, onPress, title } = props;
+  let { customStyles, rightIcon, textStyles, onPress, title } = props;
   let { width, height } = useWindowDimensions();
   let styles = standardButtonStyles({ width, height });
 
@@ -12,9 +12,9 @@ const StandardButton = (props) => {
       onPress={onPress}
     >
       <Text style={[styles.text, textStyles]}>{title}</Text>
+      {rightIcon && rightIcon}
     </TouchableOpacity>
   );
 };
 
-
-export default StandardButton
+export default StandardButton;

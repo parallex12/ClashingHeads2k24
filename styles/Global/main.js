@@ -133,12 +133,12 @@ export const CalendarTimeBottomSheetStyles = ({ width, height }) =>
       justifyContent: "center",
     },
     hour_minutes_input_wrapper: {
-      flex:1,
+      flex: 1,
       fontSize: RFValue(12.5),
       fontFamily: "Regular",
       color: "#9CA3AF",
-      marginHorizontal:2,
-      textAlign:'center'
+      marginHorizontal: 2,
+      textAlign: "center",
     },
     am_pm_wrapper: {
       width: getPercent(30, width),
@@ -228,6 +228,48 @@ export const CalendarBottomSheetStyles = ({ width, height }) =>
     },
   });
 
+//FlagReportBottomSheet Styles   starts here
+export const FlagReportBottomSheetStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    card_header_wrapper: {
+      width: "100%",
+      paddingVertical: getPercent(1, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderColor: "#F3F4F6",
+      borderBottomWidth: 1,
+      paddingHorizontal: getPercent(3, width),
+    },
+    sheetContentContainer: {
+      flex: 1,
+    },
+    contentContainer: {
+      flex: 1,
+      paddingHorizontal: getPercent(3, width),
+      alignItems: "center",
+      justifyContent: "flex-start",
+      paddingTop: getPercent(2, height),
+      paddingBottom:getPercent(10,height)
+    },
+    categoriesWrapper: {
+      width: "100%",
+      flex: 1,
+    },
+    categoriesItemWrapper: {
+      width: "100%",
+      minHeight: getPercent(5, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-start",
+      borderBottomWidth: 1,
+      borderColor:'#F3F4F6',
+      paddingVertical:15,
+    },
+  });
 //VoiceRecorderBottomSheet  Styles starts here
 export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
   StyleSheet.create({

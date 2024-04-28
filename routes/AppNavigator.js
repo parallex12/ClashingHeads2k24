@@ -23,6 +23,9 @@ import VoiceRecording from "../screens/Authentication/VoiceRecording/VoiceRecord
 import ProfilePhoto from "../screens/Authentication/ProfilePhoto/ProfilePhoto";
 import CreateRoom from "../screens/CreateRoom/CreateRoom";
 import CreateClash from "../screens/CreateClash/CreateClash";
+import AddClashers from "../screens/AddClashers/AddClashers";
+import MyProfile from "../screens/MyProfile/MyProfile";
+import UserProfile from "../screens/UserProfile/UserProfile";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -42,9 +45,12 @@ const HomeScreens = () => {
       <HomeStack.Screen name="Search" component={Search} />
       <HomeStack.Screen name="Messages" component={Messages} />
       <HomeStack.Screen name="Clashes" component={Clashes} />
+      <HomeStack.Screen name="AddClashers" component={AddClashers} />
       <HomeStack.Screen name="ClashRoom" component={ClashRoom} />
       <HomeStack.Screen name="CreateRoom" component={CreateRoom} />
       <HomeStack.Screen name="CreateClash" component={CreateClash} />
+      <HomeStack.Screen name="MyProfile" component={MyProfile} />
+      <HomeStack.Screen name="UserProfile" component={UserProfile} />
     </HomeStack.Navigator>
   );
 };

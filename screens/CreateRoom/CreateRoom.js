@@ -16,11 +16,13 @@ import { useRef } from "react";
 import VoiceRecorderBottomSheet from "../../globalComponents/VoiceRecorderBottomSheet/VoiceRecorderBottomSheet";
 import CalendarBottomSheet from "../../globalComponents/CalendarBottomSheet/CalendarBottomSheet";
 import CalendarTimeBottomSheet from "../../globalComponents/CalendarBottomSheet/CalendarTimeBottomSheet";
+import { useNavigation } from "@react-navigation/native";
 
 const CreateRoom = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  const navigation = useNavigation();
 
   const calendarSheetRef = useRef(null);
   const calendarTimeSheetRef = useRef(null);
@@ -83,10 +85,16 @@ const CreateRoom = (props) => {
             alignSelf: "center",
             marginTop: getPercent(4, height),
           }}
+          onPress={() => {
+            navigation.navigate("ClashRoom", { type: "Owner" });
+          }}
         />
       </View>
       <CalendarTimeBottomSheet calendarTimeSheetRef={calendarTimeSheetRef} />
-      <CalendarBottomSheet calendarSheetRef={calendarSheetRef} calendarTimeSheetRef={calendarTimeSheetRef} />
+      <CalendarBottomSheet
+        calendarSheetRef={calendarSheetRef}
+        calendarTimeSheetRef={calendarTimeSheetRef}
+      />
     </View>
   );
 };

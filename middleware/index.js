@@ -143,58 +143,58 @@ export const politicsCategory = [
 export const sideMenuOptions = [
   {
     title: "My Profile",
-    route: "",
-    icon:require("../assets/icons/sideMenu/1.png")
+    route: "MyProfile",
+    icon: require("../assets/icons/sideMenu/1.png"),
   },
   {
     title: "Scheduled Rooms",
     route: "",
-    icon:require("../assets/icons/sideMenu/2.png")
+    icon: require("../assets/icons/sideMenu/2.png"),
   },
 
   {
     title: "Sponsors",
     route: "",
-    icon:require("../assets/icons/sideMenu/3.png")
+    icon: require("../assets/icons/sideMenu/3.png"),
   },
   {
     title: "Settings",
     route: "",
-    icon:require("../assets/icons/sideMenu/4.png")
+    icon: require("../assets/icons/sideMenu/4.png"),
   },
   {
     title: "Community Guidelines",
     route: "",
-    icon:require("../assets/icons/sideMenu/5.png")
+    icon: require("../assets/icons/sideMenu/5.png"),
   },
   {
     title: "Terms & Conditions",
     route: "",
-    icon:require("../assets/icons/sideMenu/6.png")
+    icon: require("../assets/icons/sideMenu/6.png"),
   },
   {
     title: "Privacy Policy",
     route: "",
-    icon:require("../assets/icons/sideMenu/7.png")
+    icon: require("../assets/icons/sideMenu/7.png"),
   },
   {
     title: "FAQs",
     route: "",
-    icon:require("../assets/icons/sideMenu/8.png")
+    icon: require("../assets/icons/sideMenu/8.png"),
   },
   {
     title: "Contact Us",
     route: "",
-    icon:require("../assets/icons/sideMenu/9.png")
+    icon: require("../assets/icons/sideMenu/9.png"),
   },
   {
     title: "About",
     route: "",
-    icon:require("../assets/icons/sideMenu/10.png")
+    icon: require("../assets/icons/sideMenu/10.png"),
   },
   {
     title: "Sign out",
     route: "",
-    icon:require("../assets/icons/sideMenu/11.png")
+    icon: require("../assets/icons/sideMenu/11.png"),
   },
 ];

@@ -10,12 +10,16 @@ import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import FlagReportBottomSheet from "../../FlagReportBottomSheet/FlagReportBottomSheet";
+import { useRef } from "react";
+import { onShareApp } from "../../../utils";
 
 const ActionMenu = (props) => {
-  let { postClashes, onPostClashesPress } = props;
+  let { postClashes, onPostClashesPress, onReportPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
+  const bottomFlagSheetRef = useRef(null);
 
   const FooterItem = ({ item, index, post_clashes_count }) => {
     return (
@@ -59,18 +63,14 @@ const ActionMenu = (props) => {
     {
       title: "Report",
       iconImg: require("../../../assets/icons/post_cards/flag.png"),
-      onPress: () => null,
+      onPress: () => onReportPress(),
     },
     {
       title: "Share",
       iconImg: require("../../../assets/icons/post_cards/share.png"),
-      onPress: () => null,
+      onPress: () => onShareApp(),
     },
   ];
-
-  const onLikePress = () => {
-    alert();
-  };
 
   return (
     <View style={styles.container}>

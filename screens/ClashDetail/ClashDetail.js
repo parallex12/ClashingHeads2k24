@@ -9,6 +9,7 @@ import { useRef, useState } from "react";
 import VoiceRecorderBottomSheet from "../../globalComponents/VoiceRecorderBottomSheet/VoiceRecorderBottomSheet";
 import { useRecoilState } from "recoil";
 import { isVoiceModalOpen_Recoil } from "../../state-management/atoms/atoms";
+import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 
 const ClashDetails = (props) => {
   let {} = props;
@@ -17,6 +18,7 @@ const ClashDetails = (props) => {
   let prevData = props?.route?.params?.data;
   const [postClashes, setPostClashes] = useState([1, 2, 3, 4]);
   const bottomVoiceSheetRef = useRef(null);
+  const bottomFlagSheetRef = useRef(null);
 
   return (
     <View style={styles.container}>
@@ -33,6 +35,7 @@ const ClashDetails = (props) => {
             data={prevData}
             postClashes={postClashes?.length}
             onPostClashesPress={() => bottomVoiceSheetRef.current?.present()}
+            onReportPress={() => bottomFlagSheetRef?.current?.present()}
           />
           <View style={styles.clashes_wrapper}>
             {postClashes.map((item, index) => {
@@ -43,6 +46,7 @@ const ClashDetails = (props) => {
                   postDateAndViews
                   data={prevData}
                   key={index}
+                  onReportPress={() => bottomFlagSheetRef?.current?.present()}
                 />
               );
             })}
@@ -50,6 +54,7 @@ const ClashDetails = (props) => {
         </View>
       </ScrollView>
       <VoiceRecorderBottomSheet bottomVoiceSheetRef={bottomVoiceSheetRef} />
+      <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
       <BottomMenu />
     </View>
   );

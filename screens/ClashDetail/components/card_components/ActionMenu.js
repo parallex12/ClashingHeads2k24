@@ -10,9 +10,10 @@ import { getPercent } from "../../../../middleware";
 import { font } from "../../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { onShareApp } from "../../../../utils";
 
 const ActionMenu = (props) => {
-  let {} = props;
+  let {onReportPress} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
@@ -58,12 +59,12 @@ const ActionMenu = (props) => {
     {
       title: "",
       iconImg: require("../../../../assets/icons/post_cards/flag.png"),
-      onPress: () => null,
+      onPress: () => onReportPress(),
     },
     {
       title: "",
       iconImg: require("../../../../assets/icons/post_cards/share.png"),
-      onPress: () => null,
+      onPress: () => onShareApp(),
     },
   ];
 

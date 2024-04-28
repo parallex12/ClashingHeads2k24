@@ -6,12 +6,12 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, Ionicons } from "@expo/vector-icons";
 import { getPercent } from "../middleware";
 import { font } from "../styles/Global/main";
 
 const UserCard = (props) => {
-  let { author } = props;
+  let { author, selectable, isSelected,onCardPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
@@ -31,7 +31,7 @@ const UserCard = (props) => {
   };
 
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.6}>
+    <TouchableOpacity style={styles.container} activeOpacity={0.6} onPress={onCardPress}>
       <Profile
         source={{
           uri: "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
@@ -51,7 +51,15 @@ const UserCard = (props) => {
         </View>
         <Text style={styles.slugText}>Democrat - Los Angles,CA 20h</Text>
       </View>
-      <Entypo name="chevron-right" size={20} color="#7A8085" />
+      {selectable ? (
+        isSelected ? (
+          <Ionicons name="radio-button-on" size={24} color="#DB2727" />
+        ) : (
+          <Ionicons name="radio-button-off-outline" size={24} color="#E5E7EB" />
+        )
+      ) : (
+        <Entypo name="chevron-right" size={20} color="#7A8085" />
+      )}
     </TouchableOpacity>
   );
 };
