@@ -64,3 +64,141 @@ export const onShareApp = async () => {
     alert(error.message);
   }
 };
+
+export const settingOptions = [
+  {
+    route: "EditPersonalInformation",
+    label: "Personal Information",
+    icon: require("../assets/icons/settings/profile.png"),
+  },
+  {
+    route: "SecuritySettings",
+    label: "Security",
+    icon: require("../assets/icons/settings/security.png"),
+  },
+  {
+    route: null,
+    label: "Location",
+    icon: require("../assets/icons/settings/location.png"),
+  },
+  {
+    route: "PrivacySettings",
+    label: "Privacy",
+    icon: require("../assets/icons/settings/lock.png"),
+  },
+  {
+    route: "NotificationSettings",
+    label: "Notifications",
+    icon: require("../assets/icons/settings/notification.png"),
+  },
+  {
+    route: "HelpAndSupport",
+    label: "Help & Support",
+    icon: require("../assets/icons/settings/help.png"),
+  },
+];
+
+export const notificationSettingsOptions = [
+  {
+    key: "daily_weekly_clash_notification",
+    label: "Daily / Weekly Clash notification",
+    isEnabled: false,
+  },
+  {
+    key: "tagged_comments_notification",
+    label: "Tagged comments notification",
+    isEnabled: false,
+  },
+  {
+    key: "calendar_notifications",
+    label: "Calendar Notifications",
+    isEnabled: false,
+  },
+  {
+    key: "notify_when_fill_in_clash",
+    label: "Notify me when [FILL-IN] is in a Clash",
+    isEnabled: false,
+  },
+  {
+    key: "notify_when_followers_clash",
+    label: "Notify me when my followers are in a Clash",
+    isEnabled: false,
+  },
+  {
+    key: "notify_when_following_clasher_clash",
+    label: "Notify me when a Clasher I’m following is in a Clash",
+    isEnabled: false,
+  },
+  {
+    key: "notify_when_celebrity_clash",
+    label: "Notify me when a celebrity is in a Clash",
+    isEnabled: false,
+  },
+  {
+    key: "notify_volunteer_opportunities",
+    label: "Notify me of volunteer opportunities for Clashing Heads",
+    isEnabled: false,
+  },
+  {
+    key: "notify_promotions_announcements",
+    label: "Notify me of promotions or announcements from Clashing Heads",
+    isEnabled: false,
+  },
+];
+
+export const privacySettingsOptions = [
+  {
+    key: "allow_advertising",
+    label: "Allow advertising and promotions popups",
+    isEnabled: true,
+  },
+  {
+    key: "allow_contact_non_marketing",
+    label: "Allow Clashing Heads to contact me for non-marketing purposes",
+    isEnabled: true,
+  },
+  {
+    key: "allow_send_advertising",
+    label: "Allow Clashing Heads to send me advertising and promotions offers",
+    isEnabled: true,
+  },
+  {
+    key: "contact_via_email",
+    label: "Clashing Heads should contact me via email",
+    isEnabled: true,
+  },
+  {
+    key: "contact_via_sms",
+    label:
+      "Clashing Heads should contact me via SMS. Third-party data rates may apply",
+    isEnabled: true,
+  },
+  {
+    key: "allow_sale_of_user_information",
+    label:
+      "Allow sale of my user information and identity information to third-party marketers",
+    isEnabled: true,
+  },
+  {
+    key: "allow_use_of_image_voice",
+    label:
+      "Allow use of my image / voice / Clashes in Clashing Heads marketing promotions without compensation as long as I am notified ahead of time by email on file",
+    isEnabled: true,
+  },
+  {
+    key: "show_real_name_in_public",
+    label: "Show my real name in public",
+    isEnabled: true,
+  },
+  {
+    key: "show_political_tag_in_public",
+    label: "Show my political tag in public",
+    isEnabled: true,
+  },
+  {
+    key: "allow_view_followers_following",
+    label:
+      "Allow any Clasher to view who I am following and who is following me",
+    isEnabled: true,
+  },
+];

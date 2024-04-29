@@ -102,7 +102,7 @@ const _styles = ({ width, height }) =>
       width: getPercent(4.2, width),
       height: getPercent(4.2, width),
     },
-    actionText: font(11, "#6B7280", "Medium", 0, 0, { marginLeft: 5 }),
+    actionText: font(11, "#6B7280", "Medium", 0, null, { marginLeft: 5 }),
   });
 
 export default ActionMenu;

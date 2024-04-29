@@ -68,6 +68,7 @@ const FlagReportBottomSheet = (props) => {
           index={1}
           snapPoints={snapPoints}
           backdropComponent={BackDrop}
+          enableContentPanningGesture={false}
         >
           <BottomSheetView style={styles.sheetContentContainer}>
             <CardHeader />

@@ -11,18 +11,13 @@ import { font } from "../../../styles/Global/main";
 import CountryCodeField from "../../../globalComponents/CountryCodeField";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
-import {
-  RecoilRoot,
-  atom,
-  selector,
-  useRecoilState,
-  useRecoilValue,
-} from 'recoil';
+import { useState } from "react";
 
 const Signin = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  const [country, setCountry] = useState(null);
 
   const onSignup = () => {
     props?.navigation?.navigate("Signup");
@@ -51,7 +46,7 @@ const Signin = (props) => {
             <Text style={font(14, "#6B7280", "Regular", 5)}>
               Enter Your Phone Number
             </Text>
-            <CountryCodeField onChangeText={(val) => console.log(val)} />
+            <CountryCodeField setCountry={setCountry} onChangeText={(val) => console.log(val)} />
             <Text style={font(10, "#252525", "Regular", 3, 20)}>
               We will send a text with a verification code. Message and date
               rates may apply, By continuing, you agree to our{" "}

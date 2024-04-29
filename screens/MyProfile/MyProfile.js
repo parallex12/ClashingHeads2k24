@@ -14,6 +14,7 @@ import { global_posts } from "../../state-management/atoms/atoms";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { useRef, useState } from "react";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
+import { getPercent } from "../../middleware";
 
 const MyProfile = (props) => {
   let {} = props;
@@ -28,7 +29,11 @@ const MyProfile = (props) => {
 
   return (
     <View style={styles.container}>
-      <StandardHeader title="Profile" backButton />
+      <StandardHeader
+        title="Profile"
+        backButton
+        containerStyles={{ height: getPercent(15, height) }}
+      />
       <ScrollView>
         <View style={styles.content}>
           <ProfileCard

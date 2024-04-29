@@ -1,10 +1,24 @@
 // atoms.js
 import { atom } from "recoil";
+import { notificationSettingsOptions, privacySettingsOptions } from "../../utils";
 
 export const registrationForm = atom({
   key: "registrationForm",
   default: {},
 });
+
+export const privacySettingsOptions_atom = atom({
+  key: "privacySettingsOptions_atom",
+  default: privacySettingsOptions,
+});
+
+
+
+export const notificationSettingsOptions_atom = atom({
+  key: "notificationSettingsOptions_atom",
+  default: notificationSettingsOptions,
+});
+
 
 export const isVoiceModalOpen_Recoil = atom({
   key: "isVoiceModalOpen",

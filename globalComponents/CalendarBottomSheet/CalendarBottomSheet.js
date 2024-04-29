@@ -1,4 +1,5 @@
 import {
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -36,6 +37,7 @@ const CalendarBottomSheet = (props) => {
         ]}
       >
         <BottomSheetModal
+          enableContentPanningGesture={false}
           ref={calendarSheetRef}
           index={1}
           snapPoints={snapPoints}
@@ -47,82 +49,84 @@ const CalendarBottomSheet = (props) => {
                 Schedule this Room
               </Text>
             </View>
-            <View style={styles.calendarWrapper}>
-              <Calendar
-                onDayPress={(day) => {
-                  setSelectedDay(day.dateString); // Update selected day
-                }}
-                style={{
-                  width: getPercent(100, width),
-                }}
-                markedDates={{
-                  [selectedDay]: {
-                    selected: true,
-                    selectedColor: "#DB2727",
-                  },
-                }}
-                theme={{
-                  arrowStyle: {
-                    paddingHorizontal: getPercent(10, width),
-                    marginBottom: 10,
-                  },
-                  arrowColor: "#DB2727",
-                  backgroundColor: "#222",
-                  calendarBackground: "#fff",
-                  textSectionTitleColor: "#000000",
-                  textSectionTitleDisabledColor: "#d9e1e8",
-                  selectedDayBackgroundColor: "#00adf5",
-                  selectedDayTextColor: "#ffffff",
-                  todayTextColor: "#000000",
-                  dayTextColor: "#333333",
-                  textDisabledColor: "#BDBDBD",
-                  dotColor: "#00adf5",
-                  selectedDotColor: "#ffffff",
-                  disabledArrowColor: "#d9e1e8",
-                  monthTextColor: "#DB2727",
-                  indicatorColor: "#DB2727",
-                  textDayFontFamily: "Regular",
-                  textMonthFontFamily: "Semibold",
-                  textDayHeaderFontFamily: "Regular",
-                  textDayFontSize: 16,
-                  textMonthFontSize: 17,
-                  textDayHeaderFontSize: 14,
-                  "stylesheet.calendar.main": {
-                    dayContainer: {
-                      flex: 1,
-                      padding: 5,
-                      paddingHorizontal: getPercent(2, width),
+            <ScrollView>
+              <View style={styles.calendarWrapper}>
+                <Calendar
+                  onDayPress={(day) => {
+                    setSelectedDay(day.dateString); // Update selected day
+                  }}
+                  style={{
+                    width: getPercent(100, width),
+                  }}
+                  markedDates={{
+                    [selectedDay]: {
+                      selected: true,
+                      selectedColor: "#DB2727",
                     },
-                    emptyDayContainer: {
-                      borderBottomWidth: 1,
-                      borderColor: "#E2D370",
-                      flex: 1,
-                      padding: 5,
+                  }}
+                  theme={{
+                    arrowStyle: {
+                      paddingHorizontal: getPercent(10, width),
+                      marginBottom: 10,
                     },
-                  },
-                }}
-              />
-            </View>
+                    arrowColor: "#DB2727",
+                    backgroundColor: "#222",
+                    calendarBackground: "#fff",
+                    textSectionTitleColor: "#000000",
+                    textSectionTitleDisabledColor: "#d9e1e8",
+                    selectedDayBackgroundColor: "#00adf5",
+                    selectedDayTextColor: "#ffffff",
+                    todayTextColor: "#000000",
+                    dayTextColor: "#333333",
+                    textDisabledColor: "#BDBDBD",
+                    dotColor: "#00adf5",
+                    selectedDotColor: "#ffffff",
+                    disabledArrowColor: "#d9e1e8",
+                    monthTextColor: "#DB2727",
+                    indicatorColor: "#DB2727",
+                    textDayFontFamily: "Regular",
+                    textMonthFontFamily: "Semibold",
+                    textDayHeaderFontFamily: "Regular",
+                    textDayFontSize: 16,
+                    textMonthFontSize: 17,
+                    textDayHeaderFontSize: 14,
+                    "stylesheet.calendar.main": {
+                      dayContainer: {
+                        flex: 1,
+                        padding: 5,
+                        paddingHorizontal: getPercent(2, width),
+                      },
+                      emptyDayContainer: {
+                        borderBottomWidth: 1,
+                        borderColor: "#E2D370",
+                        flex: 1,
+                        padding: 5,
+                      },
+                    },
+                  }}
+                />
+              </View>
 
-            <View style={styles.footerWrapper}>
-              <TouchableOpacity
-                onPress={() => {
-                  calendarSheetRef.current?.close();
-                  calendarSheetRef.current = null;
-                }}
-              >
-                <Text style={font(14, "#BDBDBD", "Medium")}>Cancel</Text>
-              </TouchableOpacity>
-              <StandardButton
-                title="Done"
-                customStyles={{ width: getPercent(25, width) }}
-                onPress={() => {
-                  calendarSheetRef.current?.close();
-                  calendarSheetRef.current = null;
-                  calendarTimeSheetRef.current?.present();
-                }}
-              />
-            </View>
+              <View style={styles.footerWrapper}>
+                <TouchableOpacity
+                  onPress={() => {
+                    calendarSheetRef.current?.close();
+                    calendarSheetRef.current = null;
+                  }}
+                >
+                  <Text style={font(14, "#BDBDBD", "Medium")}>Cancel</Text>
+                </TouchableOpacity>
+                <StandardButton
+                  title="Done"
+                  customStyles={{ width: getPercent(25, width) }}
+                  onPress={() => {
+                    calendarSheetRef.current?.close();
+                    calendarSheetRef.current = null;
+                    calendarTimeSheetRef.current?.present();
+                  }}
+                />
+              </View>
+            </ScrollView>
           </BottomSheetView>
         </BottomSheetModal>
       </View>

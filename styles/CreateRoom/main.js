@@ -40,7 +40,7 @@ export const styles = ({ width, height }) =>
     },
     privacyBtn: {
       width: "25%",
-      height: getPercent(4, height),
+      minHeight: getPercent(4, height),
       borderRadius: 100,
       alignItems: "center",
       justifyContent: "center",

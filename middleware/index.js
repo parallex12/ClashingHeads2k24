@@ -158,8 +158,14 @@ export const sideMenuOptions = [
     icon: require("../assets/icons/sideMenu/3.png"),
   },
   {
+    title: "Notifications",
+    route: "Notifications",
+    icon: require("../assets/icons/notificationWhite.png"),
+  },
+
+  {
     title: "Settings",
-    route: "",
+    route: "AccountSettings",
     icon: require("../assets/icons/sideMenu/4.png"),
   },
   {

@@ -43,7 +43,15 @@ export const AddPostDetailsStyles = ({ width, height }) =>
     },
     mediaWrapper: {
       width: "100%",
-      paddingHorizontal: getPercent(5, width),
+      flex:1,
+      paddingHorizontal: getPercent(2, width),
+      marginTop:getPercent(2,height)
+    },
+    mediaImg:{
+      width: "100%",
+      height: getPercent(20,height),
+      marginRight: 5,
+      borderRadius:5
     },
     postInput: {
       flex: 1,
@@ -71,7 +79,7 @@ export const AddPostDetailsStyles = ({ width, height }) =>
     },
     privacyBtn: {
       width: "25%",
-      height: getPercent(4, height),
+      minHeight: getPercent(4, height),
       borderRadius: 100,
       alignItems: "center",
       justifyContent: "center",

@@ -2,6 +2,7 @@ import {
   Button,
   Image,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Text,
   TextInput,
@@ -71,17 +72,13 @@ const AddPostDetails = (props) => {
             {postImage && (
               <Image
                 source={postImage}
-                style={{
-                  width: "70%",
-                  height: "100%",
-                  marginRight: 5,
-                }}
+                style={styles.mediaImg}
               />
             )}
           </View>
         </View>
       </ScrollView>
-      <KeyboardAvoidingView behavior="position">
+      <KeyboardAvoidingView behavior={Platform.OS=="ios"?"position":"height"}>
         <View style={styles.postBottomActionsWrapper}>
           <TouchableOpacity style={styles.uploadBtnWrapper} onPress={pickImage}>
             <Image

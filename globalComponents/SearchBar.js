@@ -17,7 +17,7 @@ const SearchBar = (props) => {
   let navigation = useNavigation();
 
   return (
-    <View style={styles.searchRow}>
+    <View style={[styles.searchRow, customStyles]}>
       <View style={styles.searchInputWrapper}>
         <AntDesign name="search1" size={RFValue(15)} color="#9CA3AF" />
         <TextInput

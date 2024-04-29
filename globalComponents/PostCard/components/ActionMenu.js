@@ -22,6 +22,7 @@ const ActionMenu = (props) => {
   const bottomFlagSheetRef = useRef(null);
 
   const FooterItem = ({ item, index, post_clashes_count }) => {
+
     return (
       <TouchableOpacity
         style={styles.FooterItem}
@@ -110,7 +111,7 @@ const _styles = ({ width, height }) =>
       width: getPercent(5, width),
       height: getPercent(5, height),
     },
-    actionText: font(12, "#6B7280", "Medium", 0, 0, { marginLeft: 5 }),
+    actionText: font(12, "#6B7280", "Medium", 0,null, { marginLeft: 5 }),
   });
 
 export default ActionMenu;

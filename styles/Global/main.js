@@ -19,6 +19,77 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//NewsCardStyles Styles starts here
+export const NewsCardStyles = ({ width, height }) =>
+  StyleSheet.create({
+    newsCardCont: {
+      width: "100%",
+      minHeight: getPercent(10, height),
+      borderBottomWidth: 1,
+      borderColor: "#F3F3F3",
+      paddingVertical: 10,
+      marginTop: 10,
+    },
+    cardRow: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+    },
+    newsCardThumbnailCont: {
+      width: "28%",
+      height: getPercent(12, height),
+      borderRadius: 10,
+      overflow: "hidden",
+    },
+    newsContentWrapper: {
+      flex: 1,
+      height: "100%",
+      paddingVertical: 5,
+      paddingHorizontal: getPercent(3, width),
+    },
+    cardFooterWrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      minHeight: getPercent(7, height),
+      marginTop: 10,
+    },
+    cardFootercompanyLogo: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-start",
+    },
+    companyLogo: {
+      width: getPercent(8, width),
+      height: getPercent(8, width),
+      borderRadius: 100,
+      overflow: "hidden",
+      marginRight: 10,
+    },
+  });
+
+//SettingSwitchCard Styles  starts here
+export const SettingSwitchCardStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      paddingVertical: getPercent(1.5, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderBottomWidth: 1,
+      borderColor: "#F7F8F8",
+      paddingHorizontal: getPercent(5, width),
+    },
+    text: {
+      flex: 0.95,
+      textAlign: "left",
+      lineHeight: 22,
+    },
+  });
+
 //StandardSwitchStyles starts here
 export const StandardSwitchStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -195,7 +266,7 @@ export const CalendarBottomSheetStyles = ({ width, height }) =>
       justifyContent: "center",
     },
     calendarWrapper: {
-      paddingHorizontal: getPercent(5, width),
+      // paddingHorizontal: getPercent(5, width),
     },
     timerText: font(16, "#222", "Regular"),
     changeModeBtn: {
@@ -466,8 +537,8 @@ export const StandardHeader2Styles = ({ width, height }) =>
       justifyContent: "space-between",
       paddingTop: StatusBar.currentHeight + getPercent(4.5, height),
       paddingHorizontal: getPercent(4, width),
-      borderBottomWidth:1,
-      borderColor:'#F7F8F8'
+      borderBottomWidth: 1,
+      borderColor: "#F7F8F8",
     },
     col1: {
       flex: 0.5,
@@ -718,7 +789,7 @@ export const font = (s, c, fm, mv, lh, extras) => {
     color: c,
     fontFamily: fm,
     marginVertical: mv,
-    lineHeight: lh,
+    lineHeight: lh == 0 ? null : lh,
     ...extras,
   };
 };

@@ -28,13 +28,20 @@ import MyProfile from "../screens/MyProfile/MyProfile";
 import UserProfile from "../screens/UserProfile/UserProfile";
 import NewPost from "../screens/NewPost/NewPost";
 import AddPostDetails from "../screens/NewPost/AddPostDetails";
+import News from "../screens/News/News";
+import EditPersonalInformation from "../screens/EditPersonalInformation/EditPersonalInformation";
+import Notifications from "../screens/Notifications/Notifications";
+import AccountSettings from "../screens/AccountSettings/AccountSettings";
+import SecuritySettings from "../screens/SecuritySettings/SecuritySettings";
+import NotificationSettings from "../screens/NotificationSettings/NotificationSettings";
+import PrivacySettings from "../screens/PrivacySettings/PrivacySettings";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
 
 const HomeScreens = () => {
   return (
-    <HomeStack.Navigator  screenOptions={{ headerShown: false }}>
+    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <Screen name="Signin" component={Signin} />
       <Screen name="Signup" component={Signup} />
       <Screen name="CommunityGuidelines" component={CommunityGuidelines} />
@@ -54,7 +61,17 @@ const HomeScreens = () => {
       <HomeStack.Screen name="MyProfile" component={MyProfile} />
       <HomeStack.Screen name="UserProfile" component={UserProfile} />
       <HomeStack.Screen name="NewPost" component={NewPost} />
+      <HomeStack.Screen name="News" component={News} />
       <HomeStack.Screen name="AddPostDetails" component={AddPostDetails} />
+      <HomeStack.Screen name="SecuritySettings" component={SecuritySettings} />
+      <HomeStack.Screen name="AccountSettings" component={AccountSettings} />
+      <HomeStack.Screen name="NotificationSettings" component={NotificationSettings} />
+      <HomeStack.Screen name="PrivacySettings" component={PrivacySettings} />
+      <HomeStack.Screen
+        name="EditPersonalInformation"
+        component={EditPersonalInformation}
+      />
+      <HomeStack.Screen name="Notifications" component={Notifications} />
     </HomeStack.Navigator>
   );
 };
