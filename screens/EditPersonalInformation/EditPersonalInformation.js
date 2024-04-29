@@ -35,7 +35,11 @@ const EditPersonalInformation = (props) => {
 
   return (
     <View style={styles.container}>
-      <StandardHeader title="Settings" backButton />
+      <StandardHeader
+        title="Settings"
+        backButton
+        containerStyles={{ height: getPercent(15, height) }}
+      />
       <ScrollView>
         <View style={styles.content}>
           <View style={styles.titleWrapper}>
