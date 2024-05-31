@@ -1,6 +1,7 @@
 import { useWindowDimensions } from "react-native";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { RFValue as rf } from "react-native-responsive-fontsize";
+import axios from "axios";
 export const FontsConfig = {
   Light: require("../assets/fonts/SF-Pro-Text-Light.otf"),
   Regular: require("../assets/fonts/SF-Pro-Text-Regular.otf"),
@@ -204,3 +205,11 @@ export const sideMenuOptions = [
     icon: require("../assets/icons/sideMenu/11.png"),
   },
 ];
+
+export const setAuthToken = (token) => {
+  if (token) {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete axios.defaults.headers.common["Authorization"];
+  }
+};

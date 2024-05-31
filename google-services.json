@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "596417199637",
+    "project_id": "clashingheads-v2",
+    "storage_bucket": "clashingheads-v2.appspot.com",
+    "client_id": "816698940046-4h33anbkkot2u9ha0ae7fevq935obfcs.apps.googleusercontent.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:596417199637:android:f6dedc58d45299ef09981c",
+        "android_client_info": {
+          "package_name": "com.club.clashingheadsv2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBJrYDCA1uXfL_8bMV7Y8UD7-SeSzbHro"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

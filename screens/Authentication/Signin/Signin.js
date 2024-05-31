@@ -11,20 +11,39 @@ import { font } from "../../../styles/Global/main";
 import CountryCodeField from "../../../globalComponents/CountryCodeField";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { getAuth } from "firebase/auth";
+import { _onPhoneAuth } from "../../../middleware/firebase";
 
 const Signin = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [country, setCountry] = useState(null);
+  const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
+  const [phoneNumber, setPhoneNumber] = useState(null);
+  const [message, setShowMessage] = useState(null);
+  const auth = getAuth();
+  const recaptchaVerifier = useRef(null);
+
+  let authOptions = {
+    auth,
+    phoneNumber,
+    recaptchaVerifier,
+    setShowMessage,
+  };
 
   const onSignup = () => {
     props?.navigation?.navigate("Signup");
   };
 
   const onContinue = () => {
-    props?.navigation?.navigate("Home");
+    let complete_phone_number = { code: country?.dial_code , number: phoneNumber }
+    if (!phoneNumber) {
+      alert("Phone number required.");
+      return;
+    }
+    console.log(complete_phone_number)
+    // props?.navigation?.navigate("Home");
   };
 
   return (
@@ -46,7 +65,10 @@ const Signin = (props) => {
             <Text style={font(14, "#6B7280", "Regular", 5)}>
               Enter Your Phone Number
             </Text>
-            <CountryCodeField setCountry={setCountry} onChangeText={(val) => console.log(val)} />
+            <CountryCodeField
+              setCountry={setCountry}
+              onChangeText={(val) => setPhoneNumber(val)}
+            />
             <Text style={font(10, "#252525", "Regular", 3, 20)}>
               We will send a text with a verification code. Message and date
               rates may apply, By continuing, you agree to our{" "}
