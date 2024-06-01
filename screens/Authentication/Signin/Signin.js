@@ -12,37 +12,45 @@ import CountryCodeField from "../../../globalComponents/CountryCodeField";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useRef, useState } from "react";
-import { getAuth } from "firebase/auth";
-import { _onPhoneAuth } from "../../../middleware/firebase";
+// import { getAuth } from "firebase/auth";
+// import { _onPhoneAuth } from "../../../middleware/firebase";
+import auth from "@react-native-firebase/auth";
 
 const Signin = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  // If null, no SMS has been sent
+  const [confirm, setConfirm] = useState(null);
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
   const [phoneNumber, setPhoneNumber] = useState(null);
-  const [message, setShowMessage] = useState(null);
-  const auth = getAuth();
-  const recaptchaVerifier = useRef(null);
-
-  let authOptions = {
-    auth,
-    phoneNumber,
-    recaptchaVerifier,
-    setShowMessage,
-  };
 
   const onSignup = () => {
     props?.navigation?.navigate("Signup");
   };
 
+  // Handle the button press
+  async function signInWithPhoneNumber(phoneNumber) {
+    console.log(auth);
+    await auth()
+      .signInWithPhoneNumber(phoneNumber)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    // setConfirm(confirmation);
+  }
+
   const onContinue = () => {
-    let complete_phone_number = { code: country?.dial_code , number: phoneNumber }
+    let phone_number_obj = { code: country?.dial_code, number: phoneNumber };
+    let phone_number_raw = country?.dial_code + phoneNumber;
     if (!phoneNumber) {
       alert("Phone number required.");
       return;
     }
-    console.log(complete_phone_number)
+    signInWithPhoneNumber(phone_number_raw);
     // props?.navigation?.navigate("Home");
   };
 

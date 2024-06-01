@@ -8,7 +8,7 @@ import {
   FIREBASE_APP_ID,
   FIREBASE_MEASUREMENT_ID,
 } from "@env";
-import { getAuth } from "firebase/auth";
+// import { getAuth } from "firebase/auth";
 import { setAuthToken } from "../middleware";
 
 export const EmojisArr = [
@@ -226,7 +226,7 @@ export const firebaseConfig = {
 
 export const _setToken = () => {
   try {
-    const auth = getAuth();
+    const auth = null
     const user = auth.currentUser;
     setAuthToken(user?.accessToken);
   } catch (e) {
