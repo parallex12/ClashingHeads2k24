@@ -8,7 +8,7 @@ import {
 } from "@react-navigation/drawer";
 import Home from "../screens/Home/Home";
 import ClashDetails from "../screens/ClashDetail/ClashDetail";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator,TransitionPresets  } from "@react-navigation/stack";
 import SideMenu from "../globalComponents/SideMenu/SideMenu";
 import Search from "../screens/Search/Search";
 import Messages from "../screens/Messages/Messages";
@@ -35,6 +35,7 @@ import AccountSettings from "../screens/AccountSettings/AccountSettings";
 import SecuritySettings from "../screens/SecuritySettings/SecuritySettings";
 import NotificationSettings from "../screens/NotificationSettings/NotificationSettings";
 import PrivacySettings from "../screens/PrivacySettings/PrivacySettings";
+import SplashLoader from "../screens/Splash/SplashLoader";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -42,14 +43,17 @@ const HomeStack = createStackNavigator();
 const HomeScreens = () => {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <Screen name="Signin" component={Signin} />
-      <Screen name="Signup" component={Signup} />
-      <Screen name="CommunityGuidelines" component={CommunityGuidelines} />
-      <Screen name="OTPVerification" component={OTPVerification} />
+      <HomeStack.Screen name="Home" component={Home} />
+      <HomeStack.Screen
+        name="SplashLoader"
+        component={SplashLoader}
+        options={{
+          ...TransitionPresets.SlideFromRightIOS, // Apply slide transition
+        }}
+      />
       <Screen name="PersonalInfo" component={PersonalInfo} />
       <Screen name="VoiceRecording" component={VoiceRecording} />
       <Screen name="ProfilePhoto" component={ProfilePhoto} />
-      <HomeStack.Screen name="Home" component={Home} />
       <HomeStack.Screen name="ClashDetails" component={ClashDetails} />
       <HomeStack.Screen name="Search" component={Search} />
       <HomeStack.Screen name="Messages" component={Messages} />
@@ -65,7 +69,10 @@ const HomeScreens = () => {
       <HomeStack.Screen name="AddPostDetails" component={AddPostDetails} />
       <HomeStack.Screen name="SecuritySettings" component={SecuritySettings} />
       <HomeStack.Screen name="AccountSettings" component={AccountSettings} />
-      <HomeStack.Screen name="NotificationSettings" component={NotificationSettings} />
+      <HomeStack.Screen
+        name="NotificationSettings"
+        component={NotificationSettings}
+      />
       <HomeStack.Screen name="PrivacySettings" component={PrivacySettings} />
       <HomeStack.Screen
         name="EditPersonalInformation"

@@ -15,13 +15,13 @@ import { useRef, useState } from "react";
 // import { getAuth } from "firebase/auth";
 // import { _onPhoneAuth } from "../../../middleware/firebase";
 import auth from "@react-native-firebase/auth";
+import { ActivityIndicator } from "react-native";
 
 const Signin = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  // If null, no SMS has been sent
-  const [confirm, setConfirm] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
   const [phoneNumber, setPhoneNumber] = useState(null);
 
@@ -31,27 +31,27 @@ const Signin = (props) => {
 
   // Handle the button press
   async function signInWithPhoneNumber(phoneNumber) {
-    console.log(auth);
     await auth()
       .signInWithPhoneNumber(phoneNumber)
       .then((res) => {
-        console.log(res);
+        setLoading(false);
+        props?.navigation?.navigate("OTPVerification", { confirm: res });
       })
       .catch((e) => {
         console.log(e);
+        setLoading(false);
+        alert("Something went wrong try again!");
       });
-    // setConfirm(confirmation);
   }
 
   const onContinue = () => {
-    let phone_number_obj = { code: country?.dial_code, number: phoneNumber };
     let phone_number_raw = country?.dial_code + phoneNumber;
     if (!phoneNumber) {
       alert("Phone number required.");
       return;
     }
+    setLoading(true);
     signInWithPhoneNumber(phone_number_raw);
-    // props?.navigation?.navigate("Home");
   };
 
   return (
@@ -85,7 +85,13 @@ const Signin = (props) => {
               </Text>
             </Text>
             <StandardButton
-              title="Continue"
+              title={
+                loading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  "Continue"
+                )
+              }
               customStyles={{
                 height: getPercent(7, height),
                 marginVertical: getPercent(3, height),

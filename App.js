@@ -39,13 +39,12 @@ export default function App() {
     // In this function, make sure you hide the component(s) for entering the code and/or navigate away from this screen.
     // It is also recommended to display a message to the user informing him/her that he/she has successfully logged in.
     if (user) {
-      // let token = user?.stsTokenManager?.accessToken;
+      // let token = user?.refreshToken;
       // setAuthToken(token);
-      // setUserStatus(true);
+      setUserStatus(true);
     } else {
-      // setUserStatus(false);
+      setUserStatus(false);
     }
-    console.log(user)
   }
 
   useEffect(() => {

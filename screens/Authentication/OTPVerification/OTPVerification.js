@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   Text,
@@ -16,17 +17,35 @@ import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 import PinCodeInput from "../../../globalComponents/PinCodeInput";
 import { registrationForm } from "../../../state-management/atoms/atoms";
-import {  useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 
 const OTPVerification = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [otpCode, setOtpCode] = useState(null);
+  const [loading, setLoading] = useState(false);
   const form = useRecoilValue(registrationForm);
+  let confirmOTP = props?.route?.params?.confirm;
 
-  const onContinue = () => {
-    props?.navigation?.navigate("CommunityGuidelines");
+  const onContinue = async () => {
+    try {
+      if (otpCode?.length != 6) return alert("Invalid OTP.");
+      // props?.navigation?.navigate("CommunityGuidelines");
+      setLoading(true);
+      await confirmOTP
+        .confirm(otpCode)
+        .then(async (res) => {
+          setLoading(false);
+        })
+        .catch((e) => {
+          console.log("e", e);
+          setLoading(false);
+          alert("Something went wrong try again!");
+        });
+    } catch (error) {
+      console.log("Invalid code.");
+    }
   };
 
   return (
@@ -47,13 +66,19 @@ const OTPVerification = (props) => {
             <PinCodeInput setOtpCode={setOtpCode} />
           </View>
           <Text style={font(10, "#252525", "Regular", 3, 20)}>
-            You will receive your verification code on your given number {form?.phone}
-            . If you didn’t get the number then you can change or edit the
-            number.{" "}
+            You will receive your verification code on your given number{" "}
+            {form?.phone}. If you didn’t get the number then you can change or
+            edit the number.{" "}
             <Text style={font(10, "#8E70F5", "Regular", 3)}>Change</Text>
           </Text>
           <StandardButton
-            title="Continue"
+            title={
+              loading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                "Continue"
+              )
+            }
             customStyles={{
               height: getPercent(7, height),
               marginVertical: getPercent(3, height),

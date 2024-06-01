@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   Text,
@@ -14,21 +15,44 @@ import { getPercent } from "../../../middleware";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { registrationForm } from "../../../state-management/atoms/atoms";
+import auth from "@react-native-firebase/auth";
 
 const Signup = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useRecoilState(registrationForm);
-  const [phone, setPhone] = useState(null);
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
 
   const onLogin = () => {
     props?.navigation?.navigate("Signin");
   };
 
+  // Handle the button press
+  async function signInWithPhoneNumber(phoneNumber) {
+    await auth()
+      .signInWithPhoneNumber(phoneNumber)
+      .then((res) => {
+        setLoading(false);
+        props?.navigation?.navigate("OTPVerification", { confirm: res });
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+        alert("Something went wrong try again!");
+      });
+  }
+
   const onContinue = () => {
-    props?.navigation?.navigate("OTPVerification");
+    let phone_number_raw = country?.dial_code + form?.phone ;
+    if (!phone_number_raw) {
+      alert("Phone number required.");
+      return;
+    }
+    setLoading(true);
+    signInWithPhoneNumber(phone_number_raw);
   };
 
   return (
@@ -62,7 +86,13 @@ const Signup = (props) => {
               </Text>
             </Text>
             <StandardButton
-              title="Continue"
+              title={
+                loading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  "Continue"
+                )
+              }
               customStyles={{
                 height: getPercent(7, height),
                 marginVertical: getPercent(3, height),

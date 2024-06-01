@@ -14,7 +14,7 @@ import { global_posts } from "../../state-management/atoms/atoms";
 import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const Home = (props) => {
   let {} = props;
@@ -23,6 +23,10 @@ const Home = (props) => {
   const [posts, setPosts] = useRecoilState(global_posts);
 
   const bottomFlagSheetRef = useRef(null);
+
+  useEffect(() => {
+    props?.navigation.navigate("SplashLoader");
+  }, []);
 
   return (
     <View style={styles.container}>
