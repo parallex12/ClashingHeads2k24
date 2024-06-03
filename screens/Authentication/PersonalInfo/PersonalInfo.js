@@ -14,7 +14,7 @@ import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
 import { useRecoilState } from "recoil";
 import { registrationForm } from "../../../state-management/atoms/atoms";
@@ -27,7 +27,9 @@ const PersonalInfo = (props) => {
   const [form, setForm] = useRecoilState(registrationForm);
 
   const onContinue = () => {
-    props?.navigation?.navigate("VoiceRecording");
+    console.log(form);
+    let confirm_details = "";
+    // props?.navigation?.navigate("VoiceRecording");
   };
 
   const onChangeText = (val, info) => {

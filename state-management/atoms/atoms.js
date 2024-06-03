@@ -1,10 +1,25 @@
 // atoms.js
+import auth from "@react-native-firebase/auth";
 import { atom } from "recoil";
-import { notificationSettingsOptions, privacySettingsOptions } from "../../utils";
+
+import {
+  notificationSettingsOptions,
+  privacySettingsOptions,
+} from "../../utils";
 
 export const registrationForm = atom({
   key: "registrationForm",
-  default: {},
+  default: { id: auth().currentUser?.uid },
+});
+
+export const user_auth = atom({
+  key: "user_auth",
+  default: auth().currentUser,
+});
+
+export const user_db_details = atom({
+  key: "user_db_details",
+  default: null,
 });
 
 export const privacySettingsOptions_atom = atom({
@@ -12,13 +27,10 @@ export const privacySettingsOptions_atom = atom({
   default: privacySettingsOptions,
 });
 
-
-
 export const notificationSettingsOptions_atom = atom({
   key: "notificationSettingsOptions_atom",
   default: notificationSettingsOptions,
 });
-
 
 export const isVoiceModalOpen_Recoil = atom({
   key: "isVoiceModalOpen",

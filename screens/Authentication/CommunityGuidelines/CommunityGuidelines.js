@@ -74,7 +74,7 @@ const CommunityGuidelines = (props) => {
             </View>
           </View>
           <StandardButton
-            title="Agree & Sign up"
+            title="Agree & Continue"
             customStyles={{
               height: getPercent(7, height),
               marginVertical: getPercent(3, height),

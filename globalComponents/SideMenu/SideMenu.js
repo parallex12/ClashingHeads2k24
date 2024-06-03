@@ -20,7 +20,6 @@ const SideMenu = (props) => {
   const navigation = useNavigation();
 
   const ListItem = ({ data }) => {
-    console.log(data);
     return (
       <TouchableOpacity
         style={styles.listItem}

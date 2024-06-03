@@ -21,12 +21,7 @@ const Home = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [posts, setPosts] = useRecoilState(global_posts);
-
   const bottomFlagSheetRef = useRef(null);
-
-  useEffect(() => {
-    props?.navigation.navigate("SplashLoader");
-  }, []);
 
   return (
     <View style={styles.container}>
