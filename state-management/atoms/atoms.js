@@ -12,6 +12,12 @@ export const registrationForm = atom({
   default: { id: auth().currentUser?.uid },
 });
 
+
+export const otpConfirmation = atom({
+  key: "otpConfirmation",
+  default: null,
+});
+
 export const user_auth = atom({
   key: "user_auth",
   default: auth().currentUser,

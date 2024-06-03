@@ -16,22 +16,27 @@ import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 import PinCodeInput from "../../../globalComponents/PinCodeInput";
-import { registrationForm } from "../../../state-management/atoms/atoms";
+import {
+  otpConfirmation,
+  registrationForm,
+} from "../../../state-management/atoms/atoms";
 import { useRecoilValue } from "recoil";
+import { useLoader } from "../../../state-management/LoaderContext";
 
 const OTPVerification = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [otpCode, setOtpCode] = useState(null);
+  // const { setLoading } = useLoader();
   const [loading, setLoading] = useState(false);
+
   const form = useRecoilValue(registrationForm);
-  let confirmOTP = props?.route?.params?.confirm;
+  let confirmOTP = useRecoilValue(otpConfirmation);
 
   const onContinue = async () => {
     try {
       if (otpCode?.length != 6) return alert("Invalid OTP.");
-      // props?.navigation?.navigate("CommunityGuidelines");
       setLoading(true);
       await confirmOTP
         .confirm(otpCode)
@@ -72,13 +77,7 @@ const OTPVerification = (props) => {
             <Text style={font(10, "#8E70F5", "Regular", 3)}>Change</Text>
           </Text>
           <StandardButton
-            title={
-              loading ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                "Continue"
-              )
-            }
+            title="Continue"
             customStyles={{
               height: getPercent(7, height),
               marginVertical: getPercent(3, height),

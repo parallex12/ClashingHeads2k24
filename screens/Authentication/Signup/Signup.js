@@ -14,17 +14,18 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { registrationForm } from "../../../state-management/atoms/atoms";
+import { otpConfirmation, registrationForm } from "../../../state-management/atoms/atoms";
 import auth from "@react-native-firebase/auth";
+import { useLoader } from "../../../state-management/LoaderContext";
 
 const Signup = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [loading, setLoading] = useState(false);
-
   const [form, setForm] = useRecoilState(registrationForm);
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
+  const { setLoading } = useLoader();
+  const [confirmOTP, setConfirmOTP] = useRecoilState(otpConfirmation);
 
   const onLogin = () => {
     props?.navigation?.navigate("Signin");
@@ -36,7 +37,8 @@ const Signup = (props) => {
       .signInWithPhoneNumber(phoneNumber)
       .then((res) => {
         setLoading(false);
-        props?.navigation?.navigate("OTPVerification", { confirm: res });
+        setConfirmOTP(res)
+        props?.navigation?.navigate("OTPVerification");
       })
       .catch((e) => {
         console.log(e);
@@ -46,7 +48,7 @@ const Signup = (props) => {
   }
 
   const onContinue = () => {
-    let phone_number_raw = country?.dial_code + form?.phone ;
+    let phone_number_raw = country?.dial_code + form?.phone;
     if (!phone_number_raw) {
       alert("Phone number required.");
       return;
@@ -86,13 +88,7 @@ const Signup = (props) => {
               </Text>
             </Text>
             <StandardButton
-              title={
-                loading ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  "Continue"
-                )
-              }
+              title="Continue"
               customStyles={{
                 height: getPercent(7, height),
                 marginVertical: getPercent(3, height),

@@ -38,9 +38,6 @@ import AccountSettings from "../screens/AccountSettings/AccountSettings";
 import SecuritySettings from "../screens/SecuritySettings/SecuritySettings";
 import NotificationSettings from "../screens/NotificationSettings/NotificationSettings";
 import PrivacySettings from "../screens/PrivacySettings/PrivacySettings";
-import SplashLoader from "../screens/Splash/SplashLoader";
-import { LoaderProvider } from "../state-management/LoaderContext";
-import FullScreenLoader from "../globalComponents/FullScreenLoader/FullScreenLoader";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -83,26 +80,26 @@ const HomeScreens = () => {
 
 function AppNavigation() {
   return (
-    <Navigator
-      drawerContent={(props) => <SideMenu {...props} />}
-      screenOptions={{
-        swipeEnabled: true, // Disable swipe gesture for drawer
-        headerShown: false,
-        drawerType: "slide", // Set drawer type to slide
-        drawerStyle: {
-          width: "75%", // Set width of the drawer
-          backgroundColor: "#D22323",
-          paddingHorizontal: 20,
-        },
-      }}
-    >
-      <Screen name="HomeScreens" component={HomeScreens} />
-    </Navigator>
+      <Navigator
+        drawerContent={(props) => <SideMenu {...props} />}
+        screenOptions={{
+          swipeEnabled: true, // Disable swipe gesture for drawer
+          headerShown: false,
+          drawerType: "slide", // Set drawer type to slide
+          drawerStyle: {
+            width: "75%", // Set width of the drawer
+            backgroundColor: "#D22323",
+            paddingHorizontal: 20,
+          },
+        }}
+      >
+        <Screen name="HomeScreens" component={HomeScreens} />
+      </Navigator>
   );
 }
 
 export const AppNavigator = () => (
   <NavigationContainer>
-      <AppNavigation />
+    <AppNavigation />
   </NavigationContainer>
 );

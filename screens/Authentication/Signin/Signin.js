@@ -16,14 +16,19 @@ import { useRef, useState } from "react";
 // import { _onPhoneAuth } from "../../../middleware/firebase";
 import auth from "@react-native-firebase/auth";
 import { ActivityIndicator } from "react-native";
+import { useLoader } from "../../../state-management/LoaderContext";
+import { useRecoilState } from "recoil";
+import { otpConfirmation } from "../../../state-management/atoms/atoms";
 
 const Signin = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [loading, setLoading] = useState(false);
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
   const [phoneNumber, setPhoneNumber] = useState(null);
+  // const { setLoading } = { setLoading: null };
+  const [confirmOTP, setConfirmOTP] = useRecoilState(otpConfirmation);
+  const [loading, setLoading] = useState(false);
 
   const onSignup = () => {
     props?.navigation?.navigate("Signup");
@@ -35,7 +40,8 @@ const Signin = (props) => {
       .signInWithPhoneNumber(phoneNumber)
       .then((res) => {
         setLoading(false);
-        props?.navigation?.navigate("OTPVerification", { confirm: res });
+        setConfirmOTP(res);
+        props?.navigation?.navigate("OTPVerification");
       })
       .catch((e) => {
         console.log(e);
@@ -85,13 +91,7 @@ const Signin = (props) => {
               </Text>
             </Text>
             <StandardButton
-              title={
-                loading ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  "Continue"
-                )
-              }
+              title="Continue"
               customStyles={{
                 height: getPercent(7, height),
                 marginVertical: getPercent(3, height),

@@ -20,39 +20,37 @@ import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { Logout, isUserProfileConnected } from "../../middleware/firebase";
 import { firebaseConfig } from "../../utils";
+import { getAuth } from "firebase/auth";
 
 const Home = (props) => {
-  let { } = props;
+  let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [posts, setPosts] = useRecoilState(global_posts);
   const bottomFlagSheetRef = useRef(null);
-  // const { showLoader, hideLoader } = useLoader();
-  // const userAuth = useRecoilValue(user_auth);
+  const userAuth = useRecoilValue(user_auth);
 
-  // useEffect(() => {
-  //   if (userAuth?.uid) {
-  //     showLoader()
-  //     const app = initializeApp(firebaseConfig);
-  //     const db = getFirestore(app);
-  //     isUserProfileConnected(userAuth?.uid)
-  //       .then((res) => {
-  //         console.log(res)
-  //         hideLoader()
-  //       })
-  //       .catch((e) => {
-  //         hideLoader()
-  //         if (e == 404) {
-  //           props?.navigation.navigate("CommunityGuidelines");
-  //           return;
-  //         }
-  //       });
-  //   } else {
-  //     hideLoader()
-  //   }
-  // }, [userAuth]);
-
-
+  useEffect(() => {
+    // setLoading(true)
+    // if (userAuth?.uid) {
+    //   const app = initializeApp(firebaseConfig);
+    //   const db = getFirestore(app);
+    //   isUserProfileConnected(userAuth?.uid)
+    //     .then((res) => {
+    //       console.log(res);
+    //       setLoading(false);
+    //     })
+    //     .catch((e) => {
+    //       setLoading(false);
+    //       if (e == 404) {
+    //         props?.navigation.navigate("CommunityGuidelines");
+    //         return;
+    //       }
+    //     });
+    // } else {
+    //   setLoading(false);
+    // }
+  }, [userAuth]);
 
   return (
     <View style={styles.container}>
@@ -63,7 +61,7 @@ const Home = (props) => {
           title="Create New Post"
           customStyles={styles.header2WrapperBtn}
           textStyles={font(12, "#FFFFFF", "Semibold")}
-          onPress={() => showLoader()}
+          onPress={() => setLoading(true)}
         />
       </View>
       <ScrollView>

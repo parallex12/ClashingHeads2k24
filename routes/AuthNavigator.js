@@ -6,18 +6,17 @@ import OTPVerification from "../screens/Authentication/OTPVerification/OTPVerifi
 
 const { Navigator, Screen } = createStackNavigator();
 
-function AppNavigation() {
+function AuthNavigation() {
   return (
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="Signin" component={Signin} />
       <Screen name="Signup" component={Signup} />
       <Screen name="OTPVerification" component={OTPVerification} />
-      
     </Navigator>
   );
 }
 export const AuthNavigator = () => (
   <NavigationContainer>
-    <AppNavigation />
+    <AuthNavigation />
   </NavigationContainer>
 );
