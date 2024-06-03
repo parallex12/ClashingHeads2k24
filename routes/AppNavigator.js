@@ -39,6 +39,8 @@ import SecuritySettings from "../screens/SecuritySettings/SecuritySettings";
 import NotificationSettings from "../screens/NotificationSettings/NotificationSettings";
 import PrivacySettings from "../screens/PrivacySettings/PrivacySettings";
 import SplashLoader from "../screens/Splash/SplashLoader";
+import { LoaderProvider } from "../state-management/LoaderContext";
+import FullScreenLoader from "../globalComponents/FullScreenLoader/FullScreenLoader";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -46,13 +48,6 @@ const HomeStack = createStackNavigator();
 const HomeScreens = () => {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <HomeStack.Screen
-        name="SplashLoader"
-        component={SplashLoader}
-        options={{
-          ...TransitionPresets.SlideFromRightIOS, // Apply slide transition
-        }}
-      />
       <HomeStack.Screen name="Home" component={Home} />
       <Screen name="PersonalInfo" component={PersonalInfo} />
       <Screen name="VoiceRecording" component={VoiceRecording} />
@@ -108,6 +103,6 @@ function AppNavigation() {
 
 export const AppNavigator = () => (
   <NavigationContainer>
-    <AppNavigation />
+      <AppNavigation />
   </NavigationContainer>
 );

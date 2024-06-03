@@ -23,6 +23,7 @@ const StandardInput = (props) => {
     onChangeText,
     onRemoveField,
     value,
+    customIcon
   } = props;
   let { width, height } = useWindowDimensions();
   const [dateOfBirth, setDateOfBirth] = useState(new Date());
@@ -45,7 +46,7 @@ const StandardInput = (props) => {
     let activeRadioStyle = {
       backgroundColor: "#fff",
       borderColor: "#222",
-      borderWidth:3,
+      borderWidth: 3,
     };
 
     return (
@@ -110,7 +111,7 @@ const StandardInput = (props) => {
             </Text>
           </TouchableOpacity>
         ) : null}
-        {data?.icon}
+        {data?.icon ? data?.icon : customIcon}
       </View>
     </View>
   );

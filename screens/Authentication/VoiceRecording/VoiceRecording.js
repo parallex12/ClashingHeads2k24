@@ -78,6 +78,8 @@ const VoiceRecording = (props) => {
 
   const onConfirm = async () => {
     try {
+      console.log(recording)
+      return
       if (recording) {
         setForm((prev) => {
           return { ...prev, about_voice: recording };
@@ -124,8 +126,8 @@ const VoiceRecording = (props) => {
                           isAudioPlaying
                             ? iconImages[2]
                             : isRecordingCompleted
-                            ? iconImages[1]
-                            : iconImages[0]
+                              ? iconImages[1]
+                              : iconImages[0]
                         }
                         resizeMode="contain"
                         style={{ width: "100%", height: "100%" }}
@@ -136,9 +138,8 @@ const VoiceRecording = (props) => {
               </CircleComponent>
               <View style={styles.textWrapper}>
                 <Text style={font(20, "#ffffff", "Bold", 20)}>
-                  {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${
-                    timer % 60
-                  }`}
+                  {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${timer % 60
+                    }`}
                 </Text>
                 <Text style={font(14, "#ffffff", "Regular", 0)}>
                   {recording
@@ -158,12 +159,13 @@ const VoiceRecording = (props) => {
             onConfirm={onConfirm}
           >
             <StandardButton
+              disable
               title={
                 isRecording
                   ? "Stop Recording"
                   : isRecordingCompleted
-                  ? "Confirm"
-                  : "Start Recording"
+                    ? "Confirm"
+                    : "Start Recording"
               }
               customStyles={{
                 width: getPercent(50, width),
@@ -178,8 +180,8 @@ const VoiceRecording = (props) => {
                 color: isRecording
                   ? "#fff"
                   : isRecordingCompleted
-                  ? "#DB2727"
-                  : "#4B4EFC",
+                    ? "#DB2727"
+                    : "#4B4EFC",
                 fontFamily: "Semibold",
               }}
             />

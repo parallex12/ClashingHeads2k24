@@ -233,3 +233,13 @@ export const _setToken = () => {
     console.log(e.message);
   }
 };
+
+
+export const validateRequiredFields = (details, requiredFields) => {
+  for (const field of requiredFields) {
+    if (!details[field]) {
+      return { isValid: false, msg: `${field} is required`, field };
+    }
+  }
+  return { isValid: true };
+};

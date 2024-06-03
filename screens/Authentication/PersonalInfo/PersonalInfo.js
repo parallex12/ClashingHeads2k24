@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   ScrollView,
@@ -18,6 +19,8 @@ import { useEffect, useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
 import { useRecoilState } from "recoil";
 import { registrationForm } from "../../../state-management/atoms/atoms";
+import { validate_user_details } from "../../../middleware/firebase";
+import { Entypo } from '@expo/vector-icons';
 
 const PersonalInfo = (props) => {
   let { route } = props;
@@ -25,11 +28,27 @@ const PersonalInfo = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [form, setForm] = useRecoilState(registrationForm);
+  const [loading, setLoading] = useState(false)
+  const [errorField, setErrorField] = useState({})
 
-  const onContinue = () => {
-    console.log(form);
-    let confirm_details = "";
-    // props?.navigation?.navigate("VoiceRecording");
+  const onContinue = async () => {
+    setLoading(true)
+    validate_user_details(form)
+      .then((res) => {
+        setErrorField(null)
+        setLoading(false)
+        props?.navigation?.navigate("VoiceRecording");
+      })
+      .catch((e) => {
+        console.log(e)
+        setLoading(false)
+        if (e?.field) {
+          setErrorField(e?.field)
+          alert(e?.msg)
+          return
+        }
+        alert("Something went wrong try again!")
+      })
   };
 
   const onChangeText = (val, info) => {
@@ -38,6 +57,7 @@ const PersonalInfo = (props) => {
       return { ...prev, [key]: val };
     });
   };
+
 
   const onRemoveField = (key) => {
     setForm((prev) => {
@@ -70,13 +90,20 @@ const PersonalInfo = (props) => {
                     data={item}
                     onChangeText={(val) => onChangeText(val, item)}
                     onRemoveField={onRemoveField}
+                    customIcon={item?.key == errorField ? <Entypo name="cross" size={20} color="#DB2727" /> : null}
                   />
                 );
               })}
             </View>
           </View>
           <StandardButton
-            title="Continue"
+            title={
+              loading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                "Continue"
+              )
+            }
             customStyles={{
               height: getPercent(7, height),
               marginVertical: getPercent(3, height),

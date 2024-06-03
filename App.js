@@ -13,6 +13,8 @@ import { firebaseConfig } from "./utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import firebase from "@react-native-firebase/app";
 import auth from "@react-native-firebase/auth";
+import { LoaderProvider, useLoader } from "./state-management/LoaderContext";
+import FullScreenLoader from "./globalComponents/FullScreenLoader/FullScreenLoader";
 
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -51,7 +53,7 @@ export default function App() {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
-  
+
   if (!fontsLoaded) {
     return null;
   }

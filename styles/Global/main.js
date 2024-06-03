@@ -19,6 +19,19 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//FullScreenLoader Styles starts here
+export const FullScreenLoaderStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: 1000,
+    },
+  });
+
 //NewsCardStyles Styles starts here
 export const NewsCardStyles = ({ width, height }) =>
   StyleSheet.create({

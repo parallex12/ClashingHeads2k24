@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Audio } from "expo-av";
 import { useState } from "react";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { Pressable } from "react-native";
 
 const RecordingButton = (props) => {
   let {
@@ -60,18 +61,19 @@ const RecordingButton = (props) => {
     console.log("Recording stopped and stored at", uri);
   }
 
+
   return (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
       onPress={
         isRecording
           ? stopRecording
           : isRecordingCompleted
-          ? onConfirm
-          : startRecording
+            ? onConfirm
+            : startRecording
       }
     >
       {props?.children}
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 };
 
