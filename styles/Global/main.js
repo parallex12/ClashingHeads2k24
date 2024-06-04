@@ -19,6 +19,22 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//EmptyBoxStyles Styles starts here
+export const EmptyBoxStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      width: '100%',
+      alignItems: "center",
+      justifyContent: "center",
+      marginVertical: getPercent(5, height)
+    },
+    text:{
+      fontSize:rf(13),
+      fontFamily:'Regular',
+      marginVertical: getPercent(2, height) 
+    }
+  });
+
 //LogoutPressStyles  starts here
 export const LogoutPressStyles = ({ width, height }) =>
   StyleSheet.create({

@@ -19,7 +19,7 @@ import RecordingPlayer from "../../globalComponents/RecordingPlayer";
 import RecordingButton from "../../globalComponents/RecordingButton";
 
 const NewPost = (props) => {
-  let {} = props;
+  let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [sound, setSound] = useState(false);
@@ -70,19 +70,9 @@ const NewPost = (props) => {
     }
   };
 
-  const onConfirm = async () => {
-    try {
-      if (recording) {
-        setForm((prev) => {
-          return { ...prev, about_voice: recording };
-        });
-        clearInterval(timerRef.current);
-        props?.navigation?.navigate("ProfilePhoto");
-      }
-    } catch (error) {
-      console.log("Error stopping recording:", error);
-    }
-  };
+  const onNext = () => {
+    props?.navigation?.navigate("AddPostDetails", { recording })
+  }
 
   return (
     <View
@@ -111,7 +101,7 @@ const NewPost = (props) => {
             }}
             onPress={() => {
               recording
-                ? props?.navigation?.navigate("AddPostDetails")
+                ? onNext()
                 : alert("Require voice recording");
             }}
           />
@@ -157,8 +147,8 @@ const NewPost = (props) => {
                       isAudioPlaying
                         ? iconImages[2]
                         : isRecordingCompleted
-                        ? iconImages[1]
-                        : iconImages[0]
+                          ? iconImages[1]
+                          : iconImages[0]
                     }
                     resizeMode="contain"
                     style={{ width: "100%", height: "100%" }}
@@ -176,9 +166,8 @@ const NewPost = (props) => {
                 20
               )}
             >
-              {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${
-                timer % 60
-              }`}
+              {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${timer % 60
+                }`}
             </Text>
             <Text
               style={font(
@@ -201,18 +190,15 @@ const NewPost = (props) => {
               isRecordingCompleted={isRecordingCompleted}
               start={startRecording}
               stop={stopRecording}
-              onConfirm={onConfirm}
-            >
-              <StandardButton
-                title={isRecording ? "Stop Recording" : "Start Recording"}
-                customStyles={{
-                  width: getPercent(50, width),
-                  height: getPercent(7, height),
-                  marginVertical: getPercent(3, height),
-                  alignSelf: "center",
-                }}
-              />
-            </RecordingButton>
+              onConfirm={() => null}
+              title={isRecording ? "Stop Recording" : "Start Recording"}
+              customStyles={{
+                width: getPercent(50, width),
+                height: getPercent(7, height),
+                marginVertical: getPercent(3, height),
+                alignSelf: "center",
+              }}
+            />
           )}
         </View>
       </ScrollView>

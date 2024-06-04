@@ -1,4 +1,6 @@
 import {
+  FlatList,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -11,7 +13,9 @@ import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
+  firebase_expo_app_initialize,
   global_posts,
+  home_posts,
   screen_loader,
   user_auth,
   user_db_details,
@@ -19,28 +23,33 @@ import {
 import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useEffect, useRef } from "react";
-import { isUserProfileConnected } from "../../middleware/firebase";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getHomePosts, isUserProfileConnected } from "../../middleware/firebase";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../utils";
 import { getFirestore } from "firebase/firestore";
+import EmptyBox from "../../globalComponents/EmptyBox";
 
 const Home = (props) => {
-  let {} = props;
+  let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [posts, setPosts] = useRecoilState(global_posts);
+  const [posts, setPosts] = useRecoilState(home_posts);
   const bottomFlagSheetRef = useRef(null);
-  const  userAuth= useRecoilValue(user_auth);
+  const userAuth = useRecoilValue(user_auth);
   const [loading, setLoading] = useRecoilState(screen_loader);
   const [user_details, setUser_details] = useRecoilState(user_db_details);
+  const [firebase_expo_app, setfirebase_expo_app] = useRecoilState(firebase_expo_app_initialize);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    if (user_details) return;
     setLoading(true);
-    if (userAuth?.uid) {
+    if (!firebase_expo_app) {
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
+      setfirebase_expo_app(app)
+    }
+    if (!user_db_details) {
       isUserProfileConnected(userAuth?.uid, setUser_details)
         .then((res) => {
           if (res?.goTo) {
@@ -55,10 +64,27 @@ const Home = (props) => {
             return;
           }
         });
+    }
+    if (!posts) {
+      getHomePosts()
+        .then((res) => {
+          console.log(res)
+          setPosts(res)
+          setLoading(false)
+        })
     } else {
-      setLoading(false);
+      setLoading(false)
     }
   }, [userAuth]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getHomePosts()
+      .then((res) => {
+        setPosts(res)
+        setRefreshing(false)
+      })
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -72,7 +98,28 @@ const Home = (props) => {
           onPress={() => props?.navigation.navigate("NewPost")}
         />
       </View>
-      <ScrollView>
+      <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        data={posts}
+        ListEmptyComponent={<EmptyBox text="No posts available." />}
+        renderItem={(({item, index}) => {
+          return (
+            <PostCard
+              divider
+              data={item}
+              key={index}
+              onReportPress={() => bottomFlagSheetRef?.current?.present()}
+              onProfilePress={() =>
+                props?.navigation?.navigate("UserProfile")
+              }
+            />
+          );
+        })}
+        keyExtractor={item => item?.id}
+      />
+      {/* <ScrollView>
         <View style={styles.content}>
           {posts?.map((item, index) => {
             return (
@@ -88,7 +135,7 @@ const Home = (props) => {
             );
           })}
         </View>
-      </ScrollView>
+      </ScrollView> */}
 
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
       <BottomMenu />

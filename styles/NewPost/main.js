@@ -40,6 +40,7 @@ export const AddPostDetailsStyles = ({ width, height }) =>
       width: "100%",
       minHeight: getPercent(10, height),
       paddingHorizontal: getPercent(5, width),
+      paddingVertical: getPercent(2, width),
     },
     mediaWrapper: {
       width: "100%",
@@ -70,6 +71,7 @@ export const AddPostDetailsStyles = ({ width, height }) =>
       justifyContent: "space-between",
       borderColor: "#F7F8F8",
       paddingBottom: getPercent(1, height),
+      backgroundColor:'#fff'
     },
     uploadBtnWrapper: {
       flex: 1,

@@ -18,14 +18,24 @@ import { getPercent } from "../../middleware";
 import StandardHeader2 from "../../globalComponents/StandardHeader2/StandardHeader2";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { screen_loader, user_auth } from "../../state-management/atoms/atoms";
+import { createPost, validate_post_details } from "../../middleware/firebase";
 
 const AddPostDetails = (props) => {
-  let {} = props;
+  let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
   const [postImage, setPostImage] = useState(null);
-
+  const userAuth = useRecoilValue(user_auth);
+  const [loading, setLoading] = useRecoilState(screen_loader)
+  const [postForm, setPostForm] = useState({
+    recording: props?.route?.params?.recording,
+    post_image: postImage,
+    createdAt: new Date(),
+    author: userAuth?.uid
+  })
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -39,6 +49,29 @@ const AddPostDetails = (props) => {
       setPostImage({ uri: result.assets[0].uri });
     }
   };
+
+
+  const onPost = async () => {
+    setLoading(true)
+    validate_post_details(postForm)
+      .then((res) => {
+        if (res.code == 200) {
+          createPost(postForm)
+            .then(() => {
+              props?.navigation.navigate("Home")
+              setLoading(false)
+            })
+            .catch((e) => {
+              setLoading(false)
+              alert("Something Went wrong!.")
+            })
+        }
+      })
+      .catch((e) => {
+        setLoading(false)
+        alert(e?.msg)
+      })
+  }
 
   return (
     <View style={styles.container}>
@@ -54,7 +87,7 @@ const AddPostDetails = (props) => {
               width: getPercent(17, width),
               height: getPercent(4, height),
             }}
-            onPress={() => props?.navigation?.navigate("Home")}
+            onPress={onPost}
           />
         }
       />
@@ -62,10 +95,24 @@ const AddPostDetails = (props) => {
         <View style={styles.content}>
           <View style={styles.postInputWrapper}>
             <TextInput
-              placeholder="Write Post Title..."
+              placeholder="Enter a captivating title for your post..."
               placeholderTextColor="#6B7280"
               style={styles.postInput}
               multiline
+              onChangeText={(val) => setPostForm((prev) => {
+                return { ...prev, title: val };
+              })}
+            />
+          </View>
+          <View style={styles.postInputWrapper}>
+            <TextInput
+              placeholder="Describe your post in detail... What do you want to share?"
+              placeholderTextColor="#6B7280"
+              style={styles.postInput}
+              multiline
+              onChangeText={(val) => setPostForm((prev) => {
+                return { ...prev, description: val };
+              })}
             />
           </View>
           <View style={styles.mediaWrapper}>
@@ -78,7 +125,7 @@ const AddPostDetails = (props) => {
           </View>
         </View>
       </ScrollView>
-      <KeyboardAvoidingView behavior={Platform.OS=="ios"?"position":"height"}>
+      <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "position" : "height"}>
         <View style={styles.postBottomActionsWrapper}>
           <TouchableOpacity style={styles.uploadBtnWrapper} onPress={pickImage}>
             <Image

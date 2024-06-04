@@ -38,15 +38,20 @@ import AccountSettings from "../screens/AccountSettings/AccountSettings";
 import SecuritySettings from "../screens/SecuritySettings/SecuritySettings";
 import NotificationSettings from "../screens/NotificationSettings/NotificationSettings";
 import PrivacySettings from "../screens/PrivacySettings/PrivacySettings";
-import { user_auth } from "../state-management/atoms/atoms";
-import { useRecoilValue } from "recoil";
+import { firebase_expo_app_initialize, user_auth } from "../state-management/atoms/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
 import FullScreenLoader from "../globalComponents/FullScreenLoader/FullScreenLoader";
+import { firebaseConfig } from "../utils";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
 
 const HomeScreens = () => {
   const userAuth = useRecoilValue(user_auth);
+  
+
   return (
     <HomeStack.Navigator>
       {!userAuth ? (

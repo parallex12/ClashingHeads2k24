@@ -13,7 +13,7 @@ import WaveAudioPlayer from "../../WaveAudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 
 const Content = (props) => {
-  let { postDesc, title, postMedia } = props;
+  let { description, title, post_image,recording } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
@@ -37,11 +37,11 @@ const Content = (props) => {
   return (
     <View style={styles.container} activeOpacity={1}>
       {title && <Text style={styles.title}>{title}</Text>}
-      {postMedia?.images?.length > 0 && (
-        <PostImage url={postMedia?.images[0]} />
+      {post_image && (
+        <PostImage url={post_image} />
       )}
-      {postMedia?.audio && <WaveAudioPlayer source={postMedia?.audio} />}
-      {postDesc && <Text style={styles.smallText}>{postDesc}</Text>}
+      {recording && <WaveAudioPlayer source={recording} />}
+      {description && <Text style={styles.smallText}>{description}</Text>}
     </View>
   );
 };

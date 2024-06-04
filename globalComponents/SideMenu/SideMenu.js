@@ -26,7 +26,7 @@ const SideMenu = (props) => {
   const navigation = useNavigation();
 
   const ListItem = ({ data }) => {
-    if (data?.type == "lsogout") {
+    if (data?.type == "logout") {
       return (
         <LogoutPress style={styles.listItem}>
           <View style={styles.listIcon}>

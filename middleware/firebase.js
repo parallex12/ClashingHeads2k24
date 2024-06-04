@@ -1,16 +1,20 @@
 import auth from "@react-native-firebase/auth";
 import {
+  addDoc,
+  collection,
   collectionGroup,
   doc,
   getDoc,
   getDocs,
   getFirestore,
+  limit,
+  orderBy,
   query,
   setDoc,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { validateRequiredFields } from "../utils";
+import { firebaseQuerySort, validateRequiredFields } from "../utils";
 import { useRecoilState } from "recoil";
 import { user_auth } from "../state-management/atoms/atoms";
 import {
@@ -36,6 +40,32 @@ export const getFirestoreDoc = async (collection, docID) => {
     console.log(e);
   }
 };
+
+export const getHomePosts = async () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const db = getFirestore();
+      let ref = collection(db, "Posts")
+      const q = query(ref, limit(5));
+      const querySnapshot = await getDocs(q)
+      let arr = []
+      if (querySnapshot.size == 0) {
+        resolve([])
+        return
+      }
+      querySnapshot.forEach((doc) => {
+        arr.push({ id: doc.id, ...doc.data() });
+      });
+      resolve(arr)
+    } catch (e) {
+      console.log(e)
+      reject(e)
+    }
+  })
+};
+
+
+
 
 export const isUserProfileConnected = (userID, setUser_details) => {
   return new Promise(async (resolve, reject) => {
@@ -122,6 +152,29 @@ export const validate_user_details = async (details) => {
     }
   });
 };
+
+
+export const validate_post_details = async (details) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const requiredFields = ["author", "title", "recording"];
+      const validation = validateRequiredFields(details, requiredFields);
+      if (!validation.isValid) {
+        reject({ msg: validation.msg, field: validation.field });
+        return;
+      }
+
+
+      // If email and username are unique, resolve
+      resolve({ code: 200, msg: "Post details are valid" });
+    } catch (error) {
+      console.error(error);
+      reject("Error validating user details");
+    }
+  });
+};
+
+
 export const addUser = async (userId, userDetails) => {
   return new Promise((resolve, reject) => {
     const db = getFirestore();
@@ -207,5 +260,20 @@ export const uploadMedia = (media, path, mediaName) => {
     } catch (e) {
       reject({ msg: e.message, code: 500 });
     }
+  });
+};
+
+
+export const createPost = async (post_details) => {
+  return new Promise(async (resolve, reject) => {
+    const db = getFirestore();
+    await addDoc(collection(db, "Posts"), post_details)
+      .then(() => {
+        resolve("Post added successfully");
+      })
+      .catch((error) => {
+        console.log("Error adding new post:", error);
+        reject(error);
+      });
   });
 };
