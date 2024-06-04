@@ -14,7 +14,7 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { otpConfirmation, registrationForm } from "../../../state-management/atoms/atoms";
+import { otpConfirmation, registrationForm, screen_loader } from "../../../state-management/atoms/atoms";
 import auth from "@react-native-firebase/auth";
 import { useLoader } from "../../../state-management/LoaderContext";
 
@@ -24,7 +24,7 @@ const Signup = (props) => {
   let styles = _styles({ width, height });
   const [form, setForm] = useRecoilState(registrationForm);
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
-  const { setLoading } = useLoader();
+  const [loading, setLoading] = useRecoilState(screen_loader);
   const [confirmOTP, setConfirmOTP] = useRecoilState(otpConfirmation);
 
   const onLogin = () => {

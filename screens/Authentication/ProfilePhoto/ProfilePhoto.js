@@ -15,9 +15,14 @@ import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
 import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
-import { registrationForm } from "../../../state-management/atoms/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  registrationForm,
+  screen_loader,
+  user_auth,
+} from "../../../state-management/atoms/atoms";
 import * as ImagePicker from "expo-image-picker";
+import { update_user_details, uploadMedia } from "../../../middleware/firebase";
 
 const ProfilePhoto = (props) => {
   let { route } = props;
@@ -26,9 +31,35 @@ const ProfilePhoto = (props) => {
   let styles = _styles({ width, height });
   const [form, setForm] = useRecoilState(registrationForm);
   const [profile, setProfile] = useState(null);
+  const user = useRecoilValue(user_auth);
+  const [loading, setLoading] = useRecoilState(screen_loader);
 
-  const onContinue = () => {
-    props?.navigation?.navigate("Home");
+  const onContinue = async () => {
+    try {
+      if (profile) {
+        setLoading(true);
+        await uploadMedia(profile, "userProfiles")
+          .then((res) => {
+            if (res.url) {
+              let data = { hasProfilePhoto: true, profile_photo: res?.url };
+              update_user_details(user?.uid, data).then((res) => {
+                props.navigation.reset({
+                  index: 0,
+                  routes: [{ name: "Home" }],
+                });
+                setLoading(false);
+              });
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+            setLoading(false);
+          });
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log("Error stopping recording:", error);
+    }
   };
 
   // Ask for permission on component mount
@@ -97,9 +128,9 @@ const ProfilePhoto = (props) => {
         <View style={styles.content}>
           <View style={styles.headerActionWrapper}>
             <BackButton />
-            <TouchableOpacity onPress={onContinue}>
+            {/* <TouchableOpacity onPress={onContinue}>
               <Text style={font(14, "#000000", "Medium", 3)}>Skip</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <View style={styles.formWrapper}>
             <Text style={font(20, "#120D26", "Semibold", 3)}>

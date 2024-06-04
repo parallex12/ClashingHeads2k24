@@ -106,6 +106,8 @@ const HomeScreens = () => {
             component={EditPersonalInformation}
           />
           <HomeStack.Screen name="Notifications" component={Notifications} />
+          <HomeStack.Screen name="ProfilePhoto" component={ProfilePhoto} />
+          <HomeStack.Screen name="CommunityGuidelines" component={CommunityGuidelines} />
         </HomeStack.Group>
       )}
      

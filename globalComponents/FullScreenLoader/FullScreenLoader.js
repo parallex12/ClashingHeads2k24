@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLoader } from "../../state-management/LoaderContext";
 import { Keyboard } from "react-native";
 import { useRecoilValue } from "recoil";
-import { screen_loader } from "../../state-management/atoms/atoms";
+import { screen_loader, user_auth } from "../../state-management/atoms/atoms";
 
 const FullScreenLoader = (props) => {
   const loading = useRecoilValue(screen_loader);
@@ -20,11 +20,10 @@ const FullScreenLoader = (props) => {
   let styles = FullScreenLoaderStyles({ width, height });
   const [paths, setPaths] = useState([-width, 0, width]);
   const slideAnim = useRef(new Animated.Value(paths[0])).current;
+  const userAuth = useRecoilValue(user_auth);
 
   useEffect(() => {
-    if (loading == "default") {
-      return;
-    }
+    if (!userAuth) return;
     Keyboard.dismiss();
     if (loading) {
       Animated.timing(slideAnim, {

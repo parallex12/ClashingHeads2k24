@@ -10,11 +10,19 @@ import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader
 import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { global_posts, screen_loader, user_auth } from "../../state-management/atoms/atoms";
+import {
+  global_posts,
+  screen_loader,
+  user_auth,
+} from "../../state-management/atoms/atoms";
 import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useEffect, useRef } from "react";
+import { isUserProfileConnected } from "../../middleware/firebase";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "../../utils";
+import { getFirestore } from "firebase/firestore";
 
 const Home = (props) => {
   let {} = props;
@@ -25,14 +33,17 @@ const Home = (props) => {
   const userAuth = useRecoilValue(user_auth);
   const [loading, setLoading] = useRecoilState(screen_loader);
 
-  useEffect(() => {    
-    setLoading(true)
+  useEffect(() => {
+    console.log("loading", loading);
+    setLoading(true);
     if (userAuth?.uid) {
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
       isUserProfileConnected(userAuth?.uid)
         .then((res) => {
-          console.log(res);
+          if (res?.goTo) {
+            props?.navigation.navigate(res?.goTo);
+          }
           setLoading(false);
         })
         .catch((e) => {
@@ -45,7 +56,6 @@ const Home = (props) => {
     } else {
       setLoading(false);
     }
-    console.log(userAuth)
   }, [userAuth]);
 
   return (

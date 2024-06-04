@@ -17,10 +17,17 @@ import { getPercent, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
-import { useRecoilState } from "recoil";
-import { registrationForm } from "../../../state-management/atoms/atoms";
-import { validate_user_details } from "../../../middleware/firebase";
-import { Entypo } from '@expo/vector-icons';
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  registrationForm,
+  screen_loader,
+  user_auth,
+} from "../../../state-management/atoms/atoms";
+import {
+  update_user_details,
+  validate_user_details,
+} from "../../../middleware/firebase";
+import { Entypo } from "@expo/vector-icons";
 
 const PersonalInfo = (props) => {
   let { route } = props;
@@ -28,27 +35,41 @@ const PersonalInfo = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [form, setForm] = useRecoilState(registrationForm);
-  const [loading, setLoading] = useState(false)
-  const [errorField, setErrorField] = useState({})
+  const [loading, setLoading] = useRecoilState(screen_loader);
+  const [errorField, setErrorField] = useState({});
+  const user = useRecoilValue(user_auth);
 
   const onContinue = async () => {
-    setLoading(true)
+    setLoading(true);
     validate_user_details(form)
       .then((res) => {
-        setErrorField(null)
-        setLoading(false)
-        props?.navigation?.navigate("VoiceRecording");
+        setErrorField(null);
+        let user_details = {
+          ...form,
+          hasPersonalInfo: true,
+        };
+        update_user_details(user?.uid, user_details)
+          .then((res) => {
+            setForm({});
+            props?.navigation?.navigate("VoiceRecording");
+            setLoading(false);
+          })
+          .catch((e) => {
+            setLoading(false);
+            console.log(e.message);
+            alert("Something went wrong try again!");
+          });
       })
       .catch((e) => {
-        console.log(e)
-        setLoading(false)
+        console.log(e);
+        setLoading(false);
         if (e?.field) {
-          setErrorField(e?.field)
-          alert(e?.msg)
-          return
+          setErrorField(e?.field);
+          alert(e?.msg);
+          return;
         }
-        alert("Something went wrong try again!")
-      })
+        alert("Something went wrong try again!");
+      });
   };
 
   const onChangeText = (val, info) => {
@@ -57,7 +78,6 @@ const PersonalInfo = (props) => {
       return { ...prev, [key]: val };
     });
   };
-
 
   const onRemoveField = (key) => {
     setForm((prev) => {
@@ -90,20 +110,18 @@ const PersonalInfo = (props) => {
                     data={item}
                     onChangeText={(val) => onChangeText(val, item)}
                     onRemoveField={onRemoveField}
-                    customIcon={item?.key == errorField ? <Entypo name="cross" size={20} color="#DB2727" /> : null}
+                    customIcon={
+                      item?.key == errorField ? (
+                        <Entypo name="cross" size={20} color="#DB2727" />
+                      ) : null
+                    }
                   />
                 );
               })}
             </View>
           </View>
           <StandardButton
-            title={
-              loading ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                "Continue"
-              )
-            }
+            title="Continue"
             customStyles={{
               height: getPercent(7, height),
               marginVertical: getPercent(3, height),

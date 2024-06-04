@@ -1,4 +1,9 @@
-import { Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { connect } from "react-redux";
 import { standardButtonStyles } from "../styles/Global/main";
 const StandardButton = (props) => {
@@ -7,19 +12,13 @@ const StandardButton = (props) => {
   let styles = standardButtonStyles({ width, height });
 
   return (
-    <>
-      {
-        disable ?
-          <View></View>
-          : <TouchableOpacity
-            style={[styles.container, customStyles]}
-            onPress={onPress}
-          >
-            <Text style={[styles.text, textStyles]}>{title}</Text>
-            {rightIcon && rightIcon}
-          </TouchableOpacity>
-      }
-    </>
+    <TouchableOpacity
+      style={[styles.container, customStyles]}
+      onPress={onPress}
+    >
+      <Text style={[styles.text, textStyles]}>{title}</Text>
+      {rightIcon && rightIcon}
+    </TouchableOpacity>
   );
 };
 

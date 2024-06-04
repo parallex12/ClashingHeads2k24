@@ -19,6 +19,7 @@ import PinCodeInput from "../../../globalComponents/PinCodeInput";
 import {
   otpConfirmation,
   registrationForm,
+  screen_loader,
   user_auth,
 } from "../../../state-management/atoms/atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -29,8 +30,7 @@ const OTPVerification = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [otpCode, setOtpCode] = useState(null);
-  // const { setLoading } = useLoader();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useRecoilState(screen_loader);
   const [userAuth, setUserAuth] = useRecoilState(user_auth);
   const form = useRecoilValue(registrationForm);
   let confirmOTP = useRecoilValue(otpConfirmation);

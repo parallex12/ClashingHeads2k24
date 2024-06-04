@@ -30,12 +30,9 @@ const Signin = (props) => {
   const [confirmOTP, setConfirmOTP] = useRecoilState(otpConfirmation);
 
   const onSignup = () => {
-    setLoading(true)
-    // props?.navigation?.navigate("Signup");
+    props?.navigation?.navigate("Signup");
   };
-  // console.log(loading)
 
-  // Handle the button press
   async function signInWithPhoneNumber(phoneNumber) {
     await auth()
       .signInWithPhoneNumber(phoneNumber)

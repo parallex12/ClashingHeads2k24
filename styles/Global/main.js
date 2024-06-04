@@ -23,11 +23,11 @@ export const standardButtonStyles = ({ width, height }) =>
 export const FullScreenLoaderStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      position: 'absolute',
+      position: "absolute",
       top: 0,
       left: 0,
-      width: '100%',
-      height: '100%',
+      width: "100%",
+      height: "100%",
       zIndex: 1000,
     },
   });

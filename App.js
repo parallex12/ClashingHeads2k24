@@ -7,18 +7,18 @@ import "react-native-gesture-handler";
 import { FontsConfig } from "./middleware";
 import { StatusBar } from "expo-status-bar";
 import { LogBox } from "react-native";
-import { RecoilRoot } from "recoil";
+import { RecoilRoot, useRecoilState } from "recoil";
 import { AuthNavigator } from "./routes/AuthNavigator";
 import { firebaseConfig } from "./utils";
 import firebase from "@react-native-firebase/app";
 import auth from "@react-native-firebase/auth";
+import { screen_loader } from "./state-management/atoms/atoms";
 
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 export default function App() {
   const [fontsLoaded] = useFonts(FontsConfig);
-  const [userStatus, setUserStatus] = useState(null);
 
   const config = {
     name: "SECONDARY_APP",

@@ -17,15 +17,21 @@ import { getPercent, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import CircleComponent from "./components/CircleComponent";
 import RecordingButton from "../../../globalComponents/RecordingButton";
-import { useRecoilState } from "recoil";
-import { registrationForm } from "../../../state-management/atoms/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  registrationForm,
+  screen_loader,
+  user_auth,
+} from "../../../state-management/atoms/atoms";
 import RecordingPlayer from "../../../globalComponents/RecordingPlayer";
+import { update_user_details, uploadMedia } from "../../../middleware/firebase";
 
 const VoiceRecording = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [form, setForm] = useRecoilState(registrationForm);
+  const [loading, setLoading] = useRecoilState(screen_loader);
 
   let iconImages = [
     require("../../../assets/icons/recorderVector.png"),
@@ -40,7 +46,7 @@ const VoiceRecording = (props) => {
   const [timer, setTimer] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
-
+  const user = useRecoilValue(user_auth);
   const timerRef = useRef(null);
 
   const startRecording = async () => {
@@ -78,16 +84,26 @@ const VoiceRecording = (props) => {
 
   const onConfirm = async () => {
     try {
-      console.log(recording)
-      return
       if (recording) {
-        setForm((prev) => {
-          return { ...prev, about_voice: recording };
-        });
+        setLoading(true);
         clearInterval(timerRef.current);
-        props?.navigation?.navigate("ProfilePhoto");
+        await uploadMedia(recording, "profileRecordings")
+          .then((res) => {
+            if (res.url) {
+              let data = { hasVoiceAdded: true, about_voice: res?.url };
+              update_user_details(user?.uid, data).then((res) => {
+                props?.navigation?.navigate("ProfilePhoto");
+                setLoading(false);
+              });
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+            setLoading(false);
+          });
       }
     } catch (error) {
+      setLoading(false);
       console.log("Error stopping recording:", error);
     }
   };
@@ -126,8 +142,8 @@ const VoiceRecording = (props) => {
                           isAudioPlaying
                             ? iconImages[2]
                             : isRecordingCompleted
-                              ? iconImages[1]
-                              : iconImages[0]
+                            ? iconImages[1]
+                            : iconImages[0]
                         }
                         resizeMode="contain"
                         style={{ width: "100%", height: "100%" }}
@@ -138,8 +154,9 @@ const VoiceRecording = (props) => {
               </CircleComponent>
               <View style={styles.textWrapper}>
                 <Text style={font(20, "#ffffff", "Bold", 20)}>
-                  {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${timer % 60
-                    }`}
+                  {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${
+                    timer % 60
+                  }`}
                 </Text>
                 <Text style={font(14, "#ffffff", "Regular", 0)}>
                   {recording
@@ -157,35 +174,31 @@ const VoiceRecording = (props) => {
             start={startRecording}
             stop={stopRecording}
             onConfirm={onConfirm}
-          >
-            <StandardButton
-              disable
-              title={
-                isRecording
-                  ? "Stop Recording"
-                  : isRecordingCompleted
-                    ? "Confirm"
-                    : "Start Recording"
-              }
-              customStyles={{
-                width: getPercent(50, width),
-                height: getPercent(7, height),
-                marginVertical: getPercent(3, height),
-                backgroundColor: isRecording
-                  ? "rgba(255,255,255,0.3)"
-                  : "rgba(255,255,255,1)",
-                alignSelf: "center",
-              }}
-              textStyles={{
-                color: isRecording
-                  ? "#fff"
-                  : isRecordingCompleted
-                    ? "#DB2727"
-                    : "#4B4EFC",
-                fontFamily: "Semibold",
-              }}
-            />
-          </RecordingButton>
+            title={
+              isRecording
+                ? "Stop Recording"
+                : isRecordingCompleted
+                ? "Confirm"
+                : "Start Recording"
+            }
+            customStyles={{
+              width: getPercent(50, width),
+              height: getPercent(7, height),
+              marginVertical: getPercent(3, height),
+              backgroundColor: isRecording
+                ? "rgba(255,255,255,0.3)"
+                : "rgba(255,255,255,1)",
+              alignSelf: "center",
+            }}
+            textStyles={{
+              color: isRecording
+                ? "#fff"
+                : isRecordingCompleted
+                ? "#DB2727"
+                : "#4B4EFC",
+              fontFamily: "Semibold",
+            }}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

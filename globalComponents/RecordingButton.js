@@ -6,14 +6,8 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { RecordingButtonStyles } from "../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
-import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation } from "@react-navigation/native";
 import { Audio } from "expo-av";
-import { useState } from "react";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { Pressable } from "react-native";
-
+import { styles } from "../styles/Home/main";
 const RecordingButton = (props) => {
   let {
     recording,
@@ -23,9 +17,13 @@ const RecordingButton = (props) => {
     isRecording,
     start,
     stop,
+    title,
+    customStyles,
+    textStyles
   } = props;
   const [permissionResponse, requestPermission] = Audio.usePermissions();
-
+  let { width, height } = useWindowDimensions();
+  let styles = RecordingButtonStyles({ width, height });
   async function startRecording() {
     try {
       if (permissionResponse.status !== "granted") {
@@ -61,17 +59,18 @@ const RecordingButton = (props) => {
     console.log("Recording stopped and stored at", uri);
   }
 
-
   return (
     <TouchableOpacity
+    style={[styles.container, customStyles]}
       onPress={
         isRecording
           ? stopRecording
           : isRecordingCompleted
-            ? onConfirm
-            : startRecording
+          ? onConfirm
+          : startRecording
       }
     >
+      <Text style={[styles.text, textStyles]}>{title}</Text>
       {props?.children}
     </TouchableOpacity>
   );

@@ -15,27 +15,26 @@ import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 import { addUser } from "../../../middleware/firebase";
-import { useRecoilValue } from "recoil";
-import { user_auth } from "../../../state-management/atoms/atoms";
-import { useLoader } from "../../../state-management/LoaderContext";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { screen_loader, user_auth } from "../../../state-management/atoms/atoms";
 
 const CommunityGuidelines = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user = useRecoilValue(user_auth)
-  const { showLoader, hideLoader } = useLoader();
+  const [loading, setLoading] = useRecoilState(screen_loader);
 
   const onContinue = () => {
-    showLoader();
+    setLoading(true);
     addUser(user?.uid, { tos: true, createdAt: new Date() })
       .then((res) => {
         console.log(res)
-        hideLoader()
+        setLoading(false)
         props?.navigation?.navigate("PersonalInfo");
       })
       .catch((e) => {
-        hideLoader()
+        setLoading(false)
         console.log(e)
       })
   };

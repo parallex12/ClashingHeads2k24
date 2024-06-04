@@ -13,6 +13,7 @@ import {
 import { validateRequiredFields } from "../utils";
 import { useRecoilState } from "recoil";
 import { user_auth } from "../state-management/atoms/atoms";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 
 export const getFirestoreDoc = async (collection, docID) => {
   try {
@@ -35,7 +36,7 @@ export const isUserProfileConnected = (userID) => {
   return new Promise(async (resolve, reject) => {
     try {
       const db = getFirestore();
-      const docRef = doc(db, "users", userID);
+      const docRef = doc(db, "Users", userID);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -88,16 +89,15 @@ export const validate_user_details = async (details) => {
       const validation = validateRequiredFields(details, requiredFields);
 
       if (!validation.isValid) {
-        console.log(validation.msg); // Output: None, as all required fields are present
         reject({ msg: validation.msg, field: validation.field });
         return;
       }
       const emailQuery = query(
-        collectionGroup(db, "users"),
+        collectionGroup(db, "Users"),
         where("email", "==", details?.email)
       );
       const usernameQuery = query(
-        collectionGroup(db, "users"),
+        collectionGroup(db, "Users"),
         where("username", "==", details?.username)
       );
 
@@ -127,7 +127,7 @@ export const validate_user_details = async (details) => {
 export const addUser = async (userId, userDetails) => {
   return new Promise((resolve, reject) => {
     const db = getFirestore();
-    const userRef = doc(db, "users", userId);
+    const userRef = doc(db, "Users", userId);
     setDoc(userRef, userDetails)
       .then(() => {
         resolve("User userDetails successfully");
@@ -142,7 +142,7 @@ export const addUser = async (userId, userDetails) => {
 export const update_user_details = async (userId, updatedDetails) => {
   return new Promise((resolve, reject) => {
     const db = getFirestore();
-    const userRef = doc(db, "users", userId);
+    const userRef = doc(db, "Users", userId);
     updateDoc(userRef, updatedDetails)
       .then(() => {
         resolve("User details updated successfully");
@@ -151,5 +151,65 @@ export const update_user_details = async (userId, updatedDetails) => {
         console.log("Error adding new user:", error);
         reject(error);
       });
+  });
+};
+
+
+
+export const uploadMedia = (media, path, mediaName) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const audioRes = await fetch(media);
+      const _Blob = await audioRes.blob();
+      let _mediaName = mediaName || _Blob?._data?.name;
+      const storage = getStorage();
+      const _ref = ref(storage, `${path}/${_mediaName}`);
+
+      const uploadTask = uploadBytesResumable(_ref, _Blob);
+      // Listen for state changes, errors, and completion of the upload.
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          reject({ msg: e.message, code: 500 });
+          switch (error.code) {
+            case "storage/unauthorized":
+              console.log("User doesn't have permission to access the object");
+              break;
+            case "storage/canceled":
+              console.log("User canceled the upload");
+              break;
+            case "storage/unknown":
+              console.log(
+                "Unknown error occurred, inspect error.serverResponse"
+              );
+              break;
+          }
+        },
+        () => {
+          // Upload completed successfully, now we can get the download URL
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve({ url: downloadURL, code: 200, mediaName: _mediaName });
+            console.log("File available at", downloadURL);
+            //perform your task
+          });
+        }
+      );
+    } catch (e) {
+      reject({ msg: e.message, code: 500 });
+    }
   });
 };
