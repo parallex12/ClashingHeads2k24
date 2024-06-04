@@ -9,7 +9,7 @@ export const LoaderProvider = ({ children }) => {
   const [loading, setLoading] = useState("default");
 
   return (
-    <LoaderContext.Provider value={{ loading, setLoading }}>
+    <LoaderContext.Provider value={[ loading, setLoading ]}>
       {children}
     </LoaderContext.Provider>
   );

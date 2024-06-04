@@ -18,7 +18,7 @@ import auth from "@react-native-firebase/auth";
 import { ActivityIndicator } from "react-native";
 import { useLoader } from "../../../state-management/LoaderContext";
 import { useRecoilState } from "recoil";
-import { otpConfirmation } from "../../../state-management/atoms/atoms";
+import { otpConfirmation, screen_loader } from "../../../state-management/atoms/atoms";
 
 const Signin = (props) => {
   let {} = props;
@@ -26,13 +26,14 @@ const Signin = (props) => {
   let styles = _styles({ width, height });
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
   const [phoneNumber, setPhoneNumber] = useState(null);
-  // const { setLoading } = { setLoading: null };
+  const [loading, setLoading] = useRecoilState(screen_loader);
   const [confirmOTP, setConfirmOTP] = useRecoilState(otpConfirmation);
-  const [loading, setLoading] = useState(false);
 
   const onSignup = () => {
-    props?.navigation?.navigate("Signup");
+    setLoading(true)
+    // props?.navigation?.navigate("Signup");
   };
+  // console.log(loading)
 
   // Handle the button press
   async function signInWithPhoneNumber(phoneNumber) {

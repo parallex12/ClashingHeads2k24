@@ -10,17 +10,11 @@ import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader
 import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { global_posts, user_auth } from "../../state-management/atoms/atoms";
+import { global_posts, screen_loader, user_auth } from "../../state-management/atoms/atoms";
 import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useEffect, useRef } from "react";
-import { useLoader } from "../../state-management/LoaderContext";
-import { getFirestore } from "firebase/firestore";
-import { initializeApp } from "firebase/app";
-import { Logout, isUserProfileConnected } from "../../middleware/firebase";
-import { firebaseConfig } from "../../utils";
-import { getAuth } from "firebase/auth";
 
 const Home = (props) => {
   let {} = props;
@@ -29,27 +23,29 @@ const Home = (props) => {
   const [posts, setPosts] = useRecoilState(global_posts);
   const bottomFlagSheetRef = useRef(null);
   const userAuth = useRecoilValue(user_auth);
+  const [loading, setLoading] = useRecoilState(screen_loader);
 
-  useEffect(() => {
-    // setLoading(true)
-    // if (userAuth?.uid) {
-    //   const app = initializeApp(firebaseConfig);
-    //   const db = getFirestore(app);
-    //   isUserProfileConnected(userAuth?.uid)
-    //     .then((res) => {
-    //       console.log(res);
-    //       setLoading(false);
-    //     })
-    //     .catch((e) => {
-    //       setLoading(false);
-    //       if (e == 404) {
-    //         props?.navigation.navigate("CommunityGuidelines");
-    //         return;
-    //       }
-    //     });
-    // } else {
-    //   setLoading(false);
-    // }
+  useEffect(() => {    
+    setLoading(true)
+    if (userAuth?.uid) {
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      isUserProfileConnected(userAuth?.uid)
+        .then((res) => {
+          console.log(res);
+          setLoading(false);
+        })
+        .catch((e) => {
+          setLoading(false);
+          if (e == 404) {
+            props?.navigation.navigate("CommunityGuidelines");
+            return;
+          }
+        });
+    } else {
+      setLoading(false);
+    }
+    console.log(userAuth)
   }, [userAuth]);
 
   return (

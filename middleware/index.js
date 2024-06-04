@@ -3,6 +3,7 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 import { RFValue as rf } from "react-native-responsive-fontsize";
 import axios from "axios";
 import auth from "@react-native-firebase/auth";
+import { Logout } from "./firebase";
 
 export const FontsConfig = {
   Light: require("../assets/fonts/SF-Pro-Text-Light.otf"),
@@ -205,10 +206,7 @@ export const sideMenuOptions = [
     title: "Sign out",
     route: "",
     icon: require("../assets/icons/sideMenu/11.png"),
-    onPress: () =>
-      auth()
-        .signOut()
-        .then(() => console.log("User signed out!")),
+    type:"logout"
   },
 ];
 

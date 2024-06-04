@@ -23,6 +23,11 @@ export const user_auth = atom({
   default: auth().currentUser,
 });
 
+export const screen_loader = atom({
+  key: "screen_loader",
+  default: "default",
+});
+
 export const user_db_details = atom({
   key: "user_db_details",
   default: null,

@@ -16,13 +16,13 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { firebaseConfig } from "../../utils";
 import { user_auth } from "../../state-management/atoms/atoms";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 const SplashLoader = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const userAuth = useRecoilValue(user_auth);
+  const [userAuth, setUserAuth] = useRecoilState(user_auth);
 
   useEffect(() => {
     if (userAuth) {
@@ -38,10 +38,10 @@ const SplashLoader = (props) => {
             return;
           }
           aler("Something Went Wrong!.");
-          Logout();
+          Logout(setUserAuth);
         });
     } else {
-      Logout();
+      Logout(setUserAuth);
     }
   }, []);
 

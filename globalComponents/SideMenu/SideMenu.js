@@ -11,13 +11,21 @@ import {
 import { SideMenuStyles, font } from "../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { sideMenuOptions } from "../../middleware";
-import { useNavigation } from "@react-navigation/native";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { Logout } from "../../middleware/firebase";
+import { user_auth } from "../../state-management/atoms/atoms";
+import { useRecoilState } from "recoil";
 
 const SideMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = SideMenuStyles({ width, height });
-
+  const [userAuth, setUserAuth] = useRecoilState(user_auth);
   const navigation = useNavigation();
+
+  const onLogout = () => {
+    navigation.dispatch(DrawerActions.closeDrawer());
+    Logout(setUserAuth);
+  };
 
   const ListItem = ({ data }) => {
     return (
@@ -26,8 +34,8 @@ const SideMenu = (props) => {
         onPress={() => {
           data?.route
             ? navigation?.navigate(data?.route)
-            : data?.onPress
-            ? data?.onPress()
+            : data?.type
+            ? onLogout()
             : null;
         }}
       >
