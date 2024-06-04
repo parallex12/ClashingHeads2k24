@@ -13,30 +13,41 @@ import { Entypo } from "@expo/vector-icons";
 import { sideMenuOptions } from "../../middleware";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { Logout } from "../../middleware/firebase";
-import { user_auth } from "../../state-management/atoms/atoms";
-import { useRecoilState } from "recoil";
+import { user_auth, user_db_details } from "../../state-management/atoms/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import LogoutPress from "../LogoutPress";
 
 const SideMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = SideMenuStyles({ width, height });
-  const [userAuth, setUserAuth] = useRecoilState(user_auth);
+  const userAuth = useRecoilValue(user_auth);
+  const user_details = useRecoilValue(user_db_details);
+  let profile = user_details?.profile_photo;
   const navigation = useNavigation();
 
-  const onLogout = () => {
-    navigation.dispatch(DrawerActions.closeDrawer());
-    Logout(setUserAuth);
-  };
-
   const ListItem = ({ data }) => {
+    if (data?.type == "lsogout") {
+      return (
+        <LogoutPress style={styles.listItem}>
+          <View style={styles.listIcon}>
+            <Image
+              resizeMode="contain"
+              source={data?.icon}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </View>
+          <Text style={font(12, "#FFFFFF", "Regular", 0, null, { flex: 1 })}>
+            {data?.title}
+          </Text>
+          <Entypo name="chevron-right" size={20} color="#ffffff" />
+        </LogoutPress>
+      );
+    }
     return (
       <TouchableOpacity
         style={styles.listItem}
         onPress={() => {
-          data?.route
-            ? navigation?.navigate(data?.route)
-            : data?.type
-            ? onLogout()
-            : null;
+          data?.route ? navigation?.navigate(data?.route) : null;
         }}
       >
         <View style={styles.listIcon}>
@@ -65,7 +76,11 @@ const SideMenu = (props) => {
         <View style={styles.profileView}>
           <View style={styles.profile}>
             <Image
-              source={require("../../assets/dummy/dummyProfile.png")}
+              source={
+                profile
+                  ? { uri: profile }
+                  : require("../../assets/dummy/dummyProfile.png")
+              }
               resizeMode="cover"
               style={{ width: "100%", height: "100%" }}
             />
@@ -73,10 +88,13 @@ const SideMenu = (props) => {
           <View style={styles.info}>
             <View style={styles.userName}>
               <Text style={font(14, "#FFFFFF", "Semibold", 5)}>
-                Zeeshan Karim
+                {user_details?.realName}
               </Text>
             </View>
-            <TouchableOpacity style={styles.viewProfileBtn}>
+            <TouchableOpacity
+              style={styles.viewProfileBtn}
+              onPress={() => navigation?.navigate("MyProfile")}
+            >
               <Text style={font(11, "#FFFFFF", "Regular", 2)}>
                 View Profile
               </Text>

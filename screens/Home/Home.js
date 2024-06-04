@@ -14,6 +14,7 @@ import {
   global_posts,
   screen_loader,
   user_auth,
+  user_db_details,
 } from "../../state-management/atoms/atoms";
 import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
@@ -30,16 +31,17 @@ const Home = (props) => {
   let styles = _styles({ width, height });
   const [posts, setPosts] = useRecoilState(global_posts);
   const bottomFlagSheetRef = useRef(null);
-  const userAuth = useRecoilValue(user_auth);
+  const  userAuth= useRecoilValue(user_auth);
   const [loading, setLoading] = useRecoilState(screen_loader);
+  const [user_details, setUser_details] = useRecoilState(user_db_details);
 
   useEffect(() => {
-    console.log("loading", loading);
+    if (user_details) return;
     setLoading(true);
     if (userAuth?.uid) {
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
-      isUserProfileConnected(userAuth?.uid)
+      isUserProfileConnected(userAuth?.uid, setUser_details)
         .then((res) => {
           if (res?.goTo) {
             props?.navigation.navigate(res?.goTo);
@@ -67,7 +69,7 @@ const Home = (props) => {
           title="Create New Post"
           customStyles={styles.header2WrapperBtn}
           textStyles={font(12, "#FFFFFF", "Semibold")}
-          onPress={() => setLoading(true)}
+          onPress={() => props?.navigation.navigate("NewPost")}
         />
       </View>
       <ScrollView>

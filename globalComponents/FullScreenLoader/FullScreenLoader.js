@@ -20,11 +20,11 @@ const FullScreenLoader = (props) => {
   let styles = FullScreenLoaderStyles({ width, height });
   const [paths, setPaths] = useState([-width, 0, width]);
   const slideAnim = useRef(new Animated.Value(paths[0])).current;
-  const userAuth = useRecoilValue(user_auth);
-
+  
   useEffect(() => {
-    if (!userAuth) return;
-    Keyboard.dismiss();
+    if (loading == "default") {
+      return;
+    }
     if (loading) {
       Animated.timing(slideAnim, {
         toValue: paths[1], // Slide in to cover the screen

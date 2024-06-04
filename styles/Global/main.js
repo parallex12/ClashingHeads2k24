@@ -19,6 +19,14 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//LogoutPressStyles  starts here
+export const LogoutPressStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      borderWidth: 1,
+    },
+  });
+
 //FullScreenLoader Styles starts here
 export const FullScreenLoaderStyles = ({ width, height }) =>
   StyleSheet.create({

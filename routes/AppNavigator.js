@@ -45,23 +45,13 @@ import FullScreenLoader from "../globalComponents/FullScreenLoader/FullScreenLoa
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
 
-const AuthScreens = () => {
-  return (
-    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <Screen name="Signin" component={Signin} />
-      <Screen name="Signup" component={Signup} />
-      <Screen name="OTPVerification" component={OTPVerification} />
-    </HomeStack.Navigator>
-  );
-};
-
 const HomeScreens = () => {
   const userAuth = useRecoilValue(user_auth);
   return (
     <HomeStack.Navigator>
       {!userAuth ? (
         // Screens for logged in users
-        <HomeStack.Group>
+        <HomeStack.Group screenOptions={{ headerShown: false }}>
           <Screen name="Signin" component={Signin} />
           <Screen name="Signup" component={Signup} />
           <Screen name="OTPVerification" component={OTPVerification} />
@@ -107,10 +97,12 @@ const HomeScreens = () => {
           />
           <HomeStack.Screen name="Notifications" component={Notifications} />
           <HomeStack.Screen name="ProfilePhoto" component={ProfilePhoto} />
-          <HomeStack.Screen name="CommunityGuidelines" component={CommunityGuidelines} />
+          <HomeStack.Screen
+            name="CommunityGuidelines"
+            component={CommunityGuidelines}
+          />
         </HomeStack.Group>
       )}
-     
     </HomeStack.Navigator>
   );
 };
@@ -120,7 +112,7 @@ function AppNavigation() {
     <Navigator
       drawerContent={(props) => <SideMenu {...props} />}
       screenOptions={{
-        swipeEnabled: true, // Disable swipe gesture for drawer
+        swipeEnabled: false, // Disable swipe gesture for drawer
         headerShown: false,
         drawerType: "slide", // Set drawer type to slide
         drawerStyle: {
@@ -130,7 +122,7 @@ function AppNavigation() {
         },
       }}
     >
-      <Screen name="HomeScreens"  component={HomeScreens} />
+      <Screen name="HomeScreens" component={HomeScreens} />
     </Navigator>
   );
 }
@@ -138,6 +130,6 @@ function AppNavigation() {
 export const AppNavigator = () => (
   <NavigationContainer>
     <AppNavigation />
-    <FullScreenLoader/>
+    <FullScreenLoader />
   </NavigationContainer>
 );

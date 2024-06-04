@@ -13,7 +13,12 @@ import {
 import { validateRequiredFields } from "../utils";
 import { useRecoilState } from "recoil";
 import { user_auth } from "../state-management/atoms/atoms";
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 
 export const getFirestoreDoc = async (collection, docID) => {
   try {
@@ -32,7 +37,7 @@ export const getFirestoreDoc = async (collection, docID) => {
   }
 };
 
-export const isUserProfileConnected = (userID) => {
+export const isUserProfileConnected = (userID, setUser_details) => {
   return new Promise(async (resolve, reject) => {
     try {
       const db = getFirestore();
@@ -40,6 +45,7 @@ export const isUserProfileConnected = (userID) => {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
+        setUser_details(docSnap?.data());
         let { hasPersonalInfo, hasVoiceAdded, hasProfilePhoto } =
           docSnap?.data();
         if (!hasPersonalInfo) {
@@ -56,7 +62,7 @@ export const isUserProfileConnected = (userID) => {
           return;
         }
 
-        resolve(200);
+        resolve({ id: docSnap.id, ...docSnap?.data() });
       } else {
         reject(404);
         console.log("No User Profile Connected!");
@@ -69,15 +75,7 @@ export const isUserProfileConnected = (userID) => {
 };
 
 export const Logout = async (setUserAuth) => {
-
-  auth()
-    .signOut()
-    .then(() => {
-      setUserAuth(null);
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+  // const resetList = useResetRecoilState(todoListState);
 };
 
 export const validate_user_details = async (details) => {
@@ -153,8 +151,6 @@ export const update_user_details = async (userId, updatedDetails) => {
       });
   });
 };
-
-
 
 export const uploadMedia = (media, path, mediaName) => {
   return new Promise(async (resolve, reject) => {

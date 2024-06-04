@@ -22,18 +22,19 @@ import {
   screen_loader,
   user_auth,
 } from "../../../state-management/atoms/atoms";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
 import { useLoader } from "../../../state-management/LoaderContext";
 
 const OTPVerification = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
-  let styles = _styles({ width, height });
+  let styles = _styles({ width, height });otpConfirmation
   const [otpCode, setOtpCode] = useState(null);
   const [loading, setLoading] = useRecoilState(screen_loader);
   const [userAuth, setUserAuth] = useRecoilState(user_auth);
   const form = useRecoilValue(registrationForm);
   let confirmOTP = useRecoilValue(otpConfirmation);
+  const reset_confirmOTP= useResetRecoilState(otpConfirmation);
 
   const onContinue = async () => {
     try {
@@ -43,6 +44,7 @@ const OTPVerification = (props) => {
         .confirm(otpCode)
         .then(async (res) => {
           setUserAuth(res)
+          reset_confirmOTP()
           setLoading(false);
         })
         .catch((e) => {

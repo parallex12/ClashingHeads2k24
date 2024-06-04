@@ -25,7 +25,7 @@ export const user_auth = atom({
 
 export const screen_loader = atom({
   key: "screen_loader",
-  default: true,
+  default:  "default",
 });
 
 export const user_db_details = atom({

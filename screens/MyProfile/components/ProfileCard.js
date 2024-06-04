@@ -11,13 +11,16 @@ import { font } from "../../../styles/Global/main";
 import { getPercent } from "../../../middleware";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Entypo, AntDesign } from "@expo/vector-icons";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
+import { useRecoilValue } from "recoil";
+import { user_db_details } from "../../../state-management/atoms/atoms";
 
 const ProfileCard = (props) => {
   let { currentProfile, setCurrentProfile } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-
+  const user_details = useRecoilValue(user_db_details);
+  let { realName,bio } = user_details;
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -44,7 +47,10 @@ const ProfileCard = (props) => {
               style={{ width: "100%", height: "100%" }}
             />
           </View>
-          <TouchableOpacity style={styles.cardHeaderProfileCameraIcon} onPress={pickImage}>
+          <TouchableOpacity
+            style={styles.cardHeaderProfileCameraIcon}
+            onPress={pickImage}
+          >
             <AntDesign name="camerao" size={18} color="#DB2727" />
           </TouchableOpacity>
         </View>
@@ -66,13 +72,12 @@ const ProfileCard = (props) => {
     );
   };
 
-
   return (
     <View style={styles.container}>
       <CardHeader />
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
-          <Text style={font(16, "#111827", "Medium", 2)}>Lefty AI</Text>
+          <Text style={font(16, "#111827", "Medium", 2)}>{realName}</Text>
           <Image
             source={require("../../../assets/icons/mStarIcon.png")}
             resizeMode="contain"
@@ -87,8 +92,7 @@ const ProfileCard = (props) => {
           Democrat - Los Angles,CA
         </Text>
         <Text style={font(12, "#121212", "Regular", 10)}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore.
+          {bio || "Write your bio."}
         </Text>
       </View>
       <View style={styles.action_buttons_wrapper}>

@@ -24,27 +24,6 @@ const SplashLoader = (props) => {
   let styles = _styles({ width, height });
   const [userAuth, setUserAuth] = useRecoilState(user_auth);
 
-  useEffect(() => {
-    if (userAuth) {
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      isUserProfileConnected(userAuth?.uid)
-        .then((res) => {
-          props?.navigation.navigate("Home");
-        })
-        .catch((e) => {
-          if (e == 404) {
-            props?.navigation.navigate("CommunityGuidelines");
-            return;
-          }
-          aler("Something Went Wrong!.");
-          Logout(setUserAuth);
-        });
-    } else {
-      Logout(setUserAuth);
-    }
-  }, []);
-
   return (
     <View style={styles.container}>
       <Image
