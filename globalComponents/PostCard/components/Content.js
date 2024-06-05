@@ -13,7 +13,7 @@ import WaveAudioPlayer from "../../WaveAudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 
 const Content = (props) => {
-  let { description, title, post_image,recording } = props;
+  let { description,desc_limit, title, post_image, recording } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
@@ -41,7 +41,7 @@ const Content = (props) => {
         <PostImage url={post_image} />
       )}
       {recording && <WaveAudioPlayer source={recording} />}
-      {description && <Text style={styles.smallText}>{description}</Text>}
+      {description && <Text numberOfLines={desc_limit} style={styles.smallText}>{description}</Text>}
     </View>
   );
 };

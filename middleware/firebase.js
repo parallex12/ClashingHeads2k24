@@ -266,14 +266,26 @@ export const uploadMedia = (media, path, mediaName) => {
 
 export const createPost = async (post_details) => {
   return new Promise(async (resolve, reject) => {
-    const db = getFirestore();
-    await addDoc(collection(db, "Posts"), post_details)
-      .then(() => {
-        resolve("Post added successfully");
-      })
-      .catch((error) => {
-        console.log("Error adding new post:", error);
-        reject(error);
-      });
+    try {
+      const db = getFirestore();
+      let { url } = await uploadMedia(post_details?.recording, "post_recordings")
+      post_details["recording"] = url
+
+      if (post_details?.post_image) {
+        let { url } = await uploadMedia(post_details?.post_image, "post_images")
+        post_details["post_image"] = url
+      }
+
+      await addDoc(collection(db, "Posts"), post_details)
+        .then(() => {
+          resolve({ msg: "Post added successfully", post_data: post_details });
+        })
+        .catch((error) => {
+          console.log("Error adding new post:", error);
+          reject(error);
+        });
+    } catch (e) {
+      reject(e)
+    }
   });
 };

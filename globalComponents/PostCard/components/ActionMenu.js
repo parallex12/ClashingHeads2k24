@@ -15,18 +15,17 @@ import { useRef } from "react";
 import { onShareApp } from "../../../utils";
 
 const ActionMenu = (props) => {
-  let { postClashes, onPostClashesPress, onReportPress } = props;
+  let { clashes_count, postClashes, onPostClashesPress, onReportPress, dislikes_count, likes_count } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
   const bottomFlagSheetRef = useRef(null);
 
-  const FooterItem = ({ item, index, post_clashes_count }) => {
-
+  const FooterItem = ({ item, post_clashes_count }) => {
     return (
       <TouchableOpacity
         style={styles.FooterItem}
-        onPress={() => item?.onPress(item, post_clashes_count)}
+        onPress={() => item?.onPress(item)}
       >
         <View style={styles.iconImage}>
           <Image
@@ -44,22 +43,19 @@ const ActionMenu = (props) => {
 
   let actions = [
     {
-      title: "100",
+      title: likes_count,
       iconImg: require("../../../assets/icons/post_cards/like.png"),
       onPress: () => null,
     },
     {
-      title: "210",
+      title: dislikes_count,
       iconImg: require("../../../assets/icons/post_cards/dislike.png"),
       onPress: () => null,
     },
     {
       title: "Clashes",
       iconImg: require("../../../assets/icons/post_cards/sound.png"),
-      onPress: (item, post_clashes_count) =>
-        post_clashes_count
-          ? onPostClashesPress()
-          : navigation?.navigate("ClashDetails"),
+      onPress: onPostClashesPress,
     },
     {
       title: "Report",
@@ -76,7 +72,7 @@ const ActionMenu = (props) => {
   return (
     <View style={styles.container}>
       {actions.map((item, index) => {
-        let post_clashes_count = item?.title == "Clashes" ? postClashes : null;
+        let post_clashes_count = item?.title == "Clashes" && postClashes ? postClashes : null;
         return (
           <FooterItem
             index={index}
@@ -111,7 +107,7 @@ const _styles = ({ width, height }) =>
       width: getPercent(5, width),
       height: getPercent(5, height),
     },
-    actionText: font(12, "#6B7280", "Medium", 0,null, { marginLeft: 5 }),
+    actionText: font(12, "#6B7280", "Medium", 0, null, { marginLeft: 5 }),
   });
 
 export default ActionMenu;

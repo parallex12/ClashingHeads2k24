@@ -32,21 +32,25 @@ export const AddPostDetailsStyles = ({ width, height }) =>
     },
     content: {
       flex: 1,
-      paddingTop: getPercent(2, height),
-      alignItems: "center",
-      justifyContent: "center",
+      paddingVertical: getPercent(2, height),
+      alignItems:'center',
+      justifyContent: "space-between",
     },
     postInputWrapper: {
-      width: "100%",
-      minHeight: getPercent(10, height),
+      width: "95%",
+      minHeight: getPercent(5, height),
       paddingHorizontal: getPercent(5, width),
       paddingVertical: getPercent(2, width),
+      borderWidth:1,
+      borderRadius:5,
+      marginVertical:getPercent(1,height),
+      borderColor:'#e5e5e5'
     },
     mediaWrapper: {
       width: "100%",
       flex:1,
       paddingHorizontal: getPercent(2, width),
-      marginTop:getPercent(2,height)
+      marginVertical:getPercent(2,height)
     },
     mediaImg:{
       width: "100%",

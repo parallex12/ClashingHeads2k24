@@ -15,8 +15,8 @@ const ClashDetails = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  let prevData = props?.route?.params?.data;
-  const [postClashes, setPostClashes] = useState([1, 2, 3, 4]);
+  let prevData = props?.route?.params;
+  const [postClashes, setPostClashes] = useState([]);
   const bottomVoiceSheetRef = useRef(null);
   const bottomFlagSheetRef = useRef(null);
 

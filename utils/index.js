@@ -243,3 +243,37 @@ export const validateRequiredFields = (details, requiredFields) => {
   }
   return { isValid: true };
 };
+
+export function getTimeElapsed(createdAt) {
+  const now = new Date();
+  if (!createdAt) return "0min"
+  const createdAtDate = new Date(createdAt.seconds * 1000 + createdAt.nanoseconds / 1000000);
+
+  const timeDifference = now - createdAtDate; // time difference in milliseconds
+
+  // Calculate the differences in various units
+  const seconds = Math.floor(timeDifference / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  // Return the time elapsed in a readable format
+  if (days > 0) {
+    return `${days}d`;
+  } else if (hours > 0) {
+    return `${hours}h`;
+  } else if (minutes > 0) {
+    return `${minutes}min`;
+  } else {
+    return `${seconds}s`;
+  }
+}
+
+export function sortPostsByCreatedAt(posts) {
+  return posts.sort((a, b) => {
+    const aDate = new Date(a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000);
+    const bDate = new Date(b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000);
+    return bDate - aDate; // Sort in descending order (most recent first)
+  });
+}
+

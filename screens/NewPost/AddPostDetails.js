@@ -19,23 +19,32 @@ import StandardHeader2 from "../../globalComponents/StandardHeader2/StandardHead
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { screen_loader, user_auth } from "../../state-management/atoms/atoms";
+import { home_posts, screen_loader, user_auth, user_db_details } from "../../state-management/atoms/atoms";
 import { createPost, validate_post_details } from "../../middleware/firebase";
 
 const AddPostDetails = (props) => {
   let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-
-  const [postImage, setPostImage] = useState(null);
+  const [posts, setPosts] = useRecoilState(home_posts);
   const userAuth = useRecoilValue(user_auth);
+  const user_profile = useRecoilValue(user_db_details);
   const [loading, setLoading] = useRecoilState(screen_loader)
+
   const [postForm, setPostForm] = useState({
     recording: props?.route?.params?.recording,
-    post_image: postImage,
+    post_image: null,
     createdAt: new Date(),
-    author: userAuth?.uid
+    author: user_profile,
+    liked_by: [],
+    likes_count: 0,
+    disliked_by: [],
+    dislikes_count: 0,
+    clashes_count: 0
+
   })
+
+  
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -46,18 +55,22 @@ const AddPostDetails = (props) => {
     });
 
     if (!result.canceled) {
-      setPostImage({ uri: result.assets[0].uri });
+      setPostForm((prev) => {
+        return { ...prev, post_image: result.assets[0].uri }
+      });
     }
   };
 
 
   const onPost = async () => {
-    setLoading(true)
     validate_post_details(postForm)
       .then((res) => {
+        setLoading(true)
         if (res.code == 200) {
           createPost(postForm)
-            .then(() => {
+            .then((res) => {
+              console.log("NP",res)
+              setPosts((prev) => [...prev, res.post_data])
               props?.navigation.navigate("Home")
               setLoading(false)
             })
@@ -116,9 +129,9 @@ const AddPostDetails = (props) => {
             />
           </View>
           <View style={styles.mediaWrapper}>
-            {postImage && (
+            {postForm?.post_image && (
               <Image
-                source={postImage}
+                source={{ uri: postForm?.post_image }}
                 style={styles.mediaImg}
               />
             )}

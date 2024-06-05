@@ -9,11 +9,14 @@ import {
 import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
+import { getTimeElapsed } from "../../../utils";
 
 const Header = (props) => {
-  let {author,onProfilePress} = props;
+  let {author,createdAt,onProfilePress} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+
+  let post_past_time=getTimeElapsed(createdAt)
 
   const Profile = ({ source }) => {
     return (
@@ -34,12 +37,12 @@ const Header = (props) => {
     <View style={styles.container}>
       <Profile
         source={{
-          uri: "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
+          uri:author?.profile_photo,
         }}
       />
       <View style={styles.infoWrapper}>
         <View style={styles.infoTitleRow}>
-          <Text style={styles.titleName}>Lefty Al</Text>
+          <Text style={styles.titleName}>{author?.realName}</Text>
           <Image
             source={require("../../../assets/icons/mStarIcon.png")}
             resizeMode="contain"
@@ -49,7 +52,7 @@ const Header = (props) => {
             }}
           />
         </View>
-        <Text style={styles.slugText}>Democrat - Los Angles,CA  20h</Text>
+        <Text style={styles.slugText}>{author?.politics?.key} - Los Angles,CA  {post_past_time}</Text>
       </View>
       <TouchableOpacity>
         <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />

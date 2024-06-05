@@ -20,6 +20,7 @@ const PostCard = (props) => {
   let {
     data,
     onPostClashesPress,
+    desc_limit,
     postClashes,
     divider,
     postDateAndViews,
@@ -29,6 +30,8 @@ const PostCard = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = PostCardStyles({ width, height });
   let navigation = useNavigation();
+  const createdAtDate = new Date(data?.createdAt?.seconds * 1000 + data?.createdAt?.nanoseconds / 1000000).toUTCString()
+
 
   return (
     <Pressable
@@ -38,25 +41,25 @@ const PostCard = (props) => {
           borderBottomWidth: divider ? 10 : 0,
         },
       ]}
-      onPress={() => navigation?.navigate("ClashDetails", { data })}
+      onPress={() => navigation?.navigate("ClashDetails", data)}
     >
       <View style={styles.content}>
-        <Header author={data?.author} onProfilePress={onProfilePress} />
-        <Content {...data} />
+        <Header author={data?.author} createdAt={data?.createdAt} onProfilePress={onProfilePress} />
+        <Content {...data} desc_limit={desc_limit} />
         <ActionMenu
           {...data}
           postClashes={postClashes}
-          onPostClashesPress={onPostClashesPress}
           onReportPress={onReportPress}
+          onPostClashesPress={() => navigation?.navigate("ClashDetails", data)}
         />
       </View>
       {postDateAndViews && (
         <View style={styles.postDateAndViews}>
           <Text style={font(10, "#9CA3AF", "Regular")}>
-            Posted on Tue 9 Jan 8:35 AM
+            Posted on {createdAtDate}
           </Text>
           <Text style={font(10, "#111827", "Bold")}>
-            23k <Text style={font(10, "#9CA3AF", "Regular")}>Views</Text>
+            {data?.views_count || 0} <Text style={font(10, "#9CA3AF", "Regular")}>Views</Text>
           </Text>
         </View>
       )}

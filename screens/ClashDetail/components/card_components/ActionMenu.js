@@ -13,10 +13,11 @@ import { useNavigation } from "@react-navigation/native";
 import { onShareApp } from "../../../../utils";
 
 const ActionMenu = (props) => {
-  let {onReportPress} = props;
+  let { clashes_count, onPostClashesPress, onReportPress, dislikes_count, likes_count } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
+
   const FooterItem = ({ item, index }) => {
     return (
       <TouchableOpacity
@@ -37,22 +38,23 @@ const ActionMenu = (props) => {
 
   let actions = [
     {
-      title: "100",
+      title: likes_count,
       iconImg: require("../../../../assets/icons/post_cards/like.png"),
       onPress: () => null,
     },
     {
-      title: "210",
+      title: dislikes_count,
       iconImg: require("../../../../assets/icons/post_cards/dislike.png"),
       onPress: () => null,
     },
     {
-      title: "Clashes",
+      title: clashes_count,
       iconImg: require("../../../../assets/icons/post_cards/sound.png"),
-      onPress: () => navigation?.navigate("ClashDetails"),
+      onPress: () => onPostClashesPress(),
+
     },
     {
-      title: "210",
+      title: "0",
       iconImg: require("../../../../assets/icons/post_cards/chart.png"),
       onPress: () => null,
     },
@@ -67,10 +69,6 @@ const ActionMenu = (props) => {
       onPress: () => onShareApp(),
     },
   ];
-
-  const onLikePress = () => {
-    alert();
-  };
 
   return (
     <View style={styles.container}>

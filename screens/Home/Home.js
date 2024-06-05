@@ -26,7 +26,7 @@ import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getHomePosts, isUserProfileConnected } from "../../middleware/firebase";
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../../utils";
+import { firebaseConfig, sortPostsByCreatedAt } from "../../utils";
 import { getFirestore } from "firebase/firestore";
 import EmptyBox from "../../globalComponents/EmptyBox";
 
@@ -49,7 +49,7 @@ const Home = (props) => {
       const db = getFirestore(app);
       setfirebase_expo_app(app)
     }
-    if (!user_db_details) {
+    if (!user_details) {
       isUserProfileConnected(userAuth?.uid, setUser_details)
         .then((res) => {
           if (res?.goTo) {
@@ -69,7 +69,7 @@ const Home = (props) => {
       getHomePosts()
         .then((res) => {
           console.log(res)
-          setPosts(res)
+          setPosts(sortPostsByCreatedAt(res))
           setLoading(false)
         })
     } else {
@@ -81,7 +81,7 @@ const Home = (props) => {
     setRefreshing(true);
     getHomePosts()
       .then((res) => {
-        setPosts(res)
+        setPosts(sortPostsByCreatedAt(res))
         setRefreshing(false)
       })
   }, []);
@@ -98,29 +98,32 @@ const Home = (props) => {
           onPress={() => props?.navigation.navigate("NewPost")}
         />
       </View>
-      <FlatList
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        data={posts}
-        ListEmptyComponent={<EmptyBox text="No posts available." />}
-        renderItem={(({item, index}) => {
-          return (
-            <PostCard
-              divider
-              data={item}
-              key={index}
-              onReportPress={() => bottomFlagSheetRef?.current?.present()}
-              onProfilePress={() =>
-                props?.navigation?.navigate("UserProfile")
-              }
-            />
-          );
-        })}
-        keyExtractor={item => item?.id}
-      />
+      <View style={styles.content}>
+        <FlatList
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          data={posts}
+          ListEmptyComponent={<EmptyBox text="No posts available." />}
+          renderItem={(({ item, index }) => {
+            return (
+              <PostCard
+                divider
+                desc_limit={1}
+                data={item}
+                key={index}
+                onReportPress={() => bottomFlagSheetRef?.current?.present()}
+                onProfilePress={() =>
+                  props?.navigation?.navigate("UserProfile")
+                }
+              />
+            );
+          })}
+          keyExtractor={item => item?.id}
+        />
+      </View>
+
       {/* <ScrollView>
-        <View style={styles.content}>
           {posts?.map((item, index) => {
             return (
               <PostCard
@@ -134,7 +137,6 @@ const Home = (props) => {
               />
             );
           })}
-        </View>
       </ScrollView> */}
 
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
