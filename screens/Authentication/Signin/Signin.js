@@ -5,48 +5,29 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/Signin/main";
 import { font } from "../../../styles/Global/main";
 import CountryCodeField from "../../../globalComponents/CountryCodeField";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
-import { useRef, useState } from "react";
-// import { getAuth } from "firebase/auth";
-// import { _onPhoneAuth } from "../../../middleware/firebase";
-import auth from "@react-native-firebase/auth";
-import { ActivityIndicator } from "react-native";
-import { useLoader } from "../../../state-management/LoaderContext";
-import { useRecoilState } from "recoil";
-import { otpConfirmation, screen_loader } from "../../../state-management/atoms/atoms";
+import { useEffect, useRef, useState } from "react";
+import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import { useNavigation } from "@react-navigation/native";
+import { setUserForm } from "../../../state-management/features/auth/authSlice";
 
 const Signin = (props) => {
-  let {} = props;
+  let { setForm, } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
   const [phoneNumber, setPhoneNumber] = useState(null);
-  const [loading, setLoading] = useRecoilState(screen_loader);
-  const [confirmOTP, setConfirmOTP] = useRecoilState(otpConfirmation);
+  const dispatch = useDispatch()
+  const navigation = useNavigation();
 
   const onSignup = () => {
-    props?.navigation?.navigate("Signup");
+    navigation?.navigate("Signup");
   };
-
-  async function signInWithPhoneNumber(phoneNumber) {
-    await auth()
-      .signInWithPhoneNumber(phoneNumber)
-      .then((res) => {
-        setLoading(false);
-        setConfirmOTP(res);
-        props?.navigation?.navigate("OTPVerification");
-      })
-      .catch((e) => {
-        console.log(e);
-        setLoading(false);
-        alert("Something went wrong try again!");
-      });
-  }
 
   const onContinue = () => {
     let phone_number_raw = country?.dial_code + phoneNumber;
@@ -54,8 +35,11 @@ const Signin = (props) => {
       alert("Phone number required.");
       return;
     }
-    setLoading(true);
-    signInWithPhoneNumber(phone_number_raw);
+    dispatch(startLoading())
+    dispatch(setUserForm({ phone: phone_number_raw }))
+    setTimeout(() => {
+      navigation?.navigate("OTPVerification");
+    }, 1000)
   };
 
   return (
@@ -111,4 +95,4 @@ const Signin = (props) => {
   );
 };
 
-export default Signin;
+export default Signin

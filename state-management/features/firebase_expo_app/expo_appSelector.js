@@ -1,0 +1,1 @@
+export const selectedExpoApp = (state) => state.app

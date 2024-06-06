@@ -8,51 +8,70 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/OTPVerification/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PinCodeInput from "../../../globalComponents/PinCodeInput";
-import {
-  otpConfirmation,
-  registrationForm,
-  screen_loader,
-  user_auth,
-} from "../../../state-management/atoms/atoms";
-import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
-import { useLoader } from "../../../state-management/LoaderContext";
+import { selectUserForm } from "../../../state-management/features/auth";
+import { loginSuccess, setUserForm } from "../../../state-management/features/auth/authSlice";
+import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import auth from "@react-native-firebase/auth";
 
 const OTPVerification = (props) => {
-  let { route } = props;
+  let { } = props;
   let { width, height } = useWindowDimensions();
-  let styles = _styles({ width, height });otpConfirmation
+  let styles = _styles({ width, height });
   const [otpCode, setOtpCode] = useState(null);
-  const [loading, setLoading] = useRecoilState(screen_loader);
-  const [userAuth, setUserAuth] = useRecoilState(user_auth);
-  const form = useRecoilValue(registrationForm);
-  let confirmOTP = useRecoilValue(otpConfirmation);
-  const reset_confirmOTP= useResetRecoilState(otpConfirmation);
+  const dispatch = useDispatch()
+  const form = useSelector(selectUserForm)
+  const [confirm, setConfirm] = useState(null)
+
+  async function signInWithPhoneNumber(phoneNumber) {
+    await auth()
+      .signInWithPhoneNumber(phoneNumber)
+      .then((res) => {
+        setConfirm(res)
+        dispatch(stopLoading())
+      })
+      .catch((e) => {
+        console.log(e);
+        dispatch(stopLoading())
+        alert("Something went wrong try again!");
+      });
+  }
+
+
+  useEffect(() => {
+    if(!form?.phone)return
+    console.log("Sending otp to...", form?.phone)
+    signInWithPhoneNumber(form?.phone)
+  }, [])
+
+
 
   const onContinue = async () => {
+    if (!confirm) return
     try {
       if (otpCode?.length != 6) return alert("Invalid OTP.");
-      setLoading(true);
-      await confirmOTP
-        .confirm(otpCode)
+      dispatch(startLoading())
+      await confirm.confirm(otpCode)
         .then(async (res) => {
-          setUserAuth(res)
-          reset_confirmOTP()
-          setLoading(false);
+          console.log(res)
+          dispatch(loginSuccess())
+          dispatch(setUserForm(null))
+          dispatch(stopLoading())
         })
         .catch((e) => {
           console.log("e", e);
-          setLoading(false);
+          dispatch(stopLoading())
           alert("Something went wrong try again!");
         });
     } catch (error) {
+      console.log(error)
       console.log("Invalid code.");
     }
   };
@@ -94,7 +113,4 @@ const OTPVerification = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
-export default OTPVerification;
+export default OTPVerification

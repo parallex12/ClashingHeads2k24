@@ -11,7 +11,7 @@ import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import ProfileCard from "./components/ProfileCard";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { useRecoilState } from "recoil";
-import { global_posts } from "../../state-management/atoms/atoms";
+import { global_posts, home_posts } from "../../state-management/atoms/atoms";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useRef } from "react";
 import { getPercent } from "../../middleware";
@@ -20,7 +20,7 @@ const UserProfile = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [posts, setPosts] = useRecoilState(global_posts);
+  const [posts, setPosts] = useRecoilState(home_posts);
   const bottomFlagSheetRef = useRef();
 
   return (

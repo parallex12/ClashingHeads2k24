@@ -6,26 +6,24 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { styles as _styles } from "../../../styles/Signin/main";
 import { font } from "../../../styles/Global/main";
 import CountryCodeField from "../../../globalComponents/CountryCodeField";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useState } from "react";
-import { useRecoilState } from "recoil";
-import { otpConfirmation, registrationForm, screen_loader } from "../../../state-management/atoms/atoms";
 import auth from "@react-native-firebase/auth";
-import { useLoader } from "../../../state-management/LoaderContext";
+import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import { confirmOtp, setUserForm } from "../../../state-management/features/auth/authSlice";
 
 const Signup = (props) => {
-  let {} = props;
+  let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [form, setForm] = useRecoilState(registrationForm);
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
-  const [loading, setLoading] = useRecoilState(screen_loader);
-  const [confirmOTP, setConfirmOTP] = useRecoilState(otpConfirmation);
+  const [phoneNumber, setPhoneNumber] = useState(null)
+  const dispatch = useDispatch()
 
   const onLogin = () => {
     props?.navigation?.navigate("Signin");
@@ -36,24 +34,25 @@ const Signup = (props) => {
     await auth()
       .signInWithPhoneNumber(phoneNumber)
       .then((res) => {
-        setLoading(false);
-        setConfirmOTP(res)
+        dispatch(stopLoading())
+        dispatch(confirmOtp(res))
+        dispatch(setUserForm({ phone: phoneNumber }))
         props?.navigation?.navigate("OTPVerification");
       })
       .catch((e) => {
         console.log(e);
-        setLoading(false);
+        dispatch(stopLoading())
         alert("Something went wrong try again!");
       });
   }
 
   const onContinue = () => {
-    let phone_number_raw = country?.dial_code + form?.phone;
+    let phone_number_raw = country?.dial_code + phoneNumber;
     if (!phone_number_raw) {
       alert("Phone number required.");
       return;
     }
-    setLoading(true);
+    dispatch(startLoading())
     signInWithPhoneNumber(phone_number_raw);
   };
 
@@ -78,7 +77,7 @@ const Signup = (props) => {
             </Text>
             <CountryCodeField
               setCountry={setCountry}
-              onChangeText={(val) => setForm({ phone: val })}
+              onChangeText={(val) => setPhoneNumber(val)}
             />
             <Text style={font(10, "#252525", "Regular", 3, 20)}>
               We will send a text with a verification code. Message and date
@@ -110,4 +109,5 @@ const Signup = (props) => {
   );
 };
 
-export default Signup;
+
+export default Signup

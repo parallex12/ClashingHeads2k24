@@ -11,15 +11,29 @@ import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import FlagReportBottomSheet from "../../FlagReportBottomSheet/FlagReportBottomSheet";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { onShareApp } from "../../../utils";
+import { user_db_details } from "../../../state-management/atoms/atoms";
+import { useRecoilValue } from "recoil";
+import { connect } from "react-redux";
 
 const ActionMenu = (props) => {
-  let { clashes_count, postClashes, onPostClashesPress, onReportPress, dislikes_count, likes_count } = props;
+  let {
+    clashes_count,
+    onReaction,
+    postClashes,
+    onPostClashesPress,
+    onReportPress,
+    dislikes,
+    likes,
+    reactions
+  } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
   const bottomFlagSheetRef = useRef(null);
+  const [activeReaction, setActiveReaction] = useState(reactions[user_details?.id])
+  const user_details = props?.user_db_details
 
   const FooterItem = ({ item, post_clashes_count }) => {
     return (
@@ -41,16 +55,27 @@ const ActionMenu = (props) => {
     );
   };
 
+  const onReact = (type) => {
+    if (activeReaction == type) {
+      setActiveReaction(null)
+    } else {
+      setActiveReaction(type)
+    }
+    onReaction(type)
+  }
+
   let actions = [
     {
-      title: likes_count,
-      iconImg: require("../../../assets/icons/post_cards/like.png"),
-      onPress: () => null,
+      title: likes,
+      iconImg: activeReaction == "like" ? require("../../../assets/icons/post_cards/like_active.png")
+        : require("../../../assets/icons/post_cards/like.png"),
+      onPress: () => onReact("like"),
     },
     {
-      title: dislikes_count,
-      iconImg: require("../../../assets/icons/post_cards/dislike.png"),
-      onPress: () => null,
+      title: dislikes,
+      iconImg: activeReaction == "dislike" ? require("../../../assets/icons/post_cards/dislike_active.png") :
+        require("../../../assets/icons/post_cards/dislike.png"),
+      onPress: () => onReact("dislike"),
     },
     {
       title: "Clashes",
@@ -110,4 +135,8 @@ const _styles = ({ width, height }) =>
     actionText: font(12, "#6B7280", "Medium", 0, null, { marginLeft: 5 }),
   });
 
-export default ActionMenu;
+const mapStateToProps = (state) => ({
+  errors: state.errors.errors,
+  user_db_details: state.main.user_db_details
+});
+export default connect(mapStateToProps, {})(ActionMenu);

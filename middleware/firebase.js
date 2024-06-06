@@ -8,21 +8,24 @@ import {
   getDocs,
   getFirestore,
   limit,
+  onSnapshot,
   orderBy,
   query,
+  runTransaction,
   setDoc,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { firebaseQuerySort, validateRequiredFields } from "../utils";
+import { firebaseQuerySort, sortPostsByCreatedAt, validateRequiredFields } from "../utils";
 import { useRecoilState } from "recoil";
-import { user_auth } from "../state-management/atoms/atoms";
+import { home_posts, user_auth } from "../state-management/atoms/atoms";
 import {
   getDownloadURL,
   getStorage,
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+import { HOME_POSTS, USER_DB_DETAILS } from "../state-management/types/types";
 
 export const getFirestoreDoc = async (collection, docID) => {
   try {
@@ -41,24 +44,31 @@ export const getFirestoreDoc = async (collection, docID) => {
   }
 };
 
-export const getHomePosts = async () => {
+
+
+export const getHomePosts = () => async (dispatch) => {
+
   return new Promise(async (resolve, reject) => {
+
     try {
       const db = getFirestore();
-      let ref = collection(db, "Posts")
-      const q = query(ref, limit(5));
-      const querySnapshot = await getDocs(q)
-      let arr = []
-      if (querySnapshot.size == 0) {
-        resolve([])
-        return
-      }
-      querySnapshot.forEach((doc) => {
-        arr.push({ id: doc.id, ...doc.data() });
+      const postsCollection = collection(db, 'Posts');
+      const q = query(postsCollection);
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const arr = [];
+        snapshot.forEach((doc) => {
+          arr.push({ id: doc.id, ...doc.data() });
+        });
+        dispatch({ type: HOME_POSTS, payload: arr })
+        resolve(arr);
+      }, (error) => {
+        console.log('Error getting documents: ', error);
+        reject(error);
       });
-      resolve(arr)
+      // Log when the listener is first attached
+
     } catch (e) {
-      console.log(e)
+      console.log('Error getting documents: ', error);
       reject(e)
     }
   })
@@ -67,7 +77,7 @@ export const getHomePosts = async () => {
 
 
 
-export const isUserProfileConnected = (userID, setUser_details) => {
+export const isUserProfileConnected = async (userID) => {
   return new Promise(async (resolve, reject) => {
     try {
       const db = getFirestore();
@@ -75,7 +85,6 @@ export const isUserProfileConnected = (userID, setUser_details) => {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        setUser_details(docSnap?.data());
         let { hasPersonalInfo, hasVoiceAdded, hasProfilePhoto } =
           docSnap?.data();
         if (!hasPersonalInfo) {
@@ -98,7 +107,7 @@ export const isUserProfileConnected = (userID, setUser_details) => {
         console.log("No User Profile Connected!");
       }
     } catch (e) {
-      console.log(e);
+      console.log("user connection", e);
       reject(e);
     }
   });
@@ -246,6 +255,7 @@ export const uploadMedia = (media, path, mediaName) => {
                 "Unknown error occurred, inspect error.serverResponse"
               );
               break;
+
           }
         },
         () => {
@@ -277,8 +287,8 @@ export const createPost = async (post_details) => {
       }
 
       await addDoc(collection(db, "Posts"), post_details)
-        .then(() => {
-          resolve({ msg: "Post added successfully", post_data: post_details });
+        .then((res) => {
+          resolve({ msg: "Post added successfully", post_data: { id: res?.id, ...post_details } });
         })
         .catch((error) => {
           console.log("Error adding new post:", error);
@@ -286,6 +296,126 @@ export const createPost = async (post_details) => {
         });
     } catch (e) {
       reject(e)
+    }
+  });
+};
+
+export const update_post = async (postId, updatedDetails) => {
+  return new Promise((resolve, reject) => {
+    const db = getFirestore();
+    const userRef = doc(db, "Posts", postId);
+    updateDoc(userRef, updatedDetails)
+      .then(() => {
+        resolve("Post details updated successfully");
+      })
+      .catch((error) => {
+        console.log("Error updating  post:", error);
+        reject(error);
+      });
+  });
+};
+
+export const update_post_reaction_locally = async (postData, userId, reactionType, setTempPostData) => {
+  try {
+    const userReactions = postData.reactions || {}; // { userId: 'like' or 'dislike' }
+
+    let updatedLikes = postData.likes || 0;
+    let updatedDislikes = postData.dislikes || 0;
+
+    const currentReaction = userReactions[userId];
+    // Remove user's current reaction
+    if (currentReaction) {
+      if (currentReaction === 'like') {
+        updatedLikes -= 1;
+      } else if (currentReaction === 'dislike') {
+        updatedDislikes -= 1;
+      }
+    }
+
+    // If the new reaction is the same as the current reaction, remove it
+    if (currentReaction === reactionType) {
+      delete userReactions[userId];
+    } else {
+      // Add new reaction
+      if (reactionType === 'like') {
+        updatedLikes += 1;
+      } else if (reactionType === 'dislike') {
+        updatedDislikes += 1;
+      }
+
+      // Update user reaction
+      userReactions[userId] = reactionType;
+      setTempPostData((prev) => {
+        return {
+          ...prev, likes: updatedLikes,
+          dislikes: updatedDislikes,
+          reactions: userReactions
+        }
+      })
+    }
+
+  } catch (e) {
+    console.log("Like or Dislike failed local", e);
+  }
+}
+
+
+export const update_post_reaction = async (postId, userId, reactionType) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const db = getFirestore();
+      const postRef = doc(db, "Posts", postId);
+
+      await runTransaction(db, async (transaction) => {
+        const postDoc = await transaction.get(postRef);
+        if (!postDoc.exists()) {
+          throw "Document does not exist!";
+        }
+
+        const postData = postDoc.data();
+        const userReactions = postData.reactions || {}; // { userId: 'like' or 'dislike' }
+
+        let updatedLikes = postData.likes || 0;
+        let updatedDislikes = postData.dislikes || 0;
+
+        const currentReaction = userReactions[userId];
+        console.log(currentReaction)
+        // Remove user's current reaction
+        if (currentReaction) {
+          if (currentReaction === 'like') {
+            updatedLikes -= 1;
+          } else if (currentReaction === 'dislike') {
+            updatedDislikes -= 1;
+          }
+        }
+
+        // If the new reaction is the same as the current reaction, remove it
+        if (currentReaction === reactionType) {
+          delete userReactions[userId];
+        } else {
+          // Add new reaction
+          if (reactionType === 'like') {
+            updatedLikes += 1;
+          } else if (reactionType === 'dislike') {
+            updatedDislikes += 1;
+          }
+
+          // Update user reaction
+          userReactions[userId] = reactionType;
+        }
+
+        // Update post document with new counts and user reactions
+        transaction.update(postRef, {
+          likes: updatedLikes,
+          dislikes: updatedDislikes,
+          reactions: userReactions
+        });
+      });
+      resolve(200);
+      console.log("Transaction successfully committed!");
+    } catch (e) {
+      console.log("Transaction failed: ", e);
+      reject(e);
     }
   });
 };

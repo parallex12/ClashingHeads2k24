@@ -1,6 +1,6 @@
 // SideMenu.js
 import { DrawerContentScrollView } from "@react-navigation/drawer";
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -13,15 +13,15 @@ import { Entypo } from "@expo/vector-icons";
 import { sideMenuOptions } from "../../middleware";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { Logout } from "../../middleware/firebase";
-import { user_auth, user_db_details } from "../../state-management/atoms/atoms";
-import { useRecoilState, useRecoilValue } from "recoil";
 import LogoutPress from "../LogoutPress";
+import { connect, useSelector } from "react-redux";
+import { selectIsAuth } from "../../state-management/features/auth";
 
 const SideMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = SideMenuStyles({ width, height });
-  const userAuth = useRecoilValue(user_auth);
-  const user_details = useRecoilValue(user_db_details);
+  const userAuth = useSelector(selectIsAuth);
+  const user_details = useState(null);
   let profile = user_details?.profile_photo;
   const navigation = useNavigation();
 
@@ -113,4 +113,5 @@ const SideMenu = (props) => {
   );
 };
 
-export default SideMenu;
+
+export default SideMenu

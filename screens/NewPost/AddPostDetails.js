@@ -36,12 +36,10 @@ const AddPostDetails = (props) => {
     post_image: null,
     createdAt: new Date(),
     author: user_profile,
-    liked_by: [],
-    likes_count: 0,
-    disliked_by: [],
-    dislikes_count: 0,
-    clashes_count: 0
-
+    reactions: {},
+    likes: 0,
+    dislikes: 0,
+    clashes: 0
   })
 
   

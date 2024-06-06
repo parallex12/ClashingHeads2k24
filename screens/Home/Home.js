@@ -11,80 +11,73 @@ import { styles as _styles } from "../../styles/Home/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import PostCard from "../../globalComponents/PostCard/PostCard";
-import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  firebase_expo_app_initialize,
-  global_posts,
-  home_posts,
-  screen_loader,
-  user_auth,
-  user_db_details,
-} from "../../state-management/atoms/atoms";
 import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { getHomePosts, isUserProfileConnected } from "../../middleware/firebase";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { initializeApp } from "firebase/app";
-import { firebaseConfig, sortPostsByCreatedAt } from "../../utils";
+import { firebaseConfig, } from "../../utils";
 import { getFirestore } from "firebase/firestore";
-import EmptyBox from "../../globalComponents/EmptyBox";
+import { connect, useDispatch, useSelector } from "react-redux";
+import auth from "@react-native-firebase/auth";
+import { startLoading, stopLoading } from "../../state-management/features/screen_loader/loaderSlice";
+import firebase from "firebase/compat/app";
+import { selectAuthUser } from "../../state-management/features/auth";
+import { isUserProfileConnected } from "../../middleware/firebase";
+import { setUserDetails } from "../../state-management/features/auth/authSlice";
 
 const Home = (props) => {
   let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [posts, setPosts] = useRecoilState(home_posts);
+  const [posts, setPosts] = useState([]);
   const bottomFlagSheetRef = useRef(null);
-  const userAuth = useRecoilValue(user_auth);
-  const [loading, setLoading] = useRecoilState(screen_loader);
-  const [user_details, setUser_details] = useRecoilState(user_db_details);
-  const [firebase_expo_app, setfirebase_expo_app] = useRecoilState(firebase_expo_app_initialize);
   const [refreshing, setRefreshing] = useState(false);
+  const dispatch = useDispatch()
+  const user_details = useSelector(selectAuthUser)
 
   useEffect(() => {
-    setLoading(true);
-    if (!firebase_expo_app) {
+    dispatch(startLoading());
+    if (firebase.apps.length == 0) {
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
-      setfirebase_expo_app(app)
     }
     if (!user_details) {
-      isUserProfileConnected(userAuth?.uid, setUser_details)
+      isUserProfileConnected(auth().currentUser?.uid)
         .then((res) => {
+          dispatch(setUserDetails(JSON.stringify(res)))
           if (res?.goTo) {
             props?.navigation.navigate(res?.goTo);
           }
-          setLoading(false);
+          dispatch(stopLoading());
         })
         .catch((e) => {
-          setLoading(false);
           if (e == 404) {
             props?.navigation.navigate("CommunityGuidelines");
             return;
           }
         });
-    }
-    if (!posts) {
-      getHomePosts()
-        .then((res) => {
-          console.log(res)
-          setPosts(sortPostsByCreatedAt(res))
-          setLoading(false)
-        })
     } else {
-      setLoading(false)
+      dispatch(stopLoading());
     }
-  }, [userAuth]);
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    getHomePosts()
-      .then((res) => {
-        setPosts(sortPostsByCreatedAt(res))
-        setRefreshing(false)
-      })
   }, []);
+
+
+  // useEffect(() => {
+  //   getHomePosts()
+  //     .then((res) => {
+  //       setLoading(false)
+  //     })
+  // }, [props?.user_db_details])
+
+
+  // const onRefresh = useCallback(() => {
+  //   setRefreshing(true);
+  //   getHomePosts()
+  //     .then((res) => {
+  //       setRefreshing(false)
+  //     })
+  // }, []);
 
   return (
     <View style={styles.container}>
@@ -99,7 +92,7 @@ const Home = (props) => {
         />
       </View>
       <View style={styles.content}>
-        <FlatList
+        {/* <FlatList
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
@@ -119,25 +112,9 @@ const Home = (props) => {
               />
             );
           })}
-          keyExtractor={item => item?.id}
-        />
+          keyExtractor={(item) => item.id.toString()} // Assuming item.id is a unique identifier
+        /> */}
       </View>
-
-      {/* <ScrollView>
-          {posts?.map((item, index) => {
-            return (
-              <PostCard
-                divider
-                data={item}
-                key={index}
-                onReportPress={() => bottomFlagSheetRef?.current?.present()}
-                onProfilePress={() =>
-                  props?.navigation?.navigate("UserProfile")
-                }
-              />
-            );
-          })}
-      </ScrollView> */}
 
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
       <BottomMenu />
@@ -145,4 +122,5 @@ const Home = (props) => {
   );
 };
 
-export default Home;
+export default Home
+

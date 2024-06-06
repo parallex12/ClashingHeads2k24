@@ -10,6 +10,8 @@ import {
 } from "@env";
 // import { getAuth } from "firebase/auth";
 import { setAuthToken } from "../middleware";
+import { FIREBASE_EXPO_APP, REGISTRATIONFORM, SCREEN_LOADER } from "../state-management/types/types";
+import store from "../state-management/store/store";
 
 export const EmojisArr = [
   {
@@ -270,10 +272,89 @@ export function getTimeElapsed(createdAt) {
 }
 
 export function sortPostsByCreatedAt(posts) {
-  return posts.sort((a, b) => {
+  return posts?.sort((a, b) => {
     const aDate = new Date(a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000);
     const bDate = new Date(b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000);
     return bDate - aDate; // Sort in descending order (most recent first)
   });
 }
 
+export const handleReaction = async ({
+  postId,
+  userId,
+  newReaction,
+  userReaction,
+  setUserReaction,
+  likes,
+  setLikes,
+  dislikes,
+  setDislikes,
+  updateReaction
+}) => {
+  const previousReaction = userReaction[userId] || {};
+
+  // Optimistic UI update
+  if (newReaction === previousReaction) {
+    // User clicked the same reaction, remove it
+    if (newReaction === 'like') {
+      setLikes(likes - 1);
+    } else if (newReaction === 'dislike') {
+      setDislikes(dislikes - 1);
+    }
+    setUserReaction(null);
+  } else {
+    // User clicked a different reaction
+    if (newReaction === 'like') {
+      setLikes(likes + 1);
+      if (previousReaction === 'dislike') {
+        setDislikes(dislikes - 1);
+      }
+    } else if (newReaction === 'dislike') {
+      setDislikes(dislikes + 1);
+      if (previousReaction === 'like') {
+        setLikes(likes - 1);
+      }
+    }
+    setUserReaction(newReaction);
+  }
+
+  try {
+    await updateReaction(postId, userId, newReaction === previousReaction ? null : newReaction);
+  } catch (e) {
+    // Revert UI update on failure
+    if (newReaction === previousReaction) {
+      if (newReaction === 'like') {
+        setLikes(likes + 1);
+      } else if (newReaction === 'dislike') {
+        setDislikes(dislikes + 1);
+      }
+    } else {
+      if (newReaction === 'like') {
+        setLikes(likes - 1);
+        if (previousReaction === 'dislike') {
+          setDislikes(dislikes + 1);
+        }
+      } else if (newReaction === 'dislike') {
+        setDislikes(dislikes - 1);
+        if (previousReaction === 'like') {
+          setLikes(likes + 1);
+        }
+      }
+    }
+    setUserReaction(previousReaction);
+    console.log('Failed to update reaction: ', e);
+  }
+};
+
+
+export const setLoading = (state) => {
+  store.dispatch({ type: SCREEN_LOADER, payload: state })
+}
+
+export const setForm = (form) => {
+  store.dispatch({ type: REGISTRATIONFORM, payload: form })
+}
+
+export const setFirebaseExpoApp = (app) => {
+  store.dispatch({ type: FIREBASE_EXPO_APP, payload: app })
+}

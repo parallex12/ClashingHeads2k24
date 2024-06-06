@@ -12,21 +12,20 @@ import { AntDesign } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import auth from "@react-native-firebase/auth";
-import { useRecoilState, useResetRecoilState } from "recoil";
-import { user_auth, user_db_details } from "../state-management/atoms/atoms";
+import { connect, useDispatch } from "react-redux";
+import { USER_AUTH, USER_DB_DETAILS } from "../state-management/types/types";
+import { logout } from "../state-management/features/auth/authSlice";
 
 const LogoutPress = (props) => {
   let navigation = useNavigation();
-  const reset_userAuth = useResetRecoilState(user_auth);
-  const reset_userDetails= useResetRecoilState(user_db_details);
+  const dispatch = useDispatch()
 
   const onLogout = () => {
     navigation.dispatch(DrawerActions.closeDrawer());
     auth()
       .signOut()
       .then(() => {
-        reset_userAuth();
-        reset_userDetails();
+        dispatch(logout())
       })
       .catch((e) => {
         console.log(e);
@@ -36,4 +35,4 @@ const LogoutPress = (props) => {
   return <Pressable onPress={onLogout} style={props?.style}>{props?.children}</Pressable>;
 };
 
-export default LogoutPress;
+export default LogoutPress

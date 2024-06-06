@@ -39,19 +39,20 @@ import SecuritySettings from "../screens/SecuritySettings/SecuritySettings";
 import NotificationSettings from "../screens/NotificationSettings/NotificationSettings";
 import PrivacySettings from "../screens/PrivacySettings/PrivacySettings";
 import { firebase_expo_app_initialize, user_auth } from "../state-management/atoms/atoms";
-import { useRecoilState, useRecoilValue } from "recoil";
 import FullScreenLoader from "../globalComponents/FullScreenLoader/FullScreenLoader";
 import { firebaseConfig } from "../utils";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { useSelector } from "react-redux";
+import { selectAuthUser, selectIsAuth } from "../state-management/features/auth";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
 
 const HomeScreens = () => {
-  const userAuth = useRecoilValue(user_auth);
-  
+  const userAuth = useSelector(selectIsAuth);
 
+  console.log("userAuth",userAuth)
   return (
     <HomeStack.Navigator>
       {!userAuth ? (
