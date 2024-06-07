@@ -78,7 +78,6 @@ const WaveAudioRecorder = (props) => {
   const stopRecording = async () => {
     console.log("Stopping recording...");
     if (recording) {
-      console.log("hellowww");
       try {
         setIsRecording(false);
         await recording.stopAndUnloadAsync();

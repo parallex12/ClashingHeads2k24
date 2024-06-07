@@ -93,7 +93,7 @@ const Home = (props) => {
     setRefreshing(false);
   }, []);
 
- 
+
   const memoizedPosts = useMemo(() => posts?.data, [posts]);
   const sortedPosts = useMemo(() => {
     // Sort posts by createdAt date
@@ -138,6 +138,7 @@ const Home = (props) => {
                 desc_limit={1}
                 data={item}
                 key={index}
+                onPostClashesPress={() => props?.navigation?.navigate("ClashDetails", { ...item })}
                 onReportPress={() => bottomFlagSheetRef?.current?.present()}
                 onProfilePress={() =>
                   props?.navigation?.navigate("UserProfile")

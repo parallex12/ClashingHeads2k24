@@ -15,13 +15,9 @@ import { memo, useCallback, useMemo, useState } from "react";
 import Header from "./components/Header";
 import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
-import { useRecoilValue } from "recoil";
-import { user_db_details } from "../../state-management/atoms/atoms";
-import { update_post, update_post_reaction, update_post_reaction_locally } from "../../middleware/firebase";
-import { handleReaction } from "../../utils";
+import { update_post_reaction, } from "../../middleware/firebase";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { selectPosts } from "../../state-management/features/posts";
-import { setPosts } from "../../state-management/features/posts/postSlice";
 
 const PostCard = memo((props) => {
   let {
@@ -71,7 +67,7 @@ const PostCard = memo((props) => {
           {...memoizedData}
           postClashes={postClashes}
           onReportPress={onReportPress}
-          onPostClashesPress={() => navigation?.navigate("ClashDetails", memoizedData)}
+          onPostClashesPress={onPostClashesPress}
           onReaction={onReaction}
         />
       </View>

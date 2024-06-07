@@ -15,12 +15,15 @@ import { useState } from "react";
 import Header from "../../../globalComponents/PostCard/components/Header";
 import Content from "../../../globalComponents/PostCard/components/Content";
 import ActionMenu from "./card_components/ActionMenu";
+import { stickerArr } from "../../../utils";
 
 const ClashCard = (props) => {
-  let { data, hrLine, onReportPress } = props;
+  let { data, onPostClashesPress, hrLine, onReportPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = ClashCardStyles({ width, height });
   let navigation = useNavigation();
+
+  let localmedia = data?.clashType == "sticker" ? stickerArr[data?.selectedSticker] : null
 
   return (
     <View style={styles.container}>
@@ -28,8 +31,8 @@ const ClashCard = (props) => {
       <View style={styles.content}>
         <Header author={data?.author} createdAt={data?.createdAt} />
         <View style={styles.contentCardWrapper}>
-          <Content {...data} postDesc={false} title={false} />
-          <ActionMenu {...data} onReportPress={onReportPress} />
+          <Content noaudioreset sticker={localmedia} {...data} postDesc={false} title={false} />
+          <ActionMenu onPostClashesPress={onPostClashesPress} {...data} onReportPress={onReportPress} />
         </View>
       </View>
     </View>

@@ -28,10 +28,10 @@ export const EmptyBoxStyles = ({ width, height }) =>
       justifyContent: "center",
       marginVertical: getPercent(5, height)
     },
-    text:{
-      fontSize:rf(13),
-      fontFamily:'Regular',
-      marginVertical: getPercent(2, height) 
+    text: {
+      fontSize: rf(13),
+      fontFamily: 'Regular',
+      marginVertical: getPercent(2, height)
     }
   });
 
@@ -158,6 +158,28 @@ export const EmojisStyles = ({ width, height }) =>
       justifyContent: "center",
       overflow: "hidden",
       marginHorizontal: 10,
+    },
+  });
+
+
+//StickersStyles   starts here
+export const StickersStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginVertical: getPercent(1, height),
+    },
+    emojiItemCont: {
+      width: getPercent(20, width),
+      height: getPercent(15, width),
+      borderRadius: 5,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      marginHorizontal: 10,
+      borderWidth: 2,
     },
   });
 
@@ -410,6 +432,8 @@ export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
     micWrapper: {
       width: "100%",
       height: getPercent(30, width),
+      borderRadius:10,
+      overflow:'hidden'
     },
     quickAudioWrapper: {
       width: "100%",

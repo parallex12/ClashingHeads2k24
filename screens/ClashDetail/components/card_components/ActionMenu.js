@@ -13,7 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import { onShareApp } from "../../../../utils";
 
 const ActionMenu = (props) => {
-  let { clashes_count, onPostClashesPress, onReportPress, dislikes_count, likes_count } = props;
+  let { clashes_count, onPostClashesPress, onReportPress, dislikes, likes } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
@@ -38,12 +38,12 @@ const ActionMenu = (props) => {
 
   let actions = [
     {
-      title: likes_count,
+      title: likes,
       iconImg: require("../../../../assets/icons/post_cards/like.png"),
       onPress: () => null,
     },
     {
-      title: dislikes_count,
+      title: dislikes,
       iconImg: require("../../../../assets/icons/post_cards/dislike.png"),
       onPress: () => null,
     },

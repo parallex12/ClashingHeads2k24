@@ -40,6 +40,41 @@ export const EmojisArr = [
   },
 ];
 
+export const stickerArr = [
+  {
+    sticker_id: 1,
+    img: require('../assets/stickers/1.jpg'),
+    audio: require('../assets/stickers/1.mp3'),
+  },
+  {
+    sticker_id: 2,
+    img: require('../assets/stickers/2.jpg'),
+    audio: require('../assets/stickers/2.mp3'),
+  },
+  {
+    sticker_id: 3,
+    img: require('../assets/stickers/3.jpg'),
+    audio: require('../assets/stickers/3.mp3'),
+  },
+
+  {
+    sticker_id: 4,
+    img: require('../assets/stickers/5.jpg'),
+    audio: require('../assets/stickers/5.mp3'),
+  },
+  {
+    sticker_id: 5,
+    img: require('../assets/stickers/6.jpg'),
+    audio: require('../assets/stickers/6.mp3'),
+  },
+  {
+    sticker_id: 6,
+    img: require('../assets/stickers/9.jpg'),
+    audio: require('../assets/stickers/9.mp3'),
+  },
+];
+
+
 // Function to format duration in "mm:ss" format
 export function formatDuration(durationString) {
   // Parse the duration string as an integer

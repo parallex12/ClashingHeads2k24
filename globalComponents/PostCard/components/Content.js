@@ -14,12 +14,12 @@ import { useNavigation } from "@react-navigation/native";
 import { memo } from "react";
 
 const Content = memo((props) => {
-  let { description, desc_limit, title, post_image, recording } = props;
+  let { description,noaudioreset, desc_limit, title, post_image, sticker, recording } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
 
-  const PostImage = ({ url, onPress }) => {
+  const PostImage = ({ source, onPress }) => {
     return (
       <TouchableOpacity
         style={styles.postImageWrapper}
@@ -27,7 +27,7 @@ const Content = memo((props) => {
         activeOpacity={0.9}
       >
         <Image
-          source={{ uri: url }}
+          source={source}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
         />
@@ -39,9 +39,13 @@ const Content = memo((props) => {
     <View style={styles.container} activeOpacity={1}>
       {title && <Text style={styles.title}>{title}</Text>}
       {post_image && (
-        <PostImage url={post_image} />
+        <PostImage source={{uri:post_image}} />
+      )}
+       {sticker && (
+        <PostImage source={sticker?.img} />
       )}
       {recording && <WaveAudioPlayer source={recording} />}
+      {sticker && <WaveAudioPlayer  localSource={sticker?.audio} />}
       {description && <Text numberOfLines={desc_limit} style={styles.smallText}>{description}</Text>}
     </View>
   );

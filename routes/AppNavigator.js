@@ -52,7 +52,6 @@ const HomeStack = createStackNavigator();
 const HomeScreens = () => {
   const userAuth = useSelector(selectIsAuth);
 
-  console.log("userAuth",userAuth)
   return (
     <HomeStack.Navigator>
       {!userAuth ? (
