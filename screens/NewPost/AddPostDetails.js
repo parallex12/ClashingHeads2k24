@@ -21,20 +21,25 @@ import * as ImagePicker from "expo-image-picker";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { home_posts, screen_loader, user_auth, user_db_details } from "../../state-management/atoms/atoms";
 import { createPost, validate_post_details } from "../../middleware/firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAuthUser, selectIsAuth } from "../../state-management/features/auth";
+import { startLoading, stopLoading } from "../../state-management/features/screen_loader/loaderSlice";
+import { serializeTimestamp } from "../../utils";
+import { setPosts } from "../../state-management/features/posts/postSlice";
+import { selectPosts } from "../../state-management/features/posts";
 
 const AddPostDetails = (props) => {
   let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [posts, setPosts] = useRecoilState(home_posts);
-  const userAuth = useRecoilValue(user_auth);
-  const user_profile = useRecoilValue(user_db_details);
-  const [loading, setLoading] = useRecoilState(screen_loader)
-
+  const userAuth = useSelector(selectIsAuth);
+  const user_profile = useSelector(selectAuthUser);
+  const posts = useSelector(selectPosts)
+  const dispatch = useDispatch()
   const [postForm, setPostForm] = useState({
     recording: props?.route?.params?.recording,
     post_image: null,
-    createdAt: new Date(),
+    createdAt: new Date().toISOString(),
     author: user_profile,
     reactions: {},
     likes: 0,
@@ -42,7 +47,7 @@ const AddPostDetails = (props) => {
     clashes: 0
   })
 
-  
+
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -61,25 +66,29 @@ const AddPostDetails = (props) => {
 
 
   const onPost = async () => {
+
     validate_post_details(postForm)
       .then((res) => {
-        setLoading(true)
+        dispatch(startLoading())
         if (res.code == 200) {
           createPost(postForm)
             .then((res) => {
-              console.log("NP",res)
-              setPosts((prev) => [...prev, res.post_data])
+              console.log("NP", res)
+              let updatedPosts = [...posts?.data]
+              updatedPosts.push(res?.data)
+              dispatch(setPosts(updatedPosts))
               props?.navigation.navigate("Home")
-              setLoading(false)
+              dispatch(stopLoading())
             })
             .catch((e) => {
-              setLoading(false)
+              dispatch(stopLoading())
+              console.log(e)
               alert("Something Went wrong!.")
             })
         }
       })
       .catch((e) => {
-        setLoading(false)
+        dispatch(stopLoading())
         alert(e?.msg)
       })
   }

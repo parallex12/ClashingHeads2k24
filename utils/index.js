@@ -245,11 +245,11 @@ export const validateRequiredFields = (details, requiredFields) => {
   }
   return { isValid: true };
 };
-
 export function getTimeElapsed(createdAt) {
   const now = new Date();
-  if (!createdAt) return "0min"
-  const createdAtDate = new Date(createdAt.seconds * 1000 + createdAt.nanoseconds / 1000000);
+  if (!createdAt) return "0min";
+
+  const createdAtDate = new Date(createdAt);
 
   const timeDifference = now - createdAtDate; // time difference in milliseconds
 
@@ -272,12 +272,21 @@ export function getTimeElapsed(createdAt) {
 }
 
 export function sortPostsByCreatedAt(posts) {
-  return posts?.sort((a, b) => {
-    const aDate = new Date(a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000);
-    const bDate = new Date(b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000);
+  if (posts==undefined) return []
+  // Preprocess posts to ensure createdAt is parsed correctly
+  const processedPosts = posts?.map(post => ({
+    ...post,
+    createdAt: post?.createdAt
+  }));
+
+  // Sort the processed posts array
+  return processedPosts.sort((a, b) => {
+    let aDate = new Date(a.createdAt);
+    let bDate = new Date(b.createdAt);
     return bDate - aDate; // Sort in descending order (most recent first)
   });
 }
+
 
 export const handleReaction = async ({
   postId,
@@ -358,3 +367,16 @@ export const setForm = (form) => {
 export const setFirebaseExpoApp = (app) => {
   store.dispatch({ type: FIREBASE_EXPO_APP, payload: app })
 }
+
+// src/utils/timestamp.js
+import { Timestamp } from '@firebase/firestore';
+
+// Utility function to serialize a Timestamp object
+export const serializeTimestamp = (timestamp) => ({
+  seconds: timestamp.seconds,
+  nanoseconds: timestamp.nanoseconds,
+});
+
+// Utility function to deserialize a serialized Timestamp object
+export const deserializeTimestamp = (serializedTimestamp) =>
+  new Timestamp(serializedTimestamp.seconds, serializedTimestamp.nanoseconds);

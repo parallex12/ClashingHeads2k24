@@ -4,6 +4,8 @@ import {
   collection,
   collectionGroup,
   doc,
+  endAt,
+  endBefore,
   getDoc,
   getDocs,
   getFirestore,
@@ -13,6 +15,7 @@ import {
   query,
   runTransaction,
   setDoc,
+  startAt,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -26,6 +29,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { HOME_POSTS, USER_DB_DETAILS } from "../state-management/types/types";
+import store from "../state-management/store/store";
 
 export const getFirestoreDoc = async (collection, docID) => {
   try {
@@ -46,20 +50,19 @@ export const getFirestoreDoc = async (collection, docID) => {
 
 
 
-export const getHomePosts = () => async (dispatch) => {
+export const getHomePosts = async (currentPagePosition) => {
 
   return new Promise(async (resolve, reject) => {
 
     try {
       const db = getFirestore();
       const postsCollection = collection(db, 'Posts');
-      const q = query(postsCollection);
+      const q = query(postsCollection,limit(500));
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const arr = [];
         snapshot.forEach((doc) => {
           arr.push({ id: doc.id, ...doc.data() });
         });
-        dispatch({ type: HOME_POSTS, payload: arr })
         resolve(arr);
       }, (error) => {
         console.log('Error getting documents: ', error);
@@ -101,7 +104,7 @@ export const isUserProfileConnected = async (userID) => {
           return;
         }
 
-        resolve({ id: docSnap.id, ...docSnap?.data() });
+        resolve({user:{ id: docSnap.id, ...docSnap?.data() }});
       } else {
         reject(404);
         console.log("No User Profile Connected!");
@@ -116,51 +119,66 @@ export const isUserProfileConnected = async (userID) => {
 export const Logout = async (setUserAuth) => {
   // const resetList = useResetRecoilState(todoListState);
 };
-
-export const validate_user_details = async (details) => {
+export const validate_user_details = async (details, user_profile_details) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Check if email already exists
+      // Initialize Firestore
       const db = getFirestore();
+      
+      // Define the required fields for validation
       const requiredFields = ["email", "username", "realName"];
+      
+      // Validate required fields
       const validation = validateRequiredFields(details, requiredFields);
 
+      // If validation fails, reject with the appropriate message
       if (!validation.isValid) {
         reject({ msg: validation.msg, field: validation.field });
         return;
       }
-      const emailQuery = query(
-        collectionGroup(db, "Users"),
-        where("email", "==", details?.email)
-      );
-      const usernameQuery = query(
-        collectionGroup(db, "Users"),
-        where("username", "==", details?.username)
-      );
 
-      const [emailSnapshot, usernameSnapshot] = await Promise.all([
-        getDocs(emailQuery),
-        getDocs(usernameQuery),
-      ]);
+      // Determine if email and username checks are required
+      const emailCheckRequired = !user_profile_details || user_profile_details.email !== details.email;
+      const usernameCheckRequired = !user_profile_details || user_profile_details.username !== details.username;
 
-      if (!emailSnapshot.empty) {
+      // Create queries for email and username validation if required
+      const emailQuery = emailCheckRequired
+        ? query(collectionGroup(db, "Users"), where("email", "==", details.email))
+        : null;
+
+      const usernameQuery = usernameCheckRequired
+        ? query(collectionGroup(db, "Users"), where("username", "==", details.username))
+        : null;
+
+      // Execute the queries, defaulting to empty results if the query is not required
+      const emailSnapshotPromise = emailQuery ? getDocs(emailQuery) : Promise.resolve({ empty: true });
+      const usernameSnapshotPromise = usernameQuery ? getDocs(usernameQuery) : Promise.resolve({ empty: true });
+
+      // Await the results of both queries
+      const [emailSnapshot, usernameSnapshot] = await Promise.all([emailSnapshotPromise, usernameSnapshotPromise]);
+
+      // Check the email query results
+      if (emailCheckRequired && !emailSnapshot.empty) {
         reject({ msg: "Email already exists", field: "email" });
         return;
       }
 
-      if (!usernameSnapshot.empty) {
+      // Check the username query results
+      if (usernameCheckRequired && !usernameSnapshot.empty) {
         reject({ msg: "Username already exists", field: "username" });
         return;
       }
 
-      // If email and username are unique, resolve
+      // If both checks pass, resolve with a success message
       resolve({ code: 200, msg: "User details are valid" });
     } catch (error) {
+      // Log and reject with an error message in case of an exception
       console.error(error);
       reject("Error validating user details");
     }
   });
 };
+
 
 
 export const validate_post_details = async (details) => {
@@ -379,7 +397,6 @@ export const update_post_reaction = async (postId, userId, reactionType) => {
         let updatedDislikes = postData.dislikes || 0;
 
         const currentReaction = userReactions[userId];
-        console.log(currentReaction)
         // Remove user's current reaction
         if (currentReaction) {
           if (currentReaction === 'like') {

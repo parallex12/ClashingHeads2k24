@@ -11,9 +11,10 @@ import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import WaveAudioPlayer from "../../WaveAudioPlayer";
 import { useNavigation } from "@react-navigation/native";
+import { memo } from "react";
 
-const Content = (props) => {
-  let { description,desc_limit, title, post_image, recording } = props;
+const Content = memo((props) => {
+  let { description, desc_limit, title, post_image, recording } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
@@ -44,7 +45,7 @@ const Content = (props) => {
       {description && <Text numberOfLines={desc_limit} style={styles.smallText}>{description}</Text>}
     </View>
   );
-};
+});
 
 const _styles = ({ width, height }) =>
   StyleSheet.create({
@@ -56,7 +57,8 @@ const _styles = ({ width, height }) =>
     title: font(14, "#1C1C1C", "Medium", 15),
     postImageWrapper: {
       width: "100%",
-      height: getPercent(15, height),
+      minHeight: getPercent(15, height),
+      maxHeight: getPercent(25, height),
       borderRadius: 10,
       overflow: "hidden",
       position: "relative",

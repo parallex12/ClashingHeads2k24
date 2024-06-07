@@ -12,14 +12,14 @@ import { getPercent } from "../../../middleware";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useRecoilValue } from "recoil";
-import { user_db_details } from "../../../state-management/atoms/atoms";
+import { useSelector } from "react-redux";
+import { selectAuthUser } from "../../../state-management/features/auth";
 
 const ProfileCard = (props) => {
   let { currentProfile, setCurrentProfile } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user_details = useRecoilValue(user_db_details);
+  const user_details = useSelector(selectAuthUser);
   let { realName,bio } = user_details;
 
   const pickImage = async () => {

@@ -10,13 +10,14 @@ import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { getTimeElapsed } from "../../../utils";
+import { memo } from "react";
 
 const Header = (props) => {
-  let {author,createdAt,onProfilePress} = props;
+  let { author, createdAt, onProfilePress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-
-  let post_past_time=getTimeElapsed(createdAt)
+  let user_author = author
+  let post_past_time = getTimeElapsed(createdAt)
 
   const Profile = ({ source }) => {
     return (
@@ -37,12 +38,12 @@ const Header = (props) => {
     <View style={styles.container}>
       <Profile
         source={{
-          uri:author?.profile_photo,
+          uri: user_author?.profile_photo,
         }}
       />
       <View style={styles.infoWrapper}>
         <View style={styles.infoTitleRow}>
-          <Text style={styles.titleName}>{author?.realName}</Text>
+          <Text style={styles.titleName}>{user_author?.realName}</Text>
           <Image
             source={require("../../../assets/icons/mStarIcon.png")}
             resizeMode="contain"
@@ -52,7 +53,7 @@ const Header = (props) => {
             }}
           />
         </View>
-        <Text style={styles.slugText}>{author?.politics?.key} - Los Angles,CA  {post_past_time}</Text>
+        <Text style={styles.slugText}>{user_author?.politics?.key} - Los Angles,CA  {post_past_time}</Text>
       </View>
       <TouchableOpacity>
         <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />

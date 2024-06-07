@@ -6,12 +6,12 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { PostCardStyles, font } from "../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
-import { memo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import Header from "./components/Header";
 import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
@@ -19,8 +19,11 @@ import { useRecoilValue } from "recoil";
 import { user_db_details } from "../../state-management/atoms/atoms";
 import { update_post, update_post_reaction, update_post_reaction_locally } from "../../middleware/firebase";
 import { handleReaction } from "../../utils";
+import { selectAuthUser } from "../../state-management/features/auth";
+import { selectPosts } from "../../state-management/features/posts";
+import { setPosts } from "../../state-management/features/posts/postSlice";
 
-const PostCard = (props) => {
+const PostCard = memo((props) => {
   let {
     data,
     onPostClashesPress,
@@ -34,10 +37,12 @@ const PostCard = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = PostCardStyles({ width, height });
   let navigation = useNavigation();
-  const createdAtDate = new Date(data?.createdAt?.seconds * 1000 + data?.createdAt?.nanoseconds / 1000000).toUTCString()
-  const user_details = props?.user_db_details
+  const createdAtDate = "now"
+  const user_details = useSelector(selectAuthUser)
+  const posts = useSelector(selectPosts)
+  const dispatch = useDispatch()
 
-  const onReaction = (type) => {
+  const onReaction = useCallback((type) => {
     update_post_reaction(data?.id, user_details?.id, type)
       .then((res) => {
         console.log(res)
@@ -45,9 +50,9 @@ const PostCard = (props) => {
       .catch((res) => {
         console.log(res)
       })
-  };
+  }, [data, user_details, dispatch]);
 
-
+  const memoizedData = useMemo(() => data, [data]);
 
   return (
     <Pressable
@@ -60,13 +65,13 @@ const PostCard = (props) => {
       onPress={() => navigation?.navigate("ClashDetails", data)}
     >
       <View style={styles.content}>
-        <Header author={data?.author} createdAt={data?.createdAt} onProfilePress={onProfilePress} />
-        <Content {...data} desc_limit={desc_limit} />
+        <Header author={memoizedData?.author} createdAt={memoizedData?.createdAt} onProfilePress={onProfilePress} />
+        <Content {...memoizedData} desc_limit={desc_limit} />
         <ActionMenu
-          {...data}
+          {...memoizedData}
           postClashes={postClashes}
           onReportPress={onReportPress}
-          onPostClashesPress={() => navigation?.navigate("ClashDetails", data)}
+          onPostClashesPress={() => navigation?.navigate("ClashDetails", memoizedData)}
           onReaction={onReaction}
         />
       </View>
@@ -76,16 +81,13 @@ const PostCard = (props) => {
             Posted on {createdAtDate}
           </Text>
           <Text style={font(10, "#111827", "Bold")}>
-            {data?.views_count || 0} <Text style={font(10, "#9CA3AF", "Regular")}>Views</Text>
+            {memoizedData?.views_count || 0} <Text style={font(10, "#9CA3AF", "Regular")}>Views</Text>
           </Text>
         </View>
       )}
     </Pressable>
   );
-};
-
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-  user_db_details: state.main.user_db_details
 });
-export default connect(mapStateToProps, {})(PostCard);
+
+
+export default PostCard

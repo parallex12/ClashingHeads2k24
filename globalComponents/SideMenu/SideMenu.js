@@ -15,13 +15,13 @@ import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { Logout } from "../../middleware/firebase";
 import LogoutPress from "../LogoutPress";
 import { connect, useSelector } from "react-redux";
-import { selectIsAuth } from "../../state-management/features/auth";
+import { selectAuthUser, selectIsAuth } from "../../state-management/features/auth";
 
 const SideMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = SideMenuStyles({ width, height });
   const userAuth = useSelector(selectIsAuth);
-  const user_details = useState(null);
+  const user_details = useSelector(selectAuthUser);
   let profile = user_details?.profile_photo;
   const navigation = useNavigation();
 

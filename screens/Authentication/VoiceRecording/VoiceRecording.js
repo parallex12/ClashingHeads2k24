@@ -9,29 +9,28 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/VoiceRecording/main";
 import { font } from "../../../styles/Global/main";
-import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import CircleComponent from "./components/CircleComponent";
 import RecordingButton from "../../../globalComponents/RecordingButton";
-import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  registrationForm,
-  screen_loader,
-  user_auth,
-} from "../../../state-management/atoms/atoms";
 import RecordingPlayer from "../../../globalComponents/RecordingPlayer";
 import { update_user_details, uploadMedia } from "../../../middleware/firebase";
+import auth from "@react-native-firebase/auth";
+import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import { selectAuthUser, selectUserForm } from "../../../state-management/features/auth";
 
 const VoiceRecording = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [form, setForm] = useRecoilState(registrationForm);
-  const [loading, setLoading] = useRecoilState(screen_loader);
+  const userform = useSelector(selectUserForm);
+  const [form, setForm] = useState(userform)
+  const [errorField, setErrorField] = useState({});
+  const user = auth().currentUser
+  const dispatch = useDispatch()
 
   let iconImages = [
     require("../../../assets/icons/recorderVector.png"),
@@ -46,8 +45,8 @@ const VoiceRecording = (props) => {
   const [timer, setTimer] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
-  const user = useRecoilValue(user_auth);
   const timerRef = useRef(null);
+  const user_profile_details=useSelector(selectAuthUser)
 
   const startRecording = async () => {
     try {
@@ -85,25 +84,27 @@ const VoiceRecording = (props) => {
   const onConfirm = async () => {
     try {
       if (recording) {
-        setLoading(true);
+        dispatch(startLoading())
         clearInterval(timerRef.current);
         await uploadMedia(recording, "profileRecordings")
           .then((res) => {
             if (res.url) {
               let data = { hasVoiceAdded: true, about_voice: res?.url };
               update_user_details(user?.uid, data).then((res) => {
-                props?.navigation?.navigate("ProfilePhoto");
-                setLoading(false);
+                if (!user_profile_details?.hasProfilePhoto) {
+                  props?.navigation?.navigate("ProfilePhoto");
+                  dispatch(stopLoading())
+                }
               });
             }
           })
           .catch((e) => {
             console.log(e);
-            setLoading(false);
+            dispatch(stopLoading())
           });
       }
     } catch (error) {
-      setLoading(false);
+      dispatch(stopLoading())
       console.log("Error stopping recording:", error);
     }
   };
@@ -142,8 +143,8 @@ const VoiceRecording = (props) => {
                           isAudioPlaying
                             ? iconImages[2]
                             : isRecordingCompleted
-                            ? iconImages[1]
-                            : iconImages[0]
+                              ? iconImages[1]
+                              : iconImages[0]
                         }
                         resizeMode="contain"
                         style={{ width: "100%", height: "100%" }}
@@ -154,9 +155,8 @@ const VoiceRecording = (props) => {
               </CircleComponent>
               <View style={styles.textWrapper}>
                 <Text style={font(20, "#ffffff", "Bold", 20)}>
-                  {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${
-                    timer % 60
-                  }`}
+                  {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${timer % 60
+                    }`}
                 </Text>
                 <Text style={font(14, "#ffffff", "Regular", 0)}>
                   {recording
@@ -178,8 +178,8 @@ const VoiceRecording = (props) => {
               isRecording
                 ? "Stop Recording"
                 : isRecordingCompleted
-                ? "Confirm"
-                : "Start Recording"
+                  ? "Confirm"
+                  : "Start Recording"
             }
             customStyles={{
               width: getPercent(50, width),
@@ -194,8 +194,8 @@ const VoiceRecording = (props) => {
               color: isRecording
                 ? "#fff"
                 : isRecordingCompleted
-                ? "#DB2727"
-                : "#4B4EFC",
+                  ? "#DB2727"
+                  : "#4B4EFC",
               fontFamily: "Semibold",
             }}
           />

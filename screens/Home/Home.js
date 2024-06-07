@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   RefreshControl,
   ScrollView,
@@ -16,25 +17,30 @@ import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { initializeApp } from "firebase/app";
-import { firebaseConfig, } from "../../utils";
+import { firebaseConfig, sortPostsByCreatedAt, } from "../../utils";
 import { getFirestore } from "firebase/firestore";
 import { connect, useDispatch, useSelector } from "react-redux";
 import auth from "@react-native-firebase/auth";
 import { startLoading, stopLoading } from "../../state-management/features/screen_loader/loaderSlice";
 import firebase from "firebase/compat/app";
 import { selectAuthUser } from "../../state-management/features/auth";
-import { isUserProfileConnected } from "../../middleware/firebase";
+import { getHomePosts, isUserProfileConnected } from "../../middleware/firebase";
 import { setUserDetails } from "../../state-management/features/auth/authSlice";
+import { selectPosts } from "../../state-management/features/posts";
+import { setPosts } from "../../state-management/features/posts/postSlice";
+import EmptyBox from "../../globalComponents/EmptyBox";
 
 const Home = (props) => {
   let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [posts, setPosts] = useState([]);
+  const posts = useSelector(selectPosts)
   const bottomFlagSheetRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const dispatch = useDispatch()
   const user_details = useSelector(selectAuthUser)
+  const [currentPagePosition, setCurrentPagePosition] = useState(1)
 
   useEffect(() => {
     dispatch(startLoading());
@@ -42,42 +48,69 @@ const Home = (props) => {
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
     }
-    if (!user_details) {
-      isUserProfileConnected(auth().currentUser?.uid)
-        .then((res) => {
-          dispatch(setUserDetails(JSON.stringify(res)))
-          if (res?.goTo) {
-            props?.navigation.navigate(res?.goTo);
-          }
-          dispatch(stopLoading());
-        })
-        .catch((e) => {
-          if (e == 404) {
-            props?.navigation.navigate("CommunityGuidelines");
-            return;
-          }
-        });
-    } else {
-      dispatch(stopLoading());
-    }
+    isUserProfileConnected(auth().currentUser?.uid)
+      .then((res) => {
+        dispatch(setUserDetails(res?.user))
+        if (res?.goTo) {
+          props.navigation.reset({
+            index: 0,
+            routes: [{ name: res?.goTo }],
+          })
+        }
+        dispatch(stopLoading());
+      })
+      .catch((e) => {
+        if (e == 404) {
+          props.navigation.reset({
+            index: 0,
+            routes: [{ name: "CommunityGuidelines" }],
+          })
+          return;
+        }
+      });
   }, []);
 
+  const loadPosts = async () => {
+    try {
+      const res = await getHomePosts(currentPagePosition);
+      dispatch(setPosts(res));
+      dispatch(stopLoading());
+      setRefreshing(false)
+      setLoadingMore(false)
+    } catch (e) {
+      console.log(e);
+      dispatch(stopLoading());
+    }
+  };
 
-  // useEffect(() => {
-  //   getHomePosts()
-  //     .then((res) => {
-  //       setLoading(false)
-  //     })
-  // }, [props?.user_db_details])
+  useEffect(() => {
+    loadPosts();
+  }, [currentPagePosition]);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setCurrentPagePosition(1)
+    setRefreshing(false);
+  }, []);
 
-  // const onRefresh = useCallback(() => {
-  //   setRefreshing(true);
-  //   getHomePosts()
-  //     .then((res) => {
-  //       setRefreshing(false)
-  //     })
-  // }, []);
+ 
+  const memoizedPosts = useMemo(() => posts?.data, [posts]);
+  const sortedPosts = useMemo(() => {
+    // Sort posts by createdAt date
+    return memoizedPosts
+  }, [memoizedPosts]);
+
+  const renderFooter = () => {
+    if (loadingMore && !reachedEnd) {
+      return (
+        <View style={styles.loadingIndicatorContainer}>
+          <ActivityIndicator size="small" color="#222" />
+        </View>
+      );
+    } else {
+      return null;
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -92,11 +125,11 @@ const Home = (props) => {
         />
       </View>
       <View style={styles.content}>
-        {/* <FlatList
+        <FlatList
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          data={posts}
+          data={sortedPosts || []}
           ListEmptyComponent={<EmptyBox text="No posts available." />}
           renderItem={(({ item, index }) => {
             return (
@@ -112,8 +145,9 @@ const Home = (props) => {
               />
             );
           })}
-          keyExtractor={(item) => item.id.toString()} // Assuming item.id is a unique identifier
-        /> */}
+          keyExtractor={(item) => item?.id?.toString()}
+          ListFooterComponent={renderFooter}
+        />
       </View>
 
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />

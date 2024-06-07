@@ -7,7 +7,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/CommunityGuidelines/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
@@ -15,26 +15,29 @@ import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 import { addUser } from "../../../middleware/firebase";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { screen_loader, user_auth } from "../../../state-management/atoms/atoms";
+import auth from "@react-native-firebase/auth";
+import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import { selectAuthUser,  } from "../../../state-management/features/auth";
 
 const CommunityGuidelines = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user = useRecoilValue(user_auth)
-  const [loading, setLoading] = useRecoilState(screen_loader);
+  const user = auth().currentUser
+  const dispatch = useDispatch()
+  const user_profile_details=useSelector(selectAuthUser) || {}
 
   const onContinue = () => {
-    setLoading(true);
-    addUser(user?.uid, { tos: true, createdAt: new Date() })
+    dispatch(startLoading())
+    addUser(user?.uid, { tos: true, createdAt: new Date().toISOString(), phone: user?.phoneNumber })
       .then((res) => {
-        console.log(res)
-        setLoading(false)
-        props?.navigation?.navigate("PersonalInfo");
+        dispatch(stopLoading())
+        if (!user_profile_details?.hasPersonalInfo) {
+          props?.navigation?.navigate("PersonalInfo");
+        }
       })
       .catch((e) => {
-        setLoading(false)
+        dispatch(stopLoading())
         console.log(e)
       })
   };

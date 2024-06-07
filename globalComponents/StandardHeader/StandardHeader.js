@@ -5,7 +5,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { StandardHeaderStyles } from "../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -14,6 +14,7 @@ import Profile from "./components/Profile";
 import SearchIcon from "./components/SearchIcon";
 import Logo from "./components/Logo";
 import BackButton from "../BackButton";
+import { selectAuthUser } from "../../state-management/features/auth";
 
 const StandardHeader = (props) => {
   let {
@@ -27,6 +28,7 @@ const StandardHeader = (props) => {
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = StandardHeaderStyles({ width, height });
+  const user_profile = useSelector(selectAuthUser)
 
   return (
     <ImageBackground
@@ -35,7 +37,7 @@ const StandardHeader = (props) => {
       resizeMode="cover"
     >
       <View style={styles.col1}>
-        {profile && <Profile />}
+        {profile && <Profile source={user_profile?.profile_photo} />}
         {backButton && <BackButton color="#FFFFFF" />}
       </View>
       <View style={styles.col2}>

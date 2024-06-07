@@ -9,20 +9,19 @@ import { styles as _styles } from "../../styles/MyProfile/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import ProfileCard from "./components/ProfileCard";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { global_posts, user_auth, user_db_details } from "../../state-management/atoms/atoms";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { useRef, useState } from "react";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { getPercent } from "../../middleware";
+import { useSelector } from "react-redux";
+import { selectAuthUser } from "../../state-management/features/auth";
 
 const MyProfile = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [posts, setPosts] = useRecoilState(global_posts);
-  const userAuth = useRecoilValue(user_auth);
-  const user_details = useRecoilValue(user_db_details);
+  const [posts, setPosts] = useState([]);
+  const user_details = useSelector(selectAuthUser);
   let { profile_photo, about_voice,realName } = user_details;
   const [currentProfile, setCurrentProfile] = useState({uri:profile_photo});
 

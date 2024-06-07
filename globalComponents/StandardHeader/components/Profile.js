@@ -16,19 +16,20 @@ const Profile = (props) => {
   let styles = _styles({ width, height });
   let navigation = useNavigation();
 
-  let dummyImg = {
-    uri: "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
+  let profileImg = {
+    uri: source || "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
   };
 
   const onMenu = () => {
     navigation.dispatch(DrawerActions.openDrawer());
   };
+  console.log(source)
 
   return (
-    <TouchableOpacity style={styles.container}  onPress={onMenu}>
+    <TouchableOpacity style={styles.container} onPress={onMenu}>
       <View style={styles.profileWrapper}>
         <Image
-          source={source || dummyImg}
+          source={profileImg}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
         />

@@ -15,7 +15,8 @@ import { getPercent } from "../../../middleware";
 import { useState } from "react";
 import auth from "@react-native-firebase/auth";
 import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
-import { confirmOtp, setUserForm } from "../../../state-management/features/auth/authSlice";
+import {  setUserForm } from "../../../state-management/features/auth/authSlice";
+import { useNavigation } from "@react-navigation/native";
 
 const Signup = (props) => {
   let { } = props;
@@ -24,36 +25,23 @@ const Signup = (props) => {
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
   const [phoneNumber, setPhoneNumber] = useState(null)
   const dispatch = useDispatch()
+  const navigation = useNavigation();
 
   const onLogin = () => {
-    props?.navigation?.navigate("Signin");
+    navigation?.navigate("Signin");
   };
-
-  // Handle the button press
-  async function signInWithPhoneNumber(phoneNumber) {
-    await auth()
-      .signInWithPhoneNumber(phoneNumber)
-      .then((res) => {
-        dispatch(stopLoading())
-        dispatch(confirmOtp(res))
-        dispatch(setUserForm({ phone: phoneNumber }))
-        props?.navigation?.navigate("OTPVerification");
-      })
-      .catch((e) => {
-        console.log(e);
-        dispatch(stopLoading())
-        alert("Something went wrong try again!");
-      });
-  }
 
   const onContinue = () => {
     let phone_number_raw = country?.dial_code + phoneNumber;
-    if (!phone_number_raw) {
+    if (!phoneNumber) {
       alert("Phone number required.");
       return;
     }
     dispatch(startLoading())
-    signInWithPhoneNumber(phone_number_raw);
+    dispatch(setUserForm({ phone: phone_number_raw }))
+    setTimeout(() => {
+      navigation?.navigate("OTPVerification");
+    }, 1000)
   };
 
   return (

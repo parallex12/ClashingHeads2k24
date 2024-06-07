@@ -11,11 +11,12 @@ import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import FlagReportBottomSheet from "../../FlagReportBottomSheet/FlagReportBottomSheet";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { onShareApp } from "../../../utils";
 import { user_db_details } from "../../../state-management/atoms/atoms";
 import { useRecoilValue } from "recoil";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
+import { selectAuthUser } from "../../../state-management/features/auth";
 
 const ActionMenu = (props) => {
   let {
@@ -32,8 +33,14 @@ const ActionMenu = (props) => {
   let styles = _styles({ width, height });
   const navigation = useNavigation();
   const bottomFlagSheetRef = useRef(null);
-  const [activeReaction, setActiveReaction] = useState(reactions[user_details?.id])
-  const user_details = props?.user_db_details
+  const user_details = useSelector(selectAuthUser)
+  const [activeReaction, setActiveReaction] = useState({})
+
+
+  useEffect(() => {
+    if (!reactions) return
+    setActiveReaction({ old: reactions[user_details?.id] })
+  }, [reactions])
 
   const FooterItem = ({ item, post_clashes_count }) => {
     return (
@@ -56,24 +63,31 @@ const ActionMenu = (props) => {
   };
 
   const onReact = (type) => {
-    if (activeReaction == type) {
-      setActiveReaction(null)
+    let c_reaction = activeReaction?.old || activeReaction?.new
+    if (c_reaction == type) {
+      setActiveReaction({ new: null })
+      onReaction(type)
     } else {
-      setActiveReaction(type)
+      setActiveReaction({ new: type })
+      onReaction(type)
     }
-    onReaction(type)
+    delete activeReaction['old']
   }
+
+  let isLiked = activeReaction?.new == "like" || activeReaction?.old == "like"
+  let isDisLiked = activeReaction?.new == "dislike" || activeReaction?.old == "dislike"
+
 
   let actions = [
     {
-      title: likes,
-      iconImg: activeReaction == "like" ? require("../../../assets/icons/post_cards/like_active.png")
+      title: activeReaction?.new == "like" ? eval(likes + 1) : likes,
+      iconImg: isLiked ? require("../../../assets/icons/post_cards/like_active.png")
         : require("../../../assets/icons/post_cards/like.png"),
       onPress: () => onReact("like"),
     },
     {
-      title: dislikes,
-      iconImg: activeReaction == "dislike" ? require("../../../assets/icons/post_cards/dislike_active.png") :
+      title: activeReaction?.new == "dislike" ? eval(dislikes + 1) : dislikes,
+      iconImg: isDisLiked ? require("../../../assets/icons/post_cards/dislike_active.png") :
         require("../../../assets/icons/post_cards/dislike.png"),
       onPress: () => onReact("dislike"),
     },
@@ -135,8 +149,5 @@ const _styles = ({ width, height }) =>
     actionText: font(12, "#6B7280", "Medium", 0, null, { marginLeft: 5 }),
   });
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-  user_db_details: state.main.user_db_details
-});
-export default connect(mapStateToProps, {})(ActionMenu);
+
+export default ActionMenu

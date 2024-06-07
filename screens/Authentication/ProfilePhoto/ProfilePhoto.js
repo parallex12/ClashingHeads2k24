@@ -9,7 +9,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/ProfilePhoto/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
@@ -23,21 +23,25 @@ import {
 } from "../../../state-management/atoms/atoms";
 import * as ImagePicker from "expo-image-picker";
 import { update_user_details, uploadMedia } from "../../../middleware/firebase";
+import auth from "@react-native-firebase/auth";
+import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import { selectUserForm } from "../../../state-management/features/auth";
 
 const ProfilePhoto = (props) => {
   let { route } = props;
   let { prevData } = { name: "ella" };
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [form, setForm] = useRecoilState(registrationForm);
+  const userform = useSelector(selectUserForm);
+  const [form, setForm] = useState(userform)
   const [profile, setProfile] = useState(null);
-  const user = useRecoilValue(user_auth);
-  const [loading, setLoading] = useRecoilState(screen_loader);
+  const user = auth().currentUser
+  const dispatch = useDispatch()
 
   const onContinue = async () => {
     try {
       if (profile) {
-        setLoading(true);
+        dispatch(startLoading())
         await uploadMedia(profile, "userProfiles")
           .then((res) => {
             if (res.url) {
@@ -47,17 +51,17 @@ const ProfilePhoto = (props) => {
                   index: 0,
                   routes: [{ name: "Home" }],
                 });
-                setLoading(false);
+                dispatch(stopLoading())
               });
             }
           })
           .catch((e) => {
             console.log(e);
-            setLoading(false);
+            dispatch(stopLoading())
           });
       }
     } catch (error) {
-      setLoading(false);
+      dispatch(stopLoading())
       console.log("Error stopping recording:", error);
     }
   };

@@ -9,7 +9,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/PersonalInfo/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
@@ -17,52 +17,53 @@ import { getPercent, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
-import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  registrationForm,
-  screen_loader,
-  user_auth,
-} from "../../../state-management/atoms/atoms";
 import {
   update_user_details,
   validate_user_details,
 } from "../../../middleware/firebase";
 import { Entypo } from "@expo/vector-icons";
+import { selectAuthUser, selectUserForm } from "../../../state-management/features/auth";
+import auth from "@react-native-firebase/auth";
+import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import { setUserForm } from "../../../state-management/features/auth/authSlice";
 
 const PersonalInfo = (props) => {
   let { route } = props;
-  let { prevData } = { name: "ella" };
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [form, setForm] = useRecoilState(registrationForm);
-  const [loading, setLoading] = useRecoilState(screen_loader);
+  const user_profile_details=useSelector(selectAuthUser) 
+  const [form, setForm] = useState(user_profile_details)
   const [errorField, setErrorField] = useState({});
-  const user = useRecoilValue(user_auth);
+  const user = auth().currentUser
+  const dispatch = useDispatch()
 
   const onContinue = async () => {
-    setLoading(true);
-    validate_user_details(form)
+    dispatch(startLoading())
+    validate_user_details(form,user_profile_details)
       .then((res) => {
         setErrorField(null);
         let user_details = {
           ...form,
           hasPersonalInfo: true,
         };
+        user_details["dateOfBirth"] = new Date(user_details?.dateOfBirth).toISOString()
         update_user_details(user?.uid, user_details)
           .then((res) => {
-            setForm({});
-            props?.navigation?.navigate("VoiceRecording");
-            setLoading(false);
+            dispatch(setUserForm({}))
+            if(!user_profile_details?.hasVoiceAdded){
+              props?.navigation?.navigate("VoiceRecording");
+              }
+            dispatch(stopLoading())
           })
           .catch((e) => {
-            setLoading(false);
+            dispatch(stopLoading())
             console.log(e.message);
             alert("Something went wrong try again!");
           });
       })
       .catch((e) => {
         console.log(e);
-        setLoading(false);
+        dispatch(stopLoading())
         if (e?.field) {
           setErrorField(e?.field);
           alert(e?.msg);
@@ -84,6 +85,7 @@ const PersonalInfo = (props) => {
       return { ...prev, [key]: null };
     });
   };
+  console.log(form)
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>

@@ -39,7 +39,7 @@ const StandardInput = (props) => {
 
   const onDropDownChange = (info) => {
     setDropDownShow(false);
-    onChangeText(info);
+    onChangeText(info?.title);
   };
 
   const DropDown = ({ options }) => {
@@ -49,11 +49,12 @@ const StandardInput = (props) => {
       borderWidth: 3,
     };
 
+
     return (
       <View style={styles.dropDownContainer}>
         <ScrollView style={{ flex: 1 }}>
           {options?.map((item, index) => {
-            let isActive = value?.key == item?.key;
+            let isActive = value == item?.title;
             return (
               <TouchableOpacity
                 style={styles.dropDownItem}
@@ -107,7 +108,7 @@ const StandardInput = (props) => {
           >
             {dropDownshow && <DropDown options={politicsCategory} />}
             <Text style={styles.inputText}>
-              {value?.title || data?.placeholder}
+              {value || data?.placeholder}
             </Text>
           </TouchableOpacity>
         ) : null}
