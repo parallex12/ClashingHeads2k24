@@ -9,13 +9,12 @@ import PostsResult from "./components/PostsResult";
 import NewsResult from "./components/NewsResult";
 
 const Search = (props) => {
-  let {} = props;
+  let { } = props;
   let { width, height } = useWindowDimensions();
   const [activeFilter, setActiveFilter] = useState(0);
   let styles = _styles({ width, height });
 
-  let resultOptions = [<PeopleResult />, <ClashesResult />,<PostsResult/>,<NewsResult/>];
-
+  let resultOptions = [<PeopleResult />, <ClashesResult />, <PostsResult />, <NewsResult />];
 
   return (
     <View style={styles.container}>

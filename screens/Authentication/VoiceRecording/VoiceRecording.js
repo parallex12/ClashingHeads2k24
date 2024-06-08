@@ -95,6 +95,9 @@ const VoiceRecording = (props) => {
                   props?.navigation?.navigate("ProfilePhoto");
                   dispatch(stopLoading())
                 }
+                if(res?.code==200){
+                  props?.navigation?.navigate("Home");
+                }
               });
             }
           })

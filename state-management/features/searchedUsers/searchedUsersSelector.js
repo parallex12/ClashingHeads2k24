@@ -1,0 +1,1 @@
+export const selectSearchedUsers = (state) => state.searched_users

@@ -236,7 +236,7 @@ export const update_user_details = async (userId, updatedDetails) => {
     const userRef = doc(db, "Users", userId);
     updateDoc(userRef, updatedDetails)
       .then(() => {
-        resolve("User details updated successfully");
+        resolve({msg:"User details updated successfully",code:200});
       })
       .catch((error) => {
         console.log("Error adding new user:", error);

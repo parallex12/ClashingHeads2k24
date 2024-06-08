@@ -206,7 +206,7 @@ export const sideMenuOptions = [
     title: "Sign out",
     route: "",
     icon: require("../assets/icons/sideMenu/11.png"),
-    type:"logout"
+    type: "logout"
   },
 ];
 

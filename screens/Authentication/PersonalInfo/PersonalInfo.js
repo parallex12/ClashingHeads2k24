@@ -13,7 +13,7 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/PersonalInfo/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
-import { getPercent, registrationFields } from "../../../middleware";
+import { getPercent, politicsCategory, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
@@ -31,46 +31,53 @@ const PersonalInfo = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user_profile_details=useSelector(selectAuthUser) 
+  const user_profile_details = useSelector(selectAuthUser)
   const [form, setForm] = useState(user_profile_details)
   const [errorField, setErrorField] = useState({});
   const user = auth().currentUser
   const dispatch = useDispatch()
 
   const onContinue = async () => {
-    dispatch(startLoading())
-    validate_user_details(form,user_profile_details)
-      .then((res) => {
-        setErrorField(null);
-        let user_details = {
-          ...form,
-          hasPersonalInfo: true,
-        };
-        user_details["dateOfBirth"] = new Date(user_details?.dateOfBirth).toISOString()
-        update_user_details(user?.uid, user_details)
-          .then((res) => {
-            dispatch(setUserForm({}))
-            if(!user_profile_details?.hasVoiceAdded){
-              props?.navigation?.navigate("VoiceRecording");
+    try {
+      dispatch(startLoading())
+      validate_user_details(form, user_profile_details)
+        .then((res) => {
+          setErrorField(null);
+          let user_details = {
+            ...form,
+            hasPersonalInfo: true,
+          };
+          user_details["dateOfBirth"] = new Date(user_details?.dateOfBirth).toISOString()
+          update_user_details(user?.uid, user_details)
+            .then((res) => {
+              dispatch(setUserForm({}))
+              if (!user_profile_details?.hasVoiceAdded) {
+                props?.navigation?.navigate("VoiceRecording");
               }
-            dispatch(stopLoading())
-          })
-          .catch((e) => {
-            dispatch(stopLoading())
-            console.log(e.message);
-            alert("Something went wrong try again!");
-          });
-      })
-      .catch((e) => {
-        console.log(e);
-        dispatch(stopLoading())
-        if (e?.field) {
-          setErrorField(e?.field);
-          alert(e?.msg);
-          return;
-        }
-        alert("Something went wrong try again!");
-      });
+              if(res?.code==200){
+                props?.navigation?.navigate("Home");
+              }
+              dispatch(stopLoading())
+            })
+            .catch((e) => {
+              dispatch(stopLoading())
+              console.log(e.message);
+              alert("Something went wrong try again!");
+            });
+        })
+        .catch((e) => {
+          console.log(e);
+          dispatch(stopLoading())
+          if (e?.field) {
+            setErrorField(e?.field);
+            alert(e?.msg);
+            return;
+          }
+          alert("Something went wrong try again!");
+        });
+    } catch (e) {
+      console.log(e)
+    }
   };
 
   const onChangeText = (val, info) => {

@@ -99,7 +99,7 @@ const StandardInput = (props) => {
                 onChange={onDateChange}
               />
             ) : (
-              <Text style={styles.inputText}>{value?.toDateString()}</Text>
+              <Text style={styles.inputText}>{ new Date(value).toDateString()}</Text>
             )}
           </TouchableOpacity>
         ) : data?.type == "picker" ? (

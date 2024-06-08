@@ -51,6 +51,9 @@ const ProfilePhoto = (props) => {
                   index: 0,
                   routes: [{ name: "Home" }],
                 });
+                if(res?.code==200){
+                  props?.navigation?.navigate("Home");
+                }
                 dispatch(stopLoading())
               });
             }
