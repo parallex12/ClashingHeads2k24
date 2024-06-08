@@ -7,6 +7,7 @@ import {
   limit,
   getDocs,
   startAfter,
+  where,
 } from "firebase/firestore";
 
 // Constants for pagination

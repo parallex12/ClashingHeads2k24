@@ -29,7 +29,7 @@ import { fetchAllChallengeClashes } from "../../state-management/features/allCha
 import StandardButton from "../../globalComponents/StandardButton";
 
 const Clashes = (props) => {
-  let { } = props;
+  let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
@@ -59,9 +59,11 @@ const Clashes = (props) => {
   return (
     <View style={styles.container}>
       <StandardHeader searchIcon profile logo />
-      <ScrollView refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.content}>
           {/* Header  here */}
           <View style={styles.contentHeaderWrapper}>
@@ -95,6 +97,7 @@ const Clashes = (props) => {
           {/* Clash cards here */}
           <View style={styles.cardsWrapper}>
             {clashes?.map((item, index) => {
+              if (item?.status == "pending") return;
               return <DualClashCard key={index} data={item} />;
 
               // return (

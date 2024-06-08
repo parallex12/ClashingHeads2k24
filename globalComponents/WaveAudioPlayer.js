@@ -31,10 +31,12 @@ const WaveAudioPlayer = (props) => {
   const [sound, setSound] = useState(null);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(null);
+  const [remainingTime, setRemainingTime] = useState(0);
   let styles = _styles({ width, height });
 
   useEffect(() => {
     reset();
+    loadAudio();
   }, [localSource, source]);
 
   const onPlay = async () => {
@@ -55,10 +57,17 @@ const WaveAudioPlayer = (props) => {
       let totalDuration = onLoad.durationMillis; // Total duration of the sound
       setSoundObj(onLoad);
       if (onLoad?.didJustFinish) {
-        setDuration(0);
         waveAnime.setValue(0);
+        setProgress(0);
+        setSoundObj(null);
+        setSound(null);
+        setRemainingTime(0);
+        afterAudioPlayed && afterAudioPlayed();
       } else {
-        setDuration(totalDuration / 1000);
+        setProgress(onLoad.positionMillis / onLoad.durationMillis);
+        setRemainingTime(
+          (onLoad.durationMillis - onLoad.positionMillis) / 1000
+        );
       }
     });
   };
@@ -116,6 +125,30 @@ const WaveAudioPlayer = (props) => {
     sound?.unloadAsync();
   };
 
+  const loadAudio = async () => {
+    if (!source && !localSource) return alert("Require Source attr.");
+
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      allowsRecordingIOS: false,
+    });
+
+    const { sound } = await Audio.Sound.createAsync(
+      localSource ? localSource : { uri: source },
+      { shouldPlay: false }
+    );
+    const status = await sound.getStatusAsync();
+    setSound(sound);
+    setDuration(status.durationMillis / 1000); // Set the duration in seconds
+    setRemainingTime(status.durationMillis / 1000); // Set the remaining time in seconds
+  };
+
+  const formatDuration = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -165,7 +198,11 @@ const WaveAudioPlayer = (props) => {
           <AntDesign name={"delete"} size={20} color="#DB2727" />
         </TouchableOpacity>
       )}
-      {showDuration && <Text style={font(10, "#374151", "Medium")}>02:20</Text>}
+      {showDuration && (
+        <Text style={font(10, "#374151", "Medium")}>
+          {remainingTime ? formatDuration(remainingTime) : "0:00"}
+        </Text>
+      )}
     </View>
   );
 };
