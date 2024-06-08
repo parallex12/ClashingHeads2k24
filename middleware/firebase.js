@@ -148,16 +148,16 @@ export const validate_user_details = async (details, user_profile_details) => {
       // Create queries for email and username validation if required
       const emailQuery = emailCheckRequired
         ? query(
-            collectionGroup(db, "Users"),
-            where("email", "==", details.email)
-          )
+          collectionGroup(db, "Users"),
+          where("email", "==", details.email)
+        )
         : null;
 
       const usernameQuery = usernameCheckRequired
         ? query(
-            collectionGroup(db, "Users"),
-            where("username", "==", details.username)
-          )
+          collectionGroup(db, "Users"),
+          where("username", "==", details.username)
+        )
         : null;
 
       // Execute the queries, defaulting to empty results if the query is not required
@@ -218,8 +218,7 @@ export const validate_post_details = async (details) => {
 export const validate_clash_details = async (details) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(details)
-      const requiredFields = ["challenger", "title","opponent", "challenger_audio",];
+      const requiredFields = ["challenger", "title", "opponent", "challenger_audio",];
       const validation = validateRequiredFields(details, requiredFields);
       if (!validation.isValid) {
         reject({ msg: validation.msg, field: validation.field });
@@ -255,7 +254,7 @@ export const update_user_details = async (userId, updatedDetails) => {
     const userRef = doc(db, "Users", userId);
     updateDoc(userRef, updatedDetails)
       .then(() => {
-        resolve({msg:"User details updated successfully",code:200});
+        resolve({ msg: "User details updated successfully", code: 200 });
       })
       .catch((error) => {
         console.log("Error adding new user:", error);
@@ -283,7 +282,7 @@ export const uploadMedia = (media, path, mediaName) => {
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log("Upload is " + progress + "% done");
 
-        
+
           switch (snapshot.state) {
             case "paused":
               console.log("Upload is paused");
@@ -348,6 +347,35 @@ export const createPost = async (post_details, dispatch) => {
           resolve({
             msg: "Post added successfully",
             post_data: { id: res?.id, ...post_details },
+          });
+        })
+        .catch((error) => {
+          console.log("Error adding new post:", error);
+          reject(error);
+        });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+
+export const createChallengeClash = async (clash_Details, dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const db = getFirestore();
+      let { url } = await uploadMedia(
+        clash_Details?.challenger_audio,
+        "ChallengeClashesAudios"
+      );
+      clash_Details["challenger_audio"] = url;
+
+
+      await addDoc(collection(db, "ChallengeClashes"), clash_Details)
+        .then((res) => {
+          resolve({
+            msg: "Post added successfully",
+            post_data: { id: res?.id, ...clash_Details },
           });
         })
         .catch((error) => {

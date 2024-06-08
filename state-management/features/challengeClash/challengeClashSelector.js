@@ -1,0 +1,1 @@
+export const selectChallengeClash = (state) => state.challengeClash

@@ -5,6 +5,7 @@ import { expoAppReducer } from './features/firebase_expo_app';
 import { postsReducder } from './features/posts';
 import { singlePostReducer } from './features/singlePost';
 import { searchedUserReducer } from './features/searchedUsers';
+import { challengeClashReducer } from './features/challengeClash';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
   fb_expo_app: expoAppReducer,
   posts: postsReducder,
   singlePost: singlePostReducer,
-  searched_users:searchedUserReducer
+  searched_users: searchedUserReducer,
+  challengeClash: challengeClashReducer
 });
 
 export default rootReducer;
