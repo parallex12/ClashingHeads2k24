@@ -1,5 +1,6 @@
 import {
   Image,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -16,7 +17,7 @@ import { font } from "../../styles/Global/main";
 import ClashCard from "./components/ClashCard";
 import { useNavigation } from "@react-navigation/native";
 import DualClashCard from "../Search/components/DualClashCard";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectAllChallengeClashes,
@@ -28,7 +29,7 @@ import { fetchAllChallengeClashes } from "../../state-management/features/allCha
 import StandardButton from "../../globalComponents/StandardButton";
 
 const Clashes = (props) => {
-  let {} = props;
+  let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
@@ -37,10 +38,10 @@ const Clashes = (props) => {
   const clashes = useSelector(selectAllChallengeClashes);
   const loading = useSelector(selectChallengeClashLoading);
   const error = useSelector(selectChallengeClashError);
-  const lastVisible = useSelector(selectLastVisibleClash);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchAllChallengeClashes({ lastVisible }));
+    dispatch(fetchAllChallengeClashes());
   }, [dispatch, page]);
 
   const loadMoreClashes = () => {
@@ -49,15 +50,23 @@ const Clashes = (props) => {
     }
   };
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setPage(1);
+    setRefreshing(false);
+  }, []);
+
   return (
     <View style={styles.container}>
       <StandardHeader searchIcon profile logo />
-      <ScrollView>
+      <ScrollView refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
         <View style={styles.content}>
           {/* Header  here */}
           <View style={styles.contentHeaderWrapper}>
             <Text style={font(14, "#111827", "Semibold")}>
-              102 Live Clashes
+              {clashes?.length} Live Clashes
             </Text>
             <View style={styles.contectActionsWrapper}>
               <TouchableOpacity style={styles.contentCalenderBtn}>
@@ -87,7 +96,7 @@ const Clashes = (props) => {
           <View style={styles.cardsWrapper}>
             {clashes?.map((item, index) => {
               return <DualClashCard key={index} data={item} />;
-              
+
               // return (
               //   <ClashCard
               //     onCardPress={() => navigation.navigate("ClashRoom")}
@@ -100,10 +109,10 @@ const Clashes = (props) => {
               // );
             })}
           </View>
-          <StandardButton
+          {/* {clashes?.length > 0 && <StandardButton
             title={loading ? "Loading..." : "Load More"}
             onPress={!loading && loadMoreClashes}
-          />
+          />} */}
         </View>
       </ScrollView>
       <BottomMenu />

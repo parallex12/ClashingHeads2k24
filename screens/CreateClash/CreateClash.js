@@ -36,9 +36,10 @@ import {
   stopLoading,
 } from "../../state-management/features/screen_loader/loaderSlice";
 import { addChallengeRequestForUser } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
+import { fetchAllChallengeClashes } from "../../state-management/features/allChallengeClashes/allChallengeClashesSlice";
 
 const CreateClash = (props) => {
-  let {} = props;
+  let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_details = useSelector(selectAuthUser);
@@ -65,32 +66,28 @@ const CreateClash = (props) => {
 
   const onSendRequest = async () => {
     clashForm["challenger_audio"] = await recordedVoice?.getURI();
-    await validate_clash_details(clashForm)
-      .then((res) => {
-        dispatch(startLoading());
-        if (res?.code == 200) {
-          createChallengeClash(clashForm)
-            .then((res) => {
-              let requestData = {
-                challengeId: res?.post_data?.id,
-                challenger: user_details?.id, // The user who initiates the challenge
-                opponent: clashForm?.opponent?.id, // The user who is being challenged
-                createdAt: new Date().toISOString(),
-                status: "pending",
-              };
-              dispatch(addChallengeRequestForUser(user_details?.id,requestData));
-              props?.navigation.navigate("Clashes")
-            })
-            .catch((e) => {
-              console.log(e);
-              dispatch(stopLoading());
-            });
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-        alert(e?.msg);
-      });
+    clashForm["challengerId"] = user_details?.id, // The user who initiates the challenge
+      clashForm["opponentId"] = clashForm?.opponent?.id, // The user who is being challenged
+      await validate_clash_details(clashForm)
+        .then((res) => {
+          dispatch(startLoading());
+          if (res?.code == 200) {
+            createChallengeClash(clashForm)
+              .then((res) => {
+                dispatch(stopLoading());
+                dispatch(fetchAllChallengeClashes());
+                props?.navigation.navigate("Clashes")
+              })
+              .catch((e) => {
+                console.log(e);
+                dispatch(stopLoading());
+              });
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+          alert(e?.msg);
+        });
   };
 
   const debouncedSearch = useCallback(
@@ -176,7 +173,7 @@ const CreateClash = (props) => {
                     setSearchQuery("");
                   }}
                   isSelected={clashForm?.opponent?.id}
-                  users={users}
+                  users={users?.filter((e) => e?.id != user_details?.id)}
                 />
               )
             )

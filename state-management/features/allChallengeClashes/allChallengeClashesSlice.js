@@ -15,7 +15,7 @@ const PAGE_SIZE = 2;
 // Async thunk to fetch all challenge clashes with pagination
 export const fetchAllChallengeClashes = createAsyncThunk(
   "challengeClashes/fetchAll",
-  async ({ lastVisible }) => {
+  async () => {
     const db = getFirestore();
     let q = query(
       collection(db, "ChallengeClashes"),
@@ -23,18 +23,13 @@ export const fetchAllChallengeClashes = createAsyncThunk(
       limit(PAGE_SIZE)
     );
 
-    if (lastVisible) {
-      q = query(q, startAfter(JSON.parse(lastVisible)));
-    }
-
     const snapshot = await getDocs(q);
-    const lastDoc = snapshot.docs[snapshot.docs.length - 1];
     const clashes = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    return { clashes, lastVisible:JSON.stringify(lastDoc) };
+    return { clashes };
   }
 );
 
@@ -42,7 +37,6 @@ const allChallengeClashesSlice = createSlice({
   name: "challengeClashes",
   initialState: {
     clashes: [],
-    lastVisible: null,
     loading: false,
     error: null,
   },
@@ -55,8 +49,7 @@ const allChallengeClashesSlice = createSlice({
       })
       .addCase(fetchAllChallengeClashes.fulfilled, (state, action) => {
         state.loading = false;
-        state.clashes = [...state.clashes, ...action.payload.clashes];
-        state.lastVisible = action.payload.lastVisible;
+        state.clashes = [...action.payload.clashes];
       })
       .addCase(fetchAllChallengeClashes.rejected, (state, action) => {
         state.loading = false;

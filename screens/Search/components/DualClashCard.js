@@ -16,16 +16,21 @@ import {
 import { font } from "../../../styles/Global/main";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import { getPercent } from "../../../middleware";
+import { onShareApp } from "../../../utils";
+import StandardButton from "../../../globalComponents/StandardButton";
 
 const DualClashCard = (props) => {
-  let { data } = props;
+  let { data, request_type, onAcceptRequest, onCancelRequest } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
   let challenger = data?.challenger;
   let opponent = data?.opponent;
+  let votes = Object.keys(data?.votes).length
+  let opinions = data?.opinions
+  let status = data?.status
 
-  const ClashUserCard = ({ user, type, audio }) => {
+  const ClashUserCard = ({ user, type, audio, hasAccepted, shouldAccepted }) => {
     return (
       <View style={styles.clashUserItem}>
         <View style={styles.clashUserProfile}>
@@ -37,12 +42,37 @@ const DualClashCard = (props) => {
         </View>
         <Text style={font(14, "#000000", "Semibold", 3)}>{user?.realName}</Text>
         <Text style={font(12, "#9CA3AF", "Medium", 3)}>{type}</Text>
-        <WaveAudioPlayer showDuration iconSize={15} source={audio} />
+        {audio && <WaveAudioPlayer showDuration iconSize={15} source={audio} />}
+        {/* {!hasAccepted &&
+          <StandardButton
+            title="Cancel Request"
+            customStyles={styles.requetBtn}
+            textStyles={styles.requetBtnText}
+          />
+        } */}
+        {!hasAccepted ?
+          request_type == "Recieved" ?
+            <StandardButton
+              title="Accept Request"
+              customStyles={styles.requetBtn}
+              textStyles={styles.requetBtnText}
+              onPress={onAcceptRequest}
+            />
+            : request_type == "Sent" ?
+              <StandardButton
+                title="Cancel Request"
+                customStyles={styles.requetBtn}
+                textStyles={styles.requetBtnText}
+                onPress={onCancelRequest}
+              />
+              : null
+          : null
+        }
       </View>
     );
   };
 
-  const CardFooter = () => {
+  const CardFooter = ({ votes, opinions }) => {
     return (
       <View style={styles.cardFooterWrapper}>
         <View style={styles.cardFooterItem}>
@@ -50,7 +80,7 @@ const DualClashCard = (props) => {
           <Text
             style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
           >
-            23 Voted
+            {votes} Voted
           </Text>
         </View>
         <View style={styles.cardFooterItem}>
@@ -58,7 +88,7 @@ const DualClashCard = (props) => {
           <Text
             style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
           >
-            32 Opinions
+            {opinions} Opinions
           </Text>
         </View>
         <View style={styles.cardFooterItem}>
@@ -76,7 +106,7 @@ const DualClashCard = (props) => {
             Report
           </Text>
         </View>
-        <View style={styles.cardFooterItem}>
+        <TouchableOpacity style={styles.cardFooterItem} onPress={() => onShareApp()}>
           <Image
             source={require("../../../assets/icons/post_cards/share.png")}
             resizeMode="contain"
@@ -90,31 +120,33 @@ const DualClashCard = (props) => {
           >
             Share
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
     );
   };
 
-  const ClashesCard = ({}) => {
+  const ClashesCard = ({ }) => {
     return (
       <View style={styles.clashesCardCont}>
         <Text style={styles.clashesCardTitle}>
-          “The Jan 6 Commission is a fraud”
+          “{data?.title}”
         </Text>
         <View style={styles.clashesCardUsersCont}>
           <ClashUserCard
             user={challenger}
             audio={data?.challenger_audio}
             type="Challenger"
+            hasAccepted={true}
           />
           <Text style={styles.vsText}>VS</Text>
           <ClashUserCard
             user={opponent}
             audio={data?.opponent_audio}
             type="Opponent"
+            hasAccepted={status == "accepted"}
           />
         </View>
-        <CardFooter />
+        <CardFooter votes={votes} opinions={opinions} />
       </View>
     );
   };

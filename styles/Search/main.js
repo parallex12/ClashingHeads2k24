@@ -64,6 +64,14 @@ export const ClashesResultStyles = ({ width, height }) =>
       marginVertical: 4,
       overflow: "hidden",
     },
+    requetBtn: {
+      width: getPercent(28, width),
+      height: getPercent(6, width),
+      marginTop: 10
+    },
+    requetBtnText: {
+      fontSize: rf(10),
+    },
     cardFooterWrapper: {
       width: "100%",
       height: getPercent(5, height),

@@ -64,15 +64,24 @@ export const {
   updateChallengeRequest,
   deleteChallengeRequest,
 } = challengeRequestsSlice.actions;
-
 export const fetchAllChallengeRequests = (userId) => async (dispatch) => {
   dispatch(setLoading(true));
   try {
     const db = getFirestore();
-    const requestsQuery = query(collection(db, "ChallengeRequests"), where("opponent", "==", userId));
-    const querySnapshot = await getDocs(requestsQuery);
-    const requests = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    dispatch(setAllRequests(sortPostsByCreatedAt(requests)));
+
+    // Query for opponentId
+    const opponentQuery = query(collection(db, "ChallengeClashes"), where("opponentId", "==", userId));
+    const opponentQuerySnapshot = await getDocs(opponentQuery);
+    const opponentRequests = opponentQuerySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    // Query for challengerId
+    const challengerQuery = query(collection(db, "ChallengeClashes"), where("challengerId", "==", userId));
+    const challengerQuerySnapshot = await getDocs(challengerQuery);
+    const challengerRequests = challengerQuerySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    // Combine both results and sort
+    const combinedRequests = [...opponentRequests, ...challengerRequests];
+    dispatch(setAllRequests(sortPostsByCreatedAt(combinedRequests)));
   } catch (error) {
     dispatch(setError(error.message));
   } finally {
@@ -80,11 +89,12 @@ export const fetchAllChallengeRequests = (userId) => async (dispatch) => {
   }
 };
 
+
 export const addChallengeRequestForUser = (userId, requestData) => async (dispatch) => {
   try {
     const db = getFirestore();
     requestData.opponent = userId; // Ensure the opponent field is set to the current user ID
-    const docRef = await addDoc(collection(db, "ChallengeRequests"), requestData);
+    const docRef = await addDoc(collection(db, "ChallengeClashes"), requestData);
     dispatch(addChallengeRequest({ id: docRef.id, ...requestData }));
   } catch (error) {
     dispatch(setError(error.message));
@@ -98,7 +108,7 @@ export const updateChallengeRequestForUser = (requestId, updatedFields) => async
   dispatch(setLoading(true));
   try {
     const db = getFirestore();
-    const requestRef = doc(db, "ChallengeRequests", requestId);
+    const requestRef = doc(db, "ChallengeClashes", requestId);
     await updateDoc(requestRef, updatedFields);
     dispatch(updateChallengeRequest({ requestId, updatedFields }));
   } catch (error) {
@@ -112,7 +122,7 @@ export const deleteChallengeRequestForUser = (requestId) => async (dispatch) => 
   dispatch(setLoading(true));
   try {
     const db = getFirestore();
-    const requestRef = doc(db, "ChallengeRequests", requestId);
+    const requestRef = doc(db, "ChallengeClashes", requestId);
     await deleteDoc(requestRef);
     dispatch(deleteChallengeRequest(requestId));
   } catch (error) {

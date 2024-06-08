@@ -38,11 +38,12 @@ export const fetchUsersByQuery = (searchQuery) => async (dispatch) => {
       where("username", "<=", searchQuery + "\uf8ff")
     );
     const querySnapshot = await getDocs(q);
-    const users = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    console.log(searchQuery, users)
+    const users = querySnapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      }
+    });
 
     dispatch(setSearchedUsers(users));
   } catch (error) {

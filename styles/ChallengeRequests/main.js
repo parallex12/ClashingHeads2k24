@@ -14,6 +14,25 @@ export const styles = ({ width, height }) =>
       flex: 1,
       paddingBottom: getPercent(2, height),
       paddingHorizontal: getPercent(3, width),
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    },
+    filtersWrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: getPercent(3, width),
+      marginVertical: getPercent(2, height)
+    },
+    filterItem: {
+      paddingHorizontal: getPercent(6, width),
+      height: getPercent(5, height),
+      borderRadius: 100,
+      marginRight: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: "#F3F4F6",
     },
   });
 

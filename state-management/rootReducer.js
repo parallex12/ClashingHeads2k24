@@ -7,6 +7,7 @@ import { singlePostReducer } from "./features/singlePost";
 import { searchedUserReducer } from "./features/searchedUsers";
 import { challengeClashReducer } from "./features/challengeClash";
 import { allChallengeClashesReducer } from "./features/allChallengeClashes";
+import { challengeRequestReducer } from "./features/challengeRequests";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   searched_users: searchedUserReducer,
   challengeClash: challengeClashReducer,
   challengeClashes: allChallengeClashesReducer,
+  challengeRequests:challengeRequestReducer
 });
 
 export default rootReducer;

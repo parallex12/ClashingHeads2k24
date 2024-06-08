@@ -25,6 +25,7 @@ const Header = (props) => {
       backgroundColor: activeFilter == index ? "rgba(219,39,39,0.1)" : "#fff",
       textColor: activeFilter == index ? "#DB2727" : "#111827",
     };
+    
     return (
       <TouchableOpacity
         style={[
