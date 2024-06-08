@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { uploadMedia } from "../../../middleware/firebase";
 import { sortPostsByCreatedAt } from "../../../utils";
+import { stopLoading } from "../screen_loader/loaderSlice";
 
 const initialState = {
   challengeRequest: null,
@@ -80,7 +81,6 @@ export const fetchAllChallengeRequests = (userId) => async (dispatch) => {
 };
 
 export const addChallengeRequestForUser = (userId, requestData) => async (dispatch) => {
-  dispatch(setLoading(true));
   try {
     const db = getFirestore();
     requestData.opponent = userId; // Ensure the opponent field is set to the current user ID
@@ -89,7 +89,8 @@ export const addChallengeRequestForUser = (userId, requestData) => async (dispat
   } catch (error) {
     dispatch(setError(error.message));
   } finally {
-    dispatch(setLoading(false));
+    dispatch(stopLoading(false));
+    alert("Challenge request has been sent")
   }
 };
 

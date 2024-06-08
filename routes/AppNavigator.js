@@ -38,13 +38,20 @@ import AccountSettings from "../screens/AccountSettings/AccountSettings";
 import SecuritySettings from "../screens/SecuritySettings/SecuritySettings";
 import NotificationSettings from "../screens/NotificationSettings/NotificationSettings";
 import PrivacySettings from "../screens/PrivacySettings/PrivacySettings";
-import { firebase_expo_app_initialize, user_auth } from "../state-management/atoms/atoms";
+import {
+  firebase_expo_app_initialize,
+  user_auth,
+} from "../state-management/atoms/atoms";
 import FullScreenLoader from "../globalComponents/FullScreenLoader/FullScreenLoader";
 import { firebaseConfig } from "../utils";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { useSelector } from "react-redux";
-import { selectAuthUser, selectIsAuth } from "../state-management/features/auth";
+import {
+  selectAuthUser,
+  selectIsAuth,
+} from "../state-management/features/auth";
+import ChallengeRequests from "../screens/ChallengeRequests/ChallengeRequests";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -95,6 +102,10 @@ const HomeScreens = () => {
           <HomeStack.Screen
             name="PrivacySettings"
             component={PrivacySettings}
+          />
+          <HomeStack.Screen
+            name="ChallengeRequests"
+            component={ChallengeRequests}
           />
           <HomeStack.Screen
             name="EditPersonalInformation"

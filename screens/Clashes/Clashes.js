@@ -16,12 +16,38 @@ import { font } from "../../styles/Global/main";
 import ClashCard from "./components/ClashCard";
 import { useNavigation } from "@react-navigation/native";
 import DualClashCard from "../Search/components/DualClashCard";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectAllChallengeClashes,
+  selectChallengeClashError,
+  selectChallengeClashLoading,
+  selectLastVisibleClash,
+} from "../../state-management/features/allChallengeClashes";
+import { fetchAllChallengeClashes } from "../../state-management/features/allChallengeClashes/allChallengeClashesSlice";
+import StandardButton from "../../globalComponents/StandardButton";
 
 const Clashes = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
+  const [page, setPage] = useState(1);
+  const dispatch = useDispatch();
+  const clashes = useSelector(selectAllChallengeClashes);
+  const loading = useSelector(selectChallengeClashLoading);
+  const error = useSelector(selectChallengeClashError);
+  const lastVisible = useSelector(selectLastVisibleClash);
+
+  useEffect(() => {
+    dispatch(fetchAllChallengeClashes({ lastVisible }));
+  }, [dispatch, page]);
+
+  const loadMoreClashes = () => {
+    if (!loading) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -41,32 +67,43 @@ const Clashes = (props) => {
                   style={{ width: "100%", height: "100%" }}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.contentCreateBtn} onPress={()=>navigation.navigate("CreateClash")}>
+              <TouchableOpacity
+                style={styles.contentCreateBtn}
+                onPress={() => navigation.navigate("CreateClash")}
+              >
                 <Text style={font(13, "#FFFFFF", "Semibold")}>
                   Create Clash
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
-          <TouchableOpacity style={styles.contentCreateRoomBtn} onPress={()=>navigation.navigate("CreateRoom")}>
+          <TouchableOpacity
+            style={styles.contentCreateRoomBtn}
+            onPress={() => navigation.navigate("CreateRoom")}
+          >
             <Text style={font(13, "#FFFFFF", "Semibold")}>Create Room</Text>
           </TouchableOpacity>
           {/* Clash cards here */}
           <View style={styles.cardsWrapper}>
-            {new Array(10).fill("").map((item, index) => {
-              if (index % 2 == 1) return <DualClashCard key={index} />;
-              return (
-                <ClashCard
-                  onCardPress={() => navigation.navigate("ClashRoom")}
-                  active={index == 0}
-                  is_featured={index == 0}
-                  is_public={index % 2 == 0}
-                  is_private={index % 2 == 1}
-                  key={index}
-                />
-              );
+            {clashes?.map((item, index) => {
+              return <DualClashCard key={index} data={item} />;
+              
+              // return (
+              //   <ClashCard
+              //     onCardPress={() => navigation.navigate("ClashRoom")}
+              //     active={index == 0}
+              //     is_featured={index == 0}
+              //     is_public={index % 2 == 0}
+              //     is_private={index % 2 == 1}
+              //     key={index}
+              //   />
+              // );
             })}
           </View>
+          <StandardButton
+            title={loading ? "Loading..." : "Load More"}
+            onPress={!loading && loadMoreClashes}
+          />
         </View>
       </ScrollView>
       <BottomMenu />

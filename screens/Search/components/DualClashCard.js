@@ -15,25 +15,29 @@ import {
 } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
+import { getPercent } from "../../../middleware";
 
 const DualClashCard = (props) => {
-  let {} = props;
+  let { data } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
-  const ClashUserCard = ({}) => {
+  let challenger = data?.challenger;
+  let opponent = data?.opponent;
+
+  const ClashUserCard = ({ user, type, audio }) => {
     return (
       <View style={styles.clashUserItem}>
         <View style={styles.clashUserProfile}>
           <Image
-            source={require("../../../assets/icon.png")}
+            source={{ uri: user?.profile_photo }}
             resizeMode="contain"
             style={{ width: "100%", height: "100%" }}
           />
         </View>
-        <Text style={font(14, "#000000", "Semibold", 3)}>Zeeshan Karim</Text>
-        <Text style={font(12, "#9CA3AF", "Medium", 3)}>Challenger</Text>
-        <WaveAudioPlayer iconSize={15} />
+        <Text style={font(14, "#000000", "Semibold", 3)}>{user?.realName}</Text>
+        <Text style={font(12, "#9CA3AF", "Medium", 3)}>{type}</Text>
+        <WaveAudioPlayer showDuration iconSize={15} source={audio} />
       </View>
     );
   };
@@ -57,6 +61,36 @@ const DualClashCard = (props) => {
             32 Opinions
           </Text>
         </View>
+        <View style={styles.cardFooterItem}>
+          <Image
+            source={require("../../../assets/icons/post_cards/flag.png")}
+            resizeMode="contain"
+            style={{
+              width: getPercent(4, width),
+              height: getPercent(4, width),
+            }}
+          />
+          <Text
+            style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
+          >
+            Report
+          </Text>
+        </View>
+        <View style={styles.cardFooterItem}>
+          <Image
+            source={require("../../../assets/icons/post_cards/share.png")}
+            resizeMode="contain"
+            style={{
+              width: getPercent(4, width),
+              height: getPercent(4, width),
+            }}
+          />
+          <Text
+            style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
+          >
+            Share
+          </Text>
+        </View>
       </View>
     );
   };
@@ -68,8 +102,17 @@ const DualClashCard = (props) => {
           “The Jan 6 Commission is a fraud”
         </Text>
         <View style={styles.clashesCardUsersCont}>
-          <ClashUserCard />
-          <ClashUserCard />
+          <ClashUserCard
+            user={challenger}
+            audio={data?.challenger_audio}
+            type="Challenger"
+          />
+          <Text style={styles.vsText}>VS</Text>
+          <ClashUserCard
+            user={opponent}
+            audio={data?.opponent_audio}
+            type="Opponent"
+          />
         </View>
         <CardFooter />
       </View>

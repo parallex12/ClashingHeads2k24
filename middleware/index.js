@@ -155,6 +155,11 @@ export const sideMenuOptions = [
     route: "",
     icon: require("../assets/icons/sideMenu/2.png"),
   },
+  {
+    title: "Challenge Requests",
+    route: "ChallengeRequests",
+    icon: require("../assets/icons/sideMenu/5.png"),
+  },
 
   {
     title: "Sponsors",

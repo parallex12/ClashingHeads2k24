@@ -36,6 +36,7 @@ const challengeClashSlice = createSlice({
     setError(state, action) {
       state.error = action.payload;
     },
+
     addSubClash(state, action) {
       state.subClashes.push(action.payload);
     },
@@ -70,43 +71,56 @@ export const {
   updateChallengeClashDetails,
 } = challengeClashSlice.actions;
 
-export const fetchChallengeClashAndSubClashes = (clashId) => async (dispatch) => {
-  dispatch(setLoading(true));
-  try {
-    const db = getFirestore();
-    const clashRef = doc(db, "ChallengeClashes", clashId);
-    const unsubscribeClash = onSnapshot(clashRef, (doc) => {
-      if (doc.exists()) {
-        dispatch(setChallengeClash({ id: doc.id, ...doc.data() }));
-      } else {
-        dispatch(setChallengeClash(null));
-      }
-    });
-    const subClashesRef = collection(db, "ChallengeClashes", clashId, "SubClashes");
-    const unsubscribeSubClashes = onSnapshot(subClashesRef, (snapshot) => {
-      const subClashes = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      dispatch(setSubClashes(sortPostsByCreatedAt(subClashes)));
-    });
-    // Clean up subscriptions
-    return () => {
-      unsubscribeClash();
-      unsubscribeSubClashes();
-    };
-  } catch (error) {
-    dispatch(setError(error.message));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
+export const fetchChallengeClashAndSubClashes =
+  (clashId) => async (dispatch) => {
+    dispatch(setLoading(true));
+    try {
+      const db = getFirestore();
+      const clashRef = doc(db, "ChallengeClashes", clashId);
+      const unsubscribeClash = onSnapshot(clashRef, (doc) => {
+        if (doc.exists()) {
+          dispatch(setChallengeClash({ id: doc.id, ...doc.data() }));
+        } else {
+          dispatch(setChallengeClash(null));
+        }
+      });
+      const subClashesRef = collection(
+        db,
+        "ChallengeClashes",
+        clashId,
+        "SubClashes"
+      );
+      const unsubscribeSubClashes = onSnapshot(subClashesRef, (snapshot) => {
+        const subClashes = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        dispatch(setSubClashes(sortPostsByCreatedAt(subClashes)));
+      });
+      // Clean up subscriptions
+      return () => {
+        unsubscribeClash();
+        unsubscribeSubClashes();
+      };
+    } catch (error) {
+      dispatch(setError(error.message));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
-export const addSubClashToChallenge = (clashId, subClashData) => async (dispatch) => {
+export const addSubClashToChallenge =
+  (clashId, subClashData) => async (dispatch) => {
     try {
       dispatch(addSubClash({ ...subClashData }));
       const db = getFirestore();
-      const subClashesRef = doc(db, "ChallengeClashes", clashId, "SubClashes",subClashData?.id);
+      const subClashesRef = doc(
+        db,
+        "ChallengeClashes",
+        clashId,
+        "SubClashes",
+        subClashData?.id
+      );
       const docRef = await setDoc(subClashesRef, subClashData);
       if (subClashData?.recording && subClashData?.clashType == "mic") {
         await uploadMedia(subClashData?.recording, "clashesAudios")
@@ -126,25 +140,31 @@ export const addSubClashToChallenge = (clashId, subClashData) => async (dispatch
       console.error("Error adding sub-clash:", error);
     }
   };
-  
 
-export const updateChallengeClash = (clashId, updatedFields) => async (dispatch) => {
-  try {
-    const db = getFirestore();
-    const clashRef = doc(db, "ChallengeClashes", clashId);
-    await updateDoc(clashRef, updatedFields);
-    dispatch(updateChallengeClashDetails(updatedFields));
-  } catch (error) {
-    console.error("Error updating challenge clash details:", error);
-    dispatch(setError(error.message));
-  }
-};
+export const updateChallengeClash =
+  (clashId, updatedFields) => async (dispatch) => {
+    try {
+      const db = getFirestore();
+      const clashRef = doc(db, "ChallengeClashes", clashId);
+      await updateDoc(clashRef, updatedFields);
+      dispatch(updateChallengeClashDetails(updatedFields));
+    } catch (error) {
+      console.error("Error updating challenge clash details:", error);
+      dispatch(setError(error.message));
+    }
+  };
 
 export const updateSubClashDetails =
   (clashId, subClashId, updatedFields) => async (dispatch) => {
     try {
       const db = getFirestore();
-      const subClashRef = doc(db, "ChallengeClashes", clashId, "SubClashes", subClashId);
+      const subClashRef = doc(
+        db,
+        "ChallengeClashes",
+        clashId,
+        "SubClashes",
+        subClashId
+      );
       await updateDoc(subClashRef, updatedFields);
       dispatch(updateSubClash({ subClashId, updatedFields }));
     } catch (error) {
@@ -194,7 +214,13 @@ export const updateSubClashReaction =
 
       dispatch(updateSubClash({ subClashId: subClash?.id, updatedFields }));
       const db = getFirestore();
-      const subClashRef = doc(db, "ChallengeClashes", subClash?.challengeClashId, "SubClashes", subClash?.id);
+      const subClashRef = doc(
+        db,
+        "ChallengeClashes",
+        subClash?.challengeClashId,
+        "SubClashes",
+        subClash?.id
+      );
       await updateDoc(subClashRef, updatedFields);
     } catch (error) {
       console.error("Error updating sub-clash reaction:", error);

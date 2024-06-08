@@ -80,6 +80,13 @@ export const ClashesResultStyles = ({ width, height }) =>
       justifyContent: "center",
       marginHorizontal: 10,
     },
+    vsText: {
+      fontSize: rf(28),
+      color: "#DB2727",
+      fontFamily: "BLP",
+      alignSelf: "flex-start",
+      top: getPercent(3, height),
+    },
   });
 
 //PostsResult  starts here
@@ -107,8 +114,7 @@ export const PostsResultStyles = ({ width, height }) =>
 //PeopleResultStyles  starts here
 export const PeopleResultStyles = ({ width, height }) =>
   StyleSheet.create({
-    container: {
-    },
+    container: {},
   });
 
 //NewsResultStyles  starts here
@@ -153,7 +159,7 @@ export const NewsResultStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-between",
       minHeight: getPercent(7, height),
-      marginTop:10
+      marginTop: 10,
     },
     cardFootercompanyLogo: {
       flex: 1,

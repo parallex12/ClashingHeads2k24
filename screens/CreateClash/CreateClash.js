@@ -27,11 +27,18 @@ import _ from "lodash"; // Import lodash
 import UserCard from "../../globalComponents/UserCard";
 import { ActivityIndicator } from "react-native";
 import PeopleResult from "../Search/components/PeopleResult";
-import { createChallengeClash, validate_clash_details } from "../../middleware/firebase";
-import { startLoading, stopLoading } from "../../state-management/features/screen_loader/loaderSlice";
+import {
+  createChallengeClash,
+  validate_clash_details,
+} from "../../middleware/firebase";
+import {
+  startLoading,
+  stopLoading,
+} from "../../state-management/features/screen_loader/loaderSlice";
+import { addChallengeRequestForUser } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
 
 const CreateClash = (props) => {
-  let { } = props;
+  let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_details = useSelector(selectAuthUser);
@@ -53,27 +60,36 @@ const CreateClash = (props) => {
     votes: {},
     views: 0,
     isChallengeDone: false,
+    status: "pending",
   });
 
   const onSendRequest = async () => {
     clashForm["challenger_audio"] = await recordedVoice?.getURI();
     await validate_clash_details(clashForm)
       .then((res) => {
-        dispatch(startLoading())
+        dispatch(startLoading());
         if (res?.code == 200) {
           createChallengeClash(clashForm)
             .then((res) => {
-              console.log(res)
-              dispatch(stopLoading())
-            }).catch((e) => {
-              console.log(e)
-              dispatch(stopLoading())
+              let requestData = {
+                challengeId: res?.post_data?.id,
+                challenger: user_details?.id, // The user who initiates the challenge
+                opponent: clashForm?.opponent?.id, // The user who is being challenged
+                createdAt: new Date().toISOString(),
+                status: "pending",
+              };
+              dispatch(addChallengeRequestForUser(user_details?.id,requestData));
+              props?.navigation.navigate("Clashes")
             })
+            .catch((e) => {
+              console.log(e);
+              dispatch(stopLoading());
+            });
         }
       })
       .catch((e) => {
         console.log(e);
-        alert(e?.msg)
+        alert(e?.msg);
       });
   };
 
