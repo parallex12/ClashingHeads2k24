@@ -11,7 +11,7 @@ import { getPercent } from "../middleware";
 import { font } from "../styles/Global/main";
 
 const UserCard = (props) => {
-  let { author, selectable, isSelected,onCardPress } = props;
+  let { author, selectable, isSelected, onCardPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
@@ -31,15 +31,19 @@ const UserCard = (props) => {
   };
 
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.6} onPress={onCardPress}>
+    <TouchableOpacity
+      style={styles.container}
+      activeOpacity={0.6}
+      onPress={onCardPress}
+    >
       <Profile
         source={{
-          uri: "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
+          uri: author?.profile_photo,
         }}
       />
       <View style={styles.infoWrapper}>
         <View style={styles.infoTitleRow}>
-          <Text style={styles.titleName}>Lefty Al</Text>
+          <Text style={styles.titleName}>{author?.realName}</Text>
           <Image
             source={require("../assets/icons/mStarIcon.png")}
             resizeMode="contain"
@@ -49,7 +53,7 @@ const UserCard = (props) => {
             }}
           />
         </View>
-        <Text style={styles.slugText}>Democrat - Los Angles,CA 20h</Text>
+        <Text style={styles.slugText}>{author?.politics}</Text>
       </View>
       {selectable ? (
         isSelected ? (

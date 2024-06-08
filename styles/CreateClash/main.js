@@ -31,4 +31,7 @@ export const styles = ({ width, height }) =>
       color: "#111827",
       marginVertical: 5,
     },
+    searchResultsList: {
+      borderWidth: 1,
+    },
   });

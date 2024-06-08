@@ -215,6 +215,25 @@ export const validate_post_details = async (details) => {
   });
 };
 
+export const validate_clash_details = async (details) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log(details)
+      const requiredFields = ["challenger", "title","opponent", "challenger_audio",];
+      const validation = validateRequiredFields(details, requiredFields);
+      if (!validation.isValid) {
+        reject({ msg: validation.msg, field: validation.field });
+        return;
+      }
+      // If email and username are unique, resolve
+      resolve({ code: 200, msg: "Clash details are valid" });
+    } catch (error) {
+      console.error(error);
+      reject("Error validating user details");
+    }
+  });
+};
+
 export const addUser = async (userId, userDetails) => {
   return new Promise((resolve, reject) => {
     const db = getFirestore();

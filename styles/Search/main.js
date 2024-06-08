@@ -108,7 +108,6 @@ export const PostsResultStyles = ({ width, height }) =>
 export const PeopleResultStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      flex: 1,
     },
   });
 
