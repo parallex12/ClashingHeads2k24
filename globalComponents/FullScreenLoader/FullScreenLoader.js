@@ -12,9 +12,12 @@ import { useEffect, useRef, useState } from "react";
 import { Keyboard } from "react-native";
 import { useSelector } from "react-redux";
 import { isAppLoading } from "../../state-management/features/screen_loader";
+import { getPercent } from "../../middleware";
+import Svg, { Path } from "react-native-svg";
+import * as Animatable from "react-native-animatable";
 
 const FullScreenLoader = (props) => {
-  const loading=useSelector(isAppLoading)
+  const loading = useSelector(isAppLoading);
   let { width, height } = useWindowDimensions();
   let styles = FullScreenLoaderStyles({ width, height });
   const [paths, setPaths] = useState([-width, 0, width]);
@@ -44,12 +47,23 @@ const FullScreenLoader = (props) => {
       style={[styles.container, { transform: [{ translateX: slideAnim }] }]}
     >
       <Image
-        source={require("../../assets/splash.png")}
-        style={{ width: width, height: height }}
-        resizeMode="cover"
+        source={require("../../assets/logo.png")}
+        style={{ width: getPercent(50, width), height: getPercent(10, height) }}
+        resizeMode="contain"
       />
+      <View style={styles.titleWrapper}>
+        <Animatable.Text
+          animation="pulse"
+          easing="ease-out"
+          iterationCount="infinite"
+          style={styles.title}
+        >
+          CLASHING HEADS
+        </Animatable.Text>
+      </View>
+      <Text style={styles.slug}>(Patent Pending) (Beta Version 1.0)</Text>
     </Animated.View>
   );
 };
 
-export default FullScreenLoader
+export default FullScreenLoader;

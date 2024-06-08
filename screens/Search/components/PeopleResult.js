@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { PeopleResultStyles as _styles } from "../../../styles/Search/main";
 import UserCard from "../../../globalComponents/UserCard";
+import { useSelector } from "react-redux";
 const PeopleResult = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();

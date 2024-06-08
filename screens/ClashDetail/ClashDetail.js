@@ -12,27 +12,34 @@ import { isVoiceModalOpen_Recoil } from "../../state-management/atoms/atoms";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { makeSelectSinglePost } from "../../state-management/features/singlePost";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSinglePostAndClashes } from "../../state-management/features/singlePost/singlePostSlice";
+import {
+  fetchSinglePostAndClashes,
+  updatePost,
+} from "../../state-management/features/singlePost/singlePostSlice";
+import auth from "@react-native-firebase/auth";
 
 const ClashDetails = (props) => {
-  let { } = props;
+  let {} = props;
   const dispatch = useDispatch();
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let prevData = props?.route?.params;
   const bottomVoiceSheetRef = useRef(null);
   const bottomFlagSheetRef = useRef(null);
-  let postId = prevData?.id
-  const [clashTo, setClashTo] = useState("post")
+  let postId = prevData?.id;
+  const [clashTo, setClashTo] = useState("post");
   const selectSinglePost = makeSelectSinglePost(postId);
   const { post, subClashes, loading, error } = useSelector(selectSinglePost);
+  const user_id = auth().currentUser?.uid;
 
   useEffect(() => {
-    // Dispatch the fetchSinglePostAndClashes thunk action with the postId
     dispatch(fetchSinglePostAndClashes(postId));
+    let postUserViews = { ...post?.views } || {};
+    if (postId && post?.author && !postUserViews[user_id]) {
+      postUserViews[user_id] = true;
+      dispatch(updatePost(postId, { views: postUserViews }));
+    }
   }, [dispatch, postId]);
-
-
 
   return (
     <View style={styles.container}>
@@ -50,17 +57,20 @@ const ClashDetails = (props) => {
             postClashes={subClashes?.length} // Use subClashes length from Redux state
             onPostClashesPress={() => bottomVoiceSheetRef.current?.present()}
             onReportPress={() => bottomFlagSheetRef?.current?.present()}
+            views={Object.keys(post?.views || {})?.length}
+            onProfilePress={() => props?.navigation?.navigate("UserProfile")}
           />
           <View style={styles.clashes_wrapper}>
             {subClashes?.map((clash, index) => (
               <ClashCard
+                user_id={user_id}
                 hrLine={index !== subClashes.length - 1} // Show hrLine for all but the last clash
                 postDateAndViews
                 data={clash} // Render individual clash data
                 key={clash?.id} // Use a unique key for each ClashCard
                 onPostClashesPress={() => {
-                  setClashTo(clash?.id)
-                  bottomVoiceSheetRef.current?.present()
+                  setClashTo(clash);
+                  bottomVoiceSheetRef.current?.present();
                 }}
                 onReportPress={() => bottomFlagSheetRef?.current?.present()}
               />
@@ -69,8 +79,15 @@ const ClashDetails = (props) => {
         </View>
       </ScrollView>
 
-      <VoiceRecorderBottomSheet clashTo={clashTo} postId={postId} bottomVoiceSheetRef={bottomVoiceSheetRef} />
-      <FlagReportBottomSheet postId={postId} bottomSheetRef={bottomFlagSheetRef} />
+      <VoiceRecorderBottomSheet
+        clashTo={clashTo}
+        postId={postId}
+        bottomVoiceSheetRef={bottomVoiceSheetRef}
+      />
+      <FlagReportBottomSheet
+        postId={postId}
+        bottomSheetRef={bottomFlagSheetRef}
+      />
       <BottomMenu />
     </View>
   );

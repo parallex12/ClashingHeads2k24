@@ -11,6 +11,7 @@ export const FontsConfig = {
   Semibold: require("../assets/fonts/SF-Pro-Text-Semibold.otf"),
   Bold: require("../assets/fonts/SF-Pro-Text-Bold.otf"),
   Heavy: require("../assets/fonts/SF-Pro-Text-Heavy.otf"),
+  BLP: require("../assets/fonts/BertramLETPlain.ttf"),
 };
 
 export const get12FormatTime = (time) => {

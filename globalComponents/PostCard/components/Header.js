@@ -16,13 +16,16 @@ const Header = (props) => {
   let { author, createdAt, onProfilePress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  let user_author = author
-  let post_past_time = getTimeElapsed(createdAt)
+  let user_author = author;
+  let post_past_time = getTimeElapsed(createdAt);
 
   const Profile = ({ source }) => {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.profileWrapper} onPress={onProfilePress}>
+        <TouchableOpacity
+          style={styles.profileWrapper}
+          onPress={onProfilePress}
+        >
           <Image
             source={source}
             resizeMode="cover"
@@ -53,7 +56,9 @@ const Header = (props) => {
             }}
           />
         </View>
-        <Text style={styles.slugText}>{user_author?.politics?.key} - Los Angles,CA  {post_past_time}</Text>
+        <Text style={styles.slugText}>
+          {user_author?.politics} - {post_past_time}
+        </Text>
       </View>
       <TouchableOpacity>
         <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />

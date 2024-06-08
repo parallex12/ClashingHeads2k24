@@ -23,7 +23,8 @@ const StandardInput = (props) => {
     onChangeText,
     onRemoveField,
     value,
-    customIcon
+    customIcon,
+    titleTextStyle
   } = props;
   let { width, height } = useWindowDimensions();
   const [dateOfBirth, setDateOfBirth] = useState(new Date());
@@ -75,7 +76,7 @@ const StandardInput = (props) => {
 
   return (
     <View style={[styles.container, containerStyles]}>
-      <Text style={styles.titleText}>{data?.title}</Text>
+      <Text style={[styles.titleText,titleTextStyle]}>{data?.title}</Text>
       <View style={[styles.inputWrapper, inputStyles]}>
         {data?.type == "text" ? (
           <TextInput

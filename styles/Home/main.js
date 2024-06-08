@@ -12,7 +12,7 @@ export const styles = ({ width, height }) =>
     content: {
       flex: 1,
       paddingTop: getPercent(1, height),
-      zIndex: 5,
+      zIndex: 999999,
       paddingBottom: getPercent(12, height),
     },
     header2Wrapper: {
@@ -23,6 +23,7 @@ export const styles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-between",
       borderColor: "#F7F8F8",
+      borderBottomWidth:5
     },
     header2WrapperBtn: {
       width: getPercent(40, width),

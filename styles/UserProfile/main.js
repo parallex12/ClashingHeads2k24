@@ -42,6 +42,7 @@ export const ProfileCardstyles = ({ width, height }) =>
       borderRadius: 100,
       alignItems: "center",
       justifyContent: "center",
+      overflow:'hidden'
     },
     cardHeaderProfileOnlineDot: {
       width: getPercent(4, width),

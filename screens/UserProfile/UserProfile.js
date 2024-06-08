@@ -13,14 +13,15 @@ import PostCard from "../../globalComponents/PostCard/PostCard";
 import { useRecoilState } from "recoil";
 import { global_posts, home_posts } from "../../state-management/atoms/atoms";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { getPercent } from "../../middleware";
 
 const UserProfile = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [posts, setPosts] = useRecoilState(home_posts);
+  let user=props?.route?.params?.user
+  const [posts, setPosts] = useState([]);
   const bottomFlagSheetRef = useRef();
 
   return (
@@ -32,7 +33,7 @@ const UserProfile = (props) => {
       />
       <ScrollView>
         <View style={styles.content}>
-          <ProfileCard />
+          <ProfileCard user={user}  />
           {posts?.map((item, index) => {
             return (
               <PostCard

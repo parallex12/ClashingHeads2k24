@@ -19,7 +19,11 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { firebaseQuerySort, sortPostsByCreatedAt, validateRequiredFields } from "../utils";
+import {
+  firebaseQuerySort,
+  sortPostsByCreatedAt,
+  validateRequiredFields,
+} from "../utils";
 import { useRecoilState } from "recoil";
 import { home_posts, user_auth } from "../state-management/atoms/atoms";
 import {
@@ -30,6 +34,7 @@ import {
 } from "firebase/storage";
 import { HOME_POSTS, USER_DB_DETAILS } from "../state-management/types/types";
 import store from "../state-management/store/store";
+import { setNewPostProgress } from "../state-management/features/screen_loader/loaderSlice";
 
 export const getFirestoreDoc = async (collection, docID) => {
   try {
@@ -48,37 +53,33 @@ export const getFirestoreDoc = async (collection, docID) => {
   }
 };
 
-
-
 export const getHomePosts = async (currentPagePosition) => {
-
   return new Promise(async (resolve, reject) => {
-
     try {
       const db = getFirestore();
-      const postsCollection = collection(db, 'Posts');
-      const q = query(postsCollection,limit(500));
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const arr = [];
-        snapshot.forEach((doc) => {
-          arr.push({ id: doc.id, ...doc.data() });
-        });
-        resolve(arr);
-      }, (error) => {
-        console.log('Error getting documents: ', error);
-        reject(error);
-      });
+      const postsCollection = collection(db, "Posts");
+      const q = query(postsCollection, limit(500));
+      const unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          const arr = [];
+          snapshot.forEach((doc) => {
+            arr.push({ id: doc.id, ...doc.data() });
+          });
+          resolve(arr);
+        },
+        (error) => {
+          console.log("Error getting documents: ", error);
+          reject(error);
+        }
+      );
       // Log when the listener is first attached
-
     } catch (e) {
-      console.log('Error getting documents: ', error);
-      reject(e)
+      console.log("Error getting documents: ", error);
+      reject(e);
     }
-  })
+  });
 };
-
-
-
 
 export const isUserProfileConnected = async (userID) => {
   return new Promise(async (resolve, reject) => {
@@ -104,7 +105,7 @@ export const isUserProfileConnected = async (userID) => {
           return;
         }
 
-        resolve({user:{ id: docSnap.id, ...docSnap?.data() }});
+        resolve({ user: { id: docSnap.id, ...docSnap?.data() } });
       } else {
         reject(404);
         console.log("No User Profile Connected!");
@@ -124,10 +125,10 @@ export const validate_user_details = async (details, user_profile_details) => {
     try {
       // Initialize Firestore
       const db = getFirestore();
-      
+
       // Define the required fields for validation
       const requiredFields = ["email", "username", "realName"];
-      
+
       // Validate required fields
       const validation = validateRequiredFields(details, requiredFields);
 
@@ -138,24 +139,40 @@ export const validate_user_details = async (details, user_profile_details) => {
       }
 
       // Determine if email and username checks are required
-      const emailCheckRequired = !user_profile_details || user_profile_details.email !== details.email;
-      const usernameCheckRequired = !user_profile_details || user_profile_details.username !== details.username;
+      const emailCheckRequired =
+        !user_profile_details || user_profile_details.email !== details.email;
+      const usernameCheckRequired =
+        !user_profile_details ||
+        user_profile_details.username !== details.username;
 
       // Create queries for email and username validation if required
       const emailQuery = emailCheckRequired
-        ? query(collectionGroup(db, "Users"), where("email", "==", details.email))
+        ? query(
+            collectionGroup(db, "Users"),
+            where("email", "==", details.email)
+          )
         : null;
 
       const usernameQuery = usernameCheckRequired
-        ? query(collectionGroup(db, "Users"), where("username", "==", details.username))
+        ? query(
+            collectionGroup(db, "Users"),
+            where("username", "==", details.username)
+          )
         : null;
 
       // Execute the queries, defaulting to empty results if the query is not required
-      const emailSnapshotPromise = emailQuery ? getDocs(emailQuery) : Promise.resolve({ empty: true });
-      const usernameSnapshotPromise = usernameQuery ? getDocs(usernameQuery) : Promise.resolve({ empty: true });
+      const emailSnapshotPromise = emailQuery
+        ? getDocs(emailQuery)
+        : Promise.resolve({ empty: true });
+      const usernameSnapshotPromise = usernameQuery
+        ? getDocs(usernameQuery)
+        : Promise.resolve({ empty: true });
 
       // Await the results of both queries
-      const [emailSnapshot, usernameSnapshot] = await Promise.all([emailSnapshotPromise, usernameSnapshotPromise]);
+      const [emailSnapshot, usernameSnapshot] = await Promise.all([
+        emailSnapshotPromise,
+        usernameSnapshotPromise,
+      ]);
 
       // Check the email query results
       if (emailCheckRequired && !emailSnapshot.empty) {
@@ -179,8 +196,6 @@ export const validate_user_details = async (details, user_profile_details) => {
   });
 };
 
-
-
 export const validate_post_details = async (details) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -191,7 +206,6 @@ export const validate_post_details = async (details) => {
         return;
       }
 
-
       // If email and username are unique, resolve
       resolve({ code: 200, msg: "Post details are valid" });
     } catch (error) {
@@ -200,7 +214,6 @@ export const validate_post_details = async (details) => {
     }
   });
 };
-
 
 export const addUser = async (userId, userDetails) => {
   return new Promise((resolve, reject) => {
@@ -250,6 +263,8 @@ export const uploadMedia = (media, path, mediaName) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log("Upload is " + progress + "% done");
+
+        
           switch (snapshot.state) {
             case "paused":
               console.log("Upload is paused");
@@ -273,7 +288,6 @@ export const uploadMedia = (media, path, mediaName) => {
                 "Unknown error occurred, inspect error.serverResponse"
               );
               break;
-
           }
         },
         () => {
@@ -291,29 +305,38 @@ export const uploadMedia = (media, path, mediaName) => {
   });
 };
 
-
-export const createPost = async (post_details) => {
+export const createPost = async (post_details, dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       const db = getFirestore();
-      let { url } = await uploadMedia(post_details?.recording, "post_recordings")
-      post_details["recording"] = url
+
+      let { url } = await uploadMedia(
+        post_details?.recording,
+        "post_recordings"
+      );
+      post_details["recording"] = url;
 
       if (post_details?.post_image) {
-        let { url } = await uploadMedia(post_details?.post_image, "post_images")
-        post_details["post_image"] = url
+        let { url } = await uploadMedia(
+          post_details?.post_image,
+          "post_images"
+        );
+        post_details["post_image"] = url;
       }
 
       await addDoc(collection(db, "Posts"), post_details)
         .then((res) => {
-          resolve({ msg: "Post added successfully", post_data: { id: res?.id, ...post_details } });
+          resolve({
+            msg: "Post added successfully",
+            post_data: { id: res?.id, ...post_details },
+          });
         })
         .catch((error) => {
           console.log("Error adding new post:", error);
           reject(error);
         });
     } catch (e) {
-      reject(e)
+      reject(e);
     }
   });
 };
@@ -333,7 +356,12 @@ export const update_post = async (postId, updatedDetails) => {
   });
 };
 
-export const update_post_reaction_locally = async (postData, userId, reactionType, setTempPostData) => {
+export const update_post_reaction_locally = async (
+  postData,
+  userId,
+  reactionType,
+  setTempPostData
+) => {
   try {
     const userReactions = postData.reactions || {}; // { userId: 'like' or 'dislike' }
 
@@ -343,9 +371,9 @@ export const update_post_reaction_locally = async (postData, userId, reactionTyp
     const currentReaction = userReactions[userId];
     // Remove user's current reaction
     if (currentReaction) {
-      if (currentReaction === 'like') {
+      if (currentReaction === "like") {
         updatedLikes -= 1;
-      } else if (currentReaction === 'dislike') {
+      } else if (currentReaction === "dislike") {
         updatedDislikes -= 1;
       }
     }
@@ -355,9 +383,9 @@ export const update_post_reaction_locally = async (postData, userId, reactionTyp
       delete userReactions[userId];
     } else {
       // Add new reaction
-      if (reactionType === 'like') {
+      if (reactionType === "like") {
         updatedLikes += 1;
-      } else if (reactionType === 'dislike') {
+      } else if (reactionType === "dislike") {
         updatedDislikes += 1;
       }
 
@@ -365,18 +393,17 @@ export const update_post_reaction_locally = async (postData, userId, reactionTyp
       userReactions[userId] = reactionType;
       setTempPostData((prev) => {
         return {
-          ...prev, likes: updatedLikes,
+          ...prev,
+          likes: updatedLikes,
           dislikes: updatedDislikes,
-          reactions: userReactions
-        }
-      })
+          reactions: userReactions,
+        };
+      });
     }
-
   } catch (e) {
     console.log("Like or Dislike failed local", e);
   }
-}
-
+};
 
 export const update_post_reaction = async (postId, userId, reactionType) => {
   return new Promise(async (resolve, reject) => {
@@ -391,7 +418,7 @@ export const update_post_reaction = async (postId, userId, reactionType) => {
         }
 
         const postData = postDoc.data();
-        const userReactions = postData.reactions || {}; // { userId: 'like' or 'dislike' }
+        const userReactions = { ...postData.reactions } || {}; // { userId: 'like' or 'dislike' }
 
         let updatedLikes = postData.likes || 0;
         let updatedDislikes = postData.dislikes || 0;
@@ -399,9 +426,9 @@ export const update_post_reaction = async (postId, userId, reactionType) => {
         const currentReaction = userReactions[userId];
         // Remove user's current reaction
         if (currentReaction) {
-          if (currentReaction === 'like') {
+          if (currentReaction === "like") {
             updatedLikes -= 1;
-          } else if (currentReaction === 'dislike') {
+          } else if (currentReaction === "dislike") {
             updatedDislikes -= 1;
           }
         }
@@ -411,9 +438,9 @@ export const update_post_reaction = async (postId, userId, reactionType) => {
           delete userReactions[userId];
         } else {
           // Add new reaction
-          if (reactionType === 'like') {
+          if (reactionType === "like") {
             updatedLikes += 1;
-          } else if (reactionType === 'dislike') {
+          } else if (reactionType === "dislike") {
             updatedDislikes += 1;
           }
 
@@ -425,7 +452,7 @@ export const update_post_reaction = async (postId, userId, reactionType) => {
         transaction.update(postRef, {
           likes: updatedLikes,
           dislikes: updatedDislikes,
-          reactions: userReactions
+          reactions: userReactions,
         });
       });
       resolve(200);

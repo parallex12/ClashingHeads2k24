@@ -25,7 +25,12 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Stickers from "./Stickers";
 import { getPercent } from "../../middleware";
 import { selectAuthUser } from "../../state-management/features/auth";
-import { addClash, addClashToPost, generateUniqueId, updateClashDetails } from "../../state-management/features/singlePost/singlePostSlice";
+import {
+  addClash,
+  addClashToPost,
+  generateUniqueId,
+  updateClashDetails,
+} from "../../state-management/features/singlePost/singlePostSlice";
 import { uploadMedia } from "../../middleware/firebase";
 
 const VoiceRecorderBottomSheet = (props) => {
@@ -35,13 +40,13 @@ const VoiceRecorderBottomSheet = (props) => {
   const [recordedVoice, setRecordedVoice] = useState(null);
   const [currentVoiceMode, setCurrentVoiceMode] = useState("mic");
   const [recordingDuration, setRecordingDuration] = useState(0);
-  const [selectedSticker, setSelectedSticker] = useState(1)
-  const [isReadyToClash, setIsReadyToClash] = useState(false)
-  const dispatch = useDispatch()
+  const [selectedSticker, setSelectedSticker] = useState(0);
+  const [isReadyToClash, setIsReadyToClash] = useState(false);
+  const dispatch = useDispatch();
   // variables
   const snapPoints = useMemo(() => ["25%", "60%"], []);
   let duration = formatDuration(recordingDuration);
-  let user_profile = useSelector(selectAuthUser)
+  let user_profile = useSelector(selectAuthUser);
   const onChangeMode = () => {
     setCurrentVoiceMode((prev) => (prev == "mic" ? "sticker" : "mic"));
   };
@@ -51,23 +56,32 @@ const VoiceRecorderBottomSheet = (props) => {
       id: generateUniqueId(),
       clashType: currentVoiceMode,
       selectedSticker: selectedSticker,
-      recording: recordedVoice?.getURI(),
+      recording: recordedVoice?.getURI() || null,
       postId,
       likes: 0,
+      reactions: {},
       dislikes: 0,
       clashes: 0,
+      listened:0,
       author: { ...user_profile },
       clashTo: clashTo,
-      createdAt: new Date().toISOString()
-    }
+      createdAt: new Date().toISOString(),
+    };
     if (selectedSticker != undefined || recordedVoice) {
-      dispatch(addClashToPost(postId, clashDetails))
-      setRecordedVoice(null)
-      setRecordingDuration(0)
-      bottomVoiceSheetRef.current.close()
-      return
+      dispatch(addClashToPost(postId, clashDetails));
+      if (clashTo != "post") {
+        dispatch(
+          updateClashDetails(postId, clashTo?.id, {
+            clashes: eval(clashTo?.clashes + 1),
+          })
+        );
+      }
+      setRecordedVoice(null);
+      setRecordingDuration(0);
+      bottomVoiceSheetRef.current.close();
+      return;
     }
-  }
+  };
 
   return (
     <BottomSheetModalProvider>
@@ -97,43 +111,47 @@ const VoiceRecorderBottomSheet = (props) => {
               </TouchableOpacity>
             </View>
             <View style={styles.micWrapper}>
-              {
-                currentVoiceMode == "sticker" ?
-                  <Image
-                    source={stickerArr[selectedSticker || 0].img}
-                    resizeMode="contain"
-                    style={{ width: "100%", height: "100%" }}
-                  />
-                  :
-                  <Image
-                    source={require("../../assets/images/MicRec.png")}
-                    resizeMode="contain"
-                    style={{ width: "100%", height: "100%" }}
-                  />
-              }
-
+              {currentVoiceMode == "sticker" ? (
+                <Image
+                  source={stickerArr[selectedSticker || 0].img}
+                  resizeMode="contain"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              ) : (
+                <Image
+                  source={require("../../assets/images/MicRec.png")}
+                  resizeMode="contain"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              )}
             </View>
             <View style={styles.quickAudioWrapper}>
-              {currentVoiceMode == "mic" ?
+              {currentVoiceMode == "mic" ? (
                 <>
                   <Emojis onEmojiPress={(item) => console.log(item)} />
                 </>
-                :
+              ) : (
                 <View style={{ paddingVertical: getPercent(2, height) }}>
-                  <Stickers selectedSticker={selectedSticker} setSelectedSticker={setSelectedSticker} />
+                  <Stickers
+                    selectedSticker={selectedSticker}
+                    setSelectedSticker={setSelectedSticker}
+                  />
                 </View>
-              }
+              )}
 
-              {currentVoiceMode == "mic" ?
+              {currentVoiceMode == "mic" ? (
                 recordedVoice ? (
-                  <WaveAudioPlayer audioResetBtn source={recordedVoice?.getURI()} />
+                  <WaveAudioPlayer
+                    audioResetBtn
+                    source={recordedVoice?.getURI()}
+                  />
                 ) : (
                   <WaveAudioRecorder
                     setRecordedVoice={setRecordedVoice}
                     setRecordingDuration={setRecordingDuration}
                   />
-                ) : null}
-
+                )
+              ) : null}
             </View>
             <StandardButton
               title="Post"

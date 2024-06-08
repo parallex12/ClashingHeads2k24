@@ -12,17 +12,17 @@ import { getPercent } from "../../../middleware";
 import StandardButton from "../../../globalComponents/StandardButton";
 
 const ProfileCard = (props) => {
-  let {} = props;
+  let { user } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
-  const CardHeader = () => {
+  const CardHeader = ({user}) => {
     return (
       <View style={styles.cardHeaderContainer}>
         <View style={styles.cardHeaderProfileWrapper}>
           <View style={styles.cardHeaderProfile}>
             <Image
-              source={require("../../../assets/dummy/dummyProfile2.png")}
+              source={{ uri: user?.profile_photo }}
               resizeMode="cover"
               style={{ width: "100%", height: "100%" }}
             />
@@ -31,15 +31,21 @@ const ProfileCard = (props) => {
         </View>
         <View style={styles.post_following_followers_cont}>
           <View style={styles.post_following_followers_Item}>
-            <Text style={font(15, "#121212", "Bold", 3)}>2</Text>
+            <Text style={font(15, "#121212", "Bold", 3)}>
+              {user?.posts || 0}
+            </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Posts</Text>
           </View>
           <View style={styles.post_following_followers_Item}>
-            <Text style={font(15, "#121212", "Bold", 3)}>1422</Text>
+            <Text style={font(15, "#121212", "Bold", 3)}>
+              {user?.followers || 0}
+            </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Followers</Text>
           </View>
           <View style={styles.post_following_followers_Item}>
-            <Text style={font(15, "#121212", "Bold", 3)}>452</Text>
+            <Text style={font(15, "#121212", "Bold", 3)}>
+              {user?.following || 0}
+            </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Following</Text>
           </View>
         </View>
@@ -49,10 +55,10 @@ const ProfileCard = (props) => {
 
   return (
     <View style={styles.container}>
-      <CardHeader />
+      <CardHeader user={user} />
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
-          <Text style={font(16, "#111827", "Medium", 2)}>Lefty AI</Text>
+          <Text style={font(16, "#111827", "Medium", 2)}>{user?.realName}</Text>
           <Image
             source={require("../../../assets/icons/mStarIcon.png")}
             resizeMode="contain"
@@ -63,12 +69,10 @@ const ProfileCard = (props) => {
             }}
           />
         </View>
-        <Text style={font(12, "#6B7280", "Regular", 2)}>
-          Democrat - Los Angles,CA
-        </Text>
+        <Text style={font(12, "#6B7280", "Regular", 2)}>{user?.politics}</Text>
         <Text style={font(12, "#121212", "Regular", 10)}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore.
+          {user?.bio ||
+            `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.`}
         </Text>
       </View>
       <View style={styles.action_buttons_wrapper}>

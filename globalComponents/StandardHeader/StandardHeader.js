@@ -25,6 +25,7 @@ const StandardHeader = (props) => {
     title,
     profile,
     logo,
+    
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = StandardHeaderStyles({ width, height });

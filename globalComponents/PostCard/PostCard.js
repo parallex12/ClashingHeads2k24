@@ -15,7 +15,7 @@ import { memo, useCallback, useMemo, useState } from "react";
 import Header from "./components/Header";
 import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
-import { update_post_reaction, } from "../../middleware/firebase";
+import { update_post_reaction } from "../../middleware/firebase";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { selectPosts } from "../../state-management/features/posts";
 
@@ -28,25 +28,29 @@ const PostCard = memo((props) => {
     divider,
     postDateAndViews,
     onReportPress,
-    onProfilePress
+    onProfilePress,
+    views,
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = PostCardStyles({ width, height });
   let navigation = useNavigation();
-  const createdAtDate = "now"
-  const user_details = useSelector(selectAuthUser)
-  const posts = useSelector(selectPosts)
-  const dispatch = useDispatch()
+  const createdAtDate = "now";
+  const user_details = useSelector(selectAuthUser);
+  const posts = useSelector(selectPosts);
+  const dispatch = useDispatch();
 
-  const onReaction = useCallback((type) => {
-    update_post_reaction(data?.id, user_details?.id, type)
-      .then((res) => {
-        console.log(res)
-      })
-      .catch((res) => {
-        console.log(res)
-      })
-  }, [data, user_details, dispatch]);
+  const onReaction = useCallback(
+    (type) => {
+      update_post_reaction(data?.id, user_details?.id, type)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+    },
+    [data, user_details, dispatch]
+  );
 
   const memoizedData = useMemo(() => data, [data]);
 
@@ -61,7 +65,11 @@ const PostCard = memo((props) => {
       onPress={() => navigation?.navigate("ClashDetails", data)}
     >
       <View style={styles.content}>
-        <Header author={memoizedData?.author} createdAt={memoizedData?.createdAt} onProfilePress={onProfilePress} />
+        <Header
+          author={memoizedData?.author}
+          createdAt={memoizedData?.createdAt}
+          onProfilePress={onProfilePress}
+        />
         <Content {...memoizedData} desc_limit={desc_limit} />
         <ActionMenu
           {...memoizedData}
@@ -77,7 +85,8 @@ const PostCard = memo((props) => {
             Posted on {createdAtDate}
           </Text>
           <Text style={font(10, "#111827", "Bold")}>
-            {memoizedData?.views_count || 0} <Text style={font(10, "#9CA3AF", "Regular")}>Views</Text>
+            {views || 0}{" "}
+            <Text style={font(10, "#9CA3AF", "Regular")}>Views</Text>
           </Text>
         </View>
       )}
@@ -85,5 +94,4 @@ const PostCard = memo((props) => {
   );
 });
 
-
-export default PostCard
+export default PostCard;

@@ -85,7 +85,6 @@ const PersonalInfo = (props) => {
       return { ...prev, [key]: null };
     });
   };
-  console.log(form)
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>

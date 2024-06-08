@@ -23,16 +23,16 @@ export const standardButtonStyles = ({ width, height }) =>
 export const EmptyBoxStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      width: '100%',
+      width: "100%",
       alignItems: "center",
       justifyContent: "center",
-      marginVertical: getPercent(5, height)
+      marginVertical: getPercent(5, height),
     },
     text: {
       fontSize: rf(13),
-      fontFamily: 'Regular',
-      marginVertical: getPercent(2, height)
-    }
+      fontFamily: "Regular",
+      marginVertical: getPercent(2, height),
+    },
   });
 
 //LogoutPressStyles  starts here
@@ -53,6 +53,22 @@ export const FullScreenLoaderStyles = ({ width, height }) =>
       width: "100%",
       height: "100%",
       zIndex: 1000,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#DB2727",
+    },
+    title: {
+      fontSize: rf(22),
+      fontFamily: "BLP",
+      color: "#fff",
+      marginVertical: getPercent(2, height),
+    },
+    slug: {
+      fontSize: rf(12),
+      fontFamily: "Regular",
+      color: "#fff",
+      position: "absolute",
+      bottom: getPercent(5, height),
     },
   });
 
@@ -160,7 +176,6 @@ export const EmojisStyles = ({ width, height }) =>
       marginHorizontal: 10,
     },
   });
-
 
 //StickersStyles   starts here
 export const StickersStyles = ({ width, height }) =>
@@ -432,8 +447,8 @@ export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
     micWrapper: {
       width: "100%",
       height: getPercent(30, width),
-      borderRadius:10,
-      overflow:'hidden'
+      borderRadius: 10,
+      overflow: "hidden",
     },
     quickAudioWrapper: {
       width: "100%",

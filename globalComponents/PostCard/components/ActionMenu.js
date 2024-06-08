@@ -36,7 +36,6 @@ const ActionMenu = (props) => {
   const user_details = useSelector(selectAuthUser)
   const [activeReaction, setActiveReaction] = useState({})
 
-
   useEffect(() => {
     if (!reactions) return
     setActiveReaction({ old: reactions[user_details?.id] })

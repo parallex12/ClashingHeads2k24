@@ -66,7 +66,6 @@ const AddPostDetails = (props) => {
 
 
   const onPost = async () => {
-
     validate_post_details(postForm)
       .then((res) => {
         dispatch(startLoading())
@@ -75,7 +74,7 @@ const AddPostDetails = (props) => {
             .then((res) => {
               console.log("NP", res)
               let updatedPosts = [...posts?.data]
-              updatedPosts.push(res?.data)
+              updatedPosts.push(res?.post_data)
               dispatch(setPosts(updatedPosts))
               props?.navigation.navigate("Home")
               dispatch(stopLoading())

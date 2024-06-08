@@ -14,7 +14,16 @@ import { useNavigation } from "@react-navigation/native";
 import { memo } from "react";
 
 const Content = memo((props) => {
-  let { description,noaudioreset, desc_limit, title, post_image, sticker, recording } = props;
+  let {
+    description,
+    onAudioPlay,
+    noaudioreset,
+    desc_limit,
+    title,
+    post_image,
+    sticker,
+    recording,
+  } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
@@ -35,18 +44,19 @@ const Content = memo((props) => {
     );
   };
 
+
   return (
     <View style={styles.container} activeOpacity={1}>
       {title && <Text style={styles.title}>{title}</Text>}
-      {post_image && (
-        <PostImage source={{uri:post_image}} />
+      {post_image && <PostImage source={{ uri: post_image }} />}
+      {sticker && <PostImage source={sticker?.img} />}
+      {recording && <WaveAudioPlayer afterAudioPlayed={onAudioPlay} source={recording} />}
+      {sticker && <WaveAudioPlayer afterAudioPlayed={onAudioPlay} localSource={sticker?.audio} />}
+      {description && (
+        <Text numberOfLines={desc_limit} style={styles.smallText}>
+          {description}
+        </Text>
       )}
-       {sticker && (
-        <PostImage source={sticker?.img} />
-      )}
-      {recording && <WaveAudioPlayer source={recording} />}
-      {sticker && <WaveAudioPlayer  localSource={sticker?.audio} />}
-      {description && <Text numberOfLines={desc_limit} style={styles.smallText}>{description}</Text>}
     </View>
   );
 });

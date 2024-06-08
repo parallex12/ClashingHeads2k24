@@ -16,7 +16,15 @@ import { Audio, InterruptionModeIOS } from "expo-av";
 import { font } from "../styles/Global/main";
 
 const WaveAudioPlayer = (props) => {
-  let { source, audioResetBtn, iconSize, showDuration, localSource } = props;
+  let {
+    source,
+    audioResetBtn,
+    iconSize,
+    showDuration,
+    localSource,
+    afterAudioPlayed,
+    audioResetFunc,
+  } = props;
   let { width, height } = useWindowDimensions();
   const waveAnime = useRef(new Animated.Value(0)).current;
   const [SoundObj, setSoundObj] = useState(null);
@@ -26,8 +34,8 @@ const WaveAudioPlayer = (props) => {
   let styles = _styles({ width, height });
 
   useEffect(() => {
-    reset()
-  }, [localSource, source])
+    reset();
+  }, [localSource, source]);
 
   const onPlay = async () => {
     if (!source && !localSource) return alert("Require Source attr.");
@@ -38,7 +46,9 @@ const WaveAudioPlayer = (props) => {
     });
 
     setSoundObj({ isBuffering: true });
-    const { sound } = await Audio.Sound.createAsync(localSource ? localSource : { uri: source });
+    const { sound } = await Audio.Sound.createAsync(
+      localSource ? localSource : { uri: source }
+    );
     setSound(sound);
     await sound.playAsync();
     sound.setOnPlaybackStatusUpdate((onLoad) => {
@@ -47,9 +57,6 @@ const WaveAudioPlayer = (props) => {
       if (onLoad?.didJustFinish) {
         setDuration(0);
         waveAnime.setValue(0);
-        waveAnime.stopAnimation();
-        setSoundObj(null);
-        console.log("yes");
       } else {
         setDuration(totalDuration / 1000);
       }
@@ -72,11 +79,11 @@ const WaveAudioPlayer = (props) => {
       }).start(() => {
         sound.unloadAsync();
         setDuration(0);
+        waveAnime.setValue(0);
         setSoundObj(null);
+        setSound(null);
+        afterAudioPlayed && afterAudioPlayed();
       });
-    }
-    if (SoundObj?.didJustFinish) {
-      setDuration(0);
     }
   }, [SoundObj?.isPlaying]);
 
@@ -95,19 +102,19 @@ const WaveAudioPlayer = (props) => {
   useEffect(() => {
     return sound
       ? () => {
-        sound.unloadAsync();
-      }
+          sound.unloadAsync();
+        }
       : undefined;
   }, [sound]);
 
   const reset = () => {
     waveAnime.setValue(0);
-    setDuration(0)
-    setProgress(0)
-    setSound(null)
-    setSoundObj(null)
+    setDuration(0);
+    setProgress(0);
+    setSound(null);
+    setSoundObj(null);
     sound?.unloadAsync();
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -147,16 +154,17 @@ const WaveAudioPlayer = (props) => {
           }}
         ></View>
       </MaskedView>
-      {audioResetBtn && <TouchableOpacity
-        style={styles.btn}
-        onPress={reset}
-      >
-        <AntDesign
-          name={"delete"}
-          size={20}
-          color="#DB2727"
-        />
-      </TouchableOpacity>}
+      {audioResetBtn && (
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => {
+            audioResetFunc();
+            reset();
+          }}
+        >
+          <AntDesign name={"delete"} size={20} color="#DB2727" />
+        </TouchableOpacity>
+      )}
       {showDuration && <Text style={font(10, "#374151", "Medium")}>02:20</Text>}
     </View>
   );

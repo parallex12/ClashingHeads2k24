@@ -11,12 +11,29 @@ import { font } from "../../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { onShareApp } from "../../../../utils";
+import { useEffect, useState } from "react";
+import auth from "@react-native-firebase/auth";
 
 const ActionMenu = (props) => {
-  let { clashes_count, onPostClashesPress, onReportPress, dislikes, likes } = props;
+  let {
+    clashes,
+    handleReaction,
+    onPostClashesPress,
+    onReportPress,
+    dislikes,
+    likes,
+    reactions,
+    listened,
+  } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
+  const [activeReaction, setActiveReaction] = useState({});
+
+  useEffect(() => {
+    if (!reactions) return;
+    setActiveReaction({ old: reactions[auth().currentUser?.uid] });
+  }, [reactions]);
 
   const FooterItem = ({ item, index }) => {
     return (
@@ -36,25 +53,44 @@ const ActionMenu = (props) => {
     );
   };
 
+  const onReact = (type) => {
+    let c_reaction = activeReaction?.old || activeReaction?.new;
+    if (c_reaction == type) {
+      setActiveReaction({ new: null });
+      handleReaction(type);
+    } else {
+      setActiveReaction({ new: type });
+      handleReaction(type);
+    }
+    delete activeReaction["old"];
+  };
+
+  let isLiked = activeReaction?.new == "like" || activeReaction?.old == "like";
+  let isDisLiked =
+    activeReaction?.new == "dislike" || activeReaction?.old == "dislike";
+  let listenedViews = Object.keys(listened || {}).length;
   let actions = [
     {
       title: likes,
-      iconImg: require("../../../../assets/icons/post_cards/like.png"),
-      onPress: () => null,
+      iconImg: isLiked
+        ? require("../../../../assets/icons/post_cards/like_active.png")
+        : require("../../../../assets/icons/post_cards/like.png"),
+      onPress: () => onReact("like"),
     },
     {
       title: dislikes,
-      iconImg: require("../../../../assets/icons/post_cards/dislike.png"),
-      onPress: () => null,
+      iconImg: isDisLiked
+        ? require("../../../../assets/icons/post_cards/dislike_active.png")
+        : require("../../../../assets/icons/post_cards/dislike.png"),
+      onPress: () => onReact("dislike"),
     },
     {
-      title: clashes_count,
+      title: clashes,
       iconImg: require("../../../../assets/icons/post_cards/sound.png"),
       onPress: () => onPostClashesPress(),
-
     },
     {
-      title: "0",
+      title: listenedViews || 0,
       iconImg: require("../../../../assets/icons/post_cards/chart.png"),
       onPress: () => null,
     },

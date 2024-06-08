@@ -137,6 +137,11 @@ const FlagReportBottomSheet = (props) => {
                     height: getPercent(6, height),
                     marginVertical: 20,
                   }}
+                  onPress={()=>{
+                    bottomSheetRef.current.close()
+                    setSelectedFlags([])
+                    alert("Report submitted.")
+                  }}
                 />
               </View>
             </ScrollView>

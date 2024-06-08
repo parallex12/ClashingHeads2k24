@@ -15,15 +15,16 @@ import {
 } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
-import { useRecoilState } from "recoil";
-import { global_posts } from "../../../state-management/atoms/atoms";
 import PostCard from "../../../globalComponents/PostCard/PostCard";
+import { useSelector } from "react-redux";
+import { selectPosts } from "../../../state-management/features/posts";
+import { sortPostsByCreatedAt } from "../../../utils";
 
 const PostsResult = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [posts, setPosts] = useRecoilState(global_posts);
+  const posts = useSelector(selectPosts);
 
   return (
     <View style={styles.container}>
@@ -33,7 +34,7 @@ const PostsResult = (props) => {
       </View>
       <ScrollView>
         <View style={styles.content}>
-          {posts?.map((item, index) => {
+          {sortPostsByCreatedAt(posts?.data)?.map((item, index) => {
             return <PostCard divider data={item} key={index} />;
           })}
         </View>
