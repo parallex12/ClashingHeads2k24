@@ -5,33 +5,31 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { VoiceRecorderBottomSheetStyles } from "../../styles/Global/main";
+import { VoiceRecorderBottomSheetStyles } from "../../../../styles/Global/main";
 import {
   BottomSheetModal,
   BottomSheetView,
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { isVoiceModalOpen_Recoil } from "../../state-management/atoms/atoms";
-import { useRecoilValue } from "recoil";
 import BackDrop from "./BackDrop";
 import { Image } from "react-native";
 import Emojis from "./Emojis";
-import WaveAudioPlayer from "../WaveAudioPlayer";
-import StandardButton from "../StandardButton";
-import WaveAudioRecorder from "../WaveAudioRecorder";
-import { formatDuration, stickerArr } from "../../utils";
+import { formatDuration, stickerArr } from "../../../../utils";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Stickers from "./Stickers";
-import { getPercent } from "../../middleware";
-import { selectAuthUser } from "../../state-management/features/auth";
+import { getPercent } from "../../../../middleware";
+import { selectAuthUser } from "../../../../state-management/features/auth";
 import {
   generateUniqueId,
-} from "../../state-management/features/singlePost/singlePostSlice";
-import { uploadMedia } from "../../middleware/firebase";
+} from "../../../../state-management/features/singlePost/singlePostSlice";
+import WaveAudioPlayer from "../../../../globalComponents/WaveAudioPlayer";
+import WaveAudioRecorder from "../../../../globalComponents/WaveAudioRecorder";
+import StandardButton from "../../../../globalComponents/StandardButton";
+import { addSubClashToChallenge, updateChallengeClash, updateSubClashDetails } from "../../../../state-management/features/challengeClash/challengeClashSlice";
 
 const VoiceRecorderBottomSheet = (props) => {
-  let { bottomVoiceSheetRef, postId, clashTo, onPostClash } = props;
+  let { bottomVoiceSheetRef, clashId, clashTo,currentChallenge } = props;
   let { width, height } = useWindowDimensions();
   let styles = VoiceRecorderBottomSheetStyles({ width, height });
   const [recordedVoice, setRecordedVoice] = useState(null);
@@ -48,13 +46,13 @@ const VoiceRecorderBottomSheet = (props) => {
     setCurrentVoiceMode((prev) => (prev == "mic" ? "sticker" : "mic"));
   };
 
-  const onPost = async () => {
+  const onPostClash = async () => {
     let clashDetails = {
       id: generateUniqueId(),
       clashType: currentVoiceMode,
       selectedSticker: selectedSticker,
       recording: recordedVoice?.getURI() || null,
-      postId,
+      clashId,
       likes: 0,
       reactions: {},
       dislikes: 0,
@@ -64,14 +62,26 @@ const VoiceRecorderBottomSheet = (props) => {
       clashTo: clashTo,
       createdAt: new Date().toISOString(),
     };
-    if (clashDetails?.recording || (selectedSticker != undefined && currentVoiceMode=="sticker") ) {
-      onPostClash(clashDetails)
+    if (selectedSticker != undefined || recordedVoice) {
+      dispatch(addSubClashToChallenge(clashId, clashDetails));
+      if (clashTo != "challenge") {
+        dispatch(
+          updateSubClashDetails(clashId, clashTo?.id, {
+            clashes: eval(clashTo?.clashes + 1),
+          })
+        );
+      } else {
+        dispatch(
+          updateChallengeClash(clashId, {
+            opinions: eval(currentChallenge?.opinions + 1),
+          })
+        );
+
+      }
       setRecordedVoice(null);
       setRecordingDuration(0);
-      setSelectedSticker(0)
       bottomVoiceSheetRef.current.close();
-    }else{
-      alert("Record voice.")
+      return;
     }
   };
 
@@ -111,7 +121,7 @@ const VoiceRecorderBottomSheet = (props) => {
                 />
               ) : (
                 <Image
-                  source={require("../../assets/images/MicRec.png")}
+                  source={require("../../../../assets/images/MicRec.png")}
                   resizeMode="contain"
                   style={{ width: "100%", height: "100%" }}
                 />
@@ -146,9 +156,9 @@ const VoiceRecorderBottomSheet = (props) => {
               ) : null}
             </View>
             <StandardButton
-              title="Post"
+              title="Clash"
               customStyles={{ width: "50%", marginVertical: 20 }}
-              onPress={onPost}
+              onPress={onPostClash}
             />
           </BottomSheetView>
         </BottomSheetModal>

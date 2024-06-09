@@ -18,7 +18,7 @@ export const styles = ({ width, height }) =>
     clashes_wrapper: {
       width: "100%",
       paddingVertical: getPercent(2, height),
-      paddingHorizontal: getPercent(3, width),
+      paddingHorizontal: getPercent(4, width),
       alignItems:"center",
     },
   });

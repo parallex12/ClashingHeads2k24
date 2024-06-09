@@ -61,9 +61,9 @@ const Header = (props) => {
           {user_author?.politics} - {post_past_time}
         </Text>
       </View>
-      <TouchableOpacity>
+      {/* <TouchableOpacity>
         <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
@@ -77,8 +77,8 @@ const _styles = ({ width, height }) =>
       justifyContent: "space-between",
     },
     profileWrapper: {
-      width: getPercent(5, height),
-      height: getPercent(5, height),
+      width: getPercent(4, height),
+      height: getPercent(4, height),
       borderRadius: 100,
       overflow: "hidden",
       zIndex: 1,

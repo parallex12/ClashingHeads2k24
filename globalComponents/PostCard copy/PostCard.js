@@ -34,7 +34,7 @@ const PostCard = memo((props) => {
   let { width, height } = useWindowDimensions();
   let styles = PostCardStyles({ width, height });
   let navigation = useNavigation();
-  const createdAtDate = new Date(data?.createdAt).toDateString();
+  const createdAtDate = "now";
   const user_details = useSelector(selectAuthUser);
   const posts = useSelector(selectPosts);
   const dispatch = useDispatch();

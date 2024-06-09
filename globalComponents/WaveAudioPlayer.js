@@ -12,11 +12,11 @@ import {
 import { FontAwesome5, AntDesign } from "@expo/vector-icons";
 import { getPercent } from "../middleware";
 import MaskedView from "@react-native-masked-view/masked-view";
-import { Audio, InterruptionModeIOS } from "expo-av";
+import { Audio } from "expo-av";
 import { font } from "../styles/Global/main";
 
 const WaveAudioPlayer = (props) => {
-  let {
+  const {
     source,
     audioResetBtn,
     iconSize,
@@ -25,122 +25,155 @@ const WaveAudioPlayer = (props) => {
     afterAudioPlayed,
     audioResetFunc,
   } = props;
-  let { width, height } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const waveAnime = useRef(new Animated.Value(0)).current;
-  const [SoundObj, setSoundObj] = useState(null);
-  const [sound, setSound] = useState(null);
+  const soundRef = useRef(null);
+  const [soundObj, setSoundObj] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [progress, setProgress] = useState(null);
+  const [progress, setProgress] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
-  let styles = _styles({ width, height });
+  const styles = _styles({ width, height });
+  const [isBuffering, setIsBuffering] = useState(true); // Initialize to true
 
   useEffect(() => {
-    reset();
     loadAudio();
+    return () => {
+      unloadAudio();
+    };
   }, [localSource, source]);
 
+  const loadAudio = async () => {
+    try {
+      setIsBuffering(true); // Start buffering
+      await Audio.setAudioModeAsync({
+        playsInSilentModeIOS: true,
+        allowsRecordingIOS: false,
+      });
+
+      const { sound, status } = await Audio.Sound.createAsync(
+        localSource ? localSource : { uri: source },
+        { shouldPlay: false }
+      );
+
+      soundRef.current = sound;
+      setDuration(status.durationMillis / 1000);
+      setRemainingTime(status.durationMillis / 1000);
+      setIsBuffering(false); // Stop buffering
+      sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate); // Set playback status update handler
+    } catch (error) {
+      console.error("Error loading audio:", error);
+      setIsBuffering(false); // Stop buffering on error
+    }
+  };
+
+
   const onPlay = async () => {
-    if (!source && !localSource) return alert("Require Source attr.");
-
-    await Audio.setAudioModeAsync({
-      playsInSilentModeIOS: true,
-      allowsRecordingIOS: false,
-    });
-
-    setSoundObj({ isBuffering: true });
-    const { sound } = await Audio.Sound.createAsync(
-      localSource ? localSource : { uri: source }
-    );
-    setSound(sound);
-    await sound.playAsync();
-    sound.setOnPlaybackStatusUpdate((onLoad) => {
-      let totalDuration = onLoad.durationMillis; // Total duration of the sound
-      setSoundObj(onLoad);
-      if (onLoad?.didJustFinish) {
-        waveAnime.setValue(0);
-        setProgress(0);
-        setSoundObj(null);
-        setSound(null);
-        setRemainingTime(0);
-        afterAudioPlayed && afterAudioPlayed();
+    if (!soundRef.current) {
+      console.error("Audio not loaded");
+      return;
+    }
+  
+    try {
+      if (isPlaying) {
+        await soundRef.current.pauseAsync();
+        setIsPlaying(false);
+        Animated.timing(waveAnime).stop(); // Stop animation when audio is paused
       } else {
-        setProgress(onLoad.positionMillis / onLoad.durationMillis);
-        setRemainingTime(
-          (onLoad.durationMillis - onLoad.positionMillis) / 1000
-        );
+        await soundRef.current.playAsync();
+        setIsPlaying(true);
       }
-    });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const onStop = () => {
-    sound.stopAsync();
-    setDuration(0);
-    setSoundObj(null);
-    waveAnime.setValue(0);
+  const onStop = async () => {
+    if (soundRef.current) {
+      await soundRef.current.stopAsync();
+      setIsPlaying(false);
+      reset();
+    }
   };
+
 
   useEffect(() => {
-    if (SoundObj?.isPlaying) {
+    if (isPlaying) {
+      // Start animation when audio playback begins
+      waveAnime.setValue(progress);
       Animated.timing(waveAnime, {
         toValue: 1,
-        duration: duration * 1050, // Adjust the duration as needed
+        duration: (1 - progress) * duration * 1000,
         useNativeDriver: false,
-      }).start(() => {
-        sound.unloadAsync();
-        setDuration(0);
-        waveAnime.setValue(0);
-        setSoundObj(null);
-        setSound(null);
-        afterAudioPlayed && afterAudioPlayed();
-      });
+      }).start();
+    } else {
+      // Stop animation when audio playback pauses or ends
+      waveAnime.stopAnimation();
     }
-  }, [SoundObj?.isPlaying]);
-
-  const wavePosition = waveAnime.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0%", "96%"], // Adjusted to be numeric values
-  });
-
-  let animeWidthStyles = [
-    styles.waveRedWrapper,
-    {
-      width: wavePosition,
-    },
-  ];
-
+  }, [isPlaying]);
+  
   useEffect(() => {
-    return sound
-      ? () => {
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
+    // Reset animation when the component unmounts
+    return () => {
+      waveAnime.setValue(0);
+      waveAnime.stopAnimation();
+    };
+  }, []);
+
+  const onPlaybackStatusUpdate = (status) => {
+    if (!status.isLoaded) {
+      if (status.error) {
+        console.error(`FATAL PLAYER ERROR: ${status.error}`);
+      }
+      return;
+    }
+    setSoundObj(status);
+    if (status.isPlaying) {
+      setIsPlaying(true);
+    } else {
+      setIsPlaying(false);
+    }
+  
+    if (status.didJustFinish) {
+      resetToInitialState();
+      afterAudioPlayed && afterAudioPlayed();
+    }
+  
+    setProgress(status.positionMillis / status.durationMillis);
+    setRemainingTime((status.durationMillis - status.positionMillis) / 1000);
+  };
+
+
+  const resetToInitialState = () => {
+    waveAnime.setValue(0);
+    setDuration(0);
+    setProgress(0);
+    setRemainingTime(0);
+    setSoundObj(null);
+    setIsPlaying(false);
+    unloadAudio();
+    loadAudio();
+  };
 
   const reset = () => {
     waveAnime.setValue(0);
     setDuration(0);
     setProgress(0);
-    setSound(null);
+    setRemainingTime(0);
     setSoundObj(null);
-    sound?.unloadAsync();
+    setIsPlaying(false);
+    if (soundRef.current) {
+      soundRef.current.unloadAsync();
+      soundRef.current = null;
+    }
   };
 
-  const loadAudio = async () => {
-    if (!source && !localSource) return alert("Require Source attr.");
 
-    await Audio.setAudioModeAsync({
-      playsInSilentModeIOS: true,
-      allowsRecordingIOS: false,
-    });
-
-    const { sound } = await Audio.Sound.createAsync(
-      localSource ? localSource : { uri: source },
-      { shouldPlay: false }
-    );
-    const status = await sound.getStatusAsync();
-    setSound(sound);
-    setDuration(status.durationMillis / 1000); // Set the duration in seconds
-    setRemainingTime(status.durationMillis / 1000); // Set the remaining time in seconds
+  const unloadAudio = async () => {
+    if (soundRef.current) {
+      await soundRef.current.unloadAsync();
+      soundRef.current = null;
+    }
   };
 
   const formatDuration = (seconds) => {
@@ -149,43 +182,34 @@ const WaveAudioPlayer = (props) => {
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
+  const wavePosition = waveAnime.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0%", "96%"],
+  });
+
+  const animeWidthStyles = [
+    styles.waveRedWrapper,
+    {
+      width: wavePosition,
+    },
+  ];
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.btn}
-        onPress={SoundObj?.isPlaying ? onStop : onPlay}
-      >
-        {SoundObj?.isBuffering ? (
+      <TouchableOpacity style={styles.btn} onPress={isPlaying ? onStop : onPlay}>
+        {isBuffering ? (
           <ActivityIndicator />
         ) : (
-          <FontAwesome5
-            name={SoundObj?.isPlaying ? "pause" : "play"}
-            size={iconSize || 20}
-            color="#DB2727"
-          />
+          <FontAwesome5 name={isPlaying ? "pause" : "play"} size={iconSize || 20} color="#DB2727" />
         )}
       </TouchableOpacity>
-      <MaskedView
-        style={{ flex: 1, flexDirection: "row", height: "100%" }}
-        maskElement={
-          <View style={styles.waveForm}>
-            <Image
-              source={require("../assets/icons/post_cards/audioWave.png")}
-              style={styles.waveimg}
-              resizeMode="cover"
-            />
-          </View>
-        }
-      >
-        {/* Shows behind the mask, you can put anything here, such as an image */}
+      <MaskedView style={{ flex: 1, flexDirection: "row", height: "100%" }} maskElement={
+        <View style={styles.waveForm}>
+          <Image source={require("../assets/icons/post_cards/audioWave.png")} style={styles.waveimg} resizeMode="cover" />
+        </View>
+      }>
         <Animated.View style={animeWidthStyles}></Animated.View>
-        <View
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "#AEAEAE",
-          }}
-        ></View>
+        <View style={{ width: "100%", height: "100%", backgroundColor: "#AEAEAE" }}></View>
       </MaskedView>
       {audioResetBtn && (
         <TouchableOpacity

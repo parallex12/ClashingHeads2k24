@@ -109,45 +109,38 @@ export const fetchChallengeClashAndSubClashes =
     }
   };
 
-export const addSubClashToChallenge =
-  (clashId, subClashData) => async (dispatch) => {
+  export const addSubClashToChallenge = (clashId, subClashData) => async (dispatch) => {
     try {
       dispatch(addSubClash({ ...subClashData }));
       const db = getFirestore();
-      const subClashesRef = doc(
-        db,
-        "ChallengeClashes",
-        clashId,
-        "SubClashes",
-        subClashData?.id
-      );
-      const docRef = await setDoc(subClashesRef, subClashData);
-      if (subClashData?.recording && subClashData?.clashType == "mic") {
-        await uploadMedia(subClashData?.recording, "clashesAudios")
-          .then(async (res) => {
-            if (res?.url) {
-              subClashData["recording"] = res?.url;
-              await setDoc(docRef, subClashData);
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-      } else {
-        await setDoc(docRef, subClashData);
+      const subClashesRef = doc(db, "ChallengeClashes", clashId, "SubClashes", subClashData?.id);
+  
+      if (subClashData?.recording && subClashData?.clashType === "mic") {
+        try {
+          const res = await uploadMedia(subClashData?.recording, "clashesAudios");
+          if (res?.url) {
+            subClashData.recording = res.url;
+          }
+        } catch (uploadError) {
+          console.error("Error uploading media:", uploadError);
+          // Optionally handle the upload error (e.g., setting an error state)
+        }
       }
+  
+      await setDoc(subClashesRef, subClashData);
     } catch (error) {
       console.error("Error adding sub-clash:", error);
+      // Optionally handle the error (e.g., setting an error state)
     }
   };
 
 export const updateChallengeClash =
   (clashId, updatedFields) => async (dispatch) => {
     try {
+      dispatch(updateChallengeClashDetails(updatedFields));
       const db = getFirestore();
       const clashRef = doc(db, "ChallengeClashes", clashId);
       await updateDoc(clashRef, updatedFields);
-      dispatch(updateChallengeClashDetails(updatedFields));
     } catch (error) {
       console.error("Error updating challenge clash details:", error);
       dispatch(setError(error.message));

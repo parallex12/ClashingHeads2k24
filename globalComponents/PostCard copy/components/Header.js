@@ -19,9 +19,9 @@ const Header = (props) => {
   let user_author = author;
   let post_past_time = getTimeElapsed(createdAt);
 
-  const Profile = ({ source,profileStyles }) => {
+  const Profile = ({ source }) => {
     return (
-      <View style={[styles.container,{...profileStyles}]}>
+      <View style={[styles.container,profileStyles]}>
         <TouchableOpacity
           style={styles.profileWrapper}
           onPress={onProfilePress}
@@ -43,7 +43,6 @@ const Header = (props) => {
         source={{
           uri: user_author?.profile_photo,
         }}
-        profileStyles={profileStyles}
       />
       <View style={styles.infoWrapper}>
         <View style={styles.infoTitleRow}>

@@ -95,6 +95,39 @@ export const ClashesResultStyles = ({ width, height }) =>
       alignSelf: "flex-start",
       top: getPercent(3, height),
     },
+    votingFooterWrapper: {
+      width: '100%',
+      height: getPercent(10, height),
+      backgroundColor: '#E5E7EB'
+    },
+    votingItem: {
+      width: '100%',
+      height: getPercent(5, height),
+      flexDirection: 'row',
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: getPercent(3, width),
+      backgroundColor: 'rgba(219,39,39,0.24)'
+    },
+    votingItemText: {
+      fontSize: rf(11),
+      fontFamily: 'Semibold',
+      color: '#000000'
+    },
+    votingItemOpponent: {
+      width: '100%',
+      height: getPercent(5, height),
+      flexDirection: 'row',
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: getPercent(3, width)
+    },
+    votingItemTextOpponent: {
+      fontSize: rf(11),
+      fontFamily: 'Regular',
+      color: '#000000'
+    },
+   
   });
 
 //PostsResult  starts here

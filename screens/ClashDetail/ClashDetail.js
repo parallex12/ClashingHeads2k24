@@ -4,7 +4,6 @@ import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader
 import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { getPercent } from "../../middleware";
-import ClashCard from "./components/ClashCard";
 import { useEffect, useRef, useState } from "react";
 import VoiceRecorderBottomSheet from "../../globalComponents/VoiceRecorderBottomSheet/VoiceRecorderBottomSheet";
 import { useRecoilState } from "recoil";
@@ -13,13 +12,17 @@ import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/
 import { makeSelectSinglePost } from "../../state-management/features/singlePost";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addClashToPost,
   fetchSinglePostAndClashes,
+  generateUniqueId,
+  updateClashDetails,
   updatePost,
 } from "../../state-management/features/singlePost/singlePostSlice";
 import auth from "@react-native-firebase/auth";
+import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 
 const ClashDetails = (props) => {
-  let {} = props;
+  let { } = props;
   const dispatch = useDispatch();
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
@@ -40,6 +43,21 @@ const ClashDetails = (props) => {
       dispatch(updatePost(postId, { views: postUserViews }));
     }
   }, [dispatch, postId]);
+
+
+
+  const onPostClash = async (clashDetails) => {
+    dispatch(addClashToPost(postId, clashDetails));
+    if (clashTo != "post") {
+      dispatch(
+        updateClashDetails(postId, clashTo?.id, {
+          clashes: eval(clashTo?.clashes + 1),
+        })
+      );
+    }
+  };
+
+
 
   return (
     <View style={styles.container}>
@@ -83,6 +101,7 @@ const ClashDetails = (props) => {
         clashTo={clashTo}
         postId={postId}
         bottomVoiceSheetRef={bottomVoiceSheetRef}
+        onPostClash={onPostClash}
       />
       <FlagReportBottomSheet
         postId={postId}

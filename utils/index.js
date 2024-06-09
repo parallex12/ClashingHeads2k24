@@ -307,7 +307,7 @@ export function getTimeElapsed(createdAt) {
 }
 
 export function sortPostsByCreatedAt(posts) {
-  if (posts==undefined) return []
+  if (posts == undefined) return []
   // Preprocess posts to ensure createdAt is parsed correctly
   const processedPosts = posts?.map(post => ({
     ...post,
@@ -415,3 +415,57 @@ export const serializeTimestamp = (timestamp) => ({
 // Utility function to deserialize a serialized Timestamp object
 export const deserializeTimestamp = (serializedTimestamp) =>
   new Timestamp(serializedTimestamp.seconds, serializedTimestamp.nanoseconds);
+
+export const calculateVotes = (votes, challengerId, opponentId) => {
+  // Initialize counters for total votes and votes for each candidate
+  let totalVotes = 0;
+  let challengerVotes = 0;
+  let opponentVotes = 0;
+  const voteCounts = {};
+
+  // Iterate through the votes
+  for (const voterId in votes) {
+    const selectedCandidateId = votes[voterId];
+
+    // Increment total votes count
+    totalVotes++;
+
+    // Increment votes count for challenger and opponent
+    if (voterId === challengerId && selectedCandidateId) {
+      challengerVotes++;
+    } else if (voterId === opponentId && selectedCandidateId) {
+      opponentVotes++;
+    }
+
+    // Increment vote count for each candidate
+    if (selectedCandidateId) {
+      voteCounts[selectedCandidateId] = (voteCounts[selectedCandidateId] || 0) + 1;
+    }
+  }
+
+  // Check if there are no votes
+  if (totalVotes === 0) {
+    return {
+      totalVotes: 0,
+      challengerVotes: 0,
+      opponentVotes: 0,
+      challengerPercentage: 0,
+      opponentPercentage: 0,
+      voteCounts: {},
+    };
+  }
+
+  // Calculate percentages
+  const challengerPercentage = (challengerVotes / totalVotes) * 100;
+  const opponentPercentage = (opponentVotes / totalVotes) * 100;
+
+  return {
+    totalVotes,
+    challengerVotes,
+    opponentVotes,
+    challengerPercentage,
+    opponentPercentage,
+    voteCounts,
+  };
+};
+

@@ -105,6 +105,9 @@ const Clashes = (props) => {
                   onPress={() =>
                     props?.navigation?.navigate("ChallengeClash", { ...item })
                   }
+                  onClashesPress={() =>
+                    props?.navigation?.navigate("ChallengeClash", { ...item })
+                  }
                 />
               );
 

@@ -43,7 +43,7 @@ const Content = memo((props) => {
       </TouchableOpacity>
     );
   };
-  
+
 
   return (
     <View style={styles.container} activeOpacity={1}>

@@ -7,19 +7,16 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { connect, useDispatch } from "react-redux";
-import { ClashCardStyles, font } from "../../../styles/Global/main";
-import { getPathFromState, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import Header from "../../../globalComponents/PostCard/components/Header";
-import Content from "../../../globalComponents/PostCard/components/Content";
-import ActionMenu from "./card_components/ActionMenu";
-import { stickerArr } from "../../../utils";
-import {
-  updateClashDetails,
-  updateClashReaction,
-} from "../../../state-management/features/singlePost/singlePostSlice";
+
 import auth from "@react-native-firebase/auth";
-import { getPercent } from "../../../middleware";
+import { ClashCardStyles } from "../../styles/Global/main";
+import { updateClashDetails, updateClashReaction } from "../../state-management/features/singlePost/singlePostSlice";
+import Header from "./components/Header";
+import Content from "./components/Content";
+import ActionMenu from "./components/ActionMenu";
+import { stickerArr } from "../../utils";
 
 const ClashCard = (props) => {
   let { data, onPostClashesPress, hrLine, onReportPress } = props;
@@ -37,30 +34,30 @@ const ClashCard = (props) => {
   };
 
   const onAudioPlay = () => {
-    // let audioViews = { ...data?.listened } || {};
-    // if (!audioViews[userId]) {
-    //   audioViews[userId] = true
-    //   dispatch(
-    //     updateClashDetails(data?.postId, data?.id, { listened: audioViews })
-    //   );
-    // }
+    let audioViews = { ...data?.listened } || {};
+    if (!audioViews[userId]) {
+      audioViews[userId] = true
+      dispatch(
+        updateClashDetails(data?.postId, data?.id, { listened: audioViews })
+      );
+    }
   };
+
+  let userMention = data?.clashTo != "post" ? data?.clashTo?.author?.username : null
+
+
 
   return (
     <View style={styles.container}>
       {hrLine && <View style={styles.hrLine}></View>}
       <View style={styles.content}>
-        <Header
-          author={data?.author} createdAt={data?.createdAt} />
+        <Header author={data?.author} createdAt={data?.createdAt} />
         <View style={styles.contentCardWrapper}>
           <Content
-            showDuration
+            userMention={userMention}
             onAudioPlay={onAudioPlay}
-            noaudioreset
             sticker={localmedia}
             {...data}
-            postDesc={false}
-            title={false}
           />
           <ActionMenu
             onPostClashesPress={onPostClashesPress}

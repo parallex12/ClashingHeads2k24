@@ -15,14 +15,10 @@ import { memo } from "react";
 
 const Content = memo((props) => {
   let {
-    description,
     onAudioPlay,
-    noaudioreset,
-    desc_limit,
-    title,
-    post_image,
     sticker,
     recording,
+    userMention
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
@@ -43,20 +39,14 @@ const Content = memo((props) => {
       </TouchableOpacity>
     );
   };
-  
+
 
   return (
     <View style={styles.container} activeOpacity={1}>
-      {title && <Text style={styles.title}>{title}</Text>}
-      {post_image && <PostImage source={{ uri: post_image }} />}
+      {/* <Text style={font(12, "#c5c5c5", "Medium", 10)}>@{userMention}</Text> */}
       {sticker && <PostImage source={sticker?.img} />}
       {recording && <WaveAudioPlayer afterAudioPlayed={onAudioPlay} source={recording} />}
       {sticker && <WaveAudioPlayer afterAudioPlayed={onAudioPlay} localSource={sticker?.audio} />}
-      {description && (
-        <Text numberOfLines={desc_limit} style={styles.smallText}>
-          {description}
-        </Text>
-      )}
     </View>
   );
 });
