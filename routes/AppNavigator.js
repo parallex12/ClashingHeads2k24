@@ -52,6 +52,7 @@ import {
   selectIsAuth,
 } from "../state-management/features/auth";
 import ChallengeRequests from "../screens/ChallengeRequests/ChallengeRequests";
+import ChallengeClash from "../screens/ChallengeClash/ChallengeClash";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -82,6 +83,7 @@ const HomeScreens = () => {
           <HomeStack.Screen name="ClashRoom" component={ClashRoom} />
           <HomeStack.Screen name="CreateRoom" component={CreateRoom} />
           <HomeStack.Screen name="CreateClash" component={CreateClash} />
+          <HomeStack.Screen name="ChallengeClash" component={ChallengeClash} />
           <HomeStack.Screen name="MyProfile" component={MyProfile} />
           <HomeStack.Screen name="UserProfile" component={UserProfile} />
           <HomeStack.Screen name="NewPost" component={NewPost} />

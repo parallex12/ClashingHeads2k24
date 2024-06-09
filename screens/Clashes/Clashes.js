@@ -98,8 +98,17 @@ const Clashes = (props) => {
           <View style={styles.cardsWrapper}>
             {clashes?.map((item, index) => {
               if (item?.status == "pending") return;
-              return <DualClashCard key={index} data={item} />;
+              return (
+                <DualClashCard
+                  key={index}
+                  data={item}
+                  onPress={() =>
+                    props?.navigation?.navigate("ChallengeClash", { ...item })
+                  }
+                />
+              );
 
+              //This ClashCard named is for RoomsCard
               // return (
               //   <ClashCard
               //     onCardPress={() => navigation.navigate("ClashRoom")}

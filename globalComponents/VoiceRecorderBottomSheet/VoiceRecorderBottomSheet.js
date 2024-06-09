@@ -34,7 +34,7 @@ import {
 import { uploadMedia } from "../../middleware/firebase";
 
 const VoiceRecorderBottomSheet = (props) => {
-  let { bottomVoiceSheetRef, postId, clashTo } = props;
+  let { bottomVoiceSheetRef, postId, clashTo,challengeClash } = props;
   let { width, height } = useWindowDimensions();
   let styles = VoiceRecorderBottomSheetStyles({ width, height });
   const [recordedVoice, setRecordedVoice] = useState(null);

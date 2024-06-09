@@ -20,17 +20,34 @@ import { onShareApp } from "../../../utils";
 import StandardButton from "../../../globalComponents/StandardButton";
 
 const DualClashCard = (props) => {
-  let { data, request_type, onAcceptRequest, onCancelRequest } = props;
+  let {
+    data,
+    request_type,
+    onAcceptRequest,
+    onCancelRequest,
+    onPress,
+    totalClashes,
+    onClashesPress,
+    onReportPress,
+    views,
+    onProfilePress,
+  } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
   let challenger = data?.challenger;
   let opponent = data?.opponent;
-  let votes = Object.keys(data?.votes).length
-  let opinions = data?.opinions
-  let status = data?.status
+  let votes = Object.keys(data?.votes).length;
+  let opinions = data?.opinions;
+  let status = data?.status;
 
-  const ClashUserCard = ({ user, type, audio, hasAccepted, shouldAccepted }) => {
+  const ClashUserCard = ({
+    user,
+    type,
+    audio,
+    hasAccepted,
+    shouldAccepted,
+  }) => {
     return (
       <View style={styles.clashUserItem}>
         <View style={styles.clashUserProfile}>
@@ -43,31 +60,24 @@ const DualClashCard = (props) => {
         <Text style={font(14, "#000000", "Semibold", 3)}>{user?.realName}</Text>
         <Text style={font(12, "#9CA3AF", "Medium", 3)}>{type}</Text>
         {audio && <WaveAudioPlayer showDuration iconSize={15} source={audio} />}
-        {/* {!hasAccepted &&
-          <StandardButton
-            title="Cancel Request"
-            customStyles={styles.requetBtn}
-            textStyles={styles.requetBtnText}
-          />
-        } */}
-        {!hasAccepted ?
-          request_type == "Recieved" ?
+   
+        {!hasAccepted ? (
+          request_type == "Recieved" ? (
             <StandardButton
               title="Accept Request"
               customStyles={styles.requetBtn}
               textStyles={styles.requetBtnText}
               onPress={onAcceptRequest}
             />
-            : request_type == "Sent" ?
-              <StandardButton
-                title="Cancel Request"
-                customStyles={styles.requetBtn}
-                textStyles={styles.requetBtnText}
-                onPress={onCancelRequest}
-              />
-              : null
-          : null
-        }
+          ) : request_type == "Sent" ? (
+            <StandardButton
+              title="Cancel Request"
+              customStyles={styles.requetBtn}
+              textStyles={styles.requetBtnText}
+              onPress={onCancelRequest}
+            />
+          ) : null
+        ) : null}
       </View>
     );
   };
@@ -83,15 +93,15 @@ const DualClashCard = (props) => {
             {votes} Voted
           </Text>
         </View>
-        <View style={styles.cardFooterItem}>
+        <TouchableOpacity style={styles.cardFooterItem} onPress={()=>onClashesPress(data)}>
           <MaterialIcons name="multitrack-audio" size={15} color="#6B7280" />
           <Text
             style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
           >
             {opinions} Opinions
           </Text>
-        </View>
-        <View style={styles.cardFooterItem}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.cardFooterItem} onPress={onReportPress}>
           <Image
             source={require("../../../assets/icons/post_cards/flag.png")}
             resizeMode="contain"
@@ -105,8 +115,11 @@ const DualClashCard = (props) => {
           >
             Report
           </Text>
-        </View>
-        <TouchableOpacity style={styles.cardFooterItem} onPress={() => onShareApp()}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.cardFooterItem}
+          onPress={() => onShareApp()}
+        >
           <Image
             source={require("../../../assets/icons/post_cards/share.png")}
             resizeMode="contain"
@@ -125,12 +138,14 @@ const DualClashCard = (props) => {
     );
   };
 
-  const ClashesCard = ({ }) => {
+  const ClashesCard = ({ onPress }) => {
     return (
-      <View style={styles.clashesCardCont}>
-        <Text style={styles.clashesCardTitle}>
-          “{data?.title}”
-        </Text>
+      <TouchableOpacity
+        style={styles.clashesCardCont}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.clashesCardTitle}>“{data?.title}”</Text>
         <View style={styles.clashesCardUsersCont}>
           <ClashUserCard
             user={challenger}
@@ -147,11 +162,11 @@ const DualClashCard = (props) => {
           />
         </View>
         <CardFooter votes={votes} opinions={opinions} />
-      </View>
+      </TouchableOpacity>
     );
   };
 
-  return <ClashesCard />;
+  return <ClashesCard onPress={onPress} />;
 };
 
 export default DualClashCard;
