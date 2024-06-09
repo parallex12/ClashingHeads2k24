@@ -61,9 +61,7 @@ const Header = (props) => {
           {user_author?.politics} - {post_past_time}
         </Text>
       </View>
-      {/* <TouchableOpacity>
-        <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />
-      </TouchableOpacity> */}
+      
     </View>
   );
 };

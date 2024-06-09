@@ -17,7 +17,7 @@ import { font } from "../../styles/Global/main";
 import ClashCard from "./components/ClashCard";
 import { useNavigation } from "@react-navigation/native";
 import DualClashCard from "../Search/components/DualClashCard";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectAllChallengeClashes,
@@ -27,6 +27,7 @@ import {
 } from "../../state-management/features/allChallengeClashes";
 import { fetchAllChallengeClashes } from "../../state-management/features/allChallengeClashes/allChallengeClashesSlice";
 import StandardButton from "../../globalComponents/StandardButton";
+import { sortPostsByCreatedAt } from "../../utils";
 
 const Clashes = (props) => {
   let {} = props;
@@ -56,6 +57,10 @@ const Clashes = (props) => {
     setRefreshing(false);
   }, []);
 
+  let memoizedClashes = useMemo(() => {
+    return sortPostsByCreatedAt(clashes?.filter((e) => e?.status != "pending"));
+  }, [clashes]);
+
   return (
     <View style={styles.container}>
       <StandardHeader searchIcon profile logo />
@@ -68,7 +73,7 @@ const Clashes = (props) => {
           {/* Header  here */}
           <View style={styles.contentHeaderWrapper}>
             <Text style={font(14, "#111827", "Semibold")}>
-              {clashes?.length} Live Clashes
+              {memoizedClashes?.length} Live Clashes
             </Text>
             <View style={styles.contectActionsWrapper}>
               <TouchableOpacity style={styles.contentCalenderBtn}>
@@ -96,8 +101,7 @@ const Clashes = (props) => {
           </TouchableOpacity>
           {/* Clash cards here */}
           <View style={styles.cardsWrapper}>
-            {clashes?.map((item, index) => {
-              if (item?.status == "pending") return;
+            {memoizedClashes?.map((item, index) => {
               return (
                 <DualClashCard
                   key={index}

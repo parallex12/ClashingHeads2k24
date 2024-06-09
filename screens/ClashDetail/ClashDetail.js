@@ -107,7 +107,7 @@ const ClashDetails = (props) => {
         postId={postId}
         bottomSheetRef={bottomFlagSheetRef}
       />
-      <BottomMenu />
+      <BottomMenu active="Home" />
     </View>
   );
 };

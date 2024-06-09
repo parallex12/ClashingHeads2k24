@@ -12,14 +12,19 @@ import { useState } from "react";
 
 import auth from "@react-native-firebase/auth";
 import { ClashCardStyles } from "../../styles/Global/main";
-import { updateClashDetails, updateClashReaction } from "../../state-management/features/singlePost/singlePostSlice";
+import {
+  updateClashDetails,
+  updateClashReaction,
+} from "../../state-management/features/singlePost/singlePostSlice";
 import Header from "./components/Header";
 import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
 import { stickerArr } from "../../utils";
+import { updateSubClashDetails, updateSubClashReaction } from "../../state-management/features/challengeClash/challengeClashSlice";
 
 const ClashCard = (props) => {
-  let { data, onPostClashesPress, hrLine, onReportPress } = props;
+  let { data, onPostClashesPress, challengeClash, hrLine, onReportPress } =
+    props;
   let { width, height } = useWindowDimensions();
   let styles = ClashCardStyles({ width, height });
   let navigation = useNavigation();
@@ -30,22 +35,32 @@ const ClashCard = (props) => {
     data?.clashType == "sticker" ? stickerArr[data?.selectedSticker] : null;
 
   const handleReaction = (reactionType) => {
-    dispatch(updateClashReaction(data, userId, reactionType));
+    if (challengeClash) {
+      dispatch(updateSubClashReaction(data, userId, reactionType));
+    } else {
+      dispatch(updateClashReaction(data, userId, reactionType)); 
+    }
   };
-
   const onAudioPlay = () => {
     let audioViews = { ...data?.listened } || {};
     if (!audioViews[userId]) {
-      audioViews[userId] = true
-      dispatch(
-        updateClashDetails(data?.postId, data?.id, { listened: audioViews })
-      );
+      audioViews[userId] = true;
+      if (challengeClash) {
+        dispatch(
+          updateSubClashDetails(data?.postId, data?.id, {
+            listened: audioViews,
+          })
+        );
+      } else {
+        dispatch(
+          updateClashDetails(data?.postId, data?.id, { listened: audioViews })
+        );
+      }
     }
   };
 
-  let userMention = data?.clashTo != "post" ? data?.clashTo?.author?.username : null
-
-
+  let userMention =
+    data?.clashTo != "post" ? data?.clashTo?.author?.username : null;
 
   return (
     <View style={styles.container}>

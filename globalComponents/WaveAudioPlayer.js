@@ -34,10 +34,9 @@ const WaveAudioPlayer = (props) => {
   const [progress, setProgress] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
   const styles = _styles({ width, height });
-  const [isBuffering, setIsBuffering] = useState(true); // Initialize to true
+  const [isBuffering, setIsBuffering] = useState(false); // Initialize to true
 
   useEffect(() => {
-    loadAudio();
     return () => {
       unloadAudio();
     };
@@ -62,18 +61,16 @@ const WaveAudioPlayer = (props) => {
       setIsBuffering(false); // Stop buffering
       sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate); // Set playback status update handler
     } catch (error) {
-      console.error("Error loading audio:", error);
+      console.log("Error loading audio:", error);
       setIsBuffering(false); // Stop buffering on error
     }
   };
 
-
   const onPlay = async () => {
     if (!soundRef.current) {
-      console.error("Audio not loaded");
-      return;
+      await loadAudio();
     }
-  
+
     try {
       if (isPlaying) {
         await soundRef.current.pauseAsync();
@@ -96,7 +93,6 @@ const WaveAudioPlayer = (props) => {
     }
   };
 
-
   useEffect(() => {
     if (isPlaying) {
       // Start animation when audio playback begins
@@ -111,7 +107,7 @@ const WaveAudioPlayer = (props) => {
       waveAnime.stopAnimation();
     }
   }, [isPlaying]);
-  
+
   useEffect(() => {
     // Reset animation when the component unmounts
     return () => {
@@ -133,16 +129,15 @@ const WaveAudioPlayer = (props) => {
     } else {
       setIsPlaying(false);
     }
-  
+
     if (status.didJustFinish) {
       resetToInitialState();
       afterAudioPlayed && afterAudioPlayed();
     }
-  
+
     setProgress(status.positionMillis / status.durationMillis);
     setRemainingTime((status.durationMillis - status.positionMillis) / 1000);
   };
-
 
   const resetToInitialState = () => {
     waveAnime.setValue(0);
@@ -167,7 +162,6 @@ const WaveAudioPlayer = (props) => {
       soundRef.current = null;
     }
   };
-
 
   const unloadAudio = async () => {
     if (soundRef.current) {
@@ -196,20 +190,36 @@ const WaveAudioPlayer = (props) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.btn} onPress={isPlaying ? onStop : onPlay}>
+      <TouchableOpacity
+        style={styles.btn}
+        onPress={isBuffering ? null : isPlaying ? onStop : onPlay}
+      >
         {isBuffering ? (
           <ActivityIndicator />
         ) : (
-          <FontAwesome5 name={isPlaying ? "pause" : "play"} size={iconSize || 20} color="#DB2727" />
+          <FontAwesome5
+            name={isPlaying ? "pause" : "play"}
+            size={iconSize || 20}
+            color="#DB2727"
+          />
         )}
       </TouchableOpacity>
-      <MaskedView style={{ flex: 1, flexDirection: "row", height: "100%" }} maskElement={
-        <View style={styles.waveForm}>
-          <Image source={require("../assets/icons/post_cards/audioWave.png")} style={styles.waveimg} resizeMode="cover" />
-        </View>
-      }>
+      <MaskedView
+        style={{ flex: 1, flexDirection: "row", height: "100%" }}
+        maskElement={
+          <View style={styles.waveForm}>
+            <Image
+              source={require("../assets/icons/post_cards/audioWave.png")}
+              style={styles.waveimg}
+              resizeMode="cover"
+            />
+          </View>
+        }
+      >
         <Animated.View style={animeWidthStyles}></Animated.View>
-        <View style={{ width: "100%", height: "100%", backgroundColor: "#AEAEAE" }}></View>
+        <View
+          style={{ width: "100%", height: "100%", backgroundColor: "#AEAEAE" }}
+        ></View>
       </MaskedView>
       {audioResetBtn && (
         <TouchableOpacity

@@ -1,9 +1,8 @@
+import React, { useEffect, useState, useCallback, memo } from "react";
 import {
   Image,
-  ScrollView,
-  Text,
-  TextInput,
   TouchableOpacity,
+  Text,
   View,
   useWindowDimensions,
 } from "react-native";
@@ -12,6 +11,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
   FontAwesome6,
+  Entypo,
 } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
@@ -21,9 +21,10 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { updateChallengeClash } from "../../../state-management/features/challengeClash/challengeClashSlice";
+import { RFValue } from "react-native-responsive-fontsize";
 
 const DualClashCard = (props) => {
-  let {
+  const {
     data,
     request_type,
     onAcceptRequest,
@@ -36,41 +37,57 @@ const DualClashCard = (props) => {
     onProfilePress,
     showVoting,
     postDateAndViews,
-
   } = props;
-  let { width, height } = useWindowDimensions();
-  let styles = _styles({ width, height });
-  const currentUser = useSelector(selectAuthUser)
-  let challenger = data?.challenger;
-  let opponent = data?.opponent;
-  let voted = data?.voted
-  let opinions = data?.opinions;
-  let status = data?.status;
-  let { challengerPercentage, opponentPercentage, opponentVotes, challengerVotes } = calculateVotes(data?.votes, data?.challengerId, data?.opponentId)
 
+  const { width, height } = useWindowDimensions();
+  const styles = _styles({ width, height });
+  const currentUser = useSelector(selectAuthUser);
+  const dispatch = useDispatch();
 
-  const dispatch = useDispatch()
+  const [voteData, setVoteData] = useState(data?.votes);
+  const hasCurrentUserVoted = voteData[currentUser?.id];
 
-  const onVotePress = (selectedUserId) => {
-    if (selectedUserId) {
-      let updatedVotes = { ...data?.votes }
-      updatedVotes[currentUser?.id] = selectedUserId
-      dispatch(updateChallengeClash(data?.id, { votes: updatedVotes, voted: eval(data?.voted + 1) }))
-    }
-  }
+  useEffect(() => {
+    setVoteData(data?.votes);
+  }, [data?.votes]);
 
+  const {
+    challengerPercentage,
+    opponentPercentage,
+    opponentVotes,
+    challengerVotes,
+  } = calculateVotes(voteData, data?.challengerId, data?.opponentId);
 
-  const ClashUserCard = ({
-    user,
-    type,
-    audio,
-    hasAccepted,
-    shouldAccepted,
-    votes
-  }) => {
-
-    let hasCurrentUserVoted = votes[currentUser?.id]
-
+  const onVotePress = useCallback(
+    (selectedUserId, hasCurrentUserVoted) => {
+      const updatedVotes = { ...voteData };
+      if (hasCurrentUserVoted) {
+        if (hasCurrentUserVoted === selectedUserId) {
+          delete updatedVotes[currentUser?.id];
+          dispatch(
+            updateChallengeClash(data?.id, {
+              votes: updatedVotes,
+              voted: data?.voted - 1,
+            })
+          );
+        } else {
+          updatedVotes[currentUser?.id] = selectedUserId;
+          dispatch(updateChallengeClash(data?.id, { votes: updatedVotes }));
+        }
+      } else {
+        updatedVotes[currentUser?.id] = selectedUserId;
+        dispatch(
+          updateChallengeClash(data?.id, {
+            votes: updatedVotes,
+            voted: data?.voted + 1,
+          })
+        );
+      }
+      setVoteData(updatedVotes);
+    },
+    [currentUser, data?.id, voteData, dispatch, data?.voted]
+  );
+  const ClashUserCard = memo(({ user, type, audio, hasAccepted, votes }) => {
     return (
       <View style={styles.clashUserItem}>
         <View style={styles.clashUserProfile}>
@@ -78,151 +95,155 @@ const DualClashCard = (props) => {
             source={{ uri: user?.profile_photo }}
             resizeMode="contain"
             style={{ width: "100%", height: "100%" }}
+            cachePolicy="memory-disk"
           />
         </View>
         <Text style={font(14, "#000000", "Semibold", 3)}>{user?.realName}</Text>
         <Text style={font(12, "#9CA3AF", "Medium", 3)}>{type}</Text>
         {audio && <WaveAudioPlayer showDuration iconSize={15} source={audio} />}
-
-        {!hasAccepted ? (
-          request_type == "Recieved" ? (
+        {!hasAccepted &&
+          (request_type === "Received" ? (
             <StandardButton
               title="Accept Request"
               customStyles={styles.requetBtn}
               textStyles={styles.requetBtnText}
               onPress={onAcceptRequest}
             />
-          ) : request_type == "Sent" ? (
+          ) : request_type === "Sent" ? (
             <StandardButton
               title="Cancel Request"
               customStyles={styles.requetBtn}
               textStyles={styles.requetBtnText}
               onPress={onCancelRequest}
             />
-          ) : null
-        ) : null}
-
-        {
-          !hasCurrentUserVoted && status=="accepted" &&
+          ) : null)}
+        {data?.status === "accepted" && showVoting && (
           <StandardButton
-            title="Vote Me"
+            title={hasCurrentUserVoted === user?.id ? "THANKS" : "VOTE ME"}
+            rightIcon={
+              <Entypo name="thumbs-up" size={RFValue(12)} color="#fff" />
+            }
             customStyles={styles.requetBtn}
             textStyles={styles.requetBtnText}
-            onPress={() => onVotePress(user?.id)}
+            onPress={() => onVotePress(user?.id, hasCurrentUserVoted)}
           />
-        }
+        )}
       </View>
     );
-  };
+  });
 
-  const CardFooter = ({ votes, opinions }) => {
-    return (
-      <View style={styles.cardFooterWrapper}>
-        <View style={styles.cardFooterItem}>
-          <FontAwesome6 name="users" size={15} color="#6B7280" />
-          <Text
-            style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
-          >
-            {voted} Voted
-          </Text>
-        </View>
-        <TouchableOpacity style={styles.cardFooterItem} onPress={() => onClashesPress(data)}>
-          <MaterialIcons name="multitrack-audio" size={15} color="#6B7280" />
-          <Text
-            style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
-          >
-            {opinions} Opinions
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.cardFooterItem} onPress={onReportPress}>
-          <Image
-            source={require("../../../assets/icons/post_cards/flag.png")}
-            resizeMode="contain"
-            style={{
-              width: getPercent(4, width),
-              height: getPercent(4, width),
-            }}
-          />
-          <Text
-            style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
-          >
-            Report
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.cardFooterItem}
-          onPress={() => onShareApp()}
+  const CardFooter = memo(() => (
+    <View style={styles.cardFooterWrapper}>
+      <View style={styles.cardFooterItem}>
+        <FontAwesome6 name="users" size={15} color="#6B7280" />
+        <Text
+          style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
         >
-          <Image
-            source={require("../../../assets/icons/post_cards/share.png")}
-            resizeMode="contain"
-            style={{
-              width: getPercent(4, width),
-              height: getPercent(4, width),
-            }}
-          />
-          <Text
-            style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
-          >
-            Share
-          </Text>
-        </TouchableOpacity>
+          {data?.voted} Voted
+        </Text>
       </View>
-    );
-  };
+      <TouchableOpacity
+        style={styles.cardFooterItem}
+        onPress={() => onClashesPress(data)}
+      >
+        <MaterialIcons name="multitrack-audio" size={15} color="#6B7280" />
+        <Text
+          style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
+        >
+          {data?.opinions} Opinions
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.cardFooterItem} onPress={onReportPress}>
+        <Image
+          source={require("../../../assets/icons/post_cards/flag.png")}
+          resizeMode="contain"
+          style={{ width: getPercent(4, width), height: getPercent(4, width) }}
+        />
+        <Text
+          style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
+        >
+          Report
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.cardFooterItem}
+        onPress={() => onShareApp()}
+      >
+        <Image
+          source={require("../../../assets/icons/post_cards/share.png")}
+          resizeMode="contain"
+          style={{ width: getPercent(4, width), height: getPercent(4, width) }}
+        />
+        <Text
+          style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
+        >
+          Share
+        </Text>
+      </TouchableOpacity>
+    </View>
+  ));
 
-  const VotingFooter = () => {
-    let cstyles = challengerVotes > opponentVotes ? styles?.votingItem : styles.votingItemOpponent
-    let pstyles = opponentVotes > challengerVotes ? styles?.votingItem : styles.votingItemOpponent
+  const VotingFooter = memo(() => {
+    const style1 =
+      challengerVotes > opponentVotes
+        ? styles.votingItem
+        : styles.votingItemOpponent;
+
+    const style2 =
+      opponentVotes > challengerVotes
+        ? styles.votingItem
+        : styles.votingItemOpponent;
+
     return (
       <View style={styles.votingFooterWrapper}>
-        <View style={cstyles}>
-          <Text style={styles.votingItemText}>{challengerPercentage}% ({challengerVotes} Votes)</Text>
-          <Text style={styles.votingItemTextOpponent}>{challenger?.realName}</Text>
+        <View style={style1}>
+          <Text style={styles.votingItemText}>
+            {challengerPercentage}% ({challengerVotes} Votes)
+          </Text>
+          <Text style={styles.votingItemTextOpponent}>
+            {data?.challenger?.realName}
+          </Text>
         </View>
-        <View style={pstyles}>
-          <Text style={styles.votingItemText}>{opponentPercentage}% ({opponentVotes} Votes)</Text>
-          <Text style={styles.votingItemTextOpponent}>{opponent?.realName}</Text>
+        <View style={style2}>
+          <Text style={styles.votingItemText}>
+            {opponentPercentage}% ({opponentVotes} Votes)
+          </Text>
+          <Text style={styles.votingItemTextOpponent}>
+            {data?.opponent?.realName}
+          </Text>
         </View>
-      </View>
-    )
-  }
-
-  const ClashesCard = ({ onPress }) => {
-    return (
-      <View
-        style={styles.clashesCardCont}
-
-      >
-        <Text style={styles.clashesCardTitle}>“{data?.title}”</Text>
-        <TouchableOpacity style={styles.clashesCardUsersCont}
-          onPress={onPress}
-          activeOpacity={0.8}
-        >
-          <ClashUserCard
-            votes={data?.votes}
-            user={challenger}
-            audio={data?.challenger_audio}
-            type="Challenger"
-            hasAccepted={true}
-          />
-          <Text style={styles.vsText}>VS</Text>
-          <ClashUserCard
-            votes={data?.votes}
-            user={opponent}
-            audio={data?.opponent_audio}
-            type="Opponent"
-            hasAccepted={status == "accepted"}
-          />
-        </TouchableOpacity>
-        <CardFooter votes={voted} opinions={opinions} />
-        {showVoting && <VotingFooter />}
-
       </View>
     );
-  };
+  });
 
-  return <ClashesCard onPress={onPress} />;
+  return (
+    <View style={styles.clashesCardCont}>
+      <Text style={styles.clashesCardTitle}>“{data?.title}”</Text>
+      <TouchableOpacity
+        style={styles.clashesCardUsersCont}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <ClashUserCard
+          user={data?.challenger}
+          type="Challenger"
+          audio={data?.challenger_audio}
+          hasAccepted={true}
+          votes={voteData}
+        />
+        <Text style={styles.vsText}>VS</Text>
+        <ClashUserCard
+          user={data?.opponent}
+          type="Opponent"
+          audio={data?.opponent_audio}
+          hasAccepted={data?.status === "accepted"}
+          votes={voteData}
+        />
+      </TouchableOpacity>
+      <CardFooter />
+      {showVoting && <VotingFooter />}
+    </View>
+  );
 };
 
 export default DualClashCard;

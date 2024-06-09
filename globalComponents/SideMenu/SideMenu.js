@@ -103,11 +103,11 @@ const SideMenu = (props) => {
         </View>
         <View style={styles.listContainer}>
           {sideMenuOptions?.map((item, index) => {
-            if (index == 10) return;
+            if (index == 12) return;
             return <ListItem data={item} key={index} />;
           })}
         </View>
-        <ListItem data={sideMenuOptions[10]} />
+        <ListItem data={sideMenuOptions[12]} />
       </DrawerContentScrollView>
     </View>
   );

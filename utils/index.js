@@ -431,9 +431,9 @@ export const calculateVotes = (votes, challengerId, opponentId) => {
     totalVotes++;
 
     // Increment votes count for challenger and opponent
-    if (voterId === challengerId && selectedCandidateId) {
+    if (selectedCandidateId === challengerId) {
       challengerVotes++;
-    } else if (voterId === opponentId && selectedCandidateId) {
+    } else if (selectedCandidateId === opponentId) {
       opponentVotes++;
     }
 

@@ -64,13 +64,26 @@ export const ClashesResultStyles = ({ width, height }) =>
       marginVertical: 4,
       overflow: "hidden",
     },
+    votedBtn: {
+      width: getPercent(4, height),
+      height: getPercent(4, height),
+      borderRadius: 100,
+      backgroundColor: "rgba(219,39,39,1)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
     requetBtn: {
-      width: getPercent(28, width),
-      height: getPercent(6, width),
-      marginTop: 10
+      minWidth: getPercent(22, width),
+      height: getPercent(7, width),
+      flexDirection: "row",
+      paddingHorizontal: 10,
+      alignItems: "center",
+      justifyContent: "space-around",
     },
     requetBtnText: {
-      fontSize: rf(10),
+      fontSize: rf(13),
+      fontFamily: "BLP",
+      marginRight: 8,
     },
     cardFooterWrapper: {
       width: "100%",
@@ -96,38 +109,37 @@ export const ClashesResultStyles = ({ width, height }) =>
       top: getPercent(3, height),
     },
     votingFooterWrapper: {
-      width: '100%',
+      width: "100%",
       height: getPercent(10, height),
-      backgroundColor: '#E5E7EB'
+      backgroundColor: "#E5E7EB",
     },
     votingItem: {
-      width: '100%',
+      width: "100%",
       height: getPercent(5, height),
-      flexDirection: 'row',
+      flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       paddingHorizontal: getPercent(3, width),
-      backgroundColor: 'rgba(219,39,39,0.24)'
+      backgroundColor: "rgba(219,39,39,0.24)",
     },
     votingItemText: {
       fontSize: rf(11),
-      fontFamily: 'Semibold',
-      color: '#000000'
+      fontFamily: "Semibold",
+      color: "#000000",
     },
     votingItemOpponent: {
-      width: '100%',
+      width: "100%",
       height: getPercent(5, height),
-      flexDirection: 'row',
+      flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal: getPercent(3, width)
+      paddingHorizontal: getPercent(3, width),
     },
     votingItemTextOpponent: {
       fontSize: rf(11),
-      fontFamily: 'Regular',
-      color: '#000000'
+      fontFamily: "Regular",
+      color: "#000000",
     },
-   
   });
 
 //PostsResult  starts here
