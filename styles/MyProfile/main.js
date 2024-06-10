@@ -33,15 +33,14 @@ export const ProfileCardstyles = ({ width, height }) =>
       paddingHorizontal: getPercent(3, width),
       paddingVertical: 10,
     },
-    cardHeaderProfileWrapper: {
-    },
+    cardHeaderProfileWrapper: {},
     cardHeaderProfile: {
       width: getPercent(20, width),
       height: getPercent(20, width),
       borderRadius: 100,
       alignItems: "center",
       justifyContent: "center",
-      overflow:'hidden'
+      overflow: "hidden",
     },
     cardHeaderProfileCameraIcon: {
       width: getPercent(7, width),
@@ -87,6 +86,18 @@ export const ProfileCardstyles = ({ width, height }) =>
       flexDirection: "row-reverse",
       alignItems: "center",
       justifyContent: "center",
+    },
+    bioEditwrapper: {
+      width:'100%',
+      paddingVertical: getPercent(0.5, height),
+      paddingHorizontal: getPercent(3, width),
+      alignItems: "center",
+      flexDirection: "row",
+    },
+    bioicons: {
+      width: getPercent(4, width),
+      height: getPercent(4, width),
+      marginRight: 5,
     },
     volumeIcon: {
       width: "20%",

@@ -311,7 +311,7 @@ export function sortPostsByCreatedAt(posts) {
   // Preprocess posts to ensure createdAt is parsed correctly
   const processedPosts = posts?.map(post => ({
     ...post,
-    createdAt: post?.createdAt
+    createdAt: post?.createdAt ||post?.publishedAt
   }));
 
   // Sort the processed posts array

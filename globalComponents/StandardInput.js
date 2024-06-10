@@ -24,7 +24,7 @@ const StandardInput = (props) => {
     onRemoveField,
     value,
     customIcon,
-    titleTextStyle
+    titleTextStyle,
   } = props;
   let { width, height } = useWindowDimensions();
   const [dateOfBirth, setDateOfBirth] = useState(new Date());

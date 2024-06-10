@@ -707,7 +707,6 @@ export const StandardInputStyles = ({ width, height }) =>
     },
     input: {
       flex: 1,
-      height: "100%",
       fontSize: rf(10),
       fontFamily: "Regular",
       color: "#111827",

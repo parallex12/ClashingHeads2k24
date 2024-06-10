@@ -129,7 +129,11 @@ const Home = (props) => {
           onPress={() => props?.navigation.navigate("NewPost")}
         />
       </View>
-      <ScrollView scrollEnabled={false}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.content}>
           <FlatList
             refreshControl={

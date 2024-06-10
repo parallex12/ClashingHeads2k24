@@ -111,7 +111,7 @@ const DualClashCard = (props) => {
             />
           ) : request_type === "Sent" ? (
             <StandardButton
-              title="Cancel Request"
+              title="Request Sent"
               customStyles={styles.requetBtn}
               textStyles={styles.requetBtnText}
               onPress={onCancelRequest}

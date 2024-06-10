@@ -1,4 +1,5 @@
 import {
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -14,17 +15,42 @@ import { global_posts } from "../../state-management/atoms/atoms";
 import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getPercent } from "../../middleware";
 import SearchBar from "../../globalComponents/SearchBar";
 import NewsCard from "../../globalComponents/NewsCard";
-
+import axios from "axios";
+import { sortPostsByCreatedAt } from "../../utils";
+// api key 45b06648f48c47aaa5cad2280df9e6be
 const News = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  const [newsArr, setNewsArr] = useState([]);
+  const bottomFlagSheetRef = useRef();
+  const [refreshing, setRefreshing] = useState(true);
 
-  let newsArr = new Array(10).fill(0);
+  useEffect(() => {
+    fetchNews();
+  }, []);
+
+  const fetchNews = async () => {
+    try {
+      const response = await axios.get(
+        `https://newsapi.org/v2/top-headlines?country=us&category=politics&apiKey=45b06648f48c47aaa5cad2280df9e6be`
+      );
+      setNewsArr(sortPostsByCreatedAt(response.data.articles));
+      setRefreshing(false);
+    } catch (error) {
+      console.error("Error fetching news:", error);
+    }
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchNews();
+    setRefreshing(false);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -32,15 +58,19 @@ const News = (props) => {
         title="News"
         containerStyles={{ height: getPercent(15, height) }}
       />
-      <ScrollView>
+      <View style={styles.titleHeaderWrapper}>
+        <Text style={font(14, "#6B7280", "Medium", 5)}>Hey, Zeeshan</Text>
+        <Text style={font(26, "#1F2937", "Bold", 5)}>
+          Breaking Political News
+        </Text>
+      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.content}>
-          <View style={styles.titleHeaderWrapper}>
-            <Text style={font(14, "#6B7280", "Medium", 5)}>Hey, Zeeshan</Text>
-            <Text style={font(26, "#1F2937", "Bold", 5)}>
-              Breaking Political News
-            </Text>
-            <SearchBar customStyles={{ marginVertical: 10 }} />
-          </View>
+          <SearchBar  />
           <View style={styles.newsWrapper}>
             {newsArr?.map((item, index) => {
               return <NewsCard key={index} data={item} />;

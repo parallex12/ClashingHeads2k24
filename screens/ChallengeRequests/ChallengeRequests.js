@@ -5,7 +5,7 @@ import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
 import {
-  fetchAllChallengeRequests,
+  fetchUserPostsAndChallenges,
   updateChallengeRequestForUser,
 } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
 import { selectChallengeClashRequests } from "../../state-management/features/challengeRequests";
@@ -29,7 +29,7 @@ const ChallengeRequests = (props) => {
 
   useEffect(() => {
     if (user?.id) {
-      dispatch(fetchAllChallengeRequests(user.id));
+      dispatch(fetchUserPostsAndChallenges(user.id));
     }
   }, [user, dispatch]);
 

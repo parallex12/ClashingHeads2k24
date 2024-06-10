@@ -82,6 +82,27 @@ export const toHMS_OBJ = (seconds) => {
   return { hours: newObj[0], minutes: newObj[1], seconds: newObj[2] };
 };
 
+export const bioFields = [
+  {
+    title: "Bio",
+    key: "bio",
+    placeholder: "Write a brief description about yourself.",
+    type: "text",
+  },
+  {
+    title: "Add School / College",
+    key: "school",
+    placeholder: "Enter the name of your school or college.",
+    type: "text",
+  },
+  {
+    title: "Add Employment / Business",
+    key: "employment",
+    placeholder: "Enter your current job title or business name.",
+    type: "text",
+  },
+];
+
 export const registrationFields = [
   {
     title: "Real Name",
@@ -211,7 +232,7 @@ export const sideMenuOptions = [
     title: "Sign out",
     route: "",
     icon: require("../assets/icons/sideMenu/11.png"),
-    type: "logout"
+    type: "logout",
   },
 ];
 

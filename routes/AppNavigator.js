@@ -53,6 +53,7 @@ import {
 } from "../state-management/features/auth";
 import ChallengeRequests from "../screens/ChallengeRequests/ChallengeRequests";
 import ChallengeClash from "../screens/ChallengeClash/ChallengeClash";
+import AddBio from "../screens/Authentication/AddBio/AddBio";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -74,6 +75,7 @@ const HomeScreens = () => {
         <HomeStack.Group screenOptions={{ headerShown: false }}>
           <HomeStack.Screen name="Home" component={Home} />
           <Screen name="PersonalInfo" component={PersonalInfo} />
+          <Screen name="AddBio" component={AddBio} />
           <Screen name="VoiceRecording" component={VoiceRecording} />
           <HomeStack.Screen name="ClashDetails" component={ClashDetails} />
           <HomeStack.Screen name="Search" component={Search} />

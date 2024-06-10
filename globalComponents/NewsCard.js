@@ -1,5 +1,6 @@
 import {
   Image,
+  Pressable,
   Text,
   TextInput,
   TouchableOpacity,
@@ -10,52 +11,62 @@ import { NewsCardStyles, font } from "../styles/Global/main";
 import { AntDesign } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
+// import * as WebBrowser from "expo-web-browser";
 
 const NewsCard = (props) => {
-  let { customStyles, placeholder } = props;
+  let { data, customStyles, placeholder } = props;
   let { width, height } = useWindowDimensions();
   let styles = NewsCardStyles({ width, height });
   let navigation = useNavigation();
+
+  let { author, description, url, urlToImage, title, publishedAt, source } =
+    data;
 
   const CardFooter = () => {
     return (
       <View style={styles.cardFooterWrapper}>
         <View style={styles.cardFootercompanyLogo}>
           <Image
-            source={require("../assets/icon.png")}
+            source={
+              urlToImage ? { uri: urlToImage } : require("../assets/icon.png")
+            }
             resizeMode="cover"
             style={styles.companyLogo}
           />
-          <Text style={font(13, "#6B7287", "Regular")}>bbc.com</Text>
+          <Text style={font(13, "#6B7287", "Regular")}>{source?.name}</Text>
         </View>
-        <Text style={font(12, "#6B7287", "Regular")}>Tue 14 Apr 9:36 PM</Text>
+        <Text style={font(12, "#6B7287", "Regular")}>
+          {publishedAt && new Date(publishedAt).toDateString()}
+        </Text>
       </View>
     );
   };
 
+  const handlePress = async () => {
+    if (data.url) {
+      // await WebBrowser.openBrowserAsync("https://expo.dev");
+    }
+  };
+
   return (
-    <View style={styles.newsCardCont}>
+    <Pressable style={styles.newsCardCont} onPress={handlePress}>
       <View style={styles.cardRow}>
         <View style={styles.newsCardThumbnailCont}>
           <Image
-            source={require("../assets/stickers/1.jpg")}
+            source={
+              urlToImage ? { uri: urlToImage } : require("../assets/icon.png")
+            }
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
           />
         </View>
         <View style={styles.newsContentWrapper}>
-          <Text style={font(15, "#000000", "Semibold", 3)}>
-            This is demo headings
-          </Text>
-          <Text style={font(12.5, "#000000", "Regular", 3)}>
-            Lorem ipsum dolor sit amet. Sit conse quatur quibusdam aut illum
-            minima et facilis rerum eos aliquam quia volupta tem et placeat
-            voluptatibus.
-          </Text>
+          <Text style={font(15, "#000000", "Semibold", 3)}>{title}</Text>
+          <Text style={font(12.5, "#000000", "Regular", 3)}>{description}</Text>
         </View>
       </View>
       <CardFooter />
-    </View>
+    </Pressable>
   );
 };
 
