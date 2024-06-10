@@ -11,7 +11,7 @@ import { NewsCardStyles, font } from "../styles/Global/main";
 import { AntDesign } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
-// import * as WebBrowser from "expo-web-browser";
+import * as WebBrowser from "expo-web-browser";
 
 const NewsCard = (props) => {
   let { data, customStyles, placeholder } = props;
@@ -44,7 +44,9 @@ const NewsCard = (props) => {
 
   const handlePress = async () => {
     if (data.url) {
-      // await WebBrowser.openBrowserAsync("https://expo.dev");
+      await WebBrowser.openBrowserAsync(url, {
+        presentationStyle:'popover', // Use PAGE_SHEET presentation style
+      });
     }
   };
 

@@ -37,7 +37,7 @@ import { setPosts } from "../../state-management/features/posts/postSlice";
 import EmptyBox from "../../globalComponents/EmptyBox";
 
 const Home = (props) => {
-  let {} = props;
+  let { } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const posts = useSelector(selectPosts);
@@ -152,10 +152,15 @@ const Home = (props) => {
                     props?.navigation?.navigate("ClashDetails", { ...item })
                   }
                   onReportPress={() => bottomFlagSheetRef?.current?.present()}
-                  onProfilePress={() =>
-                    props?.navigation?.navigate("UserProfile", {
-                      user: item?.author,
-                    })
+                  onProfilePress={() => {
+                    if (item?.author?.id == user_details?.id) {
+                      props?.navigation?.navigate("MyProfile")
+                    } else {
+                      props?.navigation?.navigate("UserProfile", {
+                        user: item?.author,
+                      })
+                    }
+                  }
                   }
                 />
               );

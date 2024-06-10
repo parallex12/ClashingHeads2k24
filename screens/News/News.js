@@ -1,60 +1,62 @@
-import {
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useWindowDimensions, ScrollView, Text, View, RefreshControl } from "react-native";
 import { styles as _styles } from "../../styles/News/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
-import PostCard from "../../globalComponents/PostCard/PostCard";
-import { useRecoilState } from "recoil";
-import { global_posts } from "../../state-management/atoms/atoms";
-import { font } from "../../styles/Global/main";
-import StandardButton from "../../globalComponents/StandardButton";
-import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { getPercent } from "../../middleware";
-import SearchBar from "../../globalComponents/SearchBar";
 import NewsCard from "../../globalComponents/NewsCard";
-import axios from "axios";
 import { sortPostsByCreatedAt } from "../../utils";
-// api key 45b06648f48c47aaa5cad2280df9e6be
-const News = (props) => {
-  let {} = props;
-  let { width, height } = useWindowDimensions();
-  let styles = _styles({ width, height });
+import { font } from "../../styles/Global/main";
+import SearchBar from "../../globalComponents/SearchBar";
+import { getPercent } from "../../middleware";
+import * as WebBrowser from 'expo-web-browser';
+
+const News = () => {
   const [newsArr, setNewsArr] = useState([]);
-  const bottomFlagSheetRef = useRef();
   const [refreshing, setRefreshing] = useState(true);
 
+  const { width, height } = useWindowDimensions();
+  const styles = _styles({ width, height });
+
   useEffect(() => {
-    fetchNews();
+    loadDefaultNews();
+    searchNews("politics")
   }, []);
 
-  const fetchNews = async () => {
+  const loadDefaultNews = async () => {
     try {
-      const response = await axios.get(
-        `https://newsapi.org/v2/top-headlines?country=us&category=politics&apiKey=45b06648f48c47aaa5cad2280df9e6be`
-      );
+      const response = await axios.get(`https://newsapi.org/v2/top-headlines?country=us&category=politics&apiKey=45b06648f48c47aaa5cad2280df9e6be`);
       setNewsArr(sortPostsByCreatedAt(response.data.articles));
       setRefreshing(false);
     } catch (error) {
-      console.error("Error fetching news:", error);
+      console.error("Error fetching default news:", error);
     }
   };
 
-  const onRefresh = useCallback(() => {
+  const searchNews = async (text) => {
+    try {
+      const response = await axios.get(`https://newsapi.org/v2/everything?q=${text}&apiKey=45b06648f48c47aaa5cad2280df9e6be`);
+      setNewsArr(sortPostsByCreatedAt(response.data.articles));
+      setRefreshing(false);
+    } catch (error) {
+      console.error("Error fetching searched news:", error);
+    }
+  };
+
+  const handleSearch = (text) => {
     setRefreshing(true);
-    fetchNews();
-    setRefreshing(false);
-  }, []);
+    searchNews(text)
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadDefaultNews();
+  };
+
 
   return (
     <View style={styles.container}>
-      <StandardHeader
+       <StandardHeader
         title="News"
         containerStyles={{ height: getPercent(15, height) }}
       />
@@ -65,16 +67,16 @@ const News = (props) => {
         </Text>
       </View>
       <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <View style={styles.content}>
-          <SearchBar  />
+          <SearchBar
+            onChangeText={handleSearch}
+          />
           <View style={styles.newsWrapper}>
-            {newsArr?.map((item, index) => {
-              return <NewsCard key={index} data={item} />;
-            })}
+            {newsArr.map((item, index) => (
+              <NewsCard key={index} data={item} />
+            ))}
           </View>
         </View>
       </ScrollView>
