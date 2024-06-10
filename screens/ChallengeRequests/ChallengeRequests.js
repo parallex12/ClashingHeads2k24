@@ -33,10 +33,6 @@ const ChallengeRequests = (props) => {
     }
   }, [user, dispatch]);
 
-  useEffect(() => {
-    console.log(error);
-  }, [error]);
-
   const memoizedRequestsRecieved = useMemo(() => {
     return allRequests?.filter((e) => {
       const isReceived = e?.opponentId === user?.id;
@@ -77,12 +73,6 @@ const ChallengeRequests = (props) => {
       : memoizedRequestsRecieved;
   }, [allRequests, activeFilter, user?.id]);
 
-  const onAcceptChallenge = (id) => {
-    alert("Record your opinion to accept the challenge.");
-    bottomVoiceSheetRef.current?.present();
-    // dispatch(updateChallengeRequestForUser(id, { status: "accepted" }))
-  };
-
   return (
     <View style={styles.container}>
       <StandardHeader title="Challenge Requests" backButton />
@@ -110,11 +100,16 @@ const ChallengeRequests = (props) => {
             return (
               <DualClashCard
                 onAcceptRequest={() => {
-                  console.log(item?.id);
                   alert("Record your opinion to accept the challenge.");
                   setCurrentChallenge(item?.id);
                   bottomVoiceSheetRef.current?.present();
                 }}
+                onPress={() =>
+                  props?.navigation?.navigate("ChallengeClash", { ...item })
+                }
+                onClashesPress={() =>
+                  props?.navigation?.navigate("ChallengeClash", { ...item })
+                }
                 onCancelRequest={() => null}
                 request_type={activeFilter}
                 key={index}

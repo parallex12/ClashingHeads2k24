@@ -1,5 +1,6 @@
 import {
   Image,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,27 +12,29 @@ import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { getTimeElapsed } from "../../../utils";
 import { memo } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { selectAuthUser } from "../../../state-management/features/auth";
 
 const Header = (props) => {
-  let { author, createdAt, onProfilePress,profileStyles } = props;
+  let { author, createdAt, profileStyles } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let user_author = author;
   let post_past_time = getTimeElapsed(createdAt);
+  const navigation = useNavigation();
+  const user_details = useSelector(selectAuthUser);
 
-  const Profile = ({ source,profileStyles }) => {
+  const Profile = ({ source, profileStyles }) => {
     return (
-      <View style={[styles.container,{...profileStyles}]}>
-        <TouchableOpacity
-          style={styles.profileWrapper}
-          onPress={onProfilePress}
-        >
+      <View style={[styles.container, { ...profileStyles }]}>
+        <View style={styles.profileWrapper}>
           <Image
             source={source}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
           />
-        </TouchableOpacity>
+        </View>
         <View style={styles.online}></View>
       </View>
     );
@@ -39,28 +42,45 @@ const Header = (props) => {
 
   return (
     <View style={styles.container}>
-      <Profile
-        source={{
-          uri: user_author?.profile_photo,
+      <TouchableOpacity
+        style={{
+          flexDirection: "row",
+          paddingHorizontal: getPercent(3, width),
         }}
-        profileStyles={profileStyles}
-      />
-      <View style={styles.infoWrapper}>
-        <View style={styles.infoTitleRow}>
-          <Text style={styles.titleName}>{user_author?.realName}</Text>
-          <Image
-            source={require("../../../assets/icons/mStarIcon.png")}
-            resizeMode="contain"
-            style={{
-              width: getPercent(2, height),
-              height: getPercent(2, height),
-            }}
-          />
+        onPress={() => {
+          if (author?.id == user_details?.id) {
+            navigation?.navigate("MyProfile");
+          } else {
+            navigation?.navigate("UserProfile", {
+              user: author,
+            });
+          }
+        }}
+      >
+        <Profile
+          source={{
+            uri: user_author?.profile_photo,
+          }}
+          profileStyles={profileStyles}
+        />
+        <View style={styles.infoWrapper}>
+          <View style={styles.infoTitleRow}>
+            <Text style={styles.titleName}>{user_author?.realName}</Text>
+            <Image
+              source={require("../../../assets/icons/mStarIcon.png")}
+              resizeMode="contain"
+              style={{
+                width: getPercent(2, height),
+                height: getPercent(2, height),
+              }}
+            />
+          </View>
+          <Text style={styles.slugText}>
+            {user_author?.politics} - {post_past_time}
+          </Text>
         </View>
-        <Text style={styles.slugText}>
-          {user_author?.politics} - {post_past_time}
-        </Text>
-      </View>
+      </TouchableOpacity>
+
       <TouchableOpacity>
         <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />
       </TouchableOpacity>
@@ -83,7 +103,7 @@ const _styles = ({ width, height }) =>
       overflow: "hidden",
       zIndex: 1,
       borderWidth: 0.2,
-      backgroundColor:'#fff'
+      backgroundColor: "#fff",
     },
     online: {
       width: getPercent(1.5, height),

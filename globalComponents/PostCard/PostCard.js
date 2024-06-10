@@ -28,7 +28,6 @@ const PostCard = memo((props) => {
     divider,
     postDateAndViews,
     onReportPress,
-    onProfilePress,
     views,
   } = props;
   let { width, height } = useWindowDimensions();
@@ -68,7 +67,6 @@ const PostCard = memo((props) => {
         <Header
           author={memoizedData?.author}
           createdAt={memoizedData?.createdAt}
-          onProfilePress={onProfilePress}
         />
         <Content {...memoizedData} desc_limit={desc_limit} />
         <ActionMenu

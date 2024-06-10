@@ -34,6 +34,7 @@ const ProfileCard = (props) => {
     bio,
     school,
     employment,
+    username,
   } = user_details;
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -130,7 +131,7 @@ const ProfileCard = (props) => {
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
           <Text style={font(16, "#111827", "Medium", 2)}>
-            <Text style={font(16, "#DB2727", "Semibold", 2)}>
+            <Text style={font(16, "#", "Semibold", 2)}>
               #{clashHash}{" "}
             </Text>
             {realName}
@@ -146,6 +147,7 @@ const ProfileCard = (props) => {
           />
         </View>
         <Text style={font(12, "#6B7280", "Regular", 2)}>{politics}</Text>
+        <Text style={font(10, "#DB2727", "Semibold", 2)}>@{username} </Text>
       </View>
       <TouchableOpacity style={styles.bioEditwrapper} onPress={onBioEditPress}>
         {!bio && (

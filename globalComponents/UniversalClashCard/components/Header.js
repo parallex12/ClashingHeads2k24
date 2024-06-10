@@ -11,17 +11,22 @@ import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { getTimeElapsed } from "../../../utils";
 import { memo } from "react";
+import { useSelector } from "react-redux";
+import { selectAuthUser } from "../../../state-management/features/auth";
+import { useNavigation } from "@react-navigation/native";
 
 const Header = (props) => {
-  let { author, createdAt, onProfilePress,profileStyles } = props;
+  let { author, createdAt, onProfilePress, profileStyles } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let user_author = author;
   let post_past_time = getTimeElapsed(createdAt);
+  const user_details = useSelector(selectAuthUser);
+  const navigation = useNavigation();
 
-  const Profile = ({ source,profileStyles }) => {
+  const Profile = ({ source, profileStyles }) => {
     return (
-      <View style={[styles.container,{...profileStyles}]}>
+      <View style={[styles.container, { ...profileStyles }]}>
         <TouchableOpacity
           style={styles.profileWrapper}
           onPress={onProfilePress}
@@ -39,29 +44,43 @@ const Header = (props) => {
 
   return (
     <View style={styles.container}>
-      <Profile
-        source={{
-          uri: user_author?.profile_photo,
+      <TouchableOpacity
+        style={{
+          flexDirection: "row",
         }}
-        profileStyles={profileStyles}
-      />
-      <View style={styles.infoWrapper}>
-        <View style={styles.infoTitleRow}>
-          <Text style={styles.titleName}>{user_author?.realName}</Text>
-          <Image
-            source={require("../../../assets/icons/mStarIcon.png")}
-            resizeMode="contain"
-            style={{
-              width: getPercent(2, height),
-              height: getPercent(2, height),
-            }}
-          />
+        onPress={() => {
+          if (user_author?.id == user_details?.id) {
+            navigation?.navigate("MyProfile");
+          } else {
+            navigation?.navigate("UserProfile", {
+              user: user_author,
+            });
+          }
+        }}
+      >
+        <Profile
+          source={{
+            uri: user_author?.profile_photo,
+          }}
+          profileStyles={profileStyles}
+        />
+        <View style={styles.infoWrapper}>
+          <View style={styles.infoTitleRow}>
+            <Text style={styles.titleName}>{user_author?.realName}</Text>
+            <Image
+              source={require("../../../assets/icons/mStarIcon.png")}
+              resizeMode="contain"
+              style={{
+                width: getPercent(2, height),
+                height: getPercent(2, height),
+              }}
+            />
+          </View>
+          <Text style={styles.slugText}>
+            {user_author?.politics} - {post_past_time}
+          </Text>
         </View>
-        <Text style={styles.slugText}>
-          {user_author?.politics} - {post_past_time}
-        </Text>
-      </View>
-      
+      </TouchableOpacity>
     </View>
   );
 };
@@ -81,7 +100,7 @@ const _styles = ({ width, height }) =>
       overflow: "hidden",
       zIndex: 1,
       borderWidth: 0.2,
-      backgroundColor:'#fff'
+      backgroundColor: "#fff",
     },
     online: {
       width: getPercent(1.5, height),

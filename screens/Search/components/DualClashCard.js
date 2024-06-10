@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { updateChallengeClash } from "../../../state-management/features/challengeClash/challengeClashSlice";
 import { RFValue } from "react-native-responsive-fontsize";
+import { useNavigation } from "@react-navigation/native";
 
 const DualClashCard = (props) => {
   const {
@@ -43,6 +44,7 @@ const DualClashCard = (props) => {
   const styles = _styles({ width, height });
   const currentUser = useSelector(selectAuthUser);
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const [voteData, setVoteData] = useState(data?.votes);
   const hasCurrentUserVoted = voteData[currentUser?.id];
@@ -90,16 +92,31 @@ const DualClashCard = (props) => {
   const ClashUserCard = memo(({ user, type, audio, hasAccepted, votes }) => {
     return (
       <View style={styles.clashUserItem}>
-        <View style={styles.clashUserProfile}>
-          <Image
-            source={{ uri: user?.profile_photo }}
-            resizeMode="contain"
-            style={{ width: "100%", height: "100%" }}
-            cachePolicy="memory-disk"
-          />
-        </View>
-        <Text style={font(14, "#000000", "Semibold", 3)}>{user?.realName}</Text>
-        <Text style={font(12, "#9CA3AF", "Medium", 3)}>{type}</Text>
+        <TouchableOpacity
+          style={styles.clashUserItem}
+          onPress={() => {
+            if (user?.id == currentUser?.id) {
+              navigation?.navigate("MyProfile");
+            } else {
+              navigation?.navigate("UserProfile", {
+                user: user,
+              });
+            }
+          }}
+        >
+          <View style={styles.clashUserProfile}>
+            <Image
+              source={{ uri: user?.profile_photo }}
+              resizeMode="contain"
+              style={{ width: "100%", height: "100%" }}
+              cachePolicy="memory-disk"
+            />
+          </View>
+          <Text style={font(14, "#000000", "Semibold", 3)}>
+            {user?.realName}
+          </Text>
+          <Text style={font(12, "#9CA3AF", "Medium", 3)}>{type}</Text>
+        </TouchableOpacity>
         {audio && <WaveAudioPlayer showDuration iconSize={15} source={audio} />}
         {!hasAccepted &&
           (request_type === "Received" ? (
@@ -144,7 +161,7 @@ const DualClashCard = (props) => {
       </View>
       <TouchableOpacity
         style={styles.cardFooterItem}
-        onPress={() => onClashesPress(data)}
+        onPress={() => data?.status=="pending"?alert("Clash has not started yet. Awaiting approvals."):onClashesPress(data)}
       >
         <MaterialIcons name="multitrack-audio" size={15} color="#6B7280" />
         <Text

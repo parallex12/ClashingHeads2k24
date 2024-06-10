@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -23,7 +24,7 @@ const MyProfile = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_details = useSelector(selectAuthUser);
-  let { profile_photo, about_voice, realName, id } = user_details;
+  let { profile_photo, about_voice, username, id } = user_details;
   const [currentProfile, setCurrentProfile] = useState({ uri: profile_photo });
   const [currentChallenge, setCurrentChallenge] = useState(null);
   const bottomVoiceSheetRef = useRef();
@@ -47,50 +48,54 @@ const MyProfile = (props) => {
         backButton
         containerStyles={{ height: getPercent(15, height) }}
       />
-      <ScrollView>
-        <View style={styles.content}>
-          <ProfileCard
-            postsCount={posts?.length}
-            currentProfile={currentProfile}
-            setCurrentProfile={setCurrentProfile}
-          />
-          {posts?.map((item, index) => {
-            return (
-              <PostCard
-                divider
-                data={item}
-                key={index}
-                onReportPress={() => bottomFlagSheetRef?.current?.present()}
-                onProfilePress={() =>
-                  props?.navigation?.navigate("UserProfile")
-                }
-              />
-            );
-          })}
-          {allRequests?.map((item, index) => {
-            return (
-              <DualClashCard
-                onAcceptRequest={() => {
-                  console.log(item?.id);
-                  alert("Record your opinion to accept the challenge.");
-                  setCurrentChallenge(item?.id);
-                  bottomVoiceSheetRef.current?.present();
-                }}
-                onCancelRequest={() => null}
-                request_type={"Sent"}
-                key={index}
-                data={item}
-                onPress={() =>
-                  props?.navigation?.navigate("ChallengeClash", { ...item })
-                }
-                onClashesPress={() =>
-                  props?.navigation?.navigate("ChallengeClash", { ...item })
-                }
-              />
-            );
-          })}
-        </View>
-      </ScrollView>
+      {loading ? (
+        <ActivityIndicator />
+      ) : (
+        <ScrollView>
+          <View style={styles.content}>
+            <ProfileCard
+              postsCount={posts?.length}
+              currentProfile={currentProfile}
+              setCurrentProfile={setCurrentProfile}
+            />
+            {posts?.map((item, index) => {
+              return (
+                <PostCard
+                  divider
+                  data={item}
+                  key={index}
+                  onReportPress={() => bottomFlagSheetRef?.current?.present()}
+                  onPostClashesPress={() =>
+                    props?.navigation?.navigate("ClashDetails", { ...item })
+                  }
+                />
+              );
+            })}
+            {allRequests?.map((item, index) => {
+              return (
+                <DualClashCard
+                  onAcceptRequest={() => {
+                    console.log(item?.id);
+                    alert("Record your opinion to accept the challenge.");
+                    setCurrentChallenge(item?.id);
+                    bottomVoiceSheetRef.current?.present();
+                  }}
+                  onCancelRequest={() => null}
+                  request_type={"Sent"}
+                  key={index}
+                  data={item}
+                  onPress={() =>
+                    props?.navigation?.navigate("ChallengeClash", { ...item })
+                  }
+                  onClashesPress={() =>
+                    props?.navigation?.navigate("ChallengeClash", { ...item })
+                  }
+                />
+              );
+            })}
+          </View>
+        </ScrollView>
+      )}
       <BottomMenu active="menu" />
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
     </View>
