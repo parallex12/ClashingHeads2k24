@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 const initialState = {
   user: null,
@@ -6,21 +7,21 @@ const initialState = {
   error: null,
   otp_confirm: null,
   isAuth: false,
-  userForm: {}
+  userForm: {},
 };
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     loginSuccess: (state, action) => {
-      return { ...state, isAuth: true }
+      return { ...state, isAuth: true };
     },
     loginFailure: (state, action) => {
-      return { ...state, error: action.payload, }
+      return { ...state, error: action.payload };
     },
     logout: (state) => {
-      return { ...state, isAuth: false, user: null }
+      return { ...state, isAuth: false, user: null };
     },
     confirmOtp: (state, action) => {
       return { ...state, otp_confirm: action.payload };
@@ -34,6 +35,33 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginSuccess, confirmOtp, setUserDetails, loginFailure, logout, setUserForm } = authSlice.actions;
+export const {
+  loginSuccess,
+  confirmOtp,
+  setUserDetails,
+  loginFailure,
+  logout,
+  setUserForm,
+} = authSlice.actions;
 
+export const fetchCurrentUserDetails = (userId) => async (dispatch) => {
+  dispatch(setLoading(true));
+  try {
+    const db = getFirestore();
+    const userDoc = doc(db, "Users", userId);
+    const userSnapshot = await getDoc(userDoc);
+
+    if (userSnapshot.exists()) {
+      dispatch(
+        setUserDetails({ id: userSnapshot?.id, ...userSnapshot.data() })
+      );
+    } else {
+      dispatch(setError("User not found"));
+    }
+  } catch (error) {
+    dispatch(setError(error.message));
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
 export default authSlice.reducer;

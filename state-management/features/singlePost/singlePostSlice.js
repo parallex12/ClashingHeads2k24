@@ -57,6 +57,7 @@ const singlePostSlice = createSlice({
         ...action.payload,
       };
     },
+   
   },
 });
 

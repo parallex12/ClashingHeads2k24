@@ -89,6 +89,7 @@ const DualClashCard = (props) => {
     },
     [currentUser, data?.id, voteData, dispatch, data?.voted]
   );
+  
   const ClashUserCard = memo(({ user, type, audio, hasAccepted, votes }) => {
     return (
       <View style={styles.clashUserItem}>
@@ -119,7 +120,7 @@ const DualClashCard = (props) => {
         </TouchableOpacity>
         {audio && <WaveAudioPlayer showDuration iconSize={15} source={audio} />}
         {!hasAccepted &&
-          (request_type === "Received" ? (
+          (request_type === "Recieved" ? (
             <StandardButton
               title="Accept Request"
               customStyles={styles.requetBtn}

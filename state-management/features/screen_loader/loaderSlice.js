@@ -14,8 +14,9 @@ const loaderSlice = createSlice({
     stopLoading: (state, action) => {
       return { ...state, loading: false };
     },
+    
   },
 });
 
-export const { startLoading, stopLoading } = loaderSlice.actions;
+export const { startLoading, stopLoading, } = loaderSlice.actions;
 export default loaderSlice.reducer;

@@ -131,9 +131,7 @@ const ProfileCard = (props) => {
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
           <Text style={font(16, "#111827", "Medium", 2)}>
-            <Text style={font(16, "#", "Semibold", 2)}>
-              #{clashHash}{" "}
-            </Text>
+            <Text style={font(16, "#DB2727", "Semibold", 2)}>#{clashHash} </Text>
             {realName}
           </Text>
           <Image

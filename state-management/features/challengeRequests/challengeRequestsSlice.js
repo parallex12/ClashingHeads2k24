@@ -63,6 +63,7 @@ const challengeRequestsSlice = createSlice({
         (request) => request.id !== action.payload
       );
     },
+   
   },
 });
 
@@ -121,6 +122,46 @@ export const fetchUserPostsAndChallenges = (userId) => async (dispatch) => {
     // Dispatch posts and challenges to the store
     dispatch(setPosts(sortPostsByCreatedAt(userPosts)));
     dispatch(setAllRequests(sortPostsByCreatedAt(combinedChallenges)));
+  } catch (error) {
+    dispatch(setError(error.message));
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+export const addChallengeRequestForUser = (userId, requestData) => async (dispatch) => {
+  try {
+    const db = getFirestore();
+    requestData.opponent = userId; // Ensure the opponent field is set to the current user ID
+    const docRef = await addDoc(collection(db, "ChallengeClashes"), requestData);
+    dispatch(addChallengeRequest({ id: docRef.id, ...requestData }));
+  } catch (error) {
+    dispatch(setError(error.message));
+  } finally {
+    dispatch(stopLoading(false));
+    alert("Challenge request has been sent")
+  }
+};
+export const updateChallengeRequestForUser = (requestId, updatedFields) => async (dispatch) => {
+  dispatch(setLoading(true));
+  try {
+    const db = getFirestore();
+    const requestRef = doc(db, "ChallengeClashes", requestId);
+    await updateDoc(requestRef, updatedFields);
+    dispatch(updateChallengeRequest({ requestId, updatedFields }));
+  } catch (error) {
+    dispatch(setError(error.message));
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+export const deleteChallengeRequestForUser = (requestId) => async (dispatch) => {
+  dispatch(setLoading(true));
+  try {
+    const db = getFirestore();
+    const requestRef = doc(db, "ChallengeClashes", requestId);
+    await deleteDoc(requestRef);
+    dispatch(deleteChallengeRequest(requestId));
   } catch (error) {
     dispatch(setError(error.message));
   } finally {

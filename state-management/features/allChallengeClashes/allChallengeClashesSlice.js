@@ -41,7 +41,9 @@ const allChallengeClashesSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+   
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllChallengeClashes.pending, (state) => {
@@ -58,5 +60,5 @@ const allChallengeClashesSlice = createSlice({
       });
   },
 });
-
+export const {  } = allChallengeClashesSlice.actions;
 export default allChallengeClashesSlice.reducer;

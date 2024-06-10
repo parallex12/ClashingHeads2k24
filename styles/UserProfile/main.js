@@ -108,4 +108,16 @@ export const ProfileCardstyles = ({ width, height }) =>
       borderColor: "#9CA3AF",
       backgroundColor: "transparent",
     },
+    bioEditwrapper: {
+      width:'100%',
+      paddingVertical: getPercent(0.5, height),
+      paddingHorizontal: getPercent(3, width),
+      alignItems: "center",
+      flexDirection: "row",
+    },
+    bioicons: {
+      width: getPercent(4, width),
+      height: getPercent(4, width),
+      marginRight: 5,
+    },
   });

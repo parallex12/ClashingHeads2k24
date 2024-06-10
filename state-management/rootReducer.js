@@ -8,6 +8,8 @@ import { searchedUserReducer } from "./features/searchedUsers";
 import { challengeClashReducer } from "./features/challengeClash";
 import { allChallengeClashesReducer } from "./features/allChallengeClashes";
 import { challengeRequestReducer } from "./features/challengeRequests";
+import { RESET } from "./types/types";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const rootReducer = combineReducers({
   auth: authReducer,

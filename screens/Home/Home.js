@@ -31,7 +31,7 @@ import {
   getHomePosts,
   isUserProfileConnected,
 } from "../../middleware/firebase";
-import { setUserDetails } from "../../state-management/features/auth/authSlice";
+import { fetchCurrentUserDetails, logout,  setUserDetails } from "../../state-management/features/auth/authSlice";
 import { selectPosts } from "../../state-management/features/posts";
 import { setPosts } from "../../state-management/features/posts/postSlice";
 import EmptyBox from "../../globalComponents/EmptyBox";
@@ -54,6 +54,7 @@ const Home = (props) => {
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
     }
+    dispatch(fetchCurrentUserDetails(auth().currentUser?.uid))
     isUserProfileConnected(auth().currentUser?.uid)
       .then((res) => {
         dispatch(setUserDetails(res?.user));
@@ -73,6 +74,7 @@ const Home = (props) => {
           });
           return;
         }
+        dispatch(logout());
       });
   }, []);
 

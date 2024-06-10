@@ -22,10 +22,11 @@ const searchedUsersSlice = createSlice({
     setError(state, action) {
       state.error = action.payload;
     },
+
   },
 });
 
-export const { setSearchedUsers, setError, setLoading } = searchedUsersSlice.actions;
+export const { setSearchedUsers, setError, setLoading, } = searchedUsersSlice.actions;
 
 export const fetchUsersByQuery = (searchQuery) => async (dispatch) => {
   try {

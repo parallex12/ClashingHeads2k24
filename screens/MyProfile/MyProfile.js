@@ -15,19 +15,26 @@ import { useEffect, useRef, useState } from "react";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { getPercent } from "../../middleware";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
+import { selectAuthDetailsLoading, selectAuthUser } from "../../state-management/features/auth";
 import { fetchUserPostsAndChallenges } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
 import DualClashCard from "../Search/components/DualClashCard";
+import VoiceRecorderBottomSheet from "../ChallengeRequests/components/VoiceRecorderBottomSheet";
+import auth from "@react-native-firebase/auth";
+import { fetchCurrentUserDetails } from "../../state-management/features/auth/authSlice";
 
 const MyProfile = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_details = useSelector(selectAuthUser);
-  let { profile_photo, about_voice, username, id } = user_details;
-  const [currentProfile, setCurrentProfile] = useState({ uri: profile_photo });
+  let userID=auth().currentUser?.uid
+  const [currentProfile, setCurrentProfile] = useState({
+    uri: user_details?.profile_photo || "",
+  });
+  const authLoading=useSelector(selectAuthDetailsLoading)
   const [currentChallenge, setCurrentChallenge] = useState(null);
   const bottomVoiceSheetRef = useRef();
+  const bottomFlagSheetRef = useRef();
 
   const { posts, allRequests, loading } = useSelector(
     (state) => state.challengeRequests
@@ -35,11 +42,13 @@ const MyProfile = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchUserPostsAndChallenges(id));
+    if (userID) {
+      dispatch(fetchCurrentUserDetails(userID))
+      dispatch(fetchUserPostsAndChallenges(userID));
     }
-  }, [id]);
-  const bottomFlagSheetRef = useRef();
+  }, [userID]);
+
+
 
   return (
     <View style={styles.container}>
@@ -48,10 +57,10 @@ const MyProfile = (props) => {
         backButton
         containerStyles={{ height: getPercent(15, height) }}
       />
-      {loading ? (
+      {loading || authLoading || !user_details ? (
         <ActivityIndicator />
       ) : (
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             <ProfileCard
               postsCount={posts?.length}
@@ -81,7 +90,9 @@ const MyProfile = (props) => {
                     bottomVoiceSheetRef.current?.present();
                   }}
                   onCancelRequest={() => null}
-                  request_type={"Sent"}
+                  request_type={
+                    item?.opponentId == user_details?.id ? "Recieved" : "Sent"
+                  }
                   key={index}
                   data={item}
                   onPress={() =>
@@ -97,6 +108,10 @@ const MyProfile = (props) => {
         </ScrollView>
       )}
       <BottomMenu active="menu" />
+      <VoiceRecorderBottomSheet
+        challengeId={currentChallenge}
+        bottomVoiceSheetRef={bottomVoiceSheetRef}
+      />
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
     </View>
   );

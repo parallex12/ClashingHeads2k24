@@ -7,7 +7,7 @@ import rootReducer from '../rootReducer';
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['auth'] // You can specify which reducers to persist
+  whitelist: ['auth','posts'] // You can specify which reducers to persist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -28,4 +28,6 @@ const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
+
 export default store;

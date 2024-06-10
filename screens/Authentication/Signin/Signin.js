@@ -12,17 +12,21 @@ import CountryCodeField from "../../../globalComponents/CountryCodeField";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useEffect, useRef, useState } from "react";
-import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import {
+  startLoading,
+  stopLoading,
+} from "../../../state-management/features/screen_loader/loaderSlice";
 import { useNavigation } from "@react-navigation/native";
 import { setUserForm } from "../../../state-management/features/auth/authSlice";
+import store from "../../../state-management/store/store";
 
 const Signin = (props) => {
-  let { setForm, } = props;
+  let { setForm } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
   const [phoneNumber, setPhoneNumber] = useState(null);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const onSignup = () => {
@@ -35,13 +39,15 @@ const Signin = (props) => {
       alert("Phone number required.");
       return;
     }
-    dispatch(startLoading())
-    dispatch(setUserForm({ phone: phone_number_raw }))
+    dispatch(startLoading());
+    dispatch(setUserForm({ phone: phone_number_raw }));
     setTimeout(() => {
       navigation?.navigate("OTPVerification");
-    }, 1000)
+    }, 1000);
   };
 
+  console.log(store.getState());
+  
   return (
     <View style={styles.container}>
       <ScrollView
@@ -95,4 +101,4 @@ const Signin = (props) => {
   );
 };
 
-export default Signin
+export default Signin;
