@@ -14,7 +14,6 @@ import PostCard from "../../globalComponents/PostCard/PostCard";
 import { useRecoilState } from "recoil";
 import { global_posts } from "../../state-management/atoms/atoms";
 import { font } from "../../styles/Global/main";
-import ClashCard from "./components/ClashCard";
 import { useNavigation } from "@react-navigation/native";
 import DualClashCard from "../Search/components/DualClashCard";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -28,6 +27,7 @@ import {
 import { fetchAllChallengeClashes } from "../../state-management/features/allChallengeClashes/allChallengeClashesSlice";
 import StandardButton from "../../globalComponents/StandardButton";
 import { sortPostsByCreatedAt } from "../../utils";
+import RoomCard from "./components/RoomCard";
 
 const Clashes = (props) => {
   let {} = props;
@@ -99,6 +99,18 @@ const Clashes = (props) => {
           >
             <Text style={font(13, "#FFFFFF", "Semibold")}>Create Room</Text>
           </TouchableOpacity>
+          {[1]?.map((item, index) => {
+              return (
+                <RoomCard
+                  onCardPress={() => navigation.navigate("ClashRoom")}
+                  active={index == 0}
+                  is_featured={index == 0}
+                  is_public={index % 2 == 0}
+                  is_private={index % 2 == 1}
+                  key={index}
+                />
+              );
+            })}
           {/* Clash cards here */}
           <View style={styles.cardsWrapper}>
             {memoizedClashes?.map((item, index) => {
@@ -114,19 +126,8 @@ const Clashes = (props) => {
                   }
                 />
               );
-
-              //This ClashCard named is for RoomsCard
-              // return (
-              //   <ClashCard
-              //     onCardPress={() => navigation.navigate("ClashRoom")}
-              //     active={index == 0}
-              //     is_featured={index == 0}
-              //     is_public={index % 2 == 0}
-              //     is_private={index % 2 == 1}
-              //     key={index}
-              //   />
-              // );
             })}
+           
           </View>
           {/* {clashes?.length > 0 && <StandardButton
             title={loading ? "Loading..." : "Load More"}

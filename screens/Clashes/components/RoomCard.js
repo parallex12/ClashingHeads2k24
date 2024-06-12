@@ -13,7 +13,7 @@ import {
 import { font } from "../../../styles/Global/main";
 import { FontAwesome6, Fontisto } from "@expo/vector-icons";
 
-const ClashCard = (props) => {
+const RoomCard = (props) => {
   let { active,onCardPress, is_private, is_featured, is_public } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
@@ -117,4 +117,4 @@ const ClashCard = (props) => {
   );
 };
 
-export default ClashCard;
+export default RoomCard;

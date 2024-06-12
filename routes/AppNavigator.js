@@ -54,6 +54,7 @@ import {
 import ChallengeRequests from "../screens/ChallengeRequests/ChallengeRequests";
 import ChallengeClash from "../screens/ChallengeClash/ChallengeClash";
 import AddBio from "../screens/Authentication/AddBio/AddBio";
+import ClashRoomMonetize from "../screens/ClashRoomMonetize/ClashRoomMonetize";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -89,6 +90,7 @@ const HomeScreens = () => {
           <HomeStack.Screen name="MyProfile" component={MyProfile} />
           <HomeStack.Screen name="UserProfile" component={UserProfile} />
           <HomeStack.Screen name="NewPost" component={NewPost} />
+          <HomeStack.Screen name="ClashRoomMonetize" component={ClashRoomMonetize} />
           <HomeStack.Screen name="News" component={News} />
           <HomeStack.Screen name="AddPostDetails" component={AddPostDetails} />
           <HomeStack.Screen

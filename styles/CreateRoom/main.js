@@ -56,6 +56,15 @@ export const styles = ({ width, height }) =>
       overflow:'hidden',
       alignItems:'center',
       justifyContent:'center'
+    },
+    dollarSign:{
+      width:getPercent(3,height),
+      height:getPercent(3,height),
+      borderWidth:2,
+      borderRadius:100,
+      alignItems:'center',
+      justifyContent:'center',
+      borderColor:'#DB2727'
     }
   });
 //container Styles starts here
