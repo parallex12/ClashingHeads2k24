@@ -13,6 +13,10 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
+import { selectAuthUser } from "../../../state-management/features/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { update_user_details } from "../../../middleware/firebase";
+import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 
 const ProfileCard = (props) => {
   let { user } = props;
@@ -23,9 +27,7 @@ const ProfileCard = (props) => {
     realName,
     about_voice,
     clashHash,
-    followers,
     politics,
-    following,
     bio,
     school,
     employment,
@@ -34,12 +36,26 @@ const ProfileCard = (props) => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const sound = useRef(new Audio.Sound());
+  const dispatch = useDispatch();
+  const current_user = useSelector(selectAuthUser);
+  const followButtonTypes = ["Following", "Follow", "Follow back"];
+  const currentUserfollowing = { ...current_user?.following } || {};
+  const currentOtherUserfollowers = { ...user?.following } || {};
+  const hasCurrentUserFollowed = currentUserfollowing[user?.id];
+  const hasOpponentUserFollowed = currentOtherUserfollowers[current_user?.id];
+
+  let currentFollowButtonState = hasCurrentUserFollowed
+    ? followButtonTypes[0]
+    : hasOpponentUserFollowed
+    ? followButtonTypes[2]
+    : followButtonTypes[1];
 
   useEffect(() => {
     return () => {
       sound.current && sound.current.unloadAsync();
     };
   }, []);
+
 
   const playAudio = async () => {
     try {
@@ -64,6 +80,38 @@ const ProfileCard = (props) => {
     }
   };
 
+  const onFollow = () => {
+    if (!current_user || !user) return;
+
+    if (currentFollowButtonState == "Follow" || currentFollowButtonState == "Follow back") {
+      currentUserfollowing[user?.id] = true;
+      currentOtherUserfollowers[current_user?.id] = true;
+      dispatch(
+        setUserDetails({ ...current_user, following: currentUserfollowing })
+      );
+      update_user_details(current_user?.id, {
+        following: currentUserfollowing,
+      });
+      update_user_details(user?.id, { followers: currentOtherUserfollowers });
+      return;
+    }
+
+    if (currentFollowButtonState == "Following") {
+      delete currentUserfollowing[user?.id];
+      dispatch(
+        setUserDetails({ ...current_user, following: currentUserfollowing })
+      );
+      update_user_details(current_user?.id, {
+        following: currentUserfollowing,
+      });
+      if (hasCurrentUserFollowed && hasOpponentUserFollowed) {
+        delete currentOtherUserfollowers[current_user?.id];
+        update_user_details(user?.id, { followers: currentOtherUserfollowers });
+      }
+      return;
+    } 
+  };
+
   const CardHeader = ({ user }) => {
     return (
       <View style={styles.cardHeaderContainer}>
@@ -86,13 +134,13 @@ const ProfileCard = (props) => {
           </View>
           <View style={styles.post_following_followers_Item}>
             <Text style={font(15, "#121212", "Bold", 3)}>
-              {user?.followers || 0}
+              {Object.keys(user?.followers || {})?.length}
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Followers</Text>
           </View>
           <View style={styles.post_following_followers_Item}>
             <Text style={font(15, "#121212", "Bold", 3)}>
-              {user?.following || 0}
+              {Object.keys(user?.following || {})?.length}
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Following</Text>
           </View>
@@ -203,7 +251,11 @@ const ProfileCard = (props) => {
           }
           onPress={playAudio}
         />
-        <StandardButton title="Follow" customStyles={styles.followButton} />
+        <StandardButton
+          title={currentFollowButtonState}
+          customStyles={styles.followButton}
+          onPress={onFollow}
+        />
         <StandardButton
           title="Message"
           customStyles={styles.messageButton}

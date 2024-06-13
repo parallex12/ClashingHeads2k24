@@ -10,14 +10,14 @@ import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader
 import { getPercent } from "../../middleware";
 import { font } from "../../styles/Global/main";
 import SettingSwitchCard from "../../globalComponents/SettingSwitchCard";
-import { notificationSettingsOptions_atom, } from "../../state-management/atoms/atoms";
-import { useRecoilState } from "recoil";
+import { useState } from "react";
+import { notificationSettingsOptions } from "../../utils";
 
 const NotificationSettings = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [options, setOptions] = useRecoilState(notificationSettingsOptions_atom);
+  const [options, setOptions] = useState(notificationSettingsOptions);
 
   return (
     <View style={styles.container}>

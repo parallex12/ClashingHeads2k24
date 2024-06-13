@@ -10,53 +10,55 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
 import { NewsResultStyles as _styles } from "../../../styles/Search/main";
 import { Image } from "react-native";
+import { useEffect, useState } from "react";
+import { sortPostsByCreatedAt } from "../../../utils";
+import axios from "axios";
+import NewsCard from "../../../globalComponents/NewsCard";
 
 const NewsResult = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  const [newsArr, setNewsArr] = useState([]);
+  const [refreshing, setRefreshing] = useState(true);
 
-  const CardFooter = () => {
-    return (
-      <View style={styles.cardFooterWrapper}>
-        <View style={styles.cardFootercompanyLogo}>
-          <Image
-            source={require("../../../assets/icon.png")}
-            resizeMode="cover"
-            style={styles.companyLogo}
-          />
-          <Text style={font(13, "#6B7287", "Regular")}>bbc.com</Text>
-        </View>
-        <Text style={font(12, "#6B7287", "Regular")}>Tue 14 Apr 9:36 PM</Text>
-      </View>
-    );
+  useEffect(() => {
+    loadDefaultNews();
+    searchNews("politics");
+  }, []);
+
+  const loadDefaultNews = async () => {
+    try {
+      const response = await axios.get(
+        `https://newsapi.org/v2/top-headlines?country=us&category=politics&apiKey=45b06648f48c47aaa5cad2280df9e6be`
+      );
+      setNewsArr(sortPostsByCreatedAt(response.data.articles));
+      setRefreshing(false);
+    } catch (error) {
+      console.error("Error fetching default news:", error);
+    }
   };
 
-  const NewsCard = ({}) => {
-    return (
-      <View style={styles.newsCardCont}>
-        <View style={styles.cardRow}>
-          <View style={styles.newsCardThumbnailCont}>
-            <Image
-              source={require("../../../assets/stickers/1.jpg")}
-              resizeMode="cover"
-              style={{ width: "100%", height: "100%" }}
-            />
-          </View>
-          <View style={styles.newsContentWrapper}>
-            <Text style={font(15, "#000000", "Semibold", 3)}>
-              This is demo headings
-            </Text>
-            <Text style={font(12.5, "#000000", "Regular", 3)}>
-              Lorem ipsum dolor sit amet. Sit conse quatur quibusdam aut illum
-              minima et facilis rerum eos aliquam quia volupta tem et placeat
-              voluptatibus.
-            </Text>
-          </View>
-        </View>
-        <CardFooter />
-      </View>
-    );
+  const searchNews = async (text) => {
+    try {
+      const response = await axios.get(
+        `https://newsapi.org/v2/everything?q=${text}&apiKey=45b06648f48c47aaa5cad2280df9e6be`
+      );
+      setNewsArr(sortPostsByCreatedAt(response.data.articles));
+      setRefreshing(false);
+    } catch (error) {
+      console.error("Error fetching searched news:", error);
+    }
+  };
+
+  const handleSearch = (text) => {
+    setRefreshing(true);
+    searchNews(text);
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadDefaultNews();
   };
 
   return (
@@ -65,8 +67,8 @@ const NewsResult = (props) => {
         <MaterialCommunityIcons name="fire" size={24} color="#4B4EFC" />
         <Text style={font(14, "#111827", "Medium")}>Trending News</Text>
       </View>
-      {[1, 2, 3, 4]?.map((item, index) => {
-        return <NewsCard key={index} />;
+      {newsArr?.map((item, index) => {
+        return <NewsCard key={index} data={item} />;
       })}
     </View>
   );

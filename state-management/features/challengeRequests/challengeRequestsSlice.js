@@ -11,6 +11,7 @@ import {
   query,
   where,
   getDocs,
+  getDoc,
 } from "firebase/firestore";
 import { uploadMedia } from "../../../middleware/firebase";
 import { sortPostsByCreatedAt } from "../../../utils";
@@ -20,6 +21,7 @@ const initialState = {
   challengeRequest: null,
   allRequests: [],
   posts: [],
+  relatedUser:null,
   loading: false,
   error: null,
 };
@@ -33,6 +35,9 @@ const challengeRequestsSlice = createSlice({
     },
     setAllRequests(state, action) {
       state.allRequests = action.payload;
+    },
+    setRelatedUser(state, action) {
+      state.relatedUser = action.payload;
     },
     setPosts(state, action) {
       state.posts = action.payload;
@@ -76,12 +81,16 @@ export const {
   addChallengeRequest,
   updateChallengeRequest,
   deleteChallengeRequest,
+  setRelatedUser
 } = challengeRequestsSlice.actions;
 
 export const fetchUserPostsAndChallenges = (userId) => async (dispatch) => {
   dispatch(setLoading(true));
   try {
     const db = getFirestore();
+    // Fetch related user information
+    const userDoc = await getDoc(doc(db, "Users", userId));
+    const relatedUser = userDoc.exists() ? { id: userDoc.id, ...userDoc.data() } : null;
 
     // Fetch user's posts
     const postsQuery = query(
@@ -119,9 +128,11 @@ export const fetchUserPostsAndChallenges = (userId) => async (dispatch) => {
     // Combine all challenges
     const combinedChallenges = [...opponentChallenges, ...challengerChallenges];
 
-    // Dispatch posts and challenges to the store
+    // Dispatch posts, challenges, and related user to the store
     dispatch(setPosts(sortPostsByCreatedAt(userPosts)));
     dispatch(setAllRequests(sortPostsByCreatedAt(combinedChallenges)));
+    dispatch(setRelatedUser(relatedUser));
+
   } catch (error) {
     dispatch(setError(error.message));
   } finally {

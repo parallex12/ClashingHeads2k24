@@ -19,25 +19,25 @@ import { getPercent } from "../../middleware";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserPostsAndChallenges } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
 import DualClashCard from "../Search/components/DualClashCard";
+import { selectAuthUser } from "../../state-management/features/auth";
 
 const UserProfile = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let user = props?.route?.params?.user;
-  let { profile_photo, about_voice, username, id } = user;
   const bottomFlagSheetRef = useRef();
   const dispatch = useDispatch();
-
-  const { posts, allRequests, loading } = useSelector(
+  const { posts, allRequests, loading, relatedUser } = useSelector(
     (state) => state.challengeRequests
   );
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchUserPostsAndChallenges(id));
+    if (user) {
+      dispatch(fetchUserPostsAndChallenges(user?.id));
     }
-  }, [id]);
+  }, [user]);
+
 
   return (
     <View style={styles.container}>
@@ -46,12 +46,12 @@ const UserProfile = (props) => {
         backButton
         containerStyles={{ height: getPercent(15, height) }}
       />
-      {loading ? (
+      {!relatedUser || loading ? (
         <ActivityIndicator size="large" />
       ) : (
         <ScrollView>
           <View style={styles.content}>
-            <ProfileCard postsCount={posts?.length} user={user} />
+            <ProfileCard postsCount={posts?.length} user={relatedUser} />
             {posts?.map((item, index) => {
               return (
                 <PostCard

@@ -109,11 +109,11 @@ const ProfileCard = (props) => {
             <Text style={font(13, "#121212", "Regular", 3)}>Posts</Text>
           </View>
           <View style={styles.post_following_followers_Item}>
-            <Text style={font(15, "#121212", "Bold", 3)}>{followers || 0}</Text>
+            <Text style={font(15, "#121212", "Bold", 3)}>{Object.keys(followers || {}).length}</Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Followers</Text>
           </View>
           <View style={styles.post_following_followers_Item}>
-            <Text style={font(15, "#121212", "Bold", 3)}>{following || 0}</Text>
+            <Text style={font(15, "#121212", "Bold", 3)}>{Object.keys(following || {}).length }</Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Following</Text>
           </View>
         </View>

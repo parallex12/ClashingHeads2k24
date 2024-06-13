@@ -15,11 +15,14 @@ import {
 } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
+import { useSelector } from "react-redux";
+import { selectAllChallengeClashes } from "../../../state-management/features/allChallengeClashes";
 
 const ClashesResult = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  const clashes = useSelector(selectAllChallengeClashes);
 
   const ClashUserCard = ({}) => {
     return (
@@ -88,5 +91,6 @@ const ClashesResult = (props) => {
     </View>
   );
 };
+
 
 export default ClashesResult;

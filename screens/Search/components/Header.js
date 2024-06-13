@@ -15,7 +15,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useState } from "react";
 
 const Header = (props) => {
-  let {activeFilter, setActiveFilter} = props;
+  let {activeFilter, onChangeText,setActiveFilter} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let filtersOption = ["People", "Clashes", "Posts","News"];
@@ -56,6 +56,7 @@ const Header = (props) => {
             style={font(12, "#9CA3AF", "Regular", 0, null, { marginLeft: 8,flex:1 })}
             placeholder="Search"
             placeholderTextColor="#9CA3AF"
+            onChangeText={onChangeText}
           />
         </View>
       </View>

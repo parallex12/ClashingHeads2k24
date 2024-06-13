@@ -2,9 +2,9 @@
   "expo": {
     "name": "ClashingHeads",
     "slug": "clashingheads",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "orientation": "portrait",
-    "scheme": "com.club.clashingheadsv2",
+    "scheme": "com.ccm.clashingheadsv2",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -17,7 +17,7 @@
     ],
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
-      "buildNumber": "1.0.0",
+      "buildNumber": "1.2.0",
       "supportsTablet": false,
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to take selfies for profile.",
@@ -30,10 +30,10 @@
           "audio"
         ]
       },
-      "bundleIdentifier": "com.club.clashingheads"
+      "bundleIdentifier": "com.ccm.clashingheadsv2"
     },
     "android": {
-      "package": "com.club.clashingheads",
+      "package": "com.ccm.clashingheadsv2",
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

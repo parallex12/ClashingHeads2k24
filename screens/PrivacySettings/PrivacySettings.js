@@ -11,14 +11,13 @@ import { getPercent } from "../../middleware";
 import { font } from "../../styles/Global/main";
 import SettingSwitchCard from "../../globalComponents/SettingSwitchCard";
 import { privacySettingsOptions } from "../../utils";
-import { useRecoilState } from "recoil";
-import { privacySettingsOptions_atom } from "../../state-management/atoms/atoms";
+import { useState } from "react";
 
 const PrivacySettings = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [options, setOptions] = useRecoilState(privacySettingsOptions_atom);
+  const [options, setOptions] = useState(privacySettingsOptions);
 
   return (
     <View style={styles.container}>

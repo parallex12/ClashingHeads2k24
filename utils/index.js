@@ -115,7 +115,7 @@ export const onShareApp = async () => {
 
 export const settingOptions = [
   {
-    route: "EditPersonalInformation",
+    route: "PersonalInfo",
     label: "Personal Information",
     icon: require("../assets/icons/settings/profile.png"),
   },
