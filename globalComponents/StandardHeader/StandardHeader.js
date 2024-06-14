@@ -25,15 +25,19 @@ const StandardHeader = (props) => {
     title,
     profile,
     logo,
-    
+    plainBg,
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = StandardHeaderStyles({ width, height });
-  const user_profile = useSelector(selectAuthUser)
+  const user_profile = useSelector(selectAuthUser);
 
   return (
     <ImageBackground
-      style={[styles.container, containerStyles]}
+      style={[
+        styles.container,
+        containerStyles,
+        { backgroundColor: plainBg ? plainBg : "transparent" },
+      ]}
       source={require("../../assets/images/headerBg.png")}
       resizeMode="cover"
     >

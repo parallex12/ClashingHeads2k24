@@ -83,6 +83,11 @@ const ProfileCard = (props) => {
     }
   };
 
+  
+  const onFollowView=()=>{
+    navigation.navigate("Connections",{user:user_details})
+  }
+
   const CardHeader = () => {
     return (
       <View style={styles.cardHeaderContainer}>
@@ -108,14 +113,14 @@ const ProfileCard = (props) => {
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Posts</Text>
           </View>
-          <View style={styles.post_following_followers_Item}>
+          <TouchableOpacity style={styles.post_following_followers_Item} onPress={onFollowView}>
             <Text style={font(15, "#121212", "Bold", 3)}>{Object.keys(followers || {}).length}</Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Followers</Text>
-          </View>
-          <View style={styles.post_following_followers_Item}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.post_following_followers_Item} onPress={onFollowView}>
             <Text style={font(15, "#121212", "Bold", 3)}>{Object.keys(following || {}).length }</Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Following</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     );

@@ -76,7 +76,7 @@ const StandardInput = (props) => {
 
   return (
     <View style={[styles.container, containerStyles]}>
-      <Text style={[styles.titleText,titleTextStyle]}>{data?.title}</Text>
+     {data?.title && <Text style={[styles.titleText,titleTextStyle]}>{data?.title}</Text>}
       <View style={[styles.inputWrapper, inputStyles]}>
         {data?.type == "text" ? (
           <TextInput

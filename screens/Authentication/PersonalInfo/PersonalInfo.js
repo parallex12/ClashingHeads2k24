@@ -32,7 +32,7 @@ const PersonalInfo = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_profile_details = useSelector(selectAuthUser)
-  const [form, setForm] = useState(user_profile_details)
+  const [form, setForm] = useState(user_profile_details || {})
   const [errorField, setErrorField] = useState({});
   const user = auth().currentUser
   const dispatch = useDispatch()

@@ -172,37 +172,35 @@ export const sideMenuOptions = [
     icon: require("../assets/icons/sideMenu/1.png"),
   },
   {
-    title: "Scheduled Rooms",
-    route: "",
+    title: "Calendar",
+    route: "CalendarScreen",
     icon: require("../assets/icons/sideMenu/2.png"),
   },
   {
-    title: "Challenge Requests",
-    route: "ChallengeRequests",
-    icon: require("../assets/icons/sideMenu/5.png"),
-  },
-
-  {
-    title: "Sponsors",
-    route: "",
+    title: "Shop",
+    route: "Shop",
     icon: require("../assets/icons/sideMenu/3.png"),
   },
-  {
-    title: "Notifications",
-    route: "Notifications",
-    icon: require("../assets/icons/notificationWhite.png"),
-  },
-
   {
     title: "Settings",
     route: "AccountSettings",
     icon: require("../assets/icons/sideMenu/4.png"),
   },
   {
+    title: "Challenge Requests",
+    route: "ChallengeRequests",
+    icon: require("../assets/icons/sideMenu/5.png"),
+  },
+  {
+    title: "Invite Friends",
+    route: "Invite",
+    icon: require("../assets/icons/sideMenu/invite.png"),
+  },
+  {
     title: "Community Guidelines",
     route: "",
     icon: require("../assets/icons/sideMenu/5.png"),
-  },
+  },  
   {
     title: "Terms & Conditions",
     route: "",

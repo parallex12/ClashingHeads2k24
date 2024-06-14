@@ -32,6 +32,7 @@ const ProfileCard = (props) => {
     school,
     employment,
     username,
+    id,
   } = user;
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -55,7 +56,6 @@ const ProfileCard = (props) => {
       sound.current && sound.current.unloadAsync();
     };
   }, []);
-
 
   const playAudio = async () => {
     try {
@@ -83,9 +83,12 @@ const ProfileCard = (props) => {
   const onFollow = () => {
     if (!current_user || !user) return;
 
-    if (currentFollowButtonState == "Follow" || currentFollowButtonState == "Follow back") {
-      currentUserfollowing[user?.id] = true;
-      currentOtherUserfollowers[current_user?.id] = true;
+    if (
+      currentFollowButtonState == "Follow" ||
+      currentFollowButtonState == "Follow back"
+    ) {
+      currentUserfollowing[user?.id] = user;
+      currentOtherUserfollowers[current_user?.id] = current_user;
       dispatch(
         setUserDetails({ ...current_user, following: currentUserfollowing })
       );
@@ -109,7 +112,14 @@ const ProfileCard = (props) => {
         update_user_details(user?.id, { followers: currentOtherUserfollowers });
       }
       return;
-    } 
+    }
+  };
+
+  const onMessage = () => {
+    navigation.navigate("Messages");
+  };
+  const onFollowView = () => {
+    navigation.navigate("Connections", user);
   };
 
   const CardHeader = ({ user }) => {
@@ -132,18 +142,24 @@ const ProfileCard = (props) => {
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Posts</Text>
           </View>
-          <View style={styles.post_following_followers_Item}>
+          <TouchableOpacity
+            style={styles.post_following_followers_Item}
+            onPress={onFollowView}
+          >
             <Text style={font(15, "#121212", "Bold", 3)}>
               {Object.keys(user?.followers || {})?.length}
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Followers</Text>
-          </View>
-          <View style={styles.post_following_followers_Item}>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.post_following_followers_Item}
+            onPress={onFollowView}
+          >
             <Text style={font(15, "#121212", "Bold", 3)}>
               {Object.keys(user?.following || {})?.length}
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Following</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -260,6 +276,7 @@ const ProfileCard = (props) => {
           title="Message"
           customStyles={styles.messageButton}
           textStyles={{ color: "#121212" }}
+          onPress={onMessage}
         />
       </View>
     </View>

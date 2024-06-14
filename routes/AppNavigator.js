@@ -55,6 +55,10 @@ import ChallengeRequests from "../screens/ChallengeRequests/ChallengeRequests";
 import ChallengeClash from "../screens/ChallengeClash/ChallengeClash";
 import AddBio from "../screens/Authentication/AddBio/AddBio";
 import ClashRoomMonetize from "../screens/ClashRoomMonetize/ClashRoomMonetize";
+import Connections from "../screens/Connections/Connections";
+import Invite from "../screens/Invite/Invite";
+import Shop from "../screens/Shop/Shop";
+import CalendarScreen from "../screens/Calendar/CalendarScreen";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -90,6 +94,10 @@ const HomeScreens = () => {
           <HomeStack.Screen name="MyProfile" component={MyProfile} />
           <HomeStack.Screen name="UserProfile" component={UserProfile} />
           <HomeStack.Screen name="NewPost" component={NewPost} />
+          <HomeStack.Screen name="Connections" component={Connections} />
+          <HomeStack.Screen name="CalendarScreen" component={CalendarScreen} />
+          <HomeStack.Screen name="Shop" component={Shop} />
+          <HomeStack.Screen name="Invite" component={Invite} />
           <HomeStack.Screen name="ClashRoomMonetize" component={ClashRoomMonetize} />
           <HomeStack.Screen name="News" component={News} />
           <HomeStack.Screen name="AddPostDetails" component={AddPostDetails} />

@@ -4,7 +4,7 @@
     "slug": "clashingheads",
     "version": "1.2.0",
     "orientation": "portrait",
-    "scheme": "com.ccm.clashingheadsv2",
+    "scheme": "com.clubs.clashingheads",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -30,10 +30,10 @@
           "audio"
         ]
       },
-      "bundleIdentifier": "com.ccm.clashingheadsv2"
+      "bundleIdentifier": "com.clubs.clashingheads"
     },
     "android": {
-      "package": "com.ccm.clashingheadsv2",
+      "package": "com.clubs.clashingheads",
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
