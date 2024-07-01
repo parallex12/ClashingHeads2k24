@@ -42,7 +42,7 @@ const ProfileCard = (props) => {
   const [downloadedAudio, setDownloadedAudio] = useState(null);
   const sound = useRef(new Audio.Sound());
 
-  const compressAudio = async () => {
+  const downloadCompressedAudio = async () => {
     const downloadFileUrl = await download(about_voice, (progress) => {
       console.log("downloadProgress: ", progress);
     });
@@ -51,7 +51,7 @@ const ProfileCard = (props) => {
 
   useEffect(() => {
     if (about_voice) {
-      compressAudio();
+      downloadCompressedAudio();
     }
   }, [about_voice]);
 
@@ -81,7 +81,7 @@ const ProfileCard = (props) => {
         await sound.current.pauseAsync();
         setIsPlaying(false);
       } else {
-        if(!downloadedAudio)return
+        if (!downloadedAudio) return;
         if (!sound.current._loaded) {
           await sound.current.loadAsync({ uri: downloadedAudio });
         }

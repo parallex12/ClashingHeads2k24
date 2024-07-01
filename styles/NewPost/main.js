@@ -23,6 +23,27 @@ export const styles = ({ width, height }) =>
     },
   });
 
+//PrivacyBottomSheetStyles  starts here
+export const PrivacyBottomSheetStyles = ({ width, height }) =>
+  StyleSheet.create({
+    content: {
+      flex: 1,
+      paddingHorizontal: getPercent(3, width),
+      paddingVertical: getPercent(2, height),
+    },
+    rowItem: {
+      width: "100%",
+      minHeight: getPercent(5.5, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-start",
+      borderBottomWidth: 1,
+      borderColor: "#F1F1F1",
+      paddingVertical: getPercent(1, height),
+      paddingHorizontal: getPercent(1, width),
+    },
+  });
+
 //AddPostDetailsStyles  starts here
 export const AddPostDetailsStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -33,7 +54,7 @@ export const AddPostDetailsStyles = ({ width, height }) =>
     content: {
       flex: 1,
       paddingVertical: getPercent(2, height),
-      alignItems:'center',
+      alignItems: "center",
       justifyContent: "space-between",
     },
     postInputWrapper: {
@@ -41,22 +62,22 @@ export const AddPostDetailsStyles = ({ width, height }) =>
       minHeight: getPercent(5, height),
       paddingHorizontal: getPercent(5, width),
       paddingVertical: getPercent(2, width),
-      borderWidth:1,
-      borderRadius:5,
-      marginVertical:getPercent(1,height),
-      borderColor:'#e5e5e5'
+      borderWidth: 1,
+      borderRadius: 5,
+      marginVertical: getPercent(1, height),
+      borderColor: "#e5e5e5",
     },
     mediaWrapper: {
       width: "100%",
-      flex:1,
+      flex: 1,
       paddingHorizontal: getPercent(2, width),
-      marginVertical:getPercent(2,height)
+      marginVertical: getPercent(2, height),
     },
-    mediaImg:{
+    mediaImg: {
       width: "100%",
-      height: getPercent(20,height),
+      height: getPercent(20, height),
       marginRight: 5,
-      borderRadius:5
+      borderRadius: 5,
     },
     postInput: {
       flex: 1,
@@ -75,7 +96,7 @@ export const AddPostDetailsStyles = ({ width, height }) =>
       justifyContent: "space-between",
       borderColor: "#F7F8F8",
       paddingBottom: getPercent(1, height),
-      backgroundColor:'#fff'
+      backgroundColor: "#fff",
     },
     uploadBtnWrapper: {
       flex: 1,
@@ -84,7 +105,7 @@ export const AddPostDetailsStyles = ({ width, height }) =>
       justifyContent: "flex-start",
     },
     privacyBtn: {
-      width: "25%",
+      width: "30%",
       minHeight: getPercent(4, height),
       borderRadius: 100,
       alignItems: "center",

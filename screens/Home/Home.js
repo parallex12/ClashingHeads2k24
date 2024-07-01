@@ -149,8 +149,12 @@ const Home = (props) => {
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
-            data={sortedPosts || [ ]}
-            ListEmptyComponent={<EmptyBox text="No posts available." />}
+            data={sortedPosts}
+            ListEmptyComponent={
+              <EmptyBox
+                text={`No posts yet! \nBe the first to share something amazing!`}
+              />
+            }
             renderItem={({ item, index }) => {
               return (
                 <PostCard
@@ -170,7 +174,6 @@ const Home = (props) => {
           />
         </View>
       </ScrollView>
-
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
       <BottomMenu />
     </View>

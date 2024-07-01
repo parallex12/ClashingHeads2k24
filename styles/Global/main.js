@@ -24,14 +24,17 @@ export const EmptyBoxStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       width: "100%",
+      height: getPercent(35, height),
       alignItems: "center",
       justifyContent: "center",
-      marginVertical: getPercent(5, height),
+      paddingHorizontal: getPercent(3, width),
     },
     text: {
-      fontSize: rf(13),
-      fontFamily: "Regular",
-      marginVertical: getPercent(2, height),
+      minHeight: getPercent(10, height),
+      fontSize: rf(15),
+      fontFamily: "BLP",
+      textAlign: "center",
+      color:'#6B7280'
     },
   });
 

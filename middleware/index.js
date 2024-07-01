@@ -3,6 +3,7 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 import { RFValue as rf } from "react-native-responsive-fontsize";
 import axios from "axios";
 import auth from "@react-native-firebase/auth";
+import { FontAwesome6, FontAwesome5, Fontisto } from "@expo/vector-icons";
 
 export const FontsConfig = {
   Light: require("../assets/fonts/SF-Pro-Text-Light.otf"),
@@ -14,6 +15,27 @@ export const FontsConfig = {
   BLP: require("../assets/fonts/BertramLETPlain.ttf"),
 };
 
+
+export const postprivacyoptions = [
+  {
+    label: "Public",
+    icon: <FontAwesome6 name="earth-americas" size={16} color="#6B7280" />,
+    active: false,
+    key: 0,
+  },
+  {
+    label: "Friends",
+    icon: <FontAwesome5 name="users" size={16} color="#6B7280" />,
+    active: false,
+    key: 1,
+  },
+  {
+    label: "Only me",
+    icon: <FontAwesome6 name="lock" size={16} color="#6B7280" />,
+    active: false,
+    key: 2,
+  },
+];
 export const get12FormatTime = (time) => {
   const timeString12hr = new Date(
     "1970-01-01T" + time + "Z"

@@ -100,7 +100,6 @@ const ProfilePhoto = (props) => {
         quality: 0.1,
         downloadProgress:((pres)=>console.log(pres))
       });
-      console.log("result", compressResult, uri);
       setProfile(compressResult);
       setForm((prev) => {
         return { ...prev, profile: compressResult };

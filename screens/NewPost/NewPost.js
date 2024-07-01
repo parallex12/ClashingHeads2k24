@@ -18,6 +18,7 @@ import CircleComponent from "./components/CircleComponent";
 import { getPercent } from "../../middleware";
 import RecordingPlayer from "../../globalComponents/RecordingPlayer";
 import RecordingButton from "../../globalComponents/RecordingButton";
+import { Audio } from "react-native-compressor";
 
 const NewPost = (props) => {
   let {} = props;
@@ -79,8 +80,11 @@ const NewPost = (props) => {
     }
   };
 
-  const onNext = () => {
-    props?.navigation?.navigate("AddPostDetails", { recording });
+  const onNext = async () => {
+    const result = await Audio.compress(recording, { quality: "low" });
+    if (result) {
+      props?.navigation?.navigate("AddPostDetails", { recording: result });
+    }
   };
 
   const onReset = () => {
