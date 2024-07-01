@@ -21,6 +21,7 @@ import DualClashCard from "../Search/components/DualClashCard";
 import VoiceRecorderBottomSheet from "../ChallengeRequests/components/VoiceRecorderBottomSheet";
 import auth from "@react-native-firebase/auth";
 import { fetchCurrentUserDetails } from "../../state-management/features/auth/authSlice";
+import ContentLoader, { Facebook } from 'react-content-loader'
 
 const MyProfile = (props) => {
   let {} = props;

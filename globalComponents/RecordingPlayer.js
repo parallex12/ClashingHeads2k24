@@ -35,6 +35,7 @@ const RecordingPlayer = (props) => {
       // Update the progress bar
       let progressPercentage = (currentProgress / totalDuration) * 100;
       setProgress(progressPercentage);
+
       // Update the timer
       let remainingTime = totalDuration - currentProgress;
       let minutes = Math.floor(remainingTime / 60000);
@@ -42,10 +43,13 @@ const RecordingPlayer = (props) => {
       let totalDurationSeconds = ((totalDuration % 60000) / 1000).toFixed(0);
       // Update the timer
       setTimer(seconds);
-
       // Update state to reflect whether the sound is playing or not
       setIsAudioPlaying(isPlaying);
-     
+      if (progressPercentage==100) {
+        setProgress(0);
+        setTimer(0)
+        console.log("Finsihed", progressPercentage);
+      } 
     });
   }
 
@@ -62,6 +66,8 @@ const RecordingPlayer = (props) => {
       : undefined;
   }, [sound]);
 
+
+  
   return (
     <TouchableOpacity onPress={isAudioPlaying ? stopSound : playSound}>
       {props?.children}

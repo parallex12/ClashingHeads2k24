@@ -1,4 +1,5 @@
 import {
+  Animated,
   Button,
   Image,
   ScrollView,
@@ -19,7 +20,7 @@ import RecordingPlayer from "../../globalComponents/RecordingPlayer";
 import RecordingButton from "../../globalComponents/RecordingButton";
 
 const NewPost = (props) => {
-  let { } = props;
+  let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [sound, setSound] = useState(false);
@@ -36,6 +37,8 @@ const NewPost = (props) => {
     require("../../assets/icons/bgPlay.png"),
     require("../../assets/icons/bgPause.png"),
   ];
+  // Animation value for background color transition
+  const backgroundColor = useRef(new Animated.Value(0)).current;
 
   const startRecording = async () => {
     try {
@@ -65,20 +68,47 @@ const NewPost = (props) => {
       setIsRecording(false);
       setIsRecordingCompleted(true);
       clearInterval(timerRef.current);
+      // Trigger background color transition
+      Animated.timing(backgroundColor, {
+        toValue: 1,
+        duration: 500, // transition duration
+        useNativeDriver: false,
+      }).start();
     } catch (error) {
       console.log("Error stopping recording:", error);
     }
   };
 
   const onNext = () => {
-    props?.navigation?.navigate("AddPostDetails", { recording })
-  }
+    props?.navigation?.navigate("AddPostDetails", { recording });
+  };
+
+  const onReset = () => {
+    setTimer(0);
+    setProgress(0);
+    setRecording(false);
+    setIsAudioPlaying(false);
+    setIsRecording(false);
+    setIsRecordingCompleted(false);
+    clearInterval(timerRef.current);
+    // Trigger background color transition
+    Animated.timing(backgroundColor, {
+      toValue: 0,
+      duration: 500, // transition duration
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const interpolateBackgroundColor = backgroundColor.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["#ffffff", "#DB2727"],
+  });
 
   return (
-    <View
+    <Animated.View
       style={[
         styles.container,
-        { backgroundColor: isRecordingCompleted ? "#DB2727" : "#ffffff" },
+        { backgroundColor: interpolateBackgroundColor },
       ]}
     >
       <StandardHeader
@@ -100,9 +130,7 @@ const NewPost = (props) => {
               fontSize: RFValue(12),
             }}
             onPress={() => {
-              recording
-                ? onNext()
-                : alert("Require voice recording");
+              recording ? onNext() : alert("Require voice recording");
             }}
           />
         }
@@ -147,8 +175,8 @@ const NewPost = (props) => {
                       isAudioPlaying
                         ? iconImages[2]
                         : isRecordingCompleted
-                          ? iconImages[1]
-                          : iconImages[0]
+                        ? iconImages[1]
+                        : iconImages[0]
                     }
                     resizeMode="contain"
                     style={{ width: "100%", height: "100%" }}
@@ -166,8 +194,9 @@ const NewPost = (props) => {
                 20
               )}
             >
-              {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${timer % 60
-                }`}
+              {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${
+                timer % 60
+              }`}
             </Text>
             <Text
               style={font(
@@ -182,6 +211,20 @@ const NewPost = (props) => {
                 : "Record your max 15-second opinion on this post"}
             </Text>
           </View>
+          {!isRecording && recording && (
+            <StandardButton
+              title="Reset"
+              customStyles={{
+                width: getPercent(30, width),
+                backgroundColor: "#fff",
+                alignSelf: "center",
+              }}
+              textStyles={{
+                color: "#222",
+              }}
+              onPress={onReset}
+            />
+          )}
           {!isRecordingCompleted && (
             <RecordingButton
               setRecording={setRecording}
@@ -202,7 +245,7 @@ const NewPost = (props) => {
           )}
         </View>
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 };
 

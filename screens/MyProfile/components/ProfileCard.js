@@ -17,6 +17,7 @@ import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
+import { Audio as AudioCompress, download } from "react-native-compressor";
 
 const ProfileCard = (props) => {
   let { currentProfile, setCurrentProfile, postsCount } = props;
@@ -38,7 +39,21 @@ const ProfileCard = (props) => {
   } = user_details;
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [downloadedAudio, setDownloadedAudio] = useState(null);
   const sound = useRef(new Audio.Sound());
+
+  const compressAudio = async () => {
+    const downloadFileUrl = await download(about_voice, (progress) => {
+      console.log("downloadProgress: ", progress);
+    });
+    setDownloadedAudio(downloadFileUrl);
+  };
+
+  useEffect(() => {
+    if (about_voice) {
+      compressAudio();
+    }
+  }, [about_voice]);
 
   useEffect(() => {
     return () => {
@@ -66,8 +81,9 @@ const ProfileCard = (props) => {
         await sound.current.pauseAsync();
         setIsPlaying(false);
       } else {
+        if(!downloadedAudio)return
         if (!sound.current._loaded) {
-          await sound.current.loadAsync({ uri: about_voice });
+          await sound.current.loadAsync({ uri: downloadedAudio });
         }
         await sound.current.playAsync();
         setIsPlaying(true);
@@ -83,10 +99,9 @@ const ProfileCard = (props) => {
     }
   };
 
-  
-  const onFollowView=()=>{
-    navigation.navigate("Connections",{user:user_details})
-  }
+  const onFollowView = () => {
+    navigation.navigate("Connections", { user: user_details });
+  };
 
   const CardHeader = () => {
     return (
@@ -113,12 +128,22 @@ const ProfileCard = (props) => {
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Posts</Text>
           </View>
-          <TouchableOpacity style={styles.post_following_followers_Item} onPress={onFollowView}>
-            <Text style={font(15, "#121212", "Bold", 3)}>{Object.keys(followers || {}).length}</Text>
+          <TouchableOpacity
+            style={styles.post_following_followers_Item}
+            onPress={onFollowView}
+          >
+            <Text style={font(15, "#121212", "Bold", 3)}>
+              {Object.keys(followers || {}).length}
+            </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Followers</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.post_following_followers_Item} onPress={onFollowView}>
-            <Text style={font(15, "#121212", "Bold", 3)}>{Object.keys(following || {}).length }</Text>
+          <TouchableOpacity
+            style={styles.post_following_followers_Item}
+            onPress={onFollowView}
+          >
+            <Text style={font(15, "#121212", "Bold", 3)}>
+              {Object.keys(following || {}).length}
+            </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Following</Text>
           </TouchableOpacity>
         </View>
@@ -136,7 +161,9 @@ const ProfileCard = (props) => {
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
           <Text style={font(16, "#111827", "Medium", 2)}>
-            <Text style={font(16, "#DB2727", "Semibold", 2)}>#{clashHash} </Text>
+            <Text style={font(16, "#DB2727", "Semibold", 2)}>
+              #{clashHash}{" "}
+            </Text>
             {realName}
           </Text>
           <Image

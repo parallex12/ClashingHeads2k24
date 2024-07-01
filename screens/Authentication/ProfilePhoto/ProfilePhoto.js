@@ -24,8 +24,12 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { update_user_details, uploadMedia } from "../../../middleware/firebase";
 import auth from "@react-native-firebase/auth";
-import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import {
+  startLoading,
+  stopLoading,
+} from "../../../state-management/features/screen_loader/loaderSlice";
 import { selectUserForm } from "../../../state-management/features/auth";
+import { Image as ImageCompress } from "react-native-compressor";
 
 const ProfilePhoto = (props) => {
   let { route } = props;
@@ -33,15 +37,15 @@ const ProfilePhoto = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const userform = useSelector(selectUserForm);
-  const [form, setForm] = useState(userform)
+  const [form, setForm] = useState(userform);
   const [profile, setProfile] = useState(null);
-  const user = auth().currentUser
-  const dispatch = useDispatch()
+  const user = auth().currentUser;
+  const dispatch = useDispatch();
 
   const onContinue = async () => {
     try {
       if (profile) {
-        dispatch(startLoading())
+        dispatch(startLoading());
         await uploadMedia(profile, "userProfiles")
           .then((res) => {
             if (res.url) {
@@ -51,20 +55,20 @@ const ProfilePhoto = (props) => {
                   index: 0,
                   routes: [{ name: "Home" }],
                 });
-                if(res?.code==200){
+                if (res?.code == 200) {
                   props?.navigation?.navigate("Home");
                 }
-                dispatch(stopLoading())
+                dispatch(stopLoading());
               });
             }
           })
           .catch((e) => {
             console.log(e);
-            dispatch(stopLoading())
+            dispatch(stopLoading());
           });
       }
     } catch (error) {
-      dispatch(stopLoading())
+      dispatch(stopLoading());
       console.log("Error stopping recording:", error);
     }
   };
@@ -87,13 +91,19 @@ const ProfilePhoto = (props) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.2,
     });
     if (!result.canceled) {
       let uri = result.assets[0].uri;
-      setProfile(uri);
+      const compressResult = await ImageCompress.compress(uri, {
+        compressionMethod: "manual",
+        quality: 0.1,
+        downloadProgress:((pres)=>console.log(pres))
+      });
+      console.log("result", compressResult, uri);
+      setProfile(compressResult);
       setForm((prev) => {
-        return { ...prev, profile: uri };
+        return { ...prev, profile: compressResult };
       });
     }
   };

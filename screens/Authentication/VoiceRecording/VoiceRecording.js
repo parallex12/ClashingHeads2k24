@@ -19,18 +19,26 @@ import RecordingButton from "../../../globalComponents/RecordingButton";
 import RecordingPlayer from "../../../globalComponents/RecordingPlayer";
 import { update_user_details, uploadMedia } from "../../../middleware/firebase";
 import auth from "@react-native-firebase/auth";
-import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
-import { selectAuthUser, selectUserForm } from "../../../state-management/features/auth";
+import {
+  startLoading,
+  stopLoading,
+} from "../../../state-management/features/screen_loader/loaderSlice";
+import {
+  selectAuthUser,
+  selectUserForm,
+} from "../../../state-management/features/auth";
+import StandardButton from "../../../globalComponents/StandardButton";
+import { Audio } from "react-native-compressor";
 
 const VoiceRecording = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const userform = useSelector(selectUserForm);
-  const [form, setForm] = useState(userform)
+  const [form, setForm] = useState(userform);
   const [errorField, setErrorField] = useState({});
-  const user = auth().currentUser
-  const dispatch = useDispatch()
+  const user = auth().currentUser;
+  const dispatch = useDispatch();
 
   let iconImages = [
     require("../../../assets/icons/recorderVector.png"),
@@ -46,7 +54,7 @@ const VoiceRecording = (props) => {
   const [progress, setProgress] = useState(0);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
   const timerRef = useRef(null);
-  const user_profile_details=useSelector(selectAuthUser)
+  const user_profile_details = useSelector(selectAuthUser);
 
   const startRecording = async () => {
     try {
@@ -81,21 +89,32 @@ const VoiceRecording = (props) => {
     }
   };
 
+  const onReset = () => {
+    setRecording(false);
+    setIsAudioPlaying(false);
+    setIsRecording(false);
+    setTimer(0);
+    setProgress(0);
+    setIsRecordingCompleted(false);
+    clearInterval(timerRef.current);
+  };
+
   const onConfirm = async () => {
     try {
       if (recording) {
-        dispatch(startLoading())
+        dispatch(startLoading());
         clearInterval(timerRef.current);
-        await uploadMedia(recording, "profileRecordings")
+        const result = await Audio.compress(recording, { quality: "low" });
+        await uploadMedia(result, "profileRecordings")
           .then((res) => {
             if (res.url) {
               let data = { hasVoiceAdded: true, about_voice: res?.url };
               update_user_details(user?.uid, data).then((res) => {
                 if (!user_profile_details?.hasProfilePhoto) {
                   props?.navigation?.navigate("ProfilePhoto");
-                  dispatch(stopLoading())
+                  dispatch(stopLoading());
                 }
-                if(res?.code==200){
+                if (res?.code == 200) {
                   props?.navigation?.navigate("Home");
                 }
               });
@@ -103,11 +122,11 @@ const VoiceRecording = (props) => {
           })
           .catch((e) => {
             console.log(e);
-            dispatch(stopLoading())
+            dispatch(stopLoading());
           });
       }
     } catch (error) {
-      dispatch(stopLoading())
+      dispatch(stopLoading());
       console.log("Error stopping recording:", error);
     }
   };
@@ -129,7 +148,10 @@ const VoiceRecording = (props) => {
               Record in your real voice about yourself
             </Text>
             <View style={styles.recorderWrapper}>
-              <CircleComponent gap={1} progress={progress}>
+              <CircleComponent
+                gap={1}
+                progress={progress == "NaN" ? 0 : progress}
+              >
                 <CircleComponent gap={1.12} progress={null}>
                   <RecordingPlayer
                     setSound={setSound}
@@ -146,8 +168,8 @@ const VoiceRecording = (props) => {
                           isAudioPlaying
                             ? iconImages[2]
                             : isRecordingCompleted
-                              ? iconImages[1]
-                              : iconImages[0]
+                            ? iconImages[1]
+                            : iconImages[0]
                         }
                         resizeMode="contain"
                         style={{ width: "100%", height: "100%" }}
@@ -158,8 +180,9 @@ const VoiceRecording = (props) => {
               </CircleComponent>
               <View style={styles.textWrapper}>
                 <Text style={font(20, "#ffffff", "Bold", 20)}>
-                  {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${timer % 60
-                    }`}
+                  {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${
+                    timer % 60
+                  }`}
                 </Text>
                 <Text style={font(14, "#ffffff", "Regular", 0)}>
                   {recording
@@ -169,6 +192,20 @@ const VoiceRecording = (props) => {
               </View>
             </View>
           </View>
+          {!isRecording && recording && (
+            <StandardButton
+              title="Reset"
+              customStyles={{
+                width: getPercent(30, width),
+                backgroundColor: "#fff",
+                alignSelf: "center",
+              }}
+              textStyles={{
+                color: "#222",
+              }}
+              onPress={onReset}
+            />
+          )}
           <RecordingButton
             setRecording={setRecording}
             recording={recording}
@@ -181,12 +218,12 @@ const VoiceRecording = (props) => {
               isRecording
                 ? "Stop Recording"
                 : isRecordingCompleted
-                  ? "Confirm"
-                  : "Start Recording"
+                ? "Confirm"
+                : "Start Recording"
             }
             customStyles={{
               width: getPercent(50, width),
-              height: getPercent(7, height),
+              height: getPercent(6, height),
               marginVertical: getPercent(3, height),
               backgroundColor: isRecording
                 ? "rgba(255,255,255,0.3)"
@@ -197,8 +234,8 @@ const VoiceRecording = (props) => {
               color: isRecording
                 ? "#fff"
                 : isRecordingCompleted
-                  ? "#DB2727"
-                  : "#4B4EFC",
+                ? "#DB2727"
+                : "#4B4EFC",
               fontFamily: "Semibold",
             }}
           />

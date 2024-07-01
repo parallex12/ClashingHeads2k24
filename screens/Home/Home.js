@@ -31,10 +31,18 @@ import {
   getHomePosts,
   isUserProfileConnected,
 } from "../../middleware/firebase";
-import { fetchCurrentUserDetails, logout,  setUserDetails } from "../../state-management/features/auth/authSlice";
+import {
+  fetchCurrentUserDetails,
+  logout,
+  setUserDetails,
+} from "../../state-management/features/auth/authSlice";
 import { selectPosts } from "../../state-management/features/posts";
 import { setPosts } from "../../state-management/features/posts/postSlice";
 import EmptyBox from "../../globalComponents/EmptyBox";
+import ContentLoader, {
+  Facebook,
+  Instagram,
+} from "react-content-loader/native";
 
 const Home = (props) => {
   let {} = props;
@@ -54,7 +62,7 @@ const Home = (props) => {
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
     }
-    dispatch(fetchCurrentUserDetails(auth().currentUser?.uid))
+    dispatch(fetchCurrentUserDetails(auth().currentUser?.uid));
     isUserProfileConnected(auth().currentUser?.uid)
       .then((res) => {
         dispatch(setUserDetails(res?.user));
@@ -141,7 +149,7 @@ const Home = (props) => {
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
-            data={sortedPosts || []}
+            data={sortedPosts || [ ]}
             ListEmptyComponent={<EmptyBox text="No posts available." />}
             renderItem={({ item, index }) => {
               return (

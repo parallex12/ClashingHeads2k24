@@ -23,7 +23,6 @@ const Profile = (props) => {
   const onMenu = () => {
     navigation.dispatch(DrawerActions.openDrawer());
   };
-  console.log(source)
 
   return (
     <TouchableOpacity style={styles.container} onPress={onMenu}>

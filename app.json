@@ -51,6 +51,7 @@
     },
     "plugins": [
       "expo-font",
+      "react-native-compressor",
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       [
