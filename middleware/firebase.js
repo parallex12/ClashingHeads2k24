@@ -205,12 +205,12 @@ export const validate_post_details = async (details) => {
         reject({ msg: validation.msg, field: validation.field });
         return;
       }
-
+      
       // If email and username are unique, resolve
       resolve({ code: 200, msg: "Post details are valid" });
     } catch (error) {
       console.error(error);
-      reject("Error validating user details");
+      reject({msg:"Error validating user details"});
     }
   });
 };

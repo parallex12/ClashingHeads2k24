@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Button,
   Image,
   KeyboardAvoidingView,
@@ -11,7 +12,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { AddPostDetailsStyles as _styles } from "../../styles/NewPost/main";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import { getPercent, postprivacyoptions } from "../../middleware";
@@ -40,12 +41,14 @@ import { setPosts } from "../../state-management/features/posts/postSlice";
 import { selectPosts } from "../../state-management/features/posts";
 import { Image as ImageCompress } from "react-native-compressor";
 import PrivacyBottomSheet from "./components/PrivacyBottomSheet";
-
+import { Blurhash } from "react-native-blurhash";
+import { Entypo } from "@expo/vector-icons";
 const AddPostDetails = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const userAuth = useSelector(selectIsAuth);
+  const [imageHashingLoad, setimageHashingLoad] = useState(false);
   const user_profile = useSelector(selectAuthUser);
   const posts = useSelector(selectPosts);
   const privacybottomSheetRef = useRef(null);
@@ -60,7 +63,26 @@ const AddPostDetails = (props) => {
     dislikes: 0,
     clashes: 0,
     privacy: null,
+    post_image_hash: null,
   });
+
+  useEffect(() => {
+    if (postForm?.post_image && !postForm?.post_image_hash) {
+      const convertToblurhash = async () => {
+        setimageHashingLoad(true);
+        let _hash = await Blurhash.encode(postForm?.post_image, 4, 3);
+        setPostForm((prev) => {
+          return {
+            ...prev,
+            post_image_hash: _hash,
+          };
+        });
+        console.log("hash Added");
+        setimageHashingLoad(false);
+      };
+      convertToblurhash();
+    }
+  }, [postForm?.post_image]);
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -79,14 +101,20 @@ const AddPostDetails = (props) => {
         downloadProgress: (pres) => console.log(pres),
       });
       setPostForm((prev) => {
-        return { ...prev, post_image: compressResult };
+        return {
+          ...prev,
+          post_image: compressResult,
+        };
       });
     }
   };
 
   const onPost = async () => {
+    if (postForm?.post_image && !postForm?.post_image_hash) {
+      return alert("Processing media.");
+    }
     validate_post_details(postForm)
-      .then((res) => {
+      .then(async (res) => {
         dispatch(startLoading());
         if (res.code == 200) {
           createPost(postForm)
@@ -158,6 +186,23 @@ const AddPostDetails = (props) => {
             />
           </View>
           <View style={styles.mediaWrapper}>
+            <View style={styles.imageActionsWrapper}>
+              <StandardButton
+                title={
+                  imageHashingLoad ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Entypo name="cross" size={24} color="#fff" />
+                  )
+                }
+                customStyles={styles.imageActionsItem}
+                onPress={() => {
+                  setPostForm((prev) => {
+                    return { ...prev, post_image: null, post_image_hash: null };
+                  });
+                }}
+              />
+            </View>
             {postForm?.post_image && (
               <Image
                 source={{ uri: postForm?.post_image }}

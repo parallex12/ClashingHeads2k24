@@ -11,7 +11,7 @@ import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import WaveAudioPlayer from "../../WaveAudioPlayer";
 import { useNavigation } from "@react-navigation/native";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Blurhash } from "react-native-blurhash";
 
 const Content = memo((props) => {
@@ -24,34 +24,36 @@ const Content = memo((props) => {
     post_image,
     sticker,
     recording,
+    post_image_hash
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
 
   const PostImage = ({ source, onPress }) => {
+    const [imageLoad, setImageLoad] = useState(true);
     return (
       <TouchableOpacity
         style={styles.postImageWrapper}
-        onPress={() => blurhash()}
+        onPress={() => alert()}
         activeOpacity={0.9}
       >
-        <Blurhash
-          blurhash="LFF$35?DERn#4,E4RPxYxv?GM|E2"
-          style={{ width: "100%", height: "100%" }}
-        />
-        {/* <Image
+        {(imageLoad && post_image_hash) && (
+          <Blurhash
+            blurhash={post_image_hash}
+            style={{ width: "100%", height: "100%" }}
+          />
+        )}
+        <Image
           source={source}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
-        /> */}
+          onLoad={() => setImageLoad(false)}
+        />
       </TouchableOpacity>
     );
   };
 
-  const blurhash = async () => {
-    console.log(await Blurhash.encode(post_image, 4, 3));
-  };
   return (
     <View style={styles.container} activeOpacity={1}>
       {title && <Text style={styles.title}>{title}</Text>}
