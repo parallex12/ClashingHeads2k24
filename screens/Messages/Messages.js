@@ -66,7 +66,6 @@ const Messages = (props) => {
           </View>
         </View>
       </ScrollView>
-      <BottomMenu />
     </View>
   );
 };

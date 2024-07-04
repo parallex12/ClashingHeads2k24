@@ -16,30 +16,37 @@ import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 import { addUser } from "../../../middleware/firebase";
 import auth from "@react-native-firebase/auth";
-import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
-import { selectAuthUser,  } from "../../../state-management/features/auth";
+import {
+  startLoading,
+  stopLoading,
+} from "../../../state-management/features/screen_loader/loaderSlice";
+import { selectAuthUser } from "../../../state-management/features/auth";
 
 const CommunityGuidelines = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user = auth().currentUser
-  const dispatch = useDispatch()
-  const user_profile_details=useSelector(selectAuthUser) || {}
+  const user = auth().currentUser;
+  const [loading, setLoading] = useState(false);
+  const user_profile_details = useSelector(selectAuthUser) || {};
 
   const onContinue = () => {
-    dispatch(startLoading())
-    addUser(user?.uid, { tos: true, createdAt: new Date().toISOString(), phone: user?.phoneNumber })
+    setLoading(true);
+    addUser(user?.uid, {
+      tos: true,
+      createdAt: new Date().toISOString(),
+      phone: user?.phoneNumber,
+    })
       .then((res) => {
-        dispatch(stopLoading())
+        setLoading(false);
         if (!user_profile_details?.hasPersonalInfo) {
           props?.navigation?.navigate("PersonalInfo");
         }
       })
       .catch((e) => {
-        dispatch(stopLoading())
-        console.log(e)
-      })
+        console.log(e);
+        setLoading(false);
+      });
   };
 
   return (
@@ -91,14 +98,17 @@ const CommunityGuidelines = (props) => {
               </Text>
             </View>
           </View>
-          <StandardButton
-            title="Agree & Continue"
-            customStyles={{
-              height: getPercent(7, height),
-              marginVertical: getPercent(3, height),
-            }}
-            onPress={onContinue}
-          />
+          {!user_profile_details?.tos && (
+            <StandardButton
+              loading={loading}
+              title="Agree & Continue"
+              customStyles={{
+                height: getPercent(7, height),
+                marginVertical: getPercent(3, height),
+              }}
+              onPress={onContinue}
+            />
+          )}
         </View>
       </ScrollView>
     </View>

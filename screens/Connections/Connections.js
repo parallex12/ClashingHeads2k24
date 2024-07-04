@@ -19,7 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const Connections = (props) => {
   let { onPress } = props;
-  const user = props?.route?.params;
+  const { user } = props?.route?.params;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [active, setActive] = useState(0);
@@ -29,7 +29,6 @@ const Connections = (props) => {
   let following = Object.values({ ...user?.following });
   let followers = Object.values({ ...user?.followers });
   let usersToShow = [followers, following, [], []];
-  let isDisplayedUserMe = user?.id == current_user?.id;
   const navigation = useNavigation();
 
   return (
@@ -46,21 +45,29 @@ const Connections = (props) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             {usersToShow[active]?.map((item, index) => {
+              let isDisplayedUserMe = current_user?.id == item?.id;
               return (
                 <UserCard
                   isDisplayedUserMe={isDisplayedUserMe}
                   user={item}
                   key={index}
-                  onPress={() =>
-                    navigation.navigate("UserProfile", { user: item })
-                  }
+                  onPress={() => {
+                    if (isDisplayedUserMe) {
+                      console.log(isDisplayedUserMe);
+                      navigation?.navigate("MyProfile");
+                    } else {
+                      navigation?.navigate("UserProfile", {
+                        user: item,
+                      });
+                     
+                    }
+                  }}
                 />
               );
             })}
           </View>
         </ScrollView>
       )}
-      <BottomMenu active="menu" />
     </View>
   );
 };

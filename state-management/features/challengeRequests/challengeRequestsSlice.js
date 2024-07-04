@@ -95,7 +95,7 @@ export const fetchUserPostsAndChallenges = (userId) => async (dispatch) => {
     // Fetch user's posts
     const postsQuery = query(
       collection(db, "Posts"),
-      where("author.id", "==", userId)
+      where("author", "==", userId)
     );
     const postsSnapshot = await getDocs(postsQuery);
     const userPosts = postsSnapshot.docs.map((doc) => ({

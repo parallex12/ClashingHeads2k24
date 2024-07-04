@@ -49,6 +49,7 @@ const AddPostDetails = (props) => {
   let styles = _styles({ width, height });
   const userAuth = useSelector(selectIsAuth);
   const [imageHashingLoad, setimageHashingLoad] = useState(false);
+  const [loading, setLoading] = useState(false);
   const user_profile = useSelector(selectAuthUser);
   const posts = useSelector(selectPosts);
   const privacybottomSheetRef = useRef(null);
@@ -57,7 +58,7 @@ const AddPostDetails = (props) => {
     recording: props?.route?.params?.recording,
     post_image: null,
     createdAt: new Date().toISOString(),
-    author: user_profile,
+    author: user_profile?.id,
     reactions: {},
     likes: 0,
     dislikes: 0,
@@ -115,7 +116,7 @@ const AddPostDetails = (props) => {
     }
     validate_post_details(postForm)
       .then(async (res) => {
-        dispatch(startLoading());
+        setLoading(true);
         if (res.code == 200) {
           createPost(postForm)
             .then((res) => {
@@ -124,17 +125,19 @@ const AddPostDetails = (props) => {
               updatedPosts.push(res?.post_data);
               dispatch(setPosts(updatedPosts));
               props?.navigation.navigate("Home");
-              dispatch(stopLoading());
+              setLoading(false);
             })
             .catch((e) => {
-              dispatch(stopLoading());
+              setLoading(false);
+
               console.log(e);
               alert("Something Went wrong!.");
             });
         }
       })
       .catch((e) => {
-        dispatch(stopLoading());
+        setLoading(false);
+
         alert(e?.msg);
       });
   };
@@ -149,6 +152,7 @@ const AddPostDetails = (props) => {
         rightIcon={
           <StandardButton
             title="Post"
+            loading={loading}
             customStyles={{
               width: getPercent(17, width),
               height: getPercent(4, height),

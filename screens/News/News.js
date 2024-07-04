@@ -80,7 +80,6 @@ const News = () => {
           </View>
         </View>
       </ScrollView>
-      <BottomMenu />
     </View>
   );
 };

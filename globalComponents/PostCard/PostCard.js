@@ -11,13 +11,19 @@ import { PostCardStyles, font } from "../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
 import { update_post_reaction } from "../../middleware/firebase";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { selectPosts } from "../../state-management/features/posts";
+import { selectFetchedSingeUser } from "../../state-management/features/searchedUsers";
+import {
+  fetchInstantUserById,
+  fetchUserById,
+} from "../../state-management/features/searchedUsers/searchedUsersSlice";
+import { Instagram } from "react-content-loader/native";
 
 const PostCard = memo((props) => {
   let {
@@ -35,8 +41,18 @@ const PostCard = memo((props) => {
   let navigation = useNavigation();
   const createdAtDate = new Date(data?.createdAt).toDateString();
   const user_details = useSelector(selectAuthUser);
-  const posts = useSelector(selectPosts);
   const dispatch = useDispatch();
+  const [singleUser, setAuthor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const memoizedData = useMemo(() => data, [data]);
+
+  useEffect(() => {
+    (async () => {
+      let author_data = await fetchInstantUserById(data?.author);
+      setAuthor(author_data);
+      setLoading(false);
+    })();
+  }, [data]);
 
   const onReaction = useCallback(
     (type) => {
@@ -51,7 +67,9 @@ const PostCard = memo((props) => {
     [data, user_details, dispatch]
   );
 
-  const memoizedData = useMemo(() => data, [data]);
+  if (loading) {
+    return <Instagram style={{ alignSelf: "center" }} />;
+  }
 
   return (
     <Pressable
@@ -64,10 +82,7 @@ const PostCard = memo((props) => {
       onPress={() => navigation?.navigate("ClashDetails", data)}
     >
       <View style={styles.content}>
-        <Header
-          author={memoizedData?.author}
-          createdAt={memoizedData?.createdAt}
-        />
+        <Header author={singleUser || {}} createdAt={memoizedData?.createdAt} />
         <Content {...memoizedData} desc_limit={desc_limit} />
         <ActionMenu
           {...memoizedData}

@@ -28,6 +28,7 @@ const Signin = (props) => {
   const [phoneNumber, setPhoneNumber] = useState(null);
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
 
   const onSignup = () => {
     navigation?.navigate("Signup");
@@ -39,14 +40,13 @@ const Signin = (props) => {
       alert("Phone number required.");
       return;
     }
-    dispatch(startLoading());
+    setLoading(true)
     dispatch(setUserForm({ phone: phone_number_raw }));
     setTimeout(() => {
       navigation?.navigate("OTPVerification");
+      setLoading(false)
     }, 1000);
   };
-
-  console.log(store.getState());
   
   return (
     <View style={styles.container}>
@@ -80,6 +80,7 @@ const Signin = (props) => {
             </Text>
             <StandardButton
               title="Continue"
+              loading={loading}
               customStyles={{
                 height: getPercent(7, height),
                 marginVertical: getPercent(3, height),

@@ -80,13 +80,12 @@ const UserCard = (props) => {
         <Text style={font(14, "#111827", "Medium")}>{user?.realName}</Text>
         <Text style={font(12, "#9CA3AF", "Regular", 5)}>@{user?.username}</Text>
       </View>
-      {isDisplayedUserMe && (
+      {!isDisplayedUserMe && (
         <StandardButton
           title={currentFollowButtonState}
           customStyles={{
             paddingHorizontal: getPercent(4, width),
             height: getPercent(4.5, height),
-           
           }}
           onPress={onFollow}
         />

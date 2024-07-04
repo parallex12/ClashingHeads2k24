@@ -30,50 +30,49 @@ import {
 } from "../../../state-management/features/screen_loader/loaderSlice";
 import { selectUserForm } from "../../../state-management/features/auth";
 import { Image as ImageCompress } from "react-native-compressor";
+import { Blurhash } from "react-native-blurhash";
 
 const ProfilePhoto = (props) => {
   let { route } = props;
-  let { prevData } = { name: "ella" };
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const userform = useSelector(selectUserForm);
-  const [form, setForm] = useState(userform);
   const [profile, setProfile] = useState(null);
+  const [profileHash, setProfileHash] = useState(null);
   const user = auth().currentUser;
-  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const onContinue = async () => {
     try {
       if (profile) {
-        dispatch(startLoading());
+        setLoading(true);
         await uploadMedia(profile, "userProfiles")
           .then((res) => {
             if (res.url) {
-              let data = { hasProfilePhoto: true, profile_photo: res?.url };
+              let data = {
+                hasProfilePhoto: true,
+                profile_photo: res?.url,
+                profile_hash: profileHash,
+              };
               update_user_details(user?.uid, data).then((res) => {
                 props.navigation.reset({
                   index: 0,
                   routes: [{ name: "Home" }],
                 });
-                if (res?.code == 200) {
-                  props?.navigation?.navigate("Home");
-                }
-                dispatch(stopLoading());
+                setLoading(false);
               });
             }
           })
           .catch((e) => {
             console.log(e);
-            dispatch(stopLoading());
+            setLoading(false);
           });
       }
     } catch (error) {
-      dispatch(stopLoading());
+      setLoading(false);
       console.log("Error stopping recording:", error);
     }
   };
 
-  // Ask for permission on component mount
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
@@ -85,6 +84,18 @@ const ProfilePhoto = (props) => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (profile) {
+      setProfileHash("loading");
+      const convertToblurhash = async () => {
+        let _hash = await Blurhash.encode(profile, 4, 3);
+        console.log(_hash);
+        setProfileHash(_hash);
+      };
+      convertToblurhash();
+    }
+  }, [profile]);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -98,12 +109,8 @@ const ProfilePhoto = (props) => {
       const compressResult = await ImageCompress.compress(uri, {
         compressionMethod: "manual",
         quality: 0.1,
-        downloadProgress:((pres)=>console.log(pres))
       });
       setProfile(compressResult);
-      setForm((prev) => {
-        return { ...prev, profile: compressResult };
-      });
     }
   };
 
@@ -125,9 +132,6 @@ const ProfilePhoto = (props) => {
       if (!result.canceled) {
         let uri = result.assets[0].uri;
         setProfile(uri);
-        setForm((prev) => {
-          return { ...prev, profile: uri };
-        });
       }
     } catch (error) {
       console.error("Error opening camera:", error);
@@ -157,6 +161,12 @@ const ProfilePhoto = (props) => {
             </Text>
             <View style={styles.profileCont}>
               <View style={styles.profileWrapper}>
+                {profileHash == "loading" && (
+                  <StandardButton
+                    loading={true}
+                    customStyles={styles.imageActionsItem}
+                  />
+                )}
                 <Image
                   source={
                     profile
@@ -169,8 +179,9 @@ const ProfilePhoto = (props) => {
               </View>
             </View>
             <View style={styles.continueBtnWrapper}>
-              {profile && (
+              {profile && profileHash != "loading" && (
                 <StandardButton
+                  loading={loading}
                   title="Continue"
                   customStyles={styles.upload_btn}
                   onPress={onContinue}

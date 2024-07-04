@@ -17,6 +17,8 @@ import { selectAuthUser } from "../../../state-management/features/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { update_user_details } from "../../../middleware/firebase";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
+import { download } from "react-native-compressor";
+import { Blurhash } from "react-native-blurhash";
 
 const ProfileCard = (props) => {
   let { user } = props;
@@ -33,6 +35,7 @@ const ProfileCard = (props) => {
     employment,
     username,
     id,
+    profile_hash,
   } = user;
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -44,6 +47,7 @@ const ProfileCard = (props) => {
   const currentOtherUserfollowers = { ...user?.following } || {};
   const hasCurrentUserFollowed = currentUserfollowing[user?.id];
   const hasOpponentUserFollowed = currentOtherUserfollowers[current_user?.id];
+  const [downloadedAudio, setDownloadedAudio] = useState(null);
 
   let currentFollowButtonState = hasCurrentUserFollowed
     ? followButtonTypes[0]
@@ -57,6 +61,17 @@ const ProfileCard = (props) => {
     };
   }, []);
 
+  const downloadCompressedAudio = async () => {
+    const downloadFileUrl = await download(about_voice, (progress) => {});
+    setDownloadedAudio(downloadFileUrl);
+  };
+
+  useEffect(() => {
+    if (about_voice) {
+      downloadCompressedAudio();
+    }
+  }, [about_voice]);
+
   const playAudio = async () => {
     try {
       if (isPlaying) {
@@ -64,7 +79,7 @@ const ProfileCard = (props) => {
         setIsPlaying(false);
       } else {
         if (!sound.current._loaded) {
-          await sound.current.loadAsync({ uri: about_voice });
+          await sound.current.loadAsync({ uri: downloadedAudio });
         }
         await sound.current.playAsync();
         setIsPlaying(true);
@@ -119,18 +134,32 @@ const ProfileCard = (props) => {
     navigation.navigate("Messages");
   };
   const onFollowView = () => {
-    navigation.navigate("Connections", user);
+    navigation.navigate("Connections", { user });
   };
 
   const CardHeader = ({ user }) => {
+    const [imageLoad, setImageLoad] = useState(true);
+
     return (
       <View style={styles.cardHeaderContainer}>
         <View style={styles.cardHeaderProfileWrapper}>
           <View style={styles.cardHeaderProfile}>
+            {imageLoad && profile_hash && (
+              <Blurhash
+                blurhash={profile_hash}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  position: "absolute",
+                  zIndex: 999,
+                }}
+              />
+            )}
             <Image
               source={{ uri: user?.profile_photo }}
               resizeMode="cover"
               style={{ width: "100%", height: "100%" }}
+              onLoad={() => setImageLoad(false)}
             />
           </View>
           <View style={styles.cardHeaderProfileOnlineDot}></View>

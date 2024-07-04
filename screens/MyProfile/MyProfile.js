@@ -15,24 +15,30 @@ import { useEffect, useRef, useState } from "react";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { getPercent } from "../../middleware";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAuthDetailsLoading, selectAuthUser } from "../../state-management/features/auth";
+import {
+  selectAuthDetailsLoading,
+  selectAuthUser,
+} from "../../state-management/features/auth";
 import { fetchUserPostsAndChallenges } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
 import DualClashCard from "../Search/components/DualClashCard";
 import VoiceRecorderBottomSheet from "../ChallengeRequests/components/VoiceRecorderBottomSheet";
 import auth from "@react-native-firebase/auth";
 import { fetchCurrentUserDetails } from "../../state-management/features/auth/authSlice";
-import ContentLoader, { Facebook } from 'react-content-loader'
+import ContentLoader, {
+  Facebook,
+  Instagram,
+  Code,
+} from "react-content-loader/native";
 
 const MyProfile = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_details = useSelector(selectAuthUser);
-  let userID=auth().currentUser?.uid
+  let userID = auth().currentUser?.uid;
   const [currentProfile, setCurrentProfile] = useState({
     uri: user_details?.profile_photo || "",
   });
-  const authLoading=useSelector(selectAuthDetailsLoading)
   const [currentChallenge, setCurrentChallenge] = useState(null);
   const bottomVoiceSheetRef = useRef();
   const bottomFlagSheetRef = useRef();
@@ -44,12 +50,10 @@ const MyProfile = (props) => {
 
   useEffect(() => {
     if (userID) {
-      dispatch(fetchCurrentUserDetails(userID))
+      dispatch(fetchCurrentUserDetails(userID));
       dispatch(fetchUserPostsAndChallenges(userID));
     }
-  }, [userID]);
-
-
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -58,57 +62,64 @@ const MyProfile = (props) => {
         backButton
         containerStyles={{ height: getPercent(15, height) }}
       />
-      {loading || authLoading || !user_details ? (
-        <ActivityIndicator />
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.content}>
-            <ProfileCard
-              postsCount={posts?.length}
-              currentProfile={currentProfile}
-              setCurrentProfile={setCurrentProfile}
-            />
-            {posts?.map((item, index) => {
-              return (
-                <PostCard
-                  divider
-                  data={item}
-                  key={index}
-                  onReportPress={() => bottomFlagSheetRef?.current?.present()}
-                  onPostClashesPress={() =>
-                    props?.navigation?.navigate("ClashDetails", { ...item })
-                  }
-                />
-              );
-            })}
-            {allRequests?.map((item, index) => {
-              return (
-                <DualClashCard
-                  onAcceptRequest={() => {
-                    console.log(item?.id);
-                    alert("Record your opinion to accept the challenge.");
-                    setCurrentChallenge(item?.id);
-                    bottomVoiceSheetRef.current?.present();
-                  }}
-                  onCancelRequest={() => null}
-                  request_type={
-                    item?.opponentId == user_details?.id ? "Recieved" : "Sent"
-                  }
-                  key={index}
-                  data={item}
-                  onPress={() =>
-                    props?.navigation?.navigate("ChallengeClash", { ...item })
-                  }
-                  onClashesPress={() =>
-                    props?.navigation?.navigate("ChallengeClash", { ...item })
-                  }
-                />
-              );
-            })}
-          </View>
-        </ScrollView>
-      )}
-      <BottomMenu active="menu" />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.content}>
+          {loading ? (
+            <View style={styles.ContentLoader}>
+              <ContentLoader style={{ flex: 1 }} />
+              {new Array(2).fill().map((item, index) => {
+                return <Instagram style={{ alignSelf: "center" }} />;
+              })}
+            </View>
+          ) : (
+            <>
+              <ProfileCard
+                postsCount={posts?.length}
+                currentProfile={currentProfile}
+                setCurrentProfile={setCurrentProfile}
+              />
+              {posts?.map((item, index) => {
+                if (index > 10) return;
+                return (
+                  <PostCard
+                    divider
+                    data={item}
+                    key={index}
+                    onReportPress={() => bottomFlagSheetRef?.current?.present()}
+                    onPostClashesPress={() =>
+                      props?.navigation?.navigate("ClashDetails", { ...item })
+                    }
+                  />
+                );
+              })}
+              {allRequests?.map((item, index) => {
+                if (index > 10) return;
+                return (
+                  <DualClashCard
+                    onAcceptRequest={() => {
+                      alert("Record your opinion to accept the challenge.");
+                      setCurrentChallenge(item?.id);
+                      bottomVoiceSheetRef.current?.present();
+                    }}
+                    onCancelRequest={() => null}
+                    request_type={
+                      item?.opponentId == user_details?.id ? "Recieved" : "Sent"
+                    }
+                    key={index}
+                    data={item}
+                    onPress={() =>
+                      props?.navigation?.navigate("ChallengeClash", { ...item })
+                    }
+                    onClashesPress={() =>
+                      props?.navigation?.navigate("ChallengeClash", { ...item })
+                    }
+                  />
+                );
+              })}
+            </>
+          )}
+        </View>
+      </ScrollView>
       <VoiceRecorderBottomSheet
         challengeId={currentChallenge}
         bottomVoiceSheetRef={bottomVoiceSheetRef}

@@ -11,28 +11,50 @@ import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { getTimeElapsed } from "../../../utils";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
+import { Blurhash } from "react-native-blurhash";
+import { fetchUserById } from "../../../state-management/features/searchedUsers/searchedUsersSlice";
+import { selectFetchedSingeUser } from "../../../state-management/features/searchedUsers";
+import ContentLoader, {
+  Facebook,
+  Instagram,
+} from "react-content-loader/native";
 
 const Header = (props) => {
   let { author, createdAt, profileStyles } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  let user_author = author;
+  const dispatch = useDispatch();
   let post_past_time = getTimeElapsed(createdAt);
   const navigation = useNavigation();
   const user_details = useSelector(selectAuthUser);
+  let user_author = author;
 
   const Profile = ({ source, profileStyles }) => {
+    const [imageLoad, setImageLoad] = useState(true);
+
     return (
       <View style={[styles.container, { ...profileStyles }]}>
         <View style={styles.profileWrapper}>
+          {imageLoad && user_details?.profile_hash && (
+            <Blurhash
+              blurhash={user_details?.profile_hash}
+              style={{
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                zIndex: 999,
+              }}
+            />
+          )}
           <Image
             source={source}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
+            onLoad={() => setImageLoad(false)}
           />
         </View>
         <View style={styles.online}></View>
@@ -45,7 +67,7 @@ const Header = (props) => {
       <TouchableOpacity
         style={{
           flexDirection: "row",
-          paddingHorizontal: getPercent(3, width),
+          flex: 1,
         }}
         onPress={() => {
           if (author?.id == user_details?.id) {
@@ -80,7 +102,6 @@ const Header = (props) => {
           </Text>
         </View>
       </TouchableOpacity>
-
       <TouchableOpacity>
         <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />
       </TouchableOpacity>

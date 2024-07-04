@@ -29,48 +29,48 @@ const OTPVerification = (props) => {
   const dispatch = useDispatch()
   const form = useSelector(selectUserForm)
   const [confirm, setConfirm] = useState(null)
+  const [loading, setLoading] = useState(false);
 
   async function signInWithPhoneNumber(phoneNumber) {
     await auth()
       .signInWithPhoneNumber(phoneNumber)
       .then((res) => {
         setConfirm(res)
-        dispatch(stopLoading())
+        setLoading(false)
       })
       .catch((e) => {
         console.log(e);
-        dispatch(stopLoading())
+        setLoading(false)
         alert("Something went wrong try again!");
       });
   }
 
-
   useEffect(() => {
     if(!form?.phone)return
-    console.log("Sending otp to...", form?.phone)
     signInWithPhoneNumber(form?.phone)
   }, [])
-
-
 
   const onContinue = async () => {
     if (!confirm) return
     try {
       if (otpCode?.length != 6) return alert("Invalid OTP.");
-      dispatch(startLoading())
+      setLoading(true)
       await confirm.confirm(otpCode)
         .then(async (res) => {
+          console.log(res)
           dispatch(loginSuccess())
-          dispatch(stopLoading())
+          setLoading(false)
         })
         .catch((e) => {
           console.log("e", e);
-          dispatch(stopLoading())
+          setLoading(false)
           alert("Something went wrong try again!");
         });
     } catch (error) {
       console.log(error)
+      setLoading(false)
       console.log("Invalid code.");
+      alert("Something went wrong try again!");
     }
   };
 
@@ -99,6 +99,7 @@ const OTPVerification = (props) => {
           </Text>
           <StandardButton
             title="Continue"
+            loading={loading}
             customStyles={{
               height: getPercent(7, height),
               marginVertical: getPercent(3, height),

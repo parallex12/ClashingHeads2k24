@@ -35,6 +35,7 @@ const StandardInput = (props) => {
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     setDateOfBirth(currentDate);
+    console.log(event)
     onChangeText(currentDate);
   };
 
@@ -49,7 +50,6 @@ const StandardInput = (props) => {
       borderColor: "#222",
       borderWidth: 3,
     };
-
 
     return (
       <View style={styles.dropDownContainer}>
@@ -76,7 +76,9 @@ const StandardInput = (props) => {
 
   return (
     <View style={[styles.container, containerStyles]}>
-     {data?.title && <Text style={[styles.titleText,titleTextStyle]}>{data?.title}</Text>}
+      {data?.title && (
+        <Text style={[styles.titleText, titleTextStyle]}>{data?.title}</Text>
+      )}
       <View style={[styles.inputWrapper, inputStyles]}>
         {data?.type == "text" ? (
           <TextInput
@@ -99,7 +101,9 @@ const StandardInput = (props) => {
                 onChange={onDateChange}
               />
             ) : (
-              <Text style={styles.inputText}>{ new Date(value).toDateString()}</Text>
+              <Text style={styles.inputText}>
+                {new Date(value).toDateString()}
+              </Text>
             )}
           </TouchableOpacity>
         ) : data?.type == "picker" ? (
@@ -108,9 +112,7 @@ const StandardInput = (props) => {
             onPress={() => setDropDownShow(true)}
           >
             {dropDownshow && <DropDown options={politicsCategory} />}
-            <Text style={styles.inputText}>
-              {value || data?.placeholder}
-            </Text>
+            <Text style={styles.inputText}>{value || data?.placeholder}</Text>
           </TouchableOpacity>
         ) : null}
         {data?.icon ? data?.icon : customIcon}
@@ -119,4 +121,4 @@ const StandardInput = (props) => {
   );
 };
 
-export default StandardInput
+export default StandardInput;

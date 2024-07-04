@@ -24,6 +24,7 @@ import { selectChallengeClash } from "../../state-management/features/challengeC
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 import VoiceRecorderBottomSheet from "../../globalComponents/VoiceRecorderBottomSheet/VoiceRecorderBottomSheet";
 import { font } from "../../styles/Global/main";
+import { Instagram } from "react-content-loader/native";
 
 const SubClashes = React.memo(
   ({
@@ -109,12 +110,15 @@ const ChallengeClash = (props) => {
         title="Clash"
         searchIcon={false}
       />
-      {!challengeClash ? (
-        <ActivityIndicator />
+      {loading ? (
+        <Instagram style={{ alignSelf: "center" }} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             <DualClashCard
+              request_type={
+                challengeClash?.opponentId == user_id ? "Recieved" : "Sent"
+              }
               data={challengeClash}
               onPress={null}
               showVoting

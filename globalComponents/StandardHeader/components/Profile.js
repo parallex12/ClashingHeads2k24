@@ -9,15 +9,20 @@ import {
 import { getPercent } from "../../../middleware";
 import { Entypo } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { Blurhash } from "react-native-blurhash";
+import { useState } from "react";
 
 const Profile = (props) => {
-  let { source } = props;
+  let { source, profile_hash } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
+  const [imageLoad, setImageLoad] = useState(true);
 
   let profileImg = {
-    uri: source || "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
+    uri:
+      source ||
+      "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
   };
 
   const onMenu = () => {
@@ -27,13 +32,25 @@ const Profile = (props) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onMenu}>
       <View style={styles.profileWrapper}>
+        {imageLoad && profile_hash && (
+          <Blurhash
+            blurhash={profile_hash}
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              zIndex: 999,
+            }}
+          />
+        )}
         <Image
           source={profileImg}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
+          onLoad={() => setImageLoad(false)}
         />
       </View>
-      <View style={styles.menu} >
+      <View style={styles.menu}>
         <Entypo name="menu" size={getPercent(1.8, height)} color="#DB2727" />
       </View>
     </TouchableOpacity>

@@ -15,6 +15,11 @@ export const styles = ({ width, height }) =>
       zIndex: 9,
       paddingBottom: getPercent(12, height),
     },
+    ContentLoader: {
+      width: "100%",
+      paddingHorizontal: getPercent(3, width),
+      paddingVertical: getPercent(2, height),
+    },
   });
 
 //ProfileCardstyles starts here

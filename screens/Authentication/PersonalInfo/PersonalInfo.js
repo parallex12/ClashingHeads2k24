@@ -13,7 +13,11 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/PersonalInfo/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
-import { getPercent, politicsCategory, registrationFields } from "../../../middleware";
+import {
+  getPercent,
+  politicsCategory,
+  registrationFields,
+} from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
@@ -22,24 +26,31 @@ import {
   validate_user_details,
 } from "../../../middleware/firebase";
 import { Entypo } from "@expo/vector-icons";
-import { selectAuthUser, selectUserForm } from "../../../state-management/features/auth";
+import {
+  selectAuthUser,
+  selectUserForm,
+} from "../../../state-management/features/auth";
 import auth from "@react-native-firebase/auth";
-import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import {
+  startLoading,
+  stopLoading,
+} from "../../../state-management/features/screen_loader/loaderSlice";
 import { setUserForm } from "../../../state-management/features/auth/authSlice";
 
 const PersonalInfo = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user_profile_details = useSelector(selectAuthUser)
-  const [form, setForm] = useState(user_profile_details || {})
+  const user_profile_details = useSelector(selectAuthUser);
+  const [form, setForm] = useState(user_profile_details || {});
   const [errorField, setErrorField] = useState({});
-  const user = auth().currentUser
-  const dispatch = useDispatch()
+  const user = auth().currentUser;
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const onContinue = async () => {
     try {
-      dispatch(startLoading())
+      setLoading(true);
       validate_user_details(form, user_profile_details)
         .then((res) => {
           setErrorField(null);
@@ -47,27 +58,30 @@ const PersonalInfo = (props) => {
             ...form,
             hasPersonalInfo: true,
           };
-          user_details["dateOfBirth"] = new Date(user_details?.dateOfBirth).toISOString()
+          user_details["dateOfBirth"] = new Date(
+            user_details?.dateOfBirth
+          ).toISOString();
           update_user_details(user?.uid, user_details)
             .then((res) => {
-              dispatch(setUserForm({}))
-              if (!user_profile_details?.hasVoiceAdded) {
-                props?.navigation?.navigate("VoiceRecording");
+              dispatch(setUserForm({}));
+              if (res?.code == 200) {
+                if (!user_profile_details?.hasVoiceAdded) {
+                  props?.navigation?.navigate("VoiceRecording");
+                } else {
+                  props?.navigation?.navigate("Home");
+                }
               }
-              if(res?.code==200){
-                props?.navigation?.navigate("Home");
-              }
-              dispatch(stopLoading())
+              setLoading(false);
             })
             .catch((e) => {
-              dispatch(stopLoading())
+              setLoading(false);
               console.log(e.message);
               alert("Something went wrong try again!");
             });
         })
         .catch((e) => {
           console.log(e);
-          dispatch(stopLoading())
+          setLoading(false);
           if (e?.field) {
             setErrorField(e?.field);
             alert(e?.msg);
@@ -76,7 +90,8 @@ const PersonalInfo = (props) => {
           alert("Something went wrong try again!");
         });
     } catch (e) {
-      console.log(e)
+      setLoading(false);
+      console.log(e);
     }
   };
 
@@ -130,6 +145,7 @@ const PersonalInfo = (props) => {
           </View>
           <StandardButton
             title="Continue"
+            loading={loading}
             customStyles={{
               height: getPercent(7, height),
               marginVertical: getPercent(3, height),

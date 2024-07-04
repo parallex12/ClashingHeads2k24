@@ -51,7 +51,7 @@ const CreateClash = (props) => {
   const dispatch = useDispatch();
   const [clashForm, setClashForm] = useState({
     title: null,
-    challenger: user_details, // The user who initiates the challenge
+    challenger: user_details?.id, // The user who initiates the challenge
     opponent: null, // The user who is being challenged
     challenger_audio: recordedVoice?.getURI(),
     opponent_audio: null,
@@ -108,6 +108,7 @@ const CreateClash = (props) => {
     setSearchQuery(query);
     dispatch(fetchUsersByQuery(query));
   };
+
 
   return (
     <View style={styles.container}>
@@ -173,7 +174,7 @@ const CreateClash = (props) => {
                     setSearchQuery("");
                   }}
                   isSelected={clashForm?.opponent?.id}
-                  users={users?.filter((e) => e?.id != user_details?.id)}
+                  users={[]}
                 />
               )
             )

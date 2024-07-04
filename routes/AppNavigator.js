@@ -1,5 +1,9 @@
 import * as React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useNavigation,
+  useNavigationState,
+} from "@react-navigation/native";
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -46,7 +50,7 @@ import FullScreenLoader from "../globalComponents/FullScreenLoader/FullScreenLoa
 import { firebaseConfig } from "../utils";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   selectAuthUser,
   selectIsAuth,
@@ -59,6 +63,8 @@ import Connections from "../screens/Connections/Connections";
 import Invite from "../screens/Invite/Invite";
 import Shop from "../screens/Shop/Shop";
 import CalendarScreen from "../screens/Calendar/CalendarScreen";
+import BottomMenu from "../globalComponents/BottomMenu/BottomMenu";
+import { onScreenChange } from "../state-management/features/bottom_menu/bottom_menuSlice";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -98,7 +104,10 @@ const HomeScreens = () => {
           <HomeStack.Screen name="CalendarScreen" component={CalendarScreen} />
           <HomeStack.Screen name="Shop" component={Shop} />
           <HomeStack.Screen name="Invite" component={Invite} />
-          <HomeStack.Screen name="ClashRoomMonetize" component={ClashRoomMonetize} />
+          <HomeStack.Screen
+            name="ClashRoomMonetize"
+            component={ClashRoomMonetize}
+          />
           <HomeStack.Screen name="News" component={News} />
           <HomeStack.Screen name="AddPostDetails" component={AddPostDetails} />
           <HomeStack.Screen
@@ -138,6 +147,15 @@ const HomeScreens = () => {
 };
 
 function AppNavigation() {
+  const navigation = useNavigation();
+  const dispatch=useDispatch()
+  React.useEffect(()=>{
+    navigation.addListener("state",()=>{
+      dispatch(onScreenChange(navigation.getCurrentRoute()?.name))
+    })
+
+  },[navigation.getCurrentRoute()])
+
   return (
     <Navigator
       drawerContent={(props) => <SideMenu {...props} />}
@@ -157,9 +175,12 @@ function AppNavigation() {
   );
 }
 
-export const AppNavigator = () => (
-  <NavigationContainer>
-    <AppNavigation />
-    <FullScreenLoader />
-  </NavigationContainer>
-);
+export const AppNavigator = () => {
+  return (
+    <NavigationContainer>
+      <AppNavigation />
+      <FullScreenLoader />
+      <BottomMenu />
+    </NavigationContainer>
+  );
+};

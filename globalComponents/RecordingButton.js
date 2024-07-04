@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Text,
   TouchableOpacity,
   View,
@@ -8,9 +9,11 @@ import { connect } from "react-redux";
 import { RecordingButtonStyles } from "../styles/Global/main";
 import { Audio } from "expo-av";
 import { styles } from "../styles/Home/main";
+import { useEffect } from "react";
 const RecordingButton = (props) => {
   let {
     recording,
+    recordingLimitReached,
     setRecording,
     isRecordingCompleted,
     onConfirm,
@@ -19,11 +22,27 @@ const RecordingButton = (props) => {
     stop,
     title,
     customStyles,
-    textStyles
+    textStyles,
+    loading,
+    theme,
   } = props;
   const [permissionResponse, requestPermission] = Audio.usePermissions();
   let { width, height } = useWindowDimensions();
   let styles = RecordingButtonStyles({ width, height });
+
+  useEffect(() => {
+    const request_permission = async () => {
+      await requestPermission();
+    };
+    request_permission();
+  }, []);
+
+  useEffect(() => {
+    if (recordingLimitReached) {
+      stopRecording();
+    }
+  }, [recordingLimitReached]);
+
   async function startRecording() {
     try {
       if (permissionResponse.status !== "granted") {
@@ -49,7 +68,6 @@ const RecordingButton = (props) => {
 
   async function stopRecording() {
     console.log("Stopping recording..");
-    stop();
     await recording.stopAndUnloadAsync();
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
@@ -57,21 +75,30 @@ const RecordingButton = (props) => {
     const uri = recording.getURI();
     setRecording(uri);
     console.log("Recording stopped and stored at", uri);
+    stop();
   }
 
   return (
     <TouchableOpacity
-    style={[styles.container, customStyles]}
+      style={[styles.container, customStyles]}
       onPress={
-        isRecording
+        loading
+          ? null
+          : isRecording
           ? stopRecording
           : isRecordingCompleted
           ? onConfirm
           : startRecording
       }
     >
-      <Text style={[styles.text, textStyles]}>{title}</Text>
-      {props?.children}
+      {loading ? (
+        <ActivityIndicator size="small" color={theme ? "#222" : "#fff"} />
+      ) : (
+        <>
+          <Text style={[styles.text, textStyles]}>{title}</Text>
+          {props?.children}
+        </>
+      )}
     </TouchableOpacity>
   );
 };

@@ -135,7 +135,6 @@ const Clashes = (props) => {
           />} */}
         </View>
       </ScrollView>
-      <BottomMenu />
     </View>
   );
 };

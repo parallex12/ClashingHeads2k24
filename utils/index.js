@@ -307,7 +307,7 @@ export function getTimeElapsed(createdAt) {
 }
 
 export function sortPostsByCreatedAt(posts) {
-  if (posts == undefined) return []
+  if (posts == undefined || typeof(posts)!="object") return []
   // Preprocess posts to ensure createdAt is parsed correctly
   const processedPosts = posts?.map(post => ({
     ...post,
@@ -321,7 +321,6 @@ export function sortPostsByCreatedAt(posts) {
     return bDate - aDate; // Sort in descending order (most recent first)
   });
 }
-
 
 export const handleReaction = async ({
   postId,

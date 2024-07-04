@@ -58,7 +58,7 @@ const VoiceRecorderBottomSheet = (props) => {
       dislikes: 0,
       clashes: 0,
       listened: 0,
-      author: { ...user_profile },
+      author: user_profile?.id,
       clashTo: clashTo,
       createdAt: new Date().toISOString(),
     };

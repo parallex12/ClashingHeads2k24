@@ -11,18 +11,26 @@ import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import WaveAudioPlayer from "../../WaveAudioPlayer";
 import { useNavigation } from "@react-navigation/native";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
+import { download } from "react-native-compressor";
 
 const Content = memo((props) => {
-  let {
-    onAudioPlay,
-    sticker,
-    recording,
-    userMention
-  } = props;
+  let { onAudioPlay, sticker, recording, userMention } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
+  const [downloadedAudio, setDownloadedAudio] = useState(null);
+
+  const downloadCompressedAudio = async () => {
+    const downloadFileUrl = await download(recording, (progress) => {});
+    setDownloadedAudio(downloadFileUrl);
+  };
+
+  useEffect(() => {
+    if (recording) {
+      downloadCompressedAudio();
+    }
+  }, [recording]);
 
   const PostImage = ({ source, onPress }) => {
     return (
@@ -40,13 +48,19 @@ const Content = memo((props) => {
     );
   };
 
-
   return (
     <View style={styles.container} activeOpacity={1}>
       {/* <Text style={font(12, "#c5c5c5", "Medium", 10)}>@{userMention}</Text> */}
       {sticker && <PostImage source={sticker?.img} />}
-      {recording && <WaveAudioPlayer afterAudioPlayed={onAudioPlay} source={recording} />}
-      {sticker && <WaveAudioPlayer afterAudioPlayed={onAudioPlay} localSource={sticker?.audio} />}
+      {recording && (
+        <WaveAudioPlayer afterAudioPlayed={onAudioPlay} source={downloadedAudio} />
+      )}
+      {sticker && (
+        <WaveAudioPlayer
+          afterAudioPlayed={onAudioPlay}
+          localSource={sticker?.audio}
+        />
+      )}
     </View>
   );
 });

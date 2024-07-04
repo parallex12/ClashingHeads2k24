@@ -36,7 +36,19 @@ export const styles = ({ width, height }) =>
      width:getPercent(35,height),
      height:getPercent(35,height),
      borderRadius:getPercent(35,height),
-     overflow:'hidden'
+     overflow:'hidden',
+     alignItems:'center',
+     justifyContent:'center'
+    },
+    imageActionsItem: {
+      width: "100%",
+      height: "100%",
+      borderRadius: 100,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      alignItems: "center",
+      justifyContent: "center",
+      position:'absolute',
+      zIndex:99999999
     },
     profile: {
       width: "100%",

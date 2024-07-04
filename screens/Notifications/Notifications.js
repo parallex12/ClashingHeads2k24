@@ -33,7 +33,6 @@ const Notifications = (props) => {
           <NotificationCard isNew />
         </View>
       </ScrollView>
-      <BottomMenu />
     </View>
   );
 };

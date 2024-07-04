@@ -23,6 +23,14 @@ import { selectAuthUser } from "../../../state-management/features/auth";
 import { updateChallengeClash } from "../../../state-management/features/challengeClash/challengeClashSlice";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
+import { selectFetchedSingeUser } from "../../../state-management/features/searchedUsers";
+import { Instagram } from "react-content-loader/native";
+import {
+  fetchInstantUserById,
+  fetchUserById,
+} from "../../../state-management/features/searchedUsers/searchedUsersSlice";
+import { Blurhash } from "react-native-blurhash";
+import { download } from "react-native-compressor";
 
 const DualClashCard = (props) => {
   const {
@@ -45,13 +53,25 @@ const DualClashCard = (props) => {
   const currentUser = useSelector(selectAuthUser);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
   const [voteData, setVoteData] = useState(data?.votes);
   const hasCurrentUserVoted = voteData[currentUser?.id];
+  const [challenger, setChallenger] = useState(null);
+  const [opponent, setOpponent] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setVoteData(data?.votes);
   }, [data?.votes]);
+
+  useEffect(() => {
+    (async () => {
+      let challenger_data = await fetchInstantUserById(data?.challenger);
+      let opponent_data = await fetchInstantUserById(data?.opponentId);
+      setChallenger(challenger_data);
+      setOpponent(opponent_data);
+      setLoading(false);
+    })();
+  }, []);
 
   const {
     challengerPercentage,
@@ -89,8 +109,21 @@ const DualClashCard = (props) => {
     },
     [currentUser, data?.id, voteData, dispatch, data?.voted]
   );
-  
+
   const ClashUserCard = memo(({ user, type, audio, hasAccepted, votes }) => {
+    const [imageLoad, setImageLoad] = useState(true);
+    const [downloadedAudio, setDownloadedAudio] = useState(null);
+    const downloadCompressedAudio = async () => {
+      const downloadFileUrl = await download(audio, (progress) => {});
+      setDownloadedAudio(downloadFileUrl);
+    };
+
+    useEffect(() => {
+      if (audio) {
+        downloadCompressedAudio();
+      }
+    }, [audio]);
+
     return (
       <View style={styles.clashUserItem}>
         <TouchableOpacity
@@ -106,11 +139,23 @@ const DualClashCard = (props) => {
           }}
         >
           <View style={styles.clashUserProfile}>
+            {imageLoad && user?.profile_hash && (
+              <Blurhash
+                blurhash={user?.profile_hash}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  position: "absolute",
+                  zIndex: 999,
+                }}
+              />
+            )}
             <Image
               source={{ uri: user?.profile_photo }}
               resizeMode="contain"
               style={{ width: "100%", height: "100%" }}
               cachePolicy="memory-disk"
+              onLoad={() => setImageLoad(false)}
             />
           </View>
           <Text style={font(14, "#000000", "Semibold", 3)}>
@@ -118,7 +163,13 @@ const DualClashCard = (props) => {
           </Text>
           <Text style={font(12, "#9CA3AF", "Medium", 3)}>{type}</Text>
         </TouchableOpacity>
-        {audio && <WaveAudioPlayer showDuration iconSize={15} source={audio} />}
+        {audio && (
+          <WaveAudioPlayer
+            showDuration
+            iconSize={15}
+            source={downloadedAudio}
+          />
+        )}
         {!hasAccepted &&
           (request_type === "Recieved" ? (
             <StandardButton
@@ -162,7 +213,11 @@ const DualClashCard = (props) => {
       </View>
       <TouchableOpacity
         style={styles.cardFooterItem}
-        onPress={() => data?.status=="pending"?alert("Clash has not started yet. Awaiting approvals."):onClashesPress(data)}
+        onPress={() =>
+          data?.status == "pending"
+            ? alert("Clash has not started yet. Awaiting approvals.")
+            : onClashesPress(data)
+        }
       >
         <MaterialIcons name="multitrack-audio" size={15} color="#6B7280" />
         <Text
@@ -236,30 +291,40 @@ const DualClashCard = (props) => {
 
   return (
     <View style={styles.clashesCardCont}>
-      <Text style={styles.clashesCardTitle}>“{data?.title}”</Text>
-      <TouchableOpacity
-        style={styles.clashesCardUsersCont}
-        onPress={onPress}
-        activeOpacity={0.8}
-      >
-        <ClashUserCard
-          user={data?.challenger}
-          type="Challenger"
-          audio={data?.challenger_audio}
-          hasAccepted={true}
-          votes={voteData}
-        />
-        <Text style={styles.vsText}>VS</Text>
-        <ClashUserCard
-          user={data?.opponent}
-          type="Opponent"
-          audio={data?.opponent_audio}
-          hasAccepted={data?.status === "accepted"}
-          votes={voteData}
-        />
-      </TouchableOpacity>
-      <CardFooter />
-      {showVoting && <VotingFooter />}
+      {loading ? (
+        <Instagram />
+      ) : (
+        <>
+          <Text style={styles.clashesCardTitle}>“{data?.title}”</Text>
+          <TouchableOpacity
+            style={styles.clashesCardUsersCont}
+            onPress={onPress}
+            activeOpacity={0.8}
+          >
+            {challenger && (
+              <ClashUserCard
+                user={challenger}
+                type="Challenger"
+                audio={data?.challenger_audio}
+                hasAccepted={true}
+                votes={voteData}
+              />
+            )}
+            <Text style={styles.vsText}>VS</Text>
+            {opponent && (
+              <ClashUserCard
+                user={opponent}
+                type="Opponent"
+                audio={data?.opponent_audio}
+                hasAccepted={data?.status === "accepted"}
+                votes={voteData}
+              />
+            )}
+          </TouchableOpacity>
+          <CardFooter />
+          {showVoting && <VotingFooter />}
+        </>
+      )}
     </View>
   );
 };

@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUserPostsAndChallenges } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
 import DualClashCard from "../Search/components/DualClashCard";
 import { selectAuthUser } from "../../state-management/features/auth";
+import ContentLoader, { Instagram } from "react-content-loader/native";
 
 const UserProfile = (props) => {
   let {} = props;
@@ -38,7 +39,6 @@ const UserProfile = (props) => {
     }
   }, [user]);
 
-
   return (
     <View style={styles.container}>
       <StandardHeader
@@ -46,46 +46,55 @@ const UserProfile = (props) => {
         backButton
         containerStyles={{ height: getPercent(15, height) }}
       />
-      {!relatedUser || loading ? (
-        <ActivityIndicator size="large" />
-      ) : (
-        <ScrollView>
-          <View style={styles.content}>
-            <ProfileCard postsCount={posts?.length} user={relatedUser} />
-            {posts?.map((item, index) => {
-              return (
-                <PostCard
-                  divider
-                  data={item}
-                  key={index}
-                  onReportPress={() => bottomFlagSheetRef?.current?.present()}
-                  onPostClashesPress={() =>
-                    props?.navigation?.navigate("ClashDetails", { ...item })
-                  }
-                />
-              );
-            })}
-            {allRequests?.map((item, index) => {
-              if (item?.status != "accepted") return;
-              return (
-                <DualClashCard
-                  onCancelRequest={() => null}
-                  request_type={"Senst"}
-                  key={index}
-                  data={item}
-                  onPress={() =>
-                    props?.navigation?.navigate("ChallengeClash", { ...item })
-                  }
-                  onClashesPress={() =>
-                    props?.navigation?.navigate("ChallengeClash", { ...item })
-                  }
-                />
-              );
-            })}
-          </View>
-        </ScrollView>
-      )}
-      <BottomMenu active="Home" />
+      <ScrollView>
+        <View style={styles.content}>
+          {loading || !relatedUser ? (
+            <View style={styles.ContentLoader}>
+              <ContentLoader style={{ flex: 1 }} />
+              {new Array(2).fill().map((item, index) => {
+                return <Instagram style={{ alignSelf: "center" }} />;
+              })}
+            </View>
+          ) : (
+            <>
+              <ProfileCard postsCount={posts?.length} user={relatedUser} />
+
+              {posts?.map((item, index) => {
+                if (index > 10) return;
+                return (
+                  <PostCard
+                    divider
+                    data={item}
+                    key={index}
+                    onReportPress={() => bottomFlagSheetRef?.current?.present()}
+                    onPostClashesPress={() =>
+                      props?.navigation?.navigate("ClashDetails", { ...item })
+                    }
+                  />
+                );
+              })}
+              {allRequests?.map((item, index) => {
+                if (item?.status != "accepted") return;
+                if (index > 10) return;
+                return (
+                  <DualClashCard
+                    onCancelRequest={() => null}
+                    request_type={"Senst"}
+                    key={index}
+                    data={item}
+                    onPress={() =>
+                      props?.navigation?.navigate("ChallengeClash", { ...item })
+                    }
+                    onClashesPress={() =>
+                      props?.navigation?.navigate("ChallengeClash", { ...item })
+                    }
+                  />
+                );
+              })}
+            </>
+          )}
+        </View>
+      </ScrollView>
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
     </View>
   );

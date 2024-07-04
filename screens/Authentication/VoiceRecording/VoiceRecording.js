@@ -34,27 +34,24 @@ const VoiceRecording = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const userform = useSelector(selectUserForm);
-  const [form, setForm] = useState(userform);
-  const [errorField, setErrorField] = useState({});
+  const [loading, setLoading] = useState(false);
   const user = auth().currentUser;
-  const dispatch = useDispatch();
-
   let iconImages = [
     require("../../../assets/icons/recorderVector.png"),
     require("../../../assets/icons/bgPlay.png"),
     require("../../../assets/icons/bgPause.png"),
   ];
-
   const [recording, setRecording] = useState(false);
   const [sound, setSound] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [recordingLimitReached, setrecordingLimitReached] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
   const timerRef = useRef(null);
   const user_profile_details = useSelector(selectAuthUser);
+  let recordingLimit = 15;
 
   const startRecording = async () => {
     try {
@@ -63,15 +60,15 @@ const VoiceRecording = (props) => {
       setProgress(0);
       timerRef.current = setInterval(() => {
         setTimer((prevTimer) => {
-          if (prevTimer >= 15) {
-            stopRecording();
+          if (prevTimer >= recordingLimit) {
+            setrecordingLimitReached(true);
             return prevTimer;
           }
           return prevTimer + 1;
         });
         setProgress((prevProgress) => {
           if (prevProgress >= 100) return 100;
-          return prevProgress + 100 / 15;
+          return prevProgress + 100 / recordingLimit;
         });
       }, 1000);
     } catch (error) {
@@ -97,12 +94,13 @@ const VoiceRecording = (props) => {
     setProgress(0);
     setIsRecordingCompleted(false);
     clearInterval(timerRef.current);
+    setrecordingLimitReached(false);
   };
 
   const onConfirm = async () => {
     try {
       if (recording) {
-        dispatch(startLoading());
+        setLoading(true);
         clearInterval(timerRef.current);
         const result = await Audio.compress(recording, { quality: "low" });
         await uploadMedia(result, "profileRecordings")
@@ -110,23 +108,24 @@ const VoiceRecording = (props) => {
             if (res.url) {
               let data = { hasVoiceAdded: true, about_voice: res?.url };
               update_user_details(user?.uid, data).then((res) => {
-                if (!user_profile_details?.hasProfilePhoto) {
-                  props?.navigation?.navigate("ProfilePhoto");
-                  dispatch(stopLoading());
-                }
                 if (res?.code == 200) {
-                  props?.navigation?.navigate("Home");
+                  if (!user_profile_details?.hasProfilePhoto) {
+                    props?.navigation?.navigate("ProfilePhoto");
+                    setLoading(false);
+                  } else {
+                    props?.navigation?.navigate("Home");
+                  }
                 }
               });
             }
           })
           .catch((e) => {
             console.log(e);
-            dispatch(stopLoading());
+            setLoading(false);
           });
       }
     } catch (error) {
-      dispatch(stopLoading());
+      setLoading(false);
       console.log("Error stopping recording:", error);
     }
   };
@@ -207,6 +206,9 @@ const VoiceRecording = (props) => {
             />
           )}
           <RecordingButton
+            theme="light"
+            loading={loading}
+            recordingLimitReached={recordingLimitReached}
             setRecording={setRecording}
             recording={recording}
             isRecording={isRecording}

@@ -220,7 +220,7 @@ export const sideMenuOptions = [
   },
   {
     title: "Community Guidelines",
-    route: "",
+    route: "CommunityGuidelines",
     icon: require("../assets/icons/sideMenu/5.png"),
   },  
   {

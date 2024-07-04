@@ -42,7 +42,7 @@ const StandardHeader = (props) => {
       resizeMode="cover"
     >
       <View style={styles.col1}>
-        {profile && <Profile source={user_profile?.profile_photo} />}
+        {profile && <Profile source={user_profile?.profile_photo} profile_hash={user_profile?.profile_hash} />}
         {backButton && <BackButton color="#FFFFFF" />}
       </View>
       <View style={styles.col2}>

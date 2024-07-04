@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Text,
   TouchableOpacity,
   View,
@@ -7,7 +8,7 @@ import {
 import { connect } from "react-redux";
 import { standardButtonStyles } from "../styles/Global/main";
 const StandardButton = (props) => {
-  let { customStyles, disable, rightIcon, textStyles, onPress, title } = props;
+  let { customStyles, loading, rightIcon, textStyles, onPress, title } = props;
   let { width, height } = useWindowDimensions();
   let styles = standardButtonStyles({ width, height });
 
@@ -16,8 +17,14 @@ const StandardButton = (props) => {
       style={[styles.container, customStyles]}
       onPress={onPress}
     >
-      <Text style={[styles.text, textStyles]}>{title}</Text>
-      {rightIcon && rightIcon}
+      {loading ? (
+        <ActivityIndicator size="small" color="#fff" />
+      ) : (
+        <>
+          <Text style={[styles.text, textStyles]}>{title}</Text>
+          {rightIcon && rightIcon}
+        </>
+      )}
     </TouchableOpacity>
   );
 };

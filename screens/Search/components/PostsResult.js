@@ -35,6 +35,7 @@ const PostsResult = (props) => {
       <ScrollView>
         <View style={styles.content}>
           {sortPostsByCreatedAt(posts?.data)?.map((item, index) => {
+            if (index > 10) return;
             return <PostCard divider data={item} key={index} />;
           })}
         </View>

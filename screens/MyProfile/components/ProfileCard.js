@@ -18,6 +18,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import { Audio as AudioCompress, download } from "react-native-compressor";
+import { Image as ImageCompress } from "react-native-compressor";
+import { Blurhash } from "react-native-blurhash";
 
 const ProfileCard = (props) => {
   let { currentProfile, setCurrentProfile, postsCount } = props;
@@ -36,6 +38,7 @@ const ProfileCard = (props) => {
     school,
     employment,
     username,
+    profile_hash,
   } = user_details;
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -43,9 +46,7 @@ const ProfileCard = (props) => {
   const sound = useRef(new Audio.Sound());
 
   const downloadCompressedAudio = async () => {
-    const downloadFileUrl = await download(about_voice, (progress) => {
-      console.log("downloadProgress: ", progress);
-    });
+    const downloadFileUrl = await download(about_voice, (progress) => {});
     setDownloadedAudio(downloadFileUrl);
   };
 
@@ -60,20 +61,6 @@ const ProfileCard = (props) => {
       sound.current && sound.current.unloadAsync();
     };
   }, []);
-
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setCurrentProfile({ uri: result.assets[0].uri });
-    }
-  };
 
   const playAudio = async () => {
     try {
@@ -104,19 +91,33 @@ const ProfileCard = (props) => {
   };
 
   const CardHeader = () => {
+    const [imageLoad, setImageLoad] = useState(true);
+
     return (
       <View style={styles.cardHeaderContainer}>
         <View style={styles.cardHeaderProfileWrapper}>
           <View style={styles.cardHeaderProfile}>
+            {imageLoad && profile_hash && (
+              <Blurhash
+                blurhash={profile_hash}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  position: "absolute",
+                  zIndex: 999,
+                }}
+              />
+            )}
             <Image
               source={currentProfile}
               resizeMode="cover"
               style={{ width: "100%", height: "100%" }}
+              onLoad={() => setImageLoad(false)}
             />
           </View>
           <TouchableOpacity
             style={styles.cardHeaderProfileCameraIcon}
-            onPress={pickImage}
+            onPress={() => navigation.navigate("ProfilePhoto")}
           >
             <AntDesign name="camerao" size={18} color="#DB2727" />
           </TouchableOpacity>

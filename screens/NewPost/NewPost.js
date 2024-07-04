@@ -32,6 +32,7 @@ const NewPost = (props) => {
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
   const [recording, setRecording] = useState(false);
   const timerRef = useRef(null);
+  const [recordingLimitReached, setrecordingLimitReached] = useState(false);
 
   let iconImages = [
     require("../../assets/icons/recorderVectorRed.png"),
@@ -49,7 +50,7 @@ const NewPost = (props) => {
       timerRef.current = setInterval(() => {
         setTimer((prevTimer) => {
           if (prevTimer >= 15) {
-            stopRecording();
+            setrecordingLimitReached(true);
             return prevTimer;
           }
           return prevTimer + 1;
@@ -95,6 +96,7 @@ const NewPost = (props) => {
     setIsRecording(false);
     setIsRecordingCompleted(false);
     clearInterval(timerRef.current);
+    setrecordingLimitReached(false);
     // Trigger background color transition
     Animated.timing(backgroundColor, {
       toValue: 0,
@@ -231,6 +233,7 @@ const NewPost = (props) => {
           )}
           {!isRecordingCompleted && (
             <RecordingButton
+              recordingLimitReached={recordingLimitReached}
               setRecording={setRecording}
               recording={recording}
               isRecording={isRecording}

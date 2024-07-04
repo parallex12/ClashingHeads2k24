@@ -1,6 +1,9 @@
 // SideMenu.js
-import { DrawerContentScrollView } from "@react-navigation/drawer";
-import React, { useState } from "react";
+import {
+  DrawerContentScrollView,
+  useDrawerStatus,
+} from "@react-navigation/drawer";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -14,16 +17,25 @@ import { sideMenuOptions } from "../../middleware";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { Logout } from "../../middleware/firebase";
 import LogoutPress from "../LogoutPress";
-import { connect, useSelector } from "react-redux";
-import { selectAuthUser, selectIsAuth } from "../../state-management/features/auth";
+import { connect, useDispatch, useSelector } from "react-redux";
+import {
+  selectAuthUser,
+  selectIsAuth,
+} from "../../state-management/features/auth";
+import { onUpdateMenu } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 
 const SideMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = SideMenuStyles({ width, height });
-  const userAuth = useSelector(selectIsAuth);
+  const dispatch = useDispatch();
   const user_details = useSelector(selectAuthUser);
   let profile = user_details?.profile_photo;
   const navigation = useNavigation();
+  const isDrawerOpen = useDrawerStatus();
+
+  useEffect(() => {
+    dispatch(onUpdateMenu(isDrawerOpen));
+  }, [isDrawerOpen]);
 
   const ListItem = ({ data }) => {
     if (data?.type == "logout") {
@@ -113,5 +125,4 @@ const SideMenu = (props) => {
   );
 };
 
-
-export default SideMenu
+export default SideMenu;

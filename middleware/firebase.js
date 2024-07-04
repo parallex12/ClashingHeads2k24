@@ -35,6 +35,7 @@ import {
 import { HOME_POSTS, USER_DB_DETAILS } from "../state-management/types/types";
 import store from "../state-management/store/store";
 import { setNewPostProgress } from "../state-management/features/screen_loader/loaderSlice";
+import axios from "axios";
 
 export const getFirestoreDoc = async (collection, docID) => {
   try {
@@ -52,13 +53,27 @@ export const getFirestoreDoc = async (collection, docID) => {
     console.log(e);
   }
 };
-
+export const getFBAccessToken = async () => {
+  try {
+    const user = auth().currentUser;
+    if (user) {
+      const idToken = await user.getIdToken(); // Get the ID token
+      return idToken;
+    } else {
+      console.log("No user is signed in");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting ID token:", error);
+    return null;
+  }
+};
 export const getHomePosts = async (currentPagePosition) => {
   return new Promise(async (resolve, reject) => {
     try {
       const db = getFirestore();
       const postsCollection = collection(db, "Posts");
-      const q = query(postsCollection, limit(500));
+      const q = query(postsCollection, limit(15));
       const unsubscribe = onSnapshot(
         q,
         (snapshot) => {
@@ -148,16 +163,16 @@ export const validate_user_details = async (details, user_profile_details) => {
       // Create queries for email and username validation if required
       const emailQuery = emailCheckRequired
         ? query(
-          collectionGroup(db, "Users"),
-          where("email", "==", details.email)
-        )
+            collectionGroup(db, "Users"),
+            where("email", "==", details.email)
+          )
         : null;
 
       const usernameQuery = usernameCheckRequired
         ? query(
-          collectionGroup(db, "Users"),
-          where("username", "==", details.username)
-        )
+            collectionGroup(db, "Users"),
+            where("username", "==", details.username)
+          )
         : null;
 
       // Execute the queries, defaulting to empty results if the query is not required
@@ -205,12 +220,12 @@ export const validate_post_details = async (details) => {
         reject({ msg: validation.msg, field: validation.field });
         return;
       }
-      
+
       // If email and username are unique, resolve
       resolve({ code: 200, msg: "Post details are valid" });
     } catch (error) {
       console.error(error);
-      reject({msg:"Error validating user details"});
+      reject({ msg: "Error validating user details" });
     }
   });
 };
@@ -218,7 +233,12 @@ export const validate_post_details = async (details) => {
 export const validate_clash_details = async (details) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const requiredFields = ["challenger", "title", "opponent", "challenger_audio",];
+      const requiredFields = [
+        "challenger",
+        "title",
+        "opponent",
+        "challenger_audio",
+      ];
       const validation = validateRequiredFields(details, requiredFields);
       if (!validation.isValid) {
         reject({ msg: validation.msg, field: validation.field });
@@ -281,7 +301,6 @@ export const uploadMedia = (media, path, mediaName) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log("Upload is " + progress + "% done");
-
 
           switch (snapshot.state) {
             case "paused":
@@ -359,7 +378,6 @@ export const createPost = async (post_details, dispatch) => {
   });
 };
 
-
 export const createChallengeClash = async (clash_Details, dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -369,7 +387,6 @@ export const createChallengeClash = async (clash_Details, dispatch) => {
         "ChallengeClashesAudios"
       );
       clash_Details["challenger_audio"] = url;
-
 
       await addDoc(collection(db, "ChallengeClashes"), clash_Details)
         .then((res) => {
@@ -457,6 +474,7 @@ export const update_post_reaction = async (postId, userId, reactionType) => {
     try {
       const db = getFirestore();
       const postRef = doc(db, "Posts", postId);
+      const userInteractionsRef = doc(db, "user_interactions", userId);
 
       await runTransaction(db, async (transaction) => {
         const postDoc = await transaction.get(postRef);
@@ -501,12 +519,55 @@ export const update_post_reaction = async (postId, userId, reactionType) => {
           dislikes: updatedDislikes,
           reactions: userReactions,
         });
+        // Update user interactions document
+        transaction.set(
+          userInteractionsRef,
+          {
+            interactions: {
+              [postId]: {
+                reactionType,
+                timestamp: new Date().toISOString(),
+              },
+            },
+          },
+          { merge: true }
+        );
       });
       resolve(200);
       console.log("Transaction successfully committed!");
     } catch (e) {
       console.log("Transaction failed: ", e);
       reject(e);
+    }
+  });
+};
+
+export const getRecommendedPosts = async () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const idToken = await getFBAccessToken();
+      // console.log(idToken)
+      // Make a GET request to your backend to fetch recommended posts
+      await axios
+        .get("posts", {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        })
+        .then(async (res) => {
+          // Extract recommended posts from the response
+          const recommendedPosts = res.data;
+          // Process the recommended posts as needed
+          resolve(recommendedPosts);
+        })
+        .catch((e) => {
+          console.log("getRecommendedPosts", e);
+          reject(e)
+        });
+    } catch (error) {
+      // Handle errors
+      console.error("Error fetching recommended posts:", error.message);
+      reject(error)
     }
   });
 };

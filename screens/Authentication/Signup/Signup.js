@@ -14,17 +14,21 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useState } from "react";
 import auth from "@react-native-firebase/auth";
-import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
-import {  setUserForm } from "../../../state-management/features/auth/authSlice";
+import {
+  startLoading,
+  stopLoading,
+} from "../../../state-management/features/screen_loader/loaderSlice";
+import { setUserForm } from "../../../state-management/features/auth/authSlice";
 import { useNavigation } from "@react-navigation/native";
 
 const Signup = (props) => {
-  let { } = props;
+  let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
-  const [phoneNumber, setPhoneNumber] = useState(null)
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState(null);
+  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const onLogin = () => {
@@ -37,11 +41,12 @@ const Signup = (props) => {
       alert("Phone number required.");
       return;
     }
-    dispatch(startLoading())
-    dispatch(setUserForm({ phone: phone_number_raw }))
+    setLoading(true);
+    dispatch(setUserForm({ phone: phone_number_raw }));
     setTimeout(() => {
       navigation?.navigate("OTPVerification");
-    }, 1000)
+      setLoading(false);
+    }, 1000);
   };
 
   return (
@@ -76,6 +81,7 @@ const Signup = (props) => {
             </Text>
             <StandardButton
               title="Continue"
+              loading={loading}
               customStyles={{
                 height: getPercent(7, height),
                 marginVertical: getPercent(3, height),
@@ -97,5 +103,4 @@ const Signup = (props) => {
   );
 };
 
-
-export default Signup
+export default Signup;

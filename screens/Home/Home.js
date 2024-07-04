@@ -28,7 +28,9 @@ import {
 import firebase from "firebase/compat/app";
 import { selectAuthUser } from "../../state-management/features/auth";
 import {
+  getFBAccessToken,
   getHomePosts,
+  getRecommendedPosts,
   isUserProfileConnected,
 } from "../../middleware/firebase";
 import {
@@ -43,6 +45,8 @@ import ContentLoader, {
   Facebook,
   Instagram,
 } from "react-content-loader/native";
+import { setAuthToken } from "../../middleware";
+import axios from "axios";
 
 const Home = (props) => {
   let {} = props;
@@ -52,13 +56,17 @@ const Home = (props) => {
   const bottomFlagSheetRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [contentLoading, setContentLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [reachedEnd, setReachedEnd] = useState(false);
+
   const dispatch = useDispatch();
   const user_details = useSelector(selectAuthUser);
-  const [currentPagePosition, setCurrentPagePosition] = useState(1);
+  const user = auth().currentUser;
 
   useEffect(() => {
-    dispatch(startLoading());
-    if (firebase.apps.length == 0) {
+    setContentLoading(true);
+    if (firebase.apps.length === 0) {
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
     }
@@ -72,10 +80,10 @@ const Home = (props) => {
             routes: [{ name: res?.goTo }],
           });
         }
-        dispatch(stopLoading());
+        setContentLoading(false);
       })
       .catch((e) => {
-        if (e == 404) {
+        if (e === 404) {
           props.navigation.reset({
             index: 0,
             routes: [{ name: "CommunityGuidelines" }],
@@ -83,33 +91,51 @@ const Home = (props) => {
           return;
         }
         dispatch(logout());
+        setContentLoading(false);
       });
   }, []);
 
   const loadPosts = async () => {
+    // const res = await getRecommendedPosts();
+    // if (res?.status == 200) {
+    //   console.log("Posts",res?.data?.length)
+    //   dispatch(setPosts(res?.data));
+    // }
+    if (loadingMore || reachedEnd) return;
+    setLoadingMore(true);
     try {
-      const res = await getHomePosts(currentPagePosition);
+      const res = await getHomePosts(currentPage);
+      if (res?.length < 10) {
+        setReachedEnd(true); // No more posts to load
+      }
       dispatch(setPosts(res));
-      dispatch(stopLoading());
+      setContentLoading(false);
       setRefreshing(false);
-      setLoadingMore(false);
     } catch (e) {
       console.log(e);
-      dispatch(stopLoading());
+      setContentLoading(false);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
   useEffect(() => {
     loadPosts();
-  }, [currentPagePosition]);
+  }, [currentPage]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setCurrentPagePosition(1);
-    setRefreshing(false);
+    setCurrentPage(1);
   }, []);
 
+  const onEndReached = useCallback(() => {
+    if (!loadingMore && !reachedEnd) {
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  }, [loadingMore, reachedEnd]);
+
   const memoizedPosts = useMemo(() => posts?.data, [posts]);
+
   const sortedPosts = useMemo(() => {
     // Sort posts by createdAt date
     return sortPostsByCreatedAt(memoizedPosts);
@@ -139,22 +165,17 @@ const Home = (props) => {
           onPress={() => props?.navigation.navigate("NewPost")}
         />
       </View>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        <View style={styles.content}>
+      <View style={styles.content}>
+        {contentLoading || refreshing ? (
+          [1, 2, 3].map((item, index) => {
+            return <Instagram key={index} style={{ alignSelf: "center" }} />;
+          })
+        ) : (
           <FlatList
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             data={sortedPosts}
-            ListEmptyComponent={
-              <EmptyBox
-                text={`No posts yet! \nBe the first to share something amazing!`}
-              />
-            }
             renderItem={({ item, index }) => {
               return (
                 <PostCard
@@ -171,11 +192,12 @@ const Home = (props) => {
             }}
             keyExtractor={(item) => item?.id?.toString()}
             ListFooterComponent={renderFooter}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.5}
           />
-        </View>
-      </ScrollView>
+        )}
+      </View>
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
-      <BottomMenu />
     </View>
   );
 };
