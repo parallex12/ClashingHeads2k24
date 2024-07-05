@@ -42,6 +42,7 @@ const OTPVerification = (props) => {
         console.log(e);
         setLoading(false)
         alert("Something went wrong try again!");
+        props?.navigation.goBack()
       });
   }
 

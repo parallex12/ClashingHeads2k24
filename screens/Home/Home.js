@@ -30,6 +30,7 @@ import { selectAuthUser } from "../../state-management/features/auth";
 import {
   getFBAccessToken,
   getHomePosts,
+  getPaginatedHomePosts,
   getRecommendedPosts,
   isUserProfileConnected,
 } from "../../middleware/firebase";
@@ -45,7 +46,7 @@ import ContentLoader, {
   Facebook,
   Instagram,
 } from "react-content-loader/native";
-import { setAuthToken } from "../../middleware";
+import { getPercent, setAuthToken } from "../../middleware";
 import axios from "axios";
 
 const Home = (props) => {
@@ -57,7 +58,8 @@ const Home = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [contentLoading, setContentLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [lastVisiblePost, setLastVisiblePost] = useState(null);
+  const [currentPosts, setCurrentPosts] = useState([]);
   const [reachedEnd, setReachedEnd] = useState(false);
 
   const dispatch = useDispatch();
@@ -80,7 +82,6 @@ const Home = (props) => {
             routes: [{ name: res?.goTo }],
           });
         }
-        setContentLoading(false);
       })
       .catch((e) => {
         if (e === 404) {
@@ -91,50 +92,51 @@ const Home = (props) => {
           return;
         }
         dispatch(logout());
-        setContentLoading(false);
       });
   }, []);
 
-  const loadPosts = async () => {
-    // const res = await getRecommendedPosts();
-    // if (res?.status == 200) {
-    //   console.log("Posts",res?.data?.length)
-    //   dispatch(setPosts(res?.data));
-    // }
-    if (loadingMore || reachedEnd) return;
-    setLoadingMore(true);
+  const loadPosts = async (refresh) => {
     try {
-      const res = await getHomePosts(currentPage);
-      if (res?.length < 10) {
-        setReachedEnd(true); // No more posts to load
+      // const res = await getRecommendedPosts(num);
+      // if (res?.status == 200) {
+      //   console.log("Posts", res);
+      //   dispatch(setPosts(res?.data));
+      // }
+      const res = await getPaginatedHomePosts(lastVisiblePost);
+      const { newposts, lastVisiblePost: newLastVisiblePost } = res;
+      setLastVisiblePost(newLastVisiblePost);
+      // dispatch(setPosts(updatedPosts));
+      if (refresh) {
+        setCurrentPosts(newposts);
+      } else {
+        setCurrentPosts((prev) => {
+          return [...prev, ...newposts];
+        });
       }
-      dispatch(setPosts(res));
+
       setContentLoading(false);
       setRefreshing(false);
     } catch (e) {
       console.log(e);
       setContentLoading(false);
-    } finally {
-      setLoadingMore(false);
     }
   };
 
   useEffect(() => {
     loadPosts();
-  }, [currentPage]);
+  }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setCurrentPage(1);
+    loadPosts(true);
   }, []);
 
-  const onEndReached = useCallback(() => {
-    if (!loadingMore && !reachedEnd) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
-  }, [loadingMore, reachedEnd]);
+  const onLoadMore = () => {
+    loadPosts();
+    console.log("loadingMmore");
+  };
 
-  const memoizedPosts = useMemo(() => posts?.data, [posts]);
+  const memoizedPosts = useMemo(() => currentPosts, [currentPosts]);
 
   const sortedPosts = useMemo(() => {
     // Sort posts by createdAt date
@@ -166,36 +168,37 @@ const Home = (props) => {
         />
       </View>
       <View style={styles.content}>
-        {contentLoading || refreshing ? (
-          [1, 2, 3].map((item, index) => {
-            return <Instagram key={index} style={{ alignSelf: "center" }} />;
-          })
-        ) : (
-          <FlatList
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            data={sortedPosts}
-            renderItem={({ item, index }) => {
-              return (
-                <PostCard
-                  divider
-                  desc_limit={1}
-                  data={item}
-                  key={index}
-                  onPostClashesPress={() =>
-                    props?.navigation?.navigate("ClashDetails", { ...item })
-                  }
-                  onReportPress={() => bottomFlagSheetRef?.current?.present()}
-                />
-              );
-            }}
-            keyExtractor={(item) => item?.id?.toString()}
-            ListFooterComponent={renderFooter}
-            onEndReached={onEndReached}
-            onEndReachedThreshold={0.5}
-          />
-        )}
+        <FlatList
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          data={memoizedPosts}
+          renderItem={({ item, index }) => {
+            return (
+              <PostCard
+                divider
+                desc_limit={1}
+                data={item}
+                key={index}
+                onPostClashesPress={() =>
+                  props?.navigation?.navigate("ClashDetails", { ...item })
+                }
+                onReportPress={() => bottomFlagSheetRef?.current?.present()}
+              />
+            );
+          }}
+          keyExtractor={(item) => item?.id?.toString()}
+          ListFooterComponent={renderFooter}
+          onEndReached={onLoadMore}
+          onEndReachedThreshold={0.6}
+          removeClippedSubviews
+          windowSize={10}
+          getItemLayout={(data, index) => ({
+            length: getPercent(15, height), // Replace ITEM_HEIGHT with the actual height of your items
+            offset: getPercent(15, height) * index,
+            index,
+          })}
+        />
       </View>
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
     </View>

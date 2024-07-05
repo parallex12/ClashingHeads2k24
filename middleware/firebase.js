@@ -15,6 +15,7 @@ import {
   query,
   runTransaction,
   setDoc,
+  startAfter,
   startAt,
   updateDoc,
   where,
@@ -68,12 +69,58 @@ export const getFBAccessToken = async () => {
     return null;
   }
 };
+// Function to get posts with pagination
+export const getPaginatedHomePosts = async (lastVisiblePost) => {
+  try {
+    const db = getFirestore();
+    // Define the collection
+    const postsCollection = collection(db, "Posts");
+    // Construct the initial query
+    let q = query(
+      postsCollection,
+      orderBy("createdAt", "desc"), // Order by the date field in descending order
+      limit(5) // Adjust limit as needed
+    );
+
+    // If there's a last visible post, use startAfter to paginate
+    if (lastVisiblePost) {
+      q = query(
+        postsCollection,
+        orderBy("createdAt", "desc"),
+        startAfter(lastVisiblePost),
+        limit(5)
+      );
+    }
+
+    // Fetch documents
+    const querySnapshot = await getDocs(q);
+
+    // Map the documents to the desired format
+    const newposts = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // Get the last visible document for pagination
+    const newLastVisiblePost =
+      querySnapshot.docs[querySnapshot.docs.length - 1];
+
+    return {
+      newposts,
+      lastVisiblePost: newLastVisiblePost, // Return the last visible document
+    };
+  } catch (error) {
+    console.error("Error getting documents: ", error);
+    throw error;
+  }
+};
+
 export const getHomePosts = async (currentPagePosition) => {
   return new Promise(async (resolve, reject) => {
     try {
       const db = getFirestore();
       const postsCollection = collection(db, "Posts");
-      const q = query(postsCollection, limit(15));
+      const q = query(postsCollection, limit(4 * currentPagePosition));
       const unsubscribe = onSnapshot(
         q,
         (snapshot) => {
@@ -542,16 +589,19 @@ export const update_post_reaction = async (postId, userId, reactionType) => {
   });
 };
 
-export const getRecommendedPosts = async () => {
+export const getRecommendedPosts = async (pageParam) => {
   return new Promise(async (resolve, reject) => {
     try {
       const idToken = await getFBAccessToken();
-      // console.log(idToken)
+      console.log(pageParam);
       // Make a GET request to your backend to fetch recommended posts
       await axios
         .get("posts", {
           headers: {
             Authorization: `Bearer ${idToken}`,
+          },
+          params: {
+            cursor: pageParam,
           },
         })
         .then(async (res) => {
@@ -562,12 +612,12 @@ export const getRecommendedPosts = async () => {
         })
         .catch((e) => {
           console.log("getRecommendedPosts", e);
-          reject(e)
+          reject(e);
         });
     } catch (error) {
       // Handle errors
       console.error("Error fetching recommended posts:", error.message);
-      reject(error)
+      reject(error);
     }
   });
 };

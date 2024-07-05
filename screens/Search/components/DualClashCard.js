@@ -54,7 +54,7 @@ const DualClashCard = (props) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [voteData, setVoteData] = useState(data?.votes);
-  const hasCurrentUserVoted = voteData[currentUser?.id];
+  const hasCurrentUserVoted =voteData && voteData[currentUser?.id];
   const [challenger, setChallenger] = useState(null);
   const [opponent, setOpponent] = useState(null);
   const [loading, setLoading] = useState(true);

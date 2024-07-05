@@ -10,7 +10,11 @@ import {
 } from "@env";
 // import { getAuth } from "firebase/auth";
 import { setAuthToken } from "../middleware";
-import { FIREBASE_EXPO_APP, REGISTRATIONFORM, SCREEN_LOADER } from "../state-management/types/types";
+import {
+  FIREBASE_EXPO_APP,
+  REGISTRATIONFORM,
+  SCREEN_LOADER,
+} from "../state-management/types/types";
 import store from "../state-management/store/store";
 
 export const EmojisArr = [
@@ -43,37 +47,36 @@ export const EmojisArr = [
 export const stickerArr = [
   {
     sticker_id: 1,
-    img: require('../assets/stickers/1.jpg'),
-    audio: require('../assets/stickers/1.mp3'),
+    img: require("../assets/stickers/1.jpg"),
+    audio: require("../assets/stickers/1.mp3"),
   },
   {
     sticker_id: 2,
-    img: require('../assets/stickers/2.jpg'),
-    audio: require('../assets/stickers/2.mp3'),
+    img: require("../assets/stickers/2.jpg"),
+    audio: require("../assets/stickers/2.mp3"),
   },
   {
     sticker_id: 3,
-    img: require('../assets/stickers/3.jpg'),
-    audio: require('../assets/stickers/3.mp3'),
+    img: require("../assets/stickers/3.jpg"),
+    audio: require("../assets/stickers/3.mp3"),
   },
 
   {
     sticker_id: 4,
-    img: require('../assets/stickers/5.jpg'),
-    audio: require('../assets/stickers/5.mp3'),
+    img: require("../assets/stickers/5.jpg"),
+    audio: require("../assets/stickers/5.mp3"),
   },
   {
     sticker_id: 5,
-    img: require('../assets/stickers/6.jpg'),
-    audio: require('../assets/stickers/6.mp3'),
+    img: require("../assets/stickers/6.jpg"),
+    audio: require("../assets/stickers/6.mp3"),
   },
   {
     sticker_id: 6,
-    img: require('../assets/stickers/9.jpg'),
-    audio: require('../assets/stickers/9.mp3'),
+    img: require("../assets/stickers/9.jpg"),
+    audio: require("../assets/stickers/9.mp3"),
   },
 ];
-
 
 // Function to format duration in "mm:ss" format
 export function formatDuration(durationString) {
@@ -263,14 +266,13 @@ export const firebaseConfig = {
 
 export const _setToken = () => {
   try {
-    const auth = null
+    const auth = null;
     const user = auth.currentUser;
     setAuthToken(user?.accessToken);
   } catch (e) {
     console.log(e.message);
   }
 };
-
 
 export const validateRequiredFields = (details, requiredFields) => {
   for (const field of requiredFields) {
@@ -307,11 +309,11 @@ export function getTimeElapsed(createdAt) {
 }
 
 export function sortPostsByCreatedAt(posts) {
-  if (posts == undefined || typeof(posts)!="object") return []
+  if (posts == undefined || typeof posts != "object") return [];
   // Preprocess posts to ensure createdAt is parsed correctly
-  const processedPosts = posts?.map(post => ({
+  const processedPosts = posts?.map((post) => ({
     ...post,
-    createdAt: post?.createdAt ||post?.publishedAt
+    createdAt: post?.createdAt || post?.publishedAt,
   }));
 
   // Sort the processed posts array
@@ -332,29 +334,29 @@ export const handleReaction = async ({
   setLikes,
   dislikes,
   setDislikes,
-  updateReaction
+  updateReaction,
 }) => {
   const previousReaction = userReaction[userId] || {};
 
   // Optimistic UI update
   if (newReaction === previousReaction) {
     // User clicked the same reaction, remove it
-    if (newReaction === 'like') {
+    if (newReaction === "like") {
       setLikes(likes - 1);
-    } else if (newReaction === 'dislike') {
+    } else if (newReaction === "dislike") {
       setDislikes(dislikes - 1);
     }
     setUserReaction(null);
   } else {
     // User clicked a different reaction
-    if (newReaction === 'like') {
+    if (newReaction === "like") {
       setLikes(likes + 1);
-      if (previousReaction === 'dislike') {
+      if (previousReaction === "dislike") {
         setDislikes(dislikes - 1);
       }
-    } else if (newReaction === 'dislike') {
+    } else if (newReaction === "dislike") {
       setDislikes(dislikes + 1);
-      if (previousReaction === 'like') {
+      if (previousReaction === "like") {
         setLikes(likes - 1);
       }
     }
@@ -362,48 +364,51 @@ export const handleReaction = async ({
   }
 
   try {
-    await updateReaction(postId, userId, newReaction === previousReaction ? null : newReaction);
+    await updateReaction(
+      postId,
+      userId,
+      newReaction === previousReaction ? null : newReaction
+    );
   } catch (e) {
     // Revert UI update on failure
     if (newReaction === previousReaction) {
-      if (newReaction === 'like') {
+      if (newReaction === "like") {
         setLikes(likes + 1);
-      } else if (newReaction === 'dislike') {
+      } else if (newReaction === "dislike") {
         setDislikes(dislikes + 1);
       }
     } else {
-      if (newReaction === 'like') {
+      if (newReaction === "like") {
         setLikes(likes - 1);
-        if (previousReaction === 'dislike') {
+        if (previousReaction === "dislike") {
           setDislikes(dislikes + 1);
         }
-      } else if (newReaction === 'dislike') {
+      } else if (newReaction === "dislike") {
         setDislikes(dislikes - 1);
-        if (previousReaction === 'like') {
+        if (previousReaction === "like") {
           setLikes(likes + 1);
         }
       }
     }
     setUserReaction(previousReaction);
-    console.log('Failed to update reaction: ', e);
+    console.log("Failed to update reaction: ", e);
   }
 };
 
-
 export const setLoading = (state) => {
-  store.dispatch({ type: SCREEN_LOADER, payload: state })
-}
+  store.dispatch({ type: SCREEN_LOADER, payload: state });
+};
 
 export const setForm = (form) => {
-  store.dispatch({ type: REGISTRATIONFORM, payload: form })
-}
+  store.dispatch({ type: REGISTRATIONFORM, payload: form });
+};
 
 export const setFirebaseExpoApp = (app) => {
-  store.dispatch({ type: FIREBASE_EXPO_APP, payload: app })
-}
+  store.dispatch({ type: FIREBASE_EXPO_APP, payload: app });
+};
 
 // src/utils/timestamp.js
-import { Timestamp } from '@firebase/firestore';
+import { Timestamp } from "@firebase/firestore";
 
 // Utility function to serialize a Timestamp object
 export const serializeTimestamp = (timestamp) => ({
@@ -438,7 +443,8 @@ export const calculateVotes = (votes, challengerId, opponentId) => {
 
     // Increment vote count for each candidate
     if (selectedCandidateId) {
-      voteCounts[selectedCandidateId] = (voteCounts[selectedCandidateId] || 0) + 1;
+      voteCounts[selectedCandidateId] =
+        (voteCounts[selectedCandidateId] || 0) + 1;
     }
   }
 
@@ -467,4 +473,3 @@ export const calculateVotes = (votes, challengerId, opponentId) => {
     voteCounts,
   };
 };
-

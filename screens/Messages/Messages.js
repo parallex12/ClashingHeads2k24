@@ -23,8 +23,7 @@ const Messages = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [messages, setMessages] = useState(new Array(10).fill(""));
-
+  
   const PlusIconButton = () => {
     return (
       <TouchableOpacity style={styles.plusIconButton}>
@@ -32,6 +31,7 @@ const Messages = (props) => {
       </TouchableOpacity>
     );
   };
+  
 
   return (
     <View style={styles.container}>
@@ -55,14 +55,12 @@ const Messages = (props) => {
             <TouchableOpacity style={styles.groupsBtn}>
               <Text style={font(12, "#000000", "Medium")}>Groups</Text>
               <View style={styles.groupsBtnNumberWrapper}>
-                <Text style={font(10, "#fff", "Medium")}>30</Text>
+                <Text style={font(10, "#fff", "Medium")}>0</Text>
               </View>
             </TouchableOpacity>
           </View>
           <View style={styles.messagesWrapper}>
-            {messages?.map((item, index) => {
-              return <MessageCard key={index} />;
-            })}
+            <MessageCard />
           </View>
         </View>
       </ScrollView>
