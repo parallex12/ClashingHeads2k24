@@ -41,6 +41,7 @@ const WaveAudioPlayer = (props) => {
       unloadAudio();
     };
   }, [localSource, source]);
+
   const loadAudio = async () => {
     try {
       setIsBuffering(true); // Start buffering
@@ -80,7 +81,8 @@ const WaveAudioPlayer = (props) => {
         setIsPlaying(true);
       }
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      console.log(soundRef)
     }
   };
 
@@ -165,7 +167,6 @@ const WaveAudioPlayer = (props) => {
   const unloadAudio = async () => {
     if (soundRef.current) {
       await soundRef.current.unloadAsync();
-      soundRef.current = null;
     }
   };
 

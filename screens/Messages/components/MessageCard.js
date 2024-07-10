@@ -7,13 +7,35 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
-import { getPercent } from "../../../middleware";
+import { formatTime, getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
+import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState } from "react";
+import { fetchInstantUserById } from "../../../state-management/features/searchedUsers/searchedUsersSlice";
+import { useSelector } from "react-redux";
+import { selectAuthUser } from "../../../state-management/features/auth";
+import { Facebook, Instagram } from "react-content-loader/native";
 
 const MessageCard = (props) => {
-  let { data } = props;
+  let { data, onPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  const navigation = useNavigation();
+  const [singleUser, setSingleUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const currentUser = useSelector(selectAuthUser);
+  const currentUserId = currentUser?.id;
+  let userId = data?.participants?.filter((e) => e != currentUserId)[0];
+
+  useEffect(() => {
+    (async () => {
+      if (!data) return;
+      let author_data = await fetchInstantUserById(userId);
+      setSingleUser(author_data);
+      setLoading(false);
+    })();
+  }, [data]);
+
 
   const Profile = ({ source }) => {
     return (
@@ -30,21 +52,35 @@ const MessageCard = (props) => {
     );
   };
 
+  const onCardPress = () => {
+    navigation.navigate("ChatScreen", { userId: userId });
+  };
+
+  if (loading) {
+    return <Facebook />;
+  }
+
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.6}>
+    <TouchableOpacity
+      style={styles.container}
+      activeOpacity={0.6}
+      onPress={onCardPress}
+    >
       <Profile
         source={{
-          uri: "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
+          uri:
+            singleUser?.profile_photo ||
+            "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
         }}
       />
       <View style={styles.infoWrapper}>
-        <Text style={styles.titleName}>Corey Press</Text>
-        <Text style={styles.slugText}>This is demo message text</Text>
+        <Text style={styles.titleName}>{singleUser.realName}</Text>
+        <Text style={styles.slugText}>{data?.lastMessage?.text}</Text>
       </View>
       <View style={styles.rightActions}>
-        <Text style={styles.timeText}>12:00 PM</Text>
+        <Text style={styles.timeText}>{formatTime(data?.lastMessage?.createdAt)}</Text>
         <View style={styles.counterWrapper}>
-          <Text style={styles.counterText} >50</Text>
+          <Text style={styles.counterText}>50</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -102,8 +138,8 @@ const _styles = ({ width, height }) =>
       backgroundColor: "#DB2727",
       borderRadius: 100,
       padding: 4,
-      alignItems:'center',
-      justifyContent:'center'
+      alignItems: "center",
+      justifyContent: "center",
     },
     counterText: font(10, "#FFFFFF", "Medium"),
   });

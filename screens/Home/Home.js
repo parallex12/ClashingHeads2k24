@@ -21,10 +21,6 @@ import { firebaseConfig, sortPostsByCreatedAt } from "../../utils";
 import { getFirestore } from "firebase/firestore";
 import { connect, useDispatch, useSelector } from "react-redux";
 import auth from "@react-native-firebase/auth";
-import {
-  startLoading,
-  stopLoading,
-} from "../../state-management/features/screen_loader/loaderSlice";
 import firebase from "firebase/compat/app";
 import { selectAuthUser } from "../../state-management/features/auth";
 import {
@@ -40,12 +36,6 @@ import {
   setUserDetails,
 } from "../../state-management/features/auth/authSlice";
 import { selectPosts } from "../../state-management/features/posts";
-import { setPosts } from "../../state-management/features/posts/postSlice";
-import EmptyBox from "../../globalComponents/EmptyBox";
-import ContentLoader, {
-  Facebook,
-  Instagram,
-} from "react-content-loader/native";
 import { getPercent, setAuthToken } from "../../middleware";
 import axios from "axios";
 

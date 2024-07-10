@@ -19,9 +19,9 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 export default function App() {
   // axios.defaults.baseURL = "http://62.135.167.72.host.secureserver.net:6500/ch_content/";
-  axios.defaults.baseURL = "http://192.168.100.127:6500/ch_content/";
-  // axios.defaults.baseURL =
-  //   "https://qrpwdz45cf.us-east-1.awsapprunner.com/ch_content/";
+  // axios.defaults.baseURL = "http://192.168.100.127:6500/ch_content/";
+  axios.defaults.baseURL =
+    "https://qrpwdz45cf.us-east-1.awsapprunner.com/ch_content/";
   const [fontsLoaded] = useFonts(FontsConfig);
   const config = {
     name: "SECONDARY_APP",

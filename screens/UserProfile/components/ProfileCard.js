@@ -131,7 +131,7 @@ const ProfileCard = (props) => {
   };
 
   const onMessage = () => {
-    navigation.navigate("Messages");
+    navigation.navigate("ChatScreen", { userId: id });
   };
   const onFollowView = () => {
     navigation.navigate("Connections", { user });

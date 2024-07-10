@@ -15,7 +15,6 @@ export const FontsConfig = {
   BLP: require("../assets/fonts/BertramLETPlain.ttf"),
 };
 
-
 export const postprivacyoptions = [
   {
     label: "Public",
@@ -222,7 +221,7 @@ export const sideMenuOptions = [
     title: "Community Guidelines",
     route: "CommunityGuidelines",
     icon: require("../assets/icons/sideMenu/5.png"),
-  },  
+  },
   {
     title: "Terms & Conditions",
     route: "",
@@ -262,4 +261,17 @@ export const setAuthToken = (token) => {
   } else {
     delete axios.defaults.headers.common["Authorization"];
   }
+};
+export const generateChatId = (userId1, userId2) => {
+  return [userId1, userId2].sort().join("_");
+};
+
+export const formatTime = (timestamp) => {
+  const date = timestamp.toDate(); // Convert Firestore Timestamp to JavaScript Date object
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 || 12; // Convert hours to 12-hour format
+  const formattedMinutes = minutes < 10 ? '0' + minutes : minutes; // Add leading zero if minutes < 10
+  return `${formattedHours}:${formattedMinutes} ${ampm}`;
 };

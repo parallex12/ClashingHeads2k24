@@ -52,7 +52,7 @@ const UserProfile = (props) => {
             <View style={styles.ContentLoader}>
               <ContentLoader style={{ flex: 1 }} />
               {new Array(2).fill().map((item, index) => {
-                return <Instagram style={{ alignSelf: "center" }} />;
+                return <Instagram style={{ alignSelf: "center" }} key={index} />;
               })}
             </View>
           ) : (

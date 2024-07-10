@@ -19,6 +19,58 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//SenderMessagestylesstarts here
+export const SenderMessagestyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: "#DB2727",
+      maxWidth: "85%",
+      paddingHorizontal: getPercent(4, width),
+      paddingVertical: getPercent(1, height),
+      minHeight: getPercent(5, height),
+      borderRadius: 15,
+      alignItems: "center",
+      justifyContent: "center",
+      alignSelf: "flex-end",
+      marginVertical: getPercent(1, height),
+    },
+    text: {
+      fontSize: rf(13),
+      fontFamily: "Regular",
+      color: "#fff",
+    },
+  });
+
+//RecieverMessagestyles  starts here
+export const RecieverMessagestyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      maxWidth: "85%",
+      paddingHorizontal: getPercent(4, width),
+      paddingVertical: getPercent(1, height),
+      minHeight: getPercent(5, height),
+      backgroundColor: "#ffffff",
+      borderRadius: 15,
+      alignItems: "center",
+      justifyContent: "center",
+      alignSelf: "flex-start",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+      marginVertical: getPercent(1, height),
+    },
+    text: {
+      fontSize: rf(13),
+      fontFamily: "Regular",
+      color: "#222",
+    },
+  });
+
 //EmptyBoxStyles Styles starts here
 export const EmptyBoxStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -34,7 +86,50 @@ export const EmptyBoxStyles = ({ width, height }) =>
       fontSize: rf(15),
       fontFamily: "BLP",
       textAlign: "center",
-      color:'#6B7280'
+      color: "#6B7280",
+    },
+  });
+
+//TypingComponentstyles Styles starts here
+export const TypingComponentstyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: getPercent(2, width),
+      flexDirection: "row",
+      borderColor: "#E5E7EB",
+      borderTopWidth: 1,
+      paddingBottom: getPercent(3, height),
+      paddingTop: getPercent(2, height),
+      backgroundColor: "#fff",
+    },
+    actionWrapper: {
+      width: getPercent(4, height),
+      height: getPercent(4, height),
+      alignItems: "center",
+      justifyContent: "center",
+      marginHorizontal: 0,
+    },
+    inputWrapper: {
+      flex: 1,
+      height: getPercent(5, height),
+      overflow: "hidden",
+      paddingHorizontal: getPercent(2, width),
+      borderColor: "#E5E7EB",
+      backgroundColor: "#F6F7F8",
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 2,
+    },
+    input: {
+      fontSize: rf(11),
+      color: "#222",
+      fontFamily: "Regular",
+      width: "100%",
+      paddingVertical: 6,
     },
   });
 
@@ -646,6 +741,7 @@ export const StandardHeaderStyles = ({ width, height }) =>
       justifyContent: "space-between",
       paddingTop: StatusBar.currentHeight + getPercent(2.5, height),
       paddingHorizontal: getPercent(4, width),
+      zIndex: 99999,
     },
     col1: {
       flex: 0.5,

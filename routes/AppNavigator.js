@@ -65,6 +65,7 @@ import Shop from "../screens/Shop/Shop";
 import CalendarScreen from "../screens/Calendar/CalendarScreen";
 import BottomMenu from "../globalComponents/BottomMenu/BottomMenu";
 import { onScreenChange } from "../state-management/features/bottom_menu/bottom_menuSlice";
+import ChatScreen from "../screens/ChatScreen/ChatScreen";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -86,6 +87,7 @@ const HomeScreens = () => {
         <HomeStack.Group screenOptions={{ headerShown: false }}>
           <HomeStack.Screen name="Home" component={Home} />
           <Screen name="PersonalInfo" component={PersonalInfo} />
+          <Screen name="ChatScreen" component={ChatScreen} />
           <Screen name="AddBio" component={AddBio} />
           <Screen name="VoiceRecording" component={VoiceRecording} />
           <HomeStack.Screen name="ClashDetails" component={ClashDetails} />
