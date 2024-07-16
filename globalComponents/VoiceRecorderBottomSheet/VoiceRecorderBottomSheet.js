@@ -39,6 +39,8 @@ const VoiceRecorderBottomSheet = (props) => {
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [selectedSticker, setSelectedSticker] = useState(0);
   const [isReadyToClash, setIsReadyToClash] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
   // variables
   const snapPoints = useMemo(() => ["25%", "60%"], []);
@@ -49,6 +51,7 @@ const VoiceRecorderBottomSheet = (props) => {
   };
 
   const onPost = async () => {
+    setLoading(true)
     let clashDetails = {
       id: generateUniqueId(),
       clashType: currentVoiceMode,
@@ -70,6 +73,7 @@ const VoiceRecorderBottomSheet = (props) => {
       setRecordingDuration(0);
       setSelectedSticker(0)
       bottomVoiceSheetRef.current.close();
+      setLoading(false)
     }else{
       alert("Record voice.")
     }
@@ -147,6 +151,8 @@ const VoiceRecorderBottomSheet = (props) => {
             </View>
             <StandardButton
               title="Post"
+            loading={loading}
+
               customStyles={{ width: "50%", marginVertical: 20 }}
               onPress={onPost}
             />

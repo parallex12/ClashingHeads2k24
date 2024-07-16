@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { memo, useEffect, useState } from "react";
 import { Blurhash } from "react-native-blurhash";
 import { download } from "react-native-compressor";
+import CacheImage from "../../CacheImage";
 
 const Content = memo((props) => {
   let {
@@ -26,6 +27,7 @@ const Content = memo((props) => {
     sticker,
     recording,
     post_image_hash,
+    loadedData
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
@@ -46,10 +48,7 @@ const Content = memo((props) => {
   const PostImage = ({ source, onPress }) => {
     const [imageLoad, setImageLoad] = useState(true);
     return (
-      <TouchableOpacity
-        style={styles.postImageWrapper}
-        activeOpacity={0.9}
-      >
+      <TouchableOpacity style={styles.postImageWrapper} activeOpacity={0.9}>
         {imageLoad && post_image_hash && (
           <Blurhash
             blurhash={post_image_hash}
@@ -61,12 +60,21 @@ const Content = memo((props) => {
             }}
           />
         )}
-        <Image
-          source={source}
-          resizeMode="cover"
-          style={{ width: "100%", height: "100%" }}
-          onLoad={() => setImageLoad(false)}
-        />
+        {source?.uri ? (
+          <CacheImage
+            source={source}
+            resizeMode="cover"
+            style={{ width: "100%", height: "100%" }}
+            onLoad={() => setImageLoad(false)}
+          />
+        ) : (
+          <Image
+            source={source}
+            resizeMode="cover"
+            style={{ width: "100%", height: "100%" }}
+            onLoad={() => setImageLoad(false)}
+          />
+        )}
       </TouchableOpacity>
     );
   };
@@ -77,7 +85,10 @@ const Content = memo((props) => {
       {post_image && <PostImage source={{ uri: post_image }} />}
       {sticker && <PostImage source={sticker?.img} />}
       {recording && (
-        <WaveAudioPlayer afterAudioPlayed={onAudioPlay} source={downloadedAudio} />
+        <WaveAudioPlayer
+          afterAudioPlayed={onAudioPlay}
+          source={downloadedAudio}
+        />
       )}
       {sticker && (
         <WaveAudioPlayer

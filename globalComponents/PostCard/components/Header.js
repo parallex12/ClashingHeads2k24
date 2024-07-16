@@ -22,6 +22,7 @@ import ContentLoader, {
   Facebook,
   Instagram,
 } from "react-content-loader/native";
+import CacheImage from "../../CacheImage";
 
 const Header = (props) => {
   let { author, createdAt, profileStyles } = props;
@@ -50,7 +51,7 @@ const Header = (props) => {
               }}
             />
           )}
-          <Image
+          <CacheImage
             source={source}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}

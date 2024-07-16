@@ -72,15 +72,18 @@ const ChallengeClash = (props) => {
   const bottomFlagSheetRef = useRef(null);
   let clashId = prevData?.id;
   const [clashTo, setClashTo] = useState("post");
-  const { challengeClash, subClashes, loading, error } = useSelector(
-    selectChallengeClash,
-    shallowEqual
-  );
+  const { challengeClash, subClashes, loading, error } =
+    useSelector(selectChallengeClash);
   const user_id = auth().currentUser?.uid;
   const createdAtDate = useMemo(
     () => new Date(challengeClash?.createdAt).toDateString(),
     [challengeClash?.createdAt]
   );
+
+  useEffect(() => {
+    if (!error) return;
+    console.log(error);
+  }, [error]);
 
   useEffect(() => {
     dispatch(fetchChallengeClashAndSubClashes(clashId));
@@ -93,6 +96,10 @@ const ChallengeClash = (props) => {
 
   const onPostClash = async (clashDetails) => {
     dispatch(addSubClashToChallenge(clashId, clashDetails));
+    dispatch(
+      updateChallengeClash(clashId, { opinions: eval(subClashes?.length + 1) })
+    );
+
     if (clashTo != "post") {
       dispatch(
         updateSubClashDetails(clashId, clashTo?.id, {
@@ -110,7 +117,7 @@ const ChallengeClash = (props) => {
         title="Clash"
         searchIcon={false}
       />
-      {loading ? (
+      {!prevData ? (
         <Instagram style={{ alignSelf: "center" }} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -119,11 +126,11 @@ const ChallengeClash = (props) => {
               request_type={
                 challengeClash?.opponentId == user_id ? "Recieved" : "Sent"
               }
-              data={challengeClash}
+              data={prevData}
               onPress={null}
               showVoting
               postDateAndViews
-              totalClashes={subClashes?.length} // Use subClashes length from Redux state
+              subClashes={subClashes} // Use subClashes length from Redux state
               onClashesPress={() => bottomVoiceSheetRef.current?.present()}
               onReportPress={() => bottomFlagSheetRef?.current?.present()}
               views={Object.keys(challengeClash?.views || {})?.length}

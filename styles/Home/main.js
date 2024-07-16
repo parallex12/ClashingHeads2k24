@@ -12,7 +12,6 @@ export const styles = ({ width, height }) =>
     content: {
       flex: 1,
       paddingTop: getPercent(1, height),
-      paddingBottom: getPercent(12, height),
     },
     header2Wrapper: {
       paddingHorizontal: getPercent(3, width),

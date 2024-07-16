@@ -22,7 +22,7 @@ import auth from "@react-native-firebase/auth";
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 
 const ClashDetails = (props) => {
-  let { } = props;
+  let {} = props;
   const dispatch = useDispatch();
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
@@ -44,8 +44,6 @@ const ClashDetails = (props) => {
     }
   }, [dispatch, postId]);
 
-
-
   const onPostClash = async (clashDetails) => {
     dispatch(addClashToPost(postId, clashDetails));
     if (clashTo != "post") {
@@ -56,8 +54,6 @@ const ClashDetails = (props) => {
       );
     }
   };
-
-
 
   return (
     <View style={styles.container}>
@@ -70,6 +66,7 @@ const ClashDetails = (props) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <PostCard
+            loadedData={prevData}
             postDateAndViews
             data={post} // Render post data from Redux state
             postClashes={subClashes?.length} // Use subClashes length from Redux state

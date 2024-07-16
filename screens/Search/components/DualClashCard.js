@@ -39,7 +39,7 @@ const DualClashCard = (props) => {
     onAcceptRequest,
     onCancelRequest,
     onPress,
-    totalClashes,
+    subClashes,
     onClashesPress,
     onReportPress,
     views,

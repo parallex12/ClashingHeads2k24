@@ -54,6 +54,7 @@
       "react-native-compressor",
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
+      "@config-plugins/react-native-webrtc",
       [
         "expo-build-properties",
         {

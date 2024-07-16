@@ -105,6 +105,7 @@ export const fetchChallengeClashAndSubClashes =
       };
     } catch (error) {
       dispatch(setError(error.message));
+      dispatch(setLoading(false));
     } finally {
       dispatch(setLoading(false));
     }

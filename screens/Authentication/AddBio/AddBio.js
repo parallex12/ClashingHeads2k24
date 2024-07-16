@@ -33,10 +33,6 @@ import {
 } from "../../../state-management/features/auth";
 import auth from "@react-native-firebase/auth";
 import {
-  startLoading,
-  stopLoading,
-} from "../../../state-management/features/screen_loader/loaderSlice";
-import {
   setUserDetails,
   setUserForm,
 } from "../../../state-management/features/auth/authSlice";
@@ -48,6 +44,7 @@ const AddBio = (props) => {
   const user_profile_details = useSelector(selectAuthUser);
   const [form, setForm] = useState(user_profile_details);
   const [errorField, setErrorField] = useState({});
+  const [loading, setLoading] = useState(false);
   const user = auth().currentUser;
   const dispatch = useDispatch();
 
@@ -59,7 +56,7 @@ const AddBio = (props) => {
         employment: form?.employment || null,
       };
 
-      dispatch(startLoading());
+      setLoading(true)
       update_user_details(user?.uid, updateDetails)
         .then((res) => {
           dispatch(setUserForm({}));
@@ -67,10 +64,10 @@ const AddBio = (props) => {
           if (res?.code == 200) {
             props?.navigation?.navigate("MyProfile");
           }
-          dispatch(stopLoading());
+          setLoading(false)
         })
         .catch((e) => {
-          dispatch(stopLoading());
+          setLoading(false)
           console.log(e.message);
           alert("Something went wrong try again!");
         });
@@ -131,6 +128,7 @@ const AddBio = (props) => {
           </View>
           <StandardButton
             title="Continue"
+            loading={loading}
             customStyles={{
               height: getPercent(7, height),
               marginVertical: getPercent(3, height),

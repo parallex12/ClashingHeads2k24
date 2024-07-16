@@ -12,7 +12,7 @@ import { styles as _styles } from "../../styles/Home/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import PostCard from "../../globalComponents/PostCard/PostCard";
-import { font } from "../../styles/Global/main";
+import { font, fontTest } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -144,7 +144,7 @@ const Home = (props) => {
       return null;
     }
   };
-
+  
   return (
     <View style={styles.container}>
       <StandardHeader searchIcon profile logo />

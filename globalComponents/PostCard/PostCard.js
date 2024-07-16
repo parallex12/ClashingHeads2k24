@@ -35,6 +35,7 @@ const PostCard = memo((props) => {
     postDateAndViews,
     onReportPress,
     views,
+    loadedData,
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = PostCardStyles({ width, height });
@@ -64,7 +65,7 @@ const PostCard = memo((props) => {
           console.log(res);
         });
     },
-    [data, user_details, dispatch]
+    [data, user_details]
   );
 
   if (loading) {
@@ -83,7 +84,11 @@ const PostCard = memo((props) => {
     >
       <View style={styles.content}>
         <Header author={singleUser || {}} createdAt={memoizedData?.createdAt} />
-        <Content {...memoizedData} desc_limit={desc_limit} />
+        <Content
+          loadedData={loadedData}
+          {...memoizedData}
+          desc_limit={desc_limit}
+        />
         <ActionMenu
           {...memoizedData}
           postClashes={postClashes}

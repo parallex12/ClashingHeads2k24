@@ -31,10 +31,6 @@ import {
   selectUserForm,
 } from "../../../state-management/features/auth";
 import auth from "@react-native-firebase/auth";
-import {
-  startLoading,
-  stopLoading,
-} from "../../../state-management/features/screen_loader/loaderSlice";
 import { setUserForm } from "../../../state-management/features/auth/authSlice";
 
 const PersonalInfo = (props) => {

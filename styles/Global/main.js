@@ -957,13 +957,14 @@ export const loaderStyles = ({ width, height }) =>
       top: getPercent(20, height),
     },
   });
-export const font = (s, c, fm, mv, lh, extras) => {
-  return {
+
+//global fonts Styles starts here
+export const font = (s, c, fm, mv, lh, extras) =>
+  StyleSheet.create({
     fontSize: RFValue(s) - 1,
     color: c,
     fontFamily: fm,
     marginVertical: mv,
     lineHeight: lh == 0 ? null : lh,
     ...extras,
-  };
-};
+  });

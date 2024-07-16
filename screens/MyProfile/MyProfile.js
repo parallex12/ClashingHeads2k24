@@ -78,20 +78,7 @@ const MyProfile = (props) => {
                 currentProfile={currentProfile}
                 setCurrentProfile={setCurrentProfile}
               />
-              {posts?.map((item, index) => {
-                if (index > 10) return;
-                return (
-                  <PostCard
-                    divider
-                    data={item}
-                    key={index}
-                    onReportPress={() => bottomFlagSheetRef?.current?.present()}
-                    onPostClashesPress={() =>
-                      props?.navigation?.navigate("ClashDetails", { ...item })
-                    }
-                  />
-                );
-              })}
+
               {allRequests?.map((item, index) => {
                 if (index > 10) return;
                 return (
@@ -112,6 +99,20 @@ const MyProfile = (props) => {
                     }
                     onClashesPress={() =>
                       props?.navigation?.navigate("ChallengeClash", { ...item })
+                    }
+                  />
+                );
+              })}
+              {posts?.map((item, index) => {
+                if (index > 10) return;
+                return (
+                  <PostCard
+                    divider
+                    data={item}
+                    key={index}
+                    onReportPress={() => bottomFlagSheetRef?.current?.present()}
+                    onPostClashesPress={() =>
+                      props?.navigation?.navigate("ClashDetails", { ...item })
                     }
                   />
                 );

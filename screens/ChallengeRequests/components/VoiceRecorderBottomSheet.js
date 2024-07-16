@@ -25,10 +25,6 @@ import Stickers from "./Stickers";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { uploadMedia } from "../../../middleware/firebase";
 import { updateChallengeRequestForUser } from "../../../state-management/features/challengeRequests/challengeRequestsSlice";
-import {
-  startLoading,
-  stopLoading,
-} from "../../../state-management/features/screen_loader/loaderSlice";
 import { useNavigation } from "@react-navigation/native";
 
 const VoiceRecorderBottomSheet = (props) => {
@@ -39,6 +35,7 @@ const VoiceRecorderBottomSheet = (props) => {
   const [currentVoiceMode, setCurrentVoiceMode] = useState("mic");
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [selectedSticker, setSelectedSticker] = useState(0);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   // variables
   const snapPoints = useMemo(() => ["25%", "60%"], []);
@@ -50,7 +47,7 @@ const VoiceRecorderBottomSheet = (props) => {
   };
 
   const onPost = async () => {
-    dispatch(startLoading());
+    setLoading(true);
     if (recordedVoice) {
       await uploadMedia(recordedVoice?.getURI(), "challengeClashesAudios")
         .then(async (res) => {
@@ -67,15 +64,15 @@ const VoiceRecorderBottomSheet = (props) => {
           bottomVoiceSheetRef.current.close();
           navigation.navigate("Clashes");
           alert("Congrats! Challenge has been started.");
-          dispatch(stopLoading());
+          setLoading(false);
         })
         .catch((e) => {
           console.log(e);
-          dispatch(stopLoading());
+          setLoading(false);
         });
-    }else{
-        alert("Recording is required")
-        dispatch(stopLoading());
+    } else {
+      alert("Recording is required");
+      setLoading(false);
     }
   };
 
@@ -150,6 +147,7 @@ const VoiceRecorderBottomSheet = (props) => {
               ) : null}
             </View>
             <StandardButton
+              loading={loading}
               title="Post & Accept Challenge"
               customStyles={{ width: "60%", marginVertical: 20 }}
               onPress={onPost}
