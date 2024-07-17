@@ -36,6 +36,7 @@ const PostCard = memo((props) => {
     onReportPress,
     views,
     loadedData,
+    
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = PostCardStyles({ width, height });

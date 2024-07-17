@@ -25,19 +25,25 @@ export const SenderMessagestyles = ({ width, height }) =>
     container: {
       backgroundColor: "#DB2727",
       maxWidth: "85%",
-      paddingHorizontal: getPercent(4, width),
+      paddingHorizontal: getPercent(2, width),
       paddingVertical: getPercent(1, height),
       minHeight: getPercent(5, height),
-      borderRadius: 15,
-      alignItems: "center",
+      borderRadius: 10,
       justifyContent: "center",
       alignSelf: "flex-end",
-      marginVertical: getPercent(1, height),
+      marginVertical: getPercent(0.5, height),
     },
     text: {
       fontSize: rf(13),
       fontFamily: "Regular",
       color: "#fff",
+    },
+    time: {
+      fontSize: rf(9),
+      fontFamily: "Medium",
+      color: "#222",
+      textAlign:'right',
+      marginBottom: getPercent(0.5, height),
     },
   });
 

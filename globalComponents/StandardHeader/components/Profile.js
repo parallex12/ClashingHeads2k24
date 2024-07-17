@@ -13,7 +13,7 @@ import { Blurhash } from "react-native-blurhash";
 import { useState } from "react";
 
 const Profile = (props) => {
-  let { source, profile_hash } = props;
+  let { source, menu, profile_hash, customStyles } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
@@ -31,7 +31,7 @@ const Profile = (props) => {
 
   return (
     <TouchableOpacity style={styles.container} onPress={onMenu}>
-      <View style={styles.profileWrapper}>
+      <View style={[styles.profileWrapper,customStyles]}>
         {imageLoad && profile_hash && (
           <Blurhash
             blurhash={profile_hash}
@@ -50,9 +50,11 @@ const Profile = (props) => {
           onLoad={() => setImageLoad(false)}
         />
       </View>
-      <View style={styles.menu}>
-        <Entypo name="menu" size={getPercent(1.8, height)} color="#DB2727" />
-      </View>
+      {menu && (
+        <View style={styles.menu}>
+          <Entypo name="menu" size={getPercent(1.8, height)} color="#DB2727" />
+        </View>
+      )}
     </TouchableOpacity>
   );
 };

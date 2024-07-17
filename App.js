@@ -16,7 +16,7 @@ import axios from "axios";
 import { QueryClient, QueryClientProvider } from "react-query";
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
-
+import "./utils/firebaseInitialize"
 export default function App() {
   // axios.defaults.baseURL = "http://62.135.167.72.host.secureserver.net:6500/ch_content/";
   // axios.defaults.baseURL = "http://192.168.100.127:6500/ch_content/";
@@ -29,10 +29,11 @@ export default function App() {
   const queryClient = new QueryClient();
 
   useEffect(() => {
-    if (firebase?.apps?.length > 0) return;
-    (async () => {
-      await firebase.initializeApp(firebaseConfig, config);
-    })();
+    if (firebase.apps.length === 0) {
+      (async () => {
+        await firebase.initializeApp(firebaseConfig, config);
+      })();
+    }
   }, []);
 
   if (!fontsLoaded) {

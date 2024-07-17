@@ -20,19 +20,17 @@ import { selectAuthUser } from "../../../state-management/features/auth";
 
 const ActionMenu = (props) => {
   let {
-    clashes_count,
     onReaction,
     postClashes,
     onPostClashesPress,
     onReportPress,
     dislikes,
     likes,
-    reactions
+    reactions,
+    clashes
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const navigation = useNavigation();
-  const bottomFlagSheetRef = useRef(null);
   const user_details = useSelector(selectAuthUser)
   const [activeReaction, setActiveReaction] = useState({})
 
@@ -110,7 +108,8 @@ const ActionMenu = (props) => {
   return (
     <View style={styles.container}>
       {actions.map((item, index) => {
-        let post_clashes_count = item?.title == "Clashes" && postClashes ? postClashes : null;
+        let clashes_temp=postClashes || clashes
+        let post_clashes_count = item?.title == "Clashes" && clashes_temp ? clashes_temp : null;
         return (
           <FooterItem
             index={index}

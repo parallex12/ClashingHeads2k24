@@ -37,7 +37,7 @@ const ProfileCard = (props) => {
     id,
     profile_hash,
   } = user;
-
+console.log(clashHash)
   const [isPlaying, setIsPlaying] = useState(false);
   const sound = useRef(new Audio.Sound());
   const dispatch = useDispatch();
@@ -205,7 +205,7 @@ const ProfileCard = (props) => {
         <View style={styles.usernameWrapper}>
           <Text style={font(16, "#111827", "Medium", 2)}>
             <Text style={font(16, "#", "Semibold", 2)}>#{clashHash} </Text>
-            {realName}
+            {realName || ""}
           </Text>
           <Image
             source={require("../../../assets/icons/mStarIcon.png")}

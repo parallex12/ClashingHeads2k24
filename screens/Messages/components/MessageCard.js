@@ -36,7 +36,6 @@ const MessageCard = (props) => {
     })();
   }, [data]);
 
-
   const Profile = ({ source }) => {
     return (
       <View style={styles.container}>
@@ -47,13 +46,16 @@ const MessageCard = (props) => {
             style={{ width: "100%", height: "100%" }}
           />
         </TouchableOpacity>
-        <View style={styles.online}></View>
+        {singleUser?.status == "online" && <View style={styles.online}></View>}
       </View>
     );
   };
 
   const onCardPress = () => {
-    navigation.navigate("ChatScreen", { userId: userId });
+    navigation.navigate("ChatScreen", {
+      userId: userId,
+      otherUserData: singleUser,
+    });
   };
 
   if (loading) {
@@ -78,7 +80,9 @@ const MessageCard = (props) => {
         <Text style={styles.slugText}>{data?.lastMessage?.text}</Text>
       </View>
       <View style={styles.rightActions}>
-        <Text style={styles.timeText}>{formatTime(data?.lastMessage?.createdAt)}</Text>
+        <Text style={styles.timeText}>
+          {formatTime(data?.lastMessage?.createdAt)}
+        </Text>
         <View style={styles.counterWrapper}>
           <Text style={styles.counterText}>50</Text>
         </View>

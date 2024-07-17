@@ -21,6 +21,7 @@ import {
   stopLoading,
 } from "../../../state-management/features/screen_loader/loaderSlice";
 import { selectAuthUser } from "../../../state-management/features/auth";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
 
 const CommunityGuidelines = (props) => {
   let { route } = props;
@@ -30,23 +31,33 @@ const CommunityGuidelines = (props) => {
   const [loading, setLoading] = useState(false);
   const user_profile_details = useSelector(selectAuthUser) || {};
 
-  const onContinue = () => {
+  const onContinue = async () => {
     setLoading(true);
-    addUser(user?.uid, {
-      tos: true,
-      createdAt: new Date().toISOString(),
-      phone: user?.phoneNumber,
-    })
-      .then((res) => {
-        setLoading(false);
-        if (!user_profile_details?.hasPersonalInfo) {
-          props?.navigation?.navigate("PersonalInfo");
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-        setLoading(false);
+    const db = getFirestore();
+    const usersRef = collection(db, "Users");
+
+    try {
+      const usersSnapshot = await getDocs(usersRef);
+      const userCount = usersSnapshot.size;
+      const clashHash = `#${userCount + 1}`;
+
+      await addUser(user?.uid, {
+        tos: true,
+        createdAt: new Date().toISOString(),
+        phone: user?.phoneNumber,
+        clashHash: user_profile_details?.clashHash || clashHash,
       });
+
+      setLoading(false);
+      if (!user_profile_details?.hasPersonalInfo) {
+        props?.navigation?.navigate("PersonalInfo");
+      } else {
+        props?.navigation?.navigate("Home");
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   };
 
   return (

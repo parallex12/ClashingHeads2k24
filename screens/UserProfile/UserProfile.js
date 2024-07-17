@@ -48,7 +48,7 @@ const UserProfile = (props) => {
       />
       <ScrollView>
         <View style={styles.content}>
-          {loading || !relatedUser ? (
+          {loading ? (
             <View style={styles.ContentLoader}>
               <ContentLoader style={{ flex: 1 }} />
               {new Array(2).fill().map((item, index) => {

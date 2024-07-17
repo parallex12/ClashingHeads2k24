@@ -13,14 +13,15 @@ import { useCallback, useEffect, useState } from "react";
 import { selectSearchedUsers } from "../../../state-management/features/searchedUsers";
 import _ from "lodash"; // Import lodash
 import { selectAuthUser } from "../../../state-management/features/auth";
+import { useNavigation } from "@react-navigation/native";
 
 const PeopleResult = (props) => {
-  let { onCardPress, searchQuery, isSelected } = props;
+  let { searchQuery, isSelected } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const { users, loading } = useSelector(selectSearchedUsers);
   const user_details = useSelector(selectAuthUser);
-
+  const navigation=useNavigation()
   const [showUsers, setShowUsers] = useState(false);
   const debouncedSearch = useCallback(
     _.debounce((query) => {
@@ -36,17 +37,24 @@ const PeopleResult = (props) => {
     }
   }, [searchQuery, debouncedSearch]);
 
+  const onCardPress = (item) => {
+    if (item?.id == user_details?.id) {
+      navigation?.navigate("MyProfile");
+    } else {
+      navigation?.navigate("UserProfile", {
+        user: item,
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
       {users
-        ?.filter((e) => e?.id != user_details?.id)
         .map((item, index) => {
           return (
             <UserCard
               onCardPress={() => onCardPress(item)}
               author={item}
-              isSelected={isSelected == item?.id}
-              selectable
               key={index}
             />
           );

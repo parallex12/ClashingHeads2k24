@@ -267,11 +267,12 @@ export const generateChatId = (userId1, userId2) => {
 };
 
 export const formatTime = (timestamp) => {
-  const date = timestamp.toDate(); // Convert Firestore Timestamp to JavaScript Date object
+  if (!timestamp) return "sending...";
+  const date = timestamp?.toDate(); // Convert Firestore Timestamp to JavaScript Date object
   const hours = date.getHours();
   const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const ampm = hours >= 12 ? "PM" : "AM";
   const formattedHours = hours % 12 || 12; // Convert hours to 12-hour format
-  const formattedMinutes = minutes < 10 ? '0' + minutes : minutes; // Add leading zero if minutes < 10
+  const formattedMinutes = minutes < 10 ? "0" + minutes : minutes; // Add leading zero if minutes < 10
   return `${formattedHours}:${formattedMinutes} ${ampm}`;
 };

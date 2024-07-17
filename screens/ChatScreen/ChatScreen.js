@@ -8,7 +8,6 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { styles as _styles } from "../../styles/ChatScreen/main";
-import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import { generateChatId, getPercent } from "../../middleware";
 import TypingComponent from "./components/TypingComponent";
 import SenderMessage from "./components/SenderMessage";
@@ -30,12 +29,15 @@ import {
 import { getAuth } from "firebase/auth";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
+import StandardHeader2 from "../../globalComponents/StandardHeader2/StandardHeader2";
+import Header from "./components/Header";
 
 const ChatScreen = (props) => {
   const currentUser = useSelector(selectAuthUser);
   const currentUserId = currentUser?.id;
   const route = useRoute();
   const userId = route.params?.userId;
+  const otherUserData = route.params?.otherUserData;
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
   const [messages, setMessages] = useState([]);
@@ -103,9 +105,9 @@ const ChatScreen = (props) => {
 
   return (
     <View style={styles.container}>
-      <StandardHeader
+      <Header
         backButton
-        title={currentUser?.realName}
+        data={otherUserData}
         containerStyles={{ height: getPercent(15, height) }}
         rightIcon={null}
       />

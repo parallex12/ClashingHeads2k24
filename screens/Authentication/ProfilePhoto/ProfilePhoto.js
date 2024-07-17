@@ -126,12 +126,15 @@ const ProfilePhoto = (props) => {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 1,
+        quality: 0.2,
       });
-
       if (!result.canceled) {
         let uri = result.assets[0].uri;
-        setProfile(uri);
+        const compressResult = await ImageCompress.compress(uri, {
+          compressionMethod: "manual",
+          quality: 0.1,
+        });
+        setProfile(compressResult);
       }
     } catch (error) {
       console.error("Error opening camera:", error);

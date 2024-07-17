@@ -14,17 +14,16 @@ import {
   orderBy,
   query,
   runTransaction,
+  serverTimestamp,
   setDoc,
   startAfter,
   startAt,
   updateDoc,
   where,
 } from "firebase/firestore";
-import {
-  firebaseQuerySort,
-  sortPostsByCreatedAt,
-  validateRequiredFields,
-} from "../utils";
+import "firebase/compat/database";
+
+import { validateRequiredFields } from "../utils";
 import { useRecoilState } from "recoil";
 import { home_posts, user_auth } from "../state-management/atoms/atoms";
 import {
@@ -73,16 +72,10 @@ export const getFBAccessToken = async () => {
 export const getPaginatedHomePosts = async (lastVisiblePost) => {
   try {
     const db = getFirestore();
-    // Define the collection
     const postsCollection = collection(db, "Posts");
-    // Construct the initial query
-    let q = query(
-      postsCollection,
-      orderBy("createdAt", "desc"), // Order by the date field in descending order
-      limit(5) // Adjust limit as needed
-    );
 
-    // If there's a last visible post, use startAfter to paginate
+    let q = query(postsCollection, orderBy("createdAt", "desc"), limit(5));
+
     if (lastVisiblePost) {
       q = query(
         postsCollection,
@@ -92,22 +85,19 @@ export const getPaginatedHomePosts = async (lastVisiblePost) => {
       );
     }
 
-    // Fetch documents
     const querySnapshot = await getDocs(q);
 
-    // Map the documents to the desired format
     const newposts = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    // Get the last visible document for pagination
     const newLastVisiblePost =
       querySnapshot.docs[querySnapshot.docs.length - 1];
 
     return {
       newposts,
-      lastVisiblePost: newLastVisiblePost, // Return the last visible document
+      _lastVisiblePost: newLastVisiblePost,
     };
   } catch (error) {
     console.error("Error getting documents: ", error);
@@ -151,8 +141,16 @@ export const isUserProfileConnected = async (userID) => {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        let { hasPersonalInfo, hasVoiceAdded, hasProfilePhoto } =
+        let { hasPersonalInfo, hasVoiceAdded, hasProfilePhoto, tos } =
           docSnap?.data();
+        if (!tos) {
+          resolve({
+            code: 200,
+            user: docSnap.data(),
+            goTo: "CommunityGuidelines",
+          });
+          return;
+        }
         if (!hasPersonalInfo) {
           resolve({ code: 200, user: docSnap.data(), goTo: "PersonalInfo" });
           return;
@@ -301,17 +299,31 @@ export const validate_clash_details = async (details) => {
 };
 
 export const addUser = async (userId, userDetails) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const db = getFirestore();
     const userRef = doc(db, "Users", userId);
-    setDoc(userRef, userDetails)
-      .then(() => {
-        resolve("User userDetails successfully");
-      })
-      .catch((error) => {
-        console.log("Error adding new user:", error);
-        reject(error);
-      });
+
+    try {
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        // Update existing user
+        await updateDoc(userRef, {
+          ...userDetails,
+          status: "online", // Set status to 'online' when adding/updating
+          lastOnline: new Date().toISOString(),
+        });
+      } else {
+        // Add new user
+        await setDoc(userRef, {
+          ...userDetails,
+          status: "online", // Set status to 'online' for new users
+          lastOnline: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.log("Error adding/updating user:", error);
+      reject(error);
+    }
   });
 };
 

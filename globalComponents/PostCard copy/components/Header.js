@@ -32,7 +32,7 @@ const Header = (props) => {
             style={{ width: "100%", height: "100%" }}
           />
         </TouchableOpacity>
-        <View style={styles.online}></View>
+        {author?.status &&<View style={styles.online}></View>}
       </View>
     );
   };

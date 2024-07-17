@@ -9,8 +9,9 @@ import { challengeClashReducer } from "./features/challengeClash";
 import { allChallengeClashesReducer } from "./features/allChallengeClashes";
 import { challengeRequestReducer } from "./features/challengeRequests";
 import { RESET } from "./types/types";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { bottom_menuReducer } from "./features/bottom_menu";
+import presenceReducer from "./features/auth/presenceSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -21,8 +22,9 @@ const rootReducer = combineReducers({
   searched_users: searchedUserReducer,
   challengeClash: challengeClashReducer,
   challengeClashes: allChallengeClashesReducer,
-  challengeRequests:challengeRequestReducer,
-  bottom_menu:bottom_menuReducer,
+  challengeRequests: challengeRequestReducer,
+  bottom_menu: bottom_menuReducer,
+  presence: presenceReducer,
 });
 
 export default rootReducer;

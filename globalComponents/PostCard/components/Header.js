@@ -33,7 +33,6 @@ const Header = (props) => {
   const navigation = useNavigation();
   const user_details = useSelector(selectAuthUser);
   let user_author = author;
-
   const Profile = ({ source, profileStyles }) => {
     const [imageLoad, setImageLoad] = useState(true);
 
@@ -58,7 +57,7 @@ const Header = (props) => {
             onLoad={() => setImageLoad(false)}
           />
         </View>
-        <View style={styles.online}></View>
+        {author?.status=="online" &&<View style={styles.online}></View>}
       </View>
     );
   };

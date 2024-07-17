@@ -37,7 +37,8 @@ import {
 } from "../../state-management/features/auth/authSlice";
 import { selectPosts } from "../../state-management/features/posts";
 import { getPercent, setAuthToken } from "../../middleware";
-import axios from "axios";
+import "../../utils/firebaseInitialize";
+import { useUserStatus } from "../../middleware/Hooks/useUserStatus";
 
 const Home = (props) => {
   let {} = props;
@@ -51,17 +52,13 @@ const Home = (props) => {
   const [lastVisiblePost, setLastVisiblePost] = useState(null);
   const [currentPosts, setCurrentPosts] = useState([]);
   const [reachedEnd, setReachedEnd] = useState(false);
-
   const dispatch = useDispatch();
   const user_details = useSelector(selectAuthUser);
   const user = auth().currentUser;
+  const userStatus = useUserStatus(user_details?.id);
 
   useEffect(() => {
     setContentLoading(true);
-    if (firebase.apps.length === 0) {
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-    }
     dispatch(fetchCurrentUserDetails(auth().currentUser?.uid));
     isUserProfileConnected(auth().currentUser?.uid)
       .then((res) => {
@@ -74,6 +71,7 @@ const Home = (props) => {
         }
       })
       .catch((e) => {
+        console.log(e);
         if (e === 404) {
           props.navigation.reset({
             index: 0,
@@ -85,53 +83,46 @@ const Home = (props) => {
       });
   }, []);
 
-  const loadPosts = async (refresh) => {
+  const loadPosts = async (lastPost, type) => {
     try {
-      // const res = await getRecommendedPosts(num);
-      // if (res?.status == 200) {
-      //   console.log("Posts", res);
-      //   dispatch(setPosts(res?.data));
-      // }
-      const res = await getPaginatedHomePosts(lastVisiblePost);
-      const { newposts, lastVisiblePost: newLastVisiblePost } = res;
-      setLastVisiblePost(newLastVisiblePost);
-      // dispatch(setPosts(updatedPosts));
-      if (refresh) {
+      const { newposts, _lastVisiblePost } = await getPaginatedHomePosts(
+        lastPost
+      );
+
+      if (type == "refresh") {
         setCurrentPosts(newposts);
       } else {
         setCurrentPosts((prev) => {
           return [...prev, ...newposts];
         });
       }
-
-      setContentLoading(false);
+      setLastVisiblePost(_lastVisiblePost);
       setRefreshing(false);
     } catch (e) {
       console.log(e);
-      setContentLoading(false);
     }
   };
 
   useEffect(() => {
-    loadPosts();
+    loadPosts(null, "refresh");
   }, []);
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    loadPosts(true);
-  }, []);
-
-  const onLoadMore = () => {
-    loadPosts();
-    console.log("loadingMmore");
-  };
 
   const memoizedPosts = useMemo(() => currentPosts, [currentPosts]);
 
-  const sortedPosts = useMemo(() => {
-    // Sort posts by createdAt date
-    return sortPostsByCreatedAt(memoizedPosts);
-  }, [memoizedPosts]);
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadPosts(lastVisiblePost, "refresh");
+  };
+
+  const onLoadMore = () => {
+    loadPosts(lastVisiblePost, "loadMore");
+    console.log("loadingMmore");
+  };
+
+  // const sortedPosts = useMemo(() => {
+  //   // Sort posts by createdAt date
+  //   return sortPostsByCreatedAt(memoizedPosts);
+  // }, [memoizedPosts]);
 
   const renderFooter = () => {
     if (loadingMore && !reachedEnd) {
@@ -144,7 +135,7 @@ const Home = (props) => {
       return null;
     }
   };
-  
+
   return (
     <View style={styles.container}>
       <StandardHeader searchIcon profile logo />
@@ -169,6 +160,7 @@ const Home = (props) => {
                 divider
                 desc_limit={1}
                 data={item}
+                postClashes={item?.clashes}
                 key={index}
                 onPostClashesPress={() =>
                   props?.navigation?.navigate("ClashDetails", { ...item })
