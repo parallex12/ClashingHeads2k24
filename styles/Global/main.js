@@ -42,7 +42,7 @@ export const SenderMessagestyles = ({ width, height }) =>
       fontSize: rf(9),
       fontFamily: "Medium",
       color: "#222",
-      textAlign:'right',
+      textAlign: "right",
       marginBottom: getPercent(0.5, height),
     },
   });
@@ -519,8 +519,50 @@ export const FlagReportBottomSheetStyles = ({ width, height }) =>
       paddingVertical: 15,
     },
   });
+
 //VoiceRecorderBottomSheet  Styles starts here
 export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    contentContainer: {
+      flex: 1,
+      paddingHorizontal: getPercent(5, width),
+      alignItems: "center",
+      justifyContent: "flex-start",
+    },
+    timerWrapper: {
+      width: "100%",
+      height: getPercent(5, height),
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    timerText: font(16, "#222", "Regular"),
+    changeModeBtn: {
+      width: getPercent(11, width),
+      height: getPercent(11, width),
+      borderRadius: 100,
+      backgroundColor: "rgba(0,0,0,0.1)",
+      alignSelf: "flex-end",
+      position: "absolute",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    micWrapper: {
+      width: "100%",
+      height: getPercent(30, width),
+      borderRadius: 10,
+      overflow: "hidden",
+    },
+    quickAudioWrapper: {
+      width: "100%",
+      minHeight: getPercent(5, width),
+    },
+  });
+
+//UpdatedVoiceRecorderBottomSheetStyles  Styles starts here
+export const UpdatedVoiceRecorderBottomSheetStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       flex: 1,

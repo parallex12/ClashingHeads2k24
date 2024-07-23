@@ -20,6 +20,7 @@ import {
 } from "../../state-management/features/singlePost/singlePostSlice";
 import auth from "@react-native-firebase/auth";
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
+import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 
 const ClashDetails = (props) => {
   let {} = props;
@@ -94,7 +95,7 @@ const ClashDetails = (props) => {
         </View>
       </ScrollView>
 
-      <VoiceRecorderBottomSheet
+      <UpdatedVoiceRecorderBottomSheet
         clashTo={clashTo}
         postId={postId}
         bottomVoiceSheetRef={bottomVoiceSheetRef}
