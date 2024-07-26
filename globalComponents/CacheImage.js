@@ -19,7 +19,6 @@ const CacheImage = (props) => {
         // Ensure the cache directory exists
         const dirInfo = await FileSystem.getInfoAsync(cacheDir);
         if (!dirInfo.exists) {
-
           await FileSystem.makeDirectoryAsync(cacheDir, {
             intermediates: true,
           });
@@ -28,10 +27,8 @@ const CacheImage = (props) => {
         // Check if the image is already cached
         const fileInfo = await FileSystem.getInfoAsync(imagePath);
         if (fileInfo.exists) {
-
           setImageUri(imagePath);
         } else {
-
           // Download the image to cache directory
           const { uri: localUri } = await FileSystem.downloadAsync(
             uri,
@@ -40,7 +37,7 @@ const CacheImage = (props) => {
           setImageUri(localUri);
         }
       } catch (error) {
-        console.error("Error fetching image:", error);
+        console.log("Error fetching image:", error, source);
         setImageUri(uri); // Fallback to original URI if caching fails
       }
     };
@@ -48,7 +45,13 @@ const CacheImage = (props) => {
     fetchImage();
   }, [uri]);
 
-  return <Image source={{ uri: imageUri }} style={style} {...props} />;
+  return (
+    <Image
+      source={{ uri: imageUri }}
+      style={style}
+      {...props}
+    />
+  );
 };
 
 export default CacheImage;

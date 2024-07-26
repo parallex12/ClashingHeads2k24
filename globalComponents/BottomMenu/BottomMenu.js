@@ -20,10 +20,12 @@ import { useEffect, useState } from "react";
 import {
   activeMenuItem,
   currentActiveScreen,
+  isBottomSheetOpen,
   isSideMenuOpen,
 } from "../../state-management/features/bottom_menu";
 import { onMenuPress } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 import { useDrawerStatus } from "@react-navigation/drawer";
+import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 let navArr = [
   {
@@ -44,6 +46,7 @@ let navArr = [
     activeIcon: require("../../assets/BottomMenuIcons/newsActive.png"),
     route: "News",
   },
+  
   {
     title: "Chat",
     icon: require("../../assets/BottomMenuIcons/chat.png"),
@@ -65,8 +68,10 @@ const BottomMenu = (props) => {
   const activeMenu = useSelector(activeMenuItem);
   const _isSideMenuOpen = useSelector(isSideMenuOpen);
   const _currentActiveScreen = useSelector(currentActiveScreen);
+  const _isBottomSheetOpen=useSelector(isBottomSheetOpen)
   const dispatch = useDispatch();
   let navigation = useNavigation();
+
   const allowedScreens = [
     "Home",
     "Clashes",
@@ -75,10 +80,10 @@ const BottomMenu = (props) => {
     "News",
     "Messages",
     "MyProfile",
-    "Connections"
+    "Connections",
+    "CalendarScreen"
   ];
   const currentRouteName = _currentActiveScreen;
-  console.log(currentRouteName);
   const onPressItem = (item) => {
     if (item?.route == "menu") {
       navigation.dispatch(DrawerActions.openDrawer());
@@ -124,7 +129,7 @@ const BottomMenu = (props) => {
     );
   };
 
-  if (_isSideMenuOpen == "open" || !allowedScreens?.includes(currentRouteName))
+  if (_isSideMenuOpen == "open" || !allowedScreens?.includes(currentRouteName) || _isBottomSheetOpen===1)
     return null;
 
   return (

@@ -30,7 +30,7 @@ export const ClashesResultStyles = ({ width, height }) =>
       marginTop: 15,
     },
     clashesCardCont: {
-      width: "100%",
+      width: "95%",
       minHeight: getPercent(15, height),
       borderRadius: 12,
       borderWidth: 1,
@@ -40,6 +40,7 @@ export const ClashesResultStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
+      alignSelf:'center'
     },
     clashesCardTitle: font(16, "#1F2937", "Medium", 5),
     clashesCardUsersCont: {

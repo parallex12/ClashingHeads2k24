@@ -57,7 +57,7 @@ const UserProfile = (props) => {
             </View>
           ) : (
             <>
-              <ProfileCard postsCount={posts?.length} user={relatedUser} />
+              <ProfileCard postsCount={posts?.length} user={relatedUser || user} />
 
               {posts?.map((item, index) => {
                 if (index > 10) return;
@@ -79,7 +79,7 @@ const UserProfile = (props) => {
                 return (
                   <DualClashCard
                     onCancelRequest={() => null}
-                    request_type={"Senst"}
+                    request_type={"Sent"}
                     key={index}
                     data={item}
                     onPress={() =>

@@ -81,9 +81,9 @@ const SideMenu = (props) => {
     <View style={styles.listWrapper}>
       <DrawerContentScrollView
         contentContainerStyle={{
-          height: "95%",
           justifyContent: "space-between",
         }}
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.profileView}>
           <View style={styles.profile}>
@@ -115,11 +115,11 @@ const SideMenu = (props) => {
         </View>
         <View style={styles.listContainer}>
           {sideMenuOptions?.map((item, index) => {
-            if (index == 12) return;
+            // if (index == 12) return;
             return <ListItem data={item} key={index} />;
           })}
         </View>
-        <ListItem data={sideMenuOptions[12]} />
+        {/* <ListItem data={sideMenuOptions[12]} /> */}
       </DrawerContentScrollView>
     </View>
   );

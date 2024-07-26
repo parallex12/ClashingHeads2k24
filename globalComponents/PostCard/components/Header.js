@@ -25,7 +25,7 @@ import ContentLoader, {
 import CacheImage from "../../CacheImage";
 
 const Header = (props) => {
-  let { author, createdAt, profileStyles } = props;
+  let { author, createdAt, profileStyles,onPostActions } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const dispatch = useDispatch();
@@ -57,7 +57,7 @@ const Header = (props) => {
             onLoad={() => setImageLoad(false)}
           />
         </View>
-        {author?.status=="online" &&<View style={styles.online}></View>}
+        {author?.status == "online" && <View style={styles.online}></View>}
       </View>
     );
   };
@@ -102,9 +102,11 @@ const Header = (props) => {
           </Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity>
-        <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />
-      </TouchableOpacity>
+      <View style={styles.settingsIconWrapper}>
+        <TouchableOpacity  style={styles.settingsIcon} onPress={onPostActions}>
+          <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -150,6 +152,13 @@ const _styles = ({ width, height }) =>
     },
     titleName: font(14, "#111827", "Medium", 2, null, { marginRight: 10 }),
     slugText: font(12, "#6B7280", "Regular"),
+    settingsIconWrapper: {
+      flex: 0.8,
+      alignItems: "flex-end",
+    },
+    settingsIcon:{
+      padding:5,
+    }
   });
 
 export default Header;

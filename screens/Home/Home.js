@@ -39,6 +39,7 @@ import { selectPosts } from "../../state-management/features/posts";
 import { getPercent, setAuthToken } from "../../middleware";
 import "../../utils/firebaseInitialize";
 import { useUserStatus } from "../../middleware/Hooks/useUserStatus";
+import PostActionsBottomSheet from "../../globalComponents/PostActionsBottomSheet/PostActionsBottomSheet";
 
 const Home = (props) => {
   let {} = props;
@@ -46,8 +47,10 @@ const Home = (props) => {
   let styles = _styles({ width, height });
   const posts = useSelector(selectPosts);
   const bottomFlagSheetRef = useRef(null);
+  const postActionsbottomSheetRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [postInteraction, setPostInteraction] = useState(null);
   const [contentLoading, setContentLoading] = useState(true);
   const [lastVisiblePost, setLastVisiblePost] = useState(null);
   const [currentPosts, setCurrentPosts] = useState([]);
@@ -73,10 +76,10 @@ const Home = (props) => {
       .catch((e) => {
         console.log(e);
         if (e === 404) {
-          props.navigation.reset({
-            index: 0,
-            routes: [{ name: "CommunityGuidelines" }],
-          });
+          // props.navigation.reset({
+          //   index: 0,
+          //   routes: [{ name: "CommunityGuidelines" }],
+          // });
           return;
         }
         dispatch(logout());
@@ -140,9 +143,9 @@ const Home = (props) => {
     <View style={styles.container}>
       <StandardHeader searchIcon profile logo />
       <View style={styles.header2Wrapper}>
-        <Text style={font(15, "#111827", "Semibold")}>Clashing Heads</Text>
+        <Text style={font(18, "#111827", "Semibold")}>Clashing Heads</Text>
         <StandardButton
-          title="Create New Post"
+          title="Reply Clash"
           customStyles={styles.header2WrapperBtn}
           textStyles={font(12, "#FFFFFF", "Semibold")}
           onPress={() => props?.navigation.navigate("NewPost")}
@@ -166,6 +169,10 @@ const Home = (props) => {
                   props?.navigation?.navigate("ClashDetails", { ...item })
                 }
                 onReportPress={() => bottomFlagSheetRef?.current?.present()}
+                onActionsPress={() => {
+                  setPostInteraction(item);
+                  postActionsbottomSheetRef?.current?.present();
+                }}
               />
             );
           }}
@@ -183,6 +190,10 @@ const Home = (props) => {
         />
       </View>
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
+      <PostActionsBottomSheet
+        data={postInteraction}
+        bottomSheetRef={postActionsbottomSheetRef}
+      />
     </View>
   );
 };

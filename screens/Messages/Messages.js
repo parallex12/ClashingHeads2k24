@@ -44,10 +44,13 @@ const Messages = (props) => {
 
       try {
         const db = getFirestore();
-        const chatsRef = collection(db, 'chats');
+        const chatsRef = collection(db, "chats");
 
         // Query chats where the participants array contains the current user's UID
-        const q = query(chatsRef, where('participants', 'array-contains', currentUserId));
+        const q = query(
+          chatsRef,
+          where("participants", "array-contains", currentUserId)
+        );
         const querySnapshot = await getDocs(q);
 
         const chatsData = [];
@@ -55,8 +58,12 @@ const Messages = (props) => {
           const chat = doc.data();
 
           // Fetch the last message in each chat
-          const messagesRef = collection(db, 'chats', doc.id, 'messages');
-          const messagesQuery = query(messagesRef, orderBy('createdAt', 'desc'), limit(1));
+          const messagesRef = collection(db, "chats", doc.id, "messages");
+          const messagesQuery = query(
+            messagesRef,
+            orderBy("createdAt", "desc"),
+            limit(1)
+          );
           const messagesSnapshot = await getDocs(messagesQuery);
 
           let lastMessage = null;
@@ -70,7 +77,7 @@ const Messages = (props) => {
 
         setChats(chatsData);
       } catch (error) {
-        console.error('Error fetching chats:', error);
+        console.error("Error fetching chats:", error);
       }
     };
 
@@ -78,8 +85,12 @@ const Messages = (props) => {
   }, [currentUser]);
 
   const PlusIconButton = () => {
+    const onPlusPress = () => {
+      props?.navigation.navigate("Connections", { user: currentUser });
+    };
+
     return (
-      <TouchableOpacity style={styles.plusIconButton}>
+      <TouchableOpacity style={styles.plusIconButton} onPress={onPlusPress}>
         <Entypo name="plus" size={20} color="#fff" />
       </TouchableOpacity>
     );
@@ -112,9 +123,13 @@ const Messages = (props) => {
             </TouchableOpacity>
           </View>
           <View style={styles.messagesWrapper}>
-            {chats?.map((item, index) => {
-              return <MessageCard data={item} key={index} />;
-            })}
+            {chats
+              ?.filter((e) => {
+                return e?.lastMessage && e;
+              })
+              ?.map((item, index) => {
+                return <MessageCard data={item} key={index} />;
+              })}
           </View>
         </View>
       </ScrollView>

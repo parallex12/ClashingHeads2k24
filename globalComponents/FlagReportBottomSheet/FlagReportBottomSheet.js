@@ -5,7 +5,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { FlagReportBottomSheetStyles, font } from "../../styles/Global/main";
 import {
   BottomSheetModal,
@@ -17,6 +17,7 @@ import StandardButton from "../StandardButton";
 import { useMemo, useState } from "react";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { getPercent } from "../../middleware";
+import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 
 const FlagReportBottomSheet = (props) => {
   let { bottomSheetRef } = props;
@@ -25,6 +26,7 @@ const FlagReportBottomSheet = (props) => {
   // variables
   const snapPoints = useMemo(() => ["25%", "82%"], []);
   const [selectedFlags, setSelectedFlags] = useState([]);
+  const dispatch=useDispatch()
 
   const CardHeader = () => {
     return (
@@ -69,6 +71,7 @@ const FlagReportBottomSheet = (props) => {
           snapPoints={snapPoints}
           backdropComponent={BackDrop}
           enableContentPanningGesture={false}
+          onChange={(e) => dispatch(onUpdateBottomSheet(e))}
         >
           <BottomSheetView style={styles.sheetContentContainer}>
             <CardHeader />

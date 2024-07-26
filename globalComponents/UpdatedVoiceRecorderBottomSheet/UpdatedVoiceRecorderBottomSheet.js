@@ -1,4 +1,5 @@
 import {
+  Animated,
   Text,
   TouchableOpacity,
   View,
@@ -10,6 +11,7 @@ import {
   BottomSheetModal,
   BottomSheetView,
   BottomSheetModalProvider,
+  useBottomSheet,
 } from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isVoiceModalOpen_Recoil } from "../../state-management/atoms/atoms";
@@ -25,38 +27,49 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Stickers from "./Stickers";
 import { getPercent } from "../../middleware";
 import { selectAuthUser } from "../../state-management/features/auth";
-import {
-  generateUniqueId,
-} from "../../state-management/features/singlePost/singlePostSlice";
+import { generateUniqueId } from "../../state-management/features/singlePost/singlePostSlice";
 import { uploadMedia } from "../../middleware/firebase";
+import RecordingPlayer from "../RecordingPlayer";
+import RoundRecordingComponent from "./RoundRecordingComponent";
+import RecordingButton from "../RecordingButton";
+import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
+import { isBottomSheetOpen } from "../../state-management/features/bottom_menu";
 
 const UpdatedVoiceRecorderBottomSheet = (props) => {
   let { bottomVoiceSheetRef, postId, clashTo, onPostClash } = props;
   let { width, height } = useWindowDimensions();
   let styles = UpdatedVoiceRecorderBottomSheetStyles({ width, height });
-  const [recordedVoice, setRecordedVoice] = useState(null);
   const [currentVoiceMode, setCurrentVoiceMode] = useState("mic");
-  const [recordingDuration, setRecordingDuration] = useState(0);
   const [selectedSticker, setSelectedSticker] = useState(0);
-  const [isReadyToClash, setIsReadyToClash] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [recording, setRecording] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const timerRef = useRef(null);
+  const [recordingLimitReached, setrecordingLimitReached] = useState(false);
 
   const dispatch = useDispatch();
   // variables
-  const snapPoints = useMemo(() => ["25%", "60%"], []);
-  let duration = formatDuration(recordingDuration);
+  const snapPoints = useMemo(() => ["25%", "55%"], []);
+  let duration = formatDuration(timer);
   let user_profile = useSelector(selectAuthUser);
+
   const onChangeMode = () => {
     setCurrentVoiceMode((prev) => (prev == "mic" ? "sticker" : "mic"));
   };
 
+  console.log(recording);
+
   const onPost = async () => {
-    setLoading(true)
+    setLoading(true);
     let clashDetails = {
       id: generateUniqueId(),
       clashType: currentVoiceMode,
       selectedSticker: selectedSticker,
-      recording: recordedVoice?.getURI() || null,
+      recording: recording || null,
       postId,
       likes: 0,
       reactions: {},
@@ -67,57 +80,105 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
       clashTo: clashTo,
       createdAt: new Date().toISOString(),
     };
-    if (clashDetails?.recording || (selectedSticker != undefined && currentVoiceMode=="sticker") ) {
-      onPostClash(clashDetails)
-      setRecordedVoice(null);
-      setRecordingDuration(0);
-      setSelectedSticker(0)
+    if (
+      clashDetails?.recording ||
+      (selectedSticker != undefined && currentVoiceMode == "sticker")
+    ) {
+      onPostClash(clashDetails);
       bottomVoiceSheetRef.current.close();
-      setLoading(false)
-    }else{
-      alert("Record voice.")
+      onReset()
+      setLoading(false);
+    } else {
+      alert("Record voice.");
     }
+  };
+
+  const startRecording = async () => {
+    try {
+      setIsRecording(true);
+      setTimer(0);
+      setProgress(0);
+      timerRef.current = setInterval(() => {
+        setTimer((prevTimer) => {
+          if (prevTimer >= 15) {
+            setrecordingLimitReached(true);
+            return prevTimer;
+          }
+          return prevTimer + 1;
+        });
+        setProgress((prevProgress) => {
+          if (prevProgress >= 100) return 100;
+          return prevProgress + 100 / 15;
+        });
+      }, 1000);
+    } catch (error) {
+      console.log("Error starting recording:", error);
+    }
+  };
+
+  const stopRecording = async () => {
+    try {
+      setIsRecording(false);
+      setIsRecordingCompleted(true);
+      clearInterval(timerRef.current);
+    } catch (error) {
+      console.log("Error stopping recording:", error);
+    }
+  };
+
+  const onReset = () => {
+    setTimer(0);
+    setProgress(0);
+    setRecording(false);
+    setIsAudioPlaying(false);
+    setIsRecording(false);
+    setIsRecordingCompleted(false);
+    clearInterval(timerRef.current);
+    setrecordingLimitReached(false);
   };
 
   return (
     <BottomSheetModalProvider>
       <View style={styles.container}>
         <BottomSheetModal
+          name="recordModal"
           ref={bottomVoiceSheetRef}
           index={1}
           snapPoints={snapPoints}
           backdropComponent={BackDrop}
+          onDismiss={() => onReset()}
+          onChange={(e) => dispatch(onUpdateBottomSheet(e))}
         >
           <BottomSheetView style={styles.contentContainer}>
-            <View style={styles.timerWrapper}>
-              <Text style={styles.timerText}>{duration || "00:00"}</Text>
+            <View style={styles.micWrapper}>
               <TouchableOpacity
                 style={styles.changeModeBtn}
                 onPress={onChangeMode}
               >
                 {currentVoiceMode == "sticker" ? (
-                  <FontAwesome name="microphone" size={24} color="#DB2727" />
+                  <FontAwesome name="microphone" size={24} color="#fff" />
                 ) : (
-                  <MaterialIcons
-                    name="emoji-emotions"
-                    size={24}
-                    color="#DB2727"
-                  />
+                  <MaterialIcons name="emoji-emotions" size={24} color="#fff" />
                 )}
               </TouchableOpacity>
-            </View>
-            <View style={styles.micWrapper}>
               {currentVoiceMode == "sticker" ? (
                 <Image
                   source={stickerArr[selectedSticker || 0].img}
-                  resizeMode="contain"
-                  style={{ width: "100%", height: "100%" }}
+                  resizeMode="cover"
+                  style={{ width: "100%", height: getPercent(20, height) }}
                 />
               ) : (
-                <Image
-                  source={require("../../assets/images/MicRec.png")}
-                  resizeMode="contain"
-                  style={{ width: "100%", height: "100%" }}
+                <RoundRecordingComponent
+                  progress={progress}
+                  setProgress={setProgress}
+                  isRecordingCompleted={isRecordingCompleted}
+                  setIsRecordingCompleted={setIsRecordingCompleted}
+                  isAudioPlaying={isAudioPlaying}
+                  setIsAudioPlaying={setIsAudioPlaying}
+                  timer={timer}
+                  setTimer={setTimer}
+                  recording={recording}
+                  setRecording={setRecording}
                 />
               )}
             </View>
@@ -127,35 +188,66 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
                   <Emojis onEmojiPress={(item) => console.log(item)} />
                 </>
               ) : (
-                <View style={{ paddingVertical: getPercent(2, height) }}>
+                <View style={{ paddingVertical: getPercent(1, height) }}>
                   <Stickers
                     selectedSticker={selectedSticker}
                     setSelectedSticker={setSelectedSticker}
                   />
                 </View>
               )}
-
-              {currentVoiceMode == "mic" ? (
-                recordedVoice ? (
-                  <WaveAudioPlayer
-                    audioResetBtn
-                    source={recordedVoice?.getURI()}
-                  />
-                ) : (
-                  <WaveAudioRecorder
-                    setRecordedVoice={setRecordedVoice}
-                    setRecordingDuration={setRecordingDuration}
-                  />
-                )
-              ) : null}
             </View>
-            <StandardButton
-              title="Post"
-            loading={loading}
 
-              customStyles={{ width: "50%", marginVertical: 20 }}
-              onPress={onPost}
-            />
+            {currentVoiceMode != "mic" && (
+              <StandardButton
+                title="Post"
+                loading={loading}
+                customStyles={{ width: "45%", marginVertical: 20 }}
+                onPress={onPost}
+              />
+            )}
+            {!isRecording && recording && (
+              <View style={styles.postBtnsWrapper}>
+                <StandardButton
+                  title="Post"
+                  loading={loading}
+                  customStyles={{ width: "45%", marginVertical: 20 }}
+                  onPress={onPost}
+                />
+                <StandardButton
+                  title="Reset"
+                  customStyles={{
+                    width: "45%",
+                    backgroundColor: "#E5E7EB",
+                    alignSelf: "center",
+                  }}
+                  textStyles={{
+                    color: "#222",
+                  }}
+                  onPress={onReset}
+                />
+              </View>
+            )}
+            {!isRecordingCompleted && currentVoiceMode == "mic" && (
+              <RecordingButton
+                recordingLimitReached={recordingLimitReached}
+                setRecording={setRecording}
+                recording={recording}
+                isRecording={isRecording}
+                isRecordingCompleted={isRecordingCompleted}
+                start={startRecording}
+                stop={stopRecording}
+                onConfirm={() => null}
+                title={isRecording ? "Stop Recording" : "Start Recording"}
+                customStyles={[
+                  styles.actionBtn,
+                  { borderColor: isRecording ? "#E5E7EB" : "#4B4EFC" },
+                ]}
+                textStyles={[
+                  styles.actionBtnText,
+                  { color: isRecording ? "#222" : "#4B4EFC" },
+                ]}
+              />
+            )}
           </BottomSheetView>
         </BottomSheetModal>
       </View>

@@ -44,7 +44,6 @@ const StandardHeader = (props) => {
       <View style={styles.col1}>
         {profile && (
           <Profile
-            menu
             source={user_profile?.profile_photo}
             profile_hash={user_profile?.profile_hash}
           />

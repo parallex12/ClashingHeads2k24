@@ -36,13 +36,14 @@ import {
   startLoading,
   stopLoading,
 } from "../../state-management/features/screen_loader/loaderSlice";
-import { serializeTimestamp } from "../../utils";
+import { serializeTimestamp, setForm } from "../../utils";
 import { setPosts } from "../../state-management/features/posts/postSlice";
 import { selectPosts } from "../../state-management/features/posts";
 import { Image as ImageCompress } from "react-native-compressor";
 import PrivacyBottomSheet from "./components/PrivacyBottomSheet";
 import { Blurhash } from "react-native-blurhash";
 import { Entypo } from "@expo/vector-icons";
+import { useRoute } from "@react-navigation/native";
 const AddPostDetails = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
@@ -54,6 +55,8 @@ const AddPostDetails = (props) => {
   const posts = useSelector(selectPosts);
   const privacybottomSheetRef = useRef(null);
   const dispatch = useDispatch();
+  const news_post = useRoute().params?.news_post;
+
   const [postForm, setPostForm] = useState({
     recording: props?.route?.params?.recording,
     post_image: null,
@@ -65,7 +68,26 @@ const AddPostDetails = (props) => {
     clashes: 0,
     privacy: null,
     post_image_hash: null,
+    postReference: "original",
   });
+
+  useEffect(() => {
+    if (news_post) {
+      setPostForm((prev) => {
+        return {
+          ...prev,
+          title: news_post?.title,
+          description: news_post?.description,
+          post_image: news_post?.urlToImage,
+          createdAt: new Date().toISOString(),
+          author: user_profile?.id,
+          newsAuthor: news_post?.author,
+          postReference: "news",
+          newsUrl: news_post?.url,
+        };
+      });
+    }
+  }, [news_post]);
 
   useEffect(() => {
     if (postForm?.post_image && !postForm?.post_image_hash) {
@@ -90,7 +112,7 @@ const AddPostDetails = (props) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [4, 5],
       quality: 0.2,
     });
 
@@ -174,6 +196,7 @@ const AddPostDetails = (props) => {
                   return { ...prev, title: val };
                 })
               }
+              value={postForm?.title}
             />
           </View>
           <View style={styles.postInputWrapper}>
@@ -187,6 +210,7 @@ const AddPostDetails = (props) => {
                   return { ...prev, description: val };
                 })
               }
+              value={postForm?.description}
             />
           </View>
           <View style={styles.mediaWrapper}>

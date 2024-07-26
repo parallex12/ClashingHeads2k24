@@ -19,6 +19,40 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//ImageViewerStyles starts here
+export const ImageViewerStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    postImageWrapper: {
+      width: "100%",
+      minHeight: getPercent(15, height),
+      maxHeight: getPercent(25, height),
+      borderRadius: 10,
+      overflow: "hidden",
+      position: "relative",
+      zIndex: 2,
+      marginBottom: getPercent(1, height),
+    },
+    fullScreenContainer: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.9)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    fullScreenBackground: {
+      width: '100%',
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    fullScreenImage: {
+      width: '100%',
+      height: '100%',
+    },
+  });
+
 //SenderMessagestylesstarts here
 export const SenderMessagestyles = ({ width, height }) =>
   StyleSheet.create({
@@ -203,7 +237,7 @@ export const NewsCardStyles = ({ width, height }) =>
       flex: 1,
       height: "100%",
       paddingVertical: 5,
-      paddingHorizontal: getPercent(3, width),
+      paddingHorizontal: getPercent(2, width),
     },
     cardFooterWrapper: {
       flexDirection: "row",
@@ -225,6 +259,16 @@ export const NewsCardStyles = ({ width, height }) =>
       overflow: "hidden",
       marginRight: 10,
     },
+    micWrapper:{
+      width: getPercent(9, width),
+      height: getPercent(9, width),
+      borderRadius: 100,
+      overflow: "hidden",
+      position:'absolute',
+      right:0,
+      alignItems:'center',
+      justifyContent:'center'
+    }
   });
 
 //SettingSwitchCard Styles  starts here
@@ -264,7 +308,6 @@ export const EmojisStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       width: "100%",
-      height: getPercent(5, height),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
@@ -281,6 +324,21 @@ export const EmojisStyles = ({ width, height }) =>
     },
   });
 
+//RoundRecordingComponentStyles   starts here
+export const RoundRecordingComponentStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: getPercent(1, height),
+    },
+    textWrapper: {
+      alignItems: "center",
+      justifyContent: "center",
+      marginVertical: 10,
+    },
+  });
 //StickersStyles   starts here
 export const StickersStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -520,6 +578,48 @@ export const FlagReportBottomSheetStyles = ({ width, height }) =>
     },
   });
 
+//PostActionsBottomSheetStyles   starts here
+export const PostActionsBottomSheetStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    card_header_wrapper: {
+      width: "100%",
+      paddingVertical: getPercent(1, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderColor: "#F3F4F6",
+      borderBottomWidth: 1,
+      paddingHorizontal: getPercent(3, width),
+    },
+    sheetContentContainer: {
+      flex: 1,
+    },
+    contentContainer: {
+      flex: 1,
+      paddingHorizontal: getPercent(3, width),
+      alignItems: "center",
+      justifyContent: "flex-start",
+      paddingBottom: getPercent(10, height),
+    },
+    categoriesWrapper: {
+      width: "100%",
+      flex: 1,
+    },
+    categoriesItemWrapper: {
+      width: "100%",
+      minHeight: getPercent(5, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-start",
+      borderBottomWidth: 1,
+      borderColor: "#F3F4F6",
+      paddingVertical: 15,
+    },
+  });
+
 //VoiceRecorderBottomSheet  Styles starts here
 export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -571,34 +671,60 @@ export const UpdatedVoiceRecorderBottomSheetStyles = ({ width, height }) =>
       flex: 1,
       paddingHorizontal: getPercent(5, width),
       alignItems: "center",
-      justifyContent: "flex-start",
+      paddingBottom: getPercent(5, height),
     },
     timerWrapper: {
       width: "100%",
       height: getPercent(5, height),
       alignItems: "center",
       justifyContent: "center",
+      zIndex: 9,
+      marginVertical: 5,
     },
     timerText: font(16, "#222", "Regular"),
     changeModeBtn: {
-      width: getPercent(11, width),
-      height: getPercent(11, width),
+      width: getPercent(10, width),
+      height: getPercent(10, width),
       borderRadius: 100,
-      backgroundColor: "rgba(0,0,0,0.1)",
+      backgroundColor: "#DB2727",
       alignSelf: "flex-end",
-      position: "absolute",
       alignItems: "center",
       justifyContent: "center",
+      position: "absolute",
+      right: 0,
+      top: 0,
+      zIndex: 999999999,
     },
     micWrapper: {
       width: "100%",
-      height: getPercent(30, width),
       borderRadius: 10,
+      zIndex: 8,
+      alignItems: "center",
+      justifyContent: "center",
       overflow: "hidden",
+      marginVertical: getPercent(1, height),
     },
     quickAudioWrapper: {
       width: "100%",
-      minHeight: getPercent(5, width),
+      marginVertical: getPercent(0, height),
+    },
+    actionBtn: {
+      width: getPercent(50, width),
+      height: getPercent(7, height),
+      marginVertical: getPercent(1, height),
+      alignSelf: "center",
+      backgroundColor: "transparent",
+      borderWidth: 1,
+      borderColor: "#4B4EFC",
+    },
+    actionBtnText: {
+      color: "#4B4EFC",
+    },
+    postBtnsWrapper: {
+      width: "100%",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
     },
   });
 
@@ -627,9 +753,11 @@ export const SideMenuStyles = ({ width, height }) =>
   StyleSheet.create({
     listWrapper: {
       flex: 1,
+      
     },
     listContainer: {
       flex: 1,
+      paddingBottom:getPercent(3,height)
     },
     footerWrapper: {},
     listItem: {

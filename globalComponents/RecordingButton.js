@@ -54,7 +54,6 @@ const RecordingButton = (props) => {
         playsInSilentModeIOS: true,
       });
 
-      console.log("Starting recording..");
       const { recording } = await Audio.Recording.createAsync(
         Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
@@ -67,7 +66,6 @@ const RecordingButton = (props) => {
   }
 
   async function stopRecording() {
-    console.log("Stopping recording..");
     await recording.stopAndUnloadAsync();
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,

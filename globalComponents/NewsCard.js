@@ -45,9 +45,13 @@ const NewsCard = (props) => {
   const handlePress = async () => {
     if (data.url) {
       await WebBrowser.openBrowserAsync(url, {
-        presentationStyle:'popover', // Use PAGE_SHEET presentation style
+        presentationStyle: "popover", // Use PAGE_SHEET presentation style
       });
     }
+  };
+
+  const onMicPress = () => {
+    navigation.navigate("NewPost", { news_post: data });
   };
 
   return (
@@ -63,8 +67,17 @@ const NewsCard = (props) => {
           />
         </View>
         <View style={styles.newsContentWrapper}>
-          <Text style={font(15, "#000000", "Semibold", 3)}>{title}</Text>
+          <Text style={font(15, "#000000", "Semibold", 3, 0, { width: "88%" })}>
+            {title}
+          </Text>
           <Text style={font(12.5, "#000000", "Regular", 3)}>{description}</Text>
+          <TouchableOpacity style={styles.micWrapper} onPress={onMicPress}>
+            <Image
+              source={require("../assets/images/mic_rec.png")}
+              resizeMode="contain"
+              style={{ width: "100%", height: "100%" }}
+            />
+          </TouchableOpacity>
         </View>
       </View>
       <CardFooter />

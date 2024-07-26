@@ -66,6 +66,7 @@ import CalendarScreen from "../screens/Calendar/CalendarScreen";
 import BottomMenu from "../globalComponents/BottomMenu/BottomMenu";
 import { onScreenChange } from "../state-management/features/bottom_menu/bottom_menuSlice";
 import ChatScreen from "../screens/ChatScreen/ChatScreen";
+import PostActionsBottomSheet from "../globalComponents/PostActionsBottomSheet/PostActionsBottomSheet";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();

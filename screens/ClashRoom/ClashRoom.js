@@ -93,7 +93,7 @@ const ClashRoom = (props) => {
       <StandardHeader
         containerStyles={{ height: getPercent(15, height) }}
         backButton
-        title="Room"
+        title="ClashRoom"
         searchIcon={false}
       />
       <ScrollView>

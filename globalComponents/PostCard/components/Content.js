@@ -15,6 +15,7 @@ import { memo, useEffect, useState } from "react";
 import { Blurhash } from "react-native-blurhash";
 import { download } from "react-native-compressor";
 import CacheImage from "../../CacheImage";
+import ImageViewer from "../../ImageViewer/ImageViewer";
 
 const Content = memo((props) => {
   let {
@@ -80,9 +81,10 @@ const Content = memo((props) => {
   };
 
   return (
-    <View style={styles.container} activeOpacity={1}>
+        <View style={styles.container} activeOpacity={1}>
       {title && <Text style={styles.title}>{title}</Text>}
-      {post_image && <PostImage source={{ uri: post_image }} />}
+      {post_image && <ImageViewer source={{ uri: post_image }} post_image_hash={post_image_hash} />}
+      {/* {post_image && <PostImage source={{ uri: post_image }} />} */}
       {sticker && <PostImage source={sticker?.img} />}
       {recording && (
         <WaveAudioPlayer

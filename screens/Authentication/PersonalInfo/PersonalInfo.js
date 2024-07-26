@@ -47,6 +47,24 @@ const PersonalInfo = (props) => {
   const onContinue = async () => {
     try {
       setLoading(true);
+      // Check if the user is under 18
+      const today = new Date();
+      const birthDate = new Date(form?.dateOfBirth);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDifference = today.getMonth() - birthDate.getMonth();
+
+      if (
+        monthDifference < 0 ||
+        (monthDifference === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        age--;
+      }
+
+      if (age < 18) {
+        alert("You must be at least 18 years old to sign up.");
+        setLoading(false);
+        return;
+      }
       validate_user_details(form, user_profile_details)
         .then((res) => {
           setErrorField(null);

@@ -21,6 +21,6 @@ export const styles = ({ width, height }) =>
       marginVertical: getPercent(1, height),
     },
     newsWrapper: {
-      paddingHorizontal: getPercent(5, width),
+      paddingHorizontal: getPercent(1, width),
     },
   });

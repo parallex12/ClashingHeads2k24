@@ -115,7 +115,7 @@ const CreateClash = (props) => {
       <StandardHeader
         containerStyles={{ height: getPercent(15, height) }}
         backButton
-        title="Challange Clash"
+        title="Challange"
         searchIcon={false}
       />
       <View style={styles.content}>

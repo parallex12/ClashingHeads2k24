@@ -163,9 +163,9 @@ const ProfileCard = (props) => {
         <View style={styles.usernameWrapper}>
           <Text style={font(16, "#111827", "Medium", 2)}>
             <Text style={font(16, "#DB2727", "Semibold", 2)}>
-              #{clashHash}{" "}
+              {clashHash}{" "}
             </Text>
-            {realName}
+            {realName || ""}
           </Text>
           <Image
             source={require("../../../assets/icons/mStarIcon.png")}

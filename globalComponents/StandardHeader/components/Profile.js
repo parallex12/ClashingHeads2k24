@@ -26,7 +26,8 @@ const Profile = (props) => {
   };
 
   const onMenu = () => {
-    navigation.dispatch(DrawerActions.openDrawer());
+    navigation.navigate("MyProfile")
+    // navigation.dispatch(DrawerActions.openDrawer());
   };
 
   return (

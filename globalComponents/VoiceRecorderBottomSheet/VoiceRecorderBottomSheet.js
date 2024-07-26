@@ -29,6 +29,7 @@ import {
   generateUniqueId,
 } from "../../state-management/features/singlePost/singlePostSlice";
 import { uploadMedia } from "../../middleware/firebase";
+import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 
 const VoiceRecorderBottomSheet = (props) => {
   let { bottomVoiceSheetRef, postId, clashTo, onPostClash } = props;
@@ -87,6 +88,8 @@ const VoiceRecorderBottomSheet = (props) => {
           index={1}
           snapPoints={snapPoints}
           backdropComponent={BackDrop}
+          onChange={(e) => dispatch(onUpdateBottomSheet(e))}
+
         >
           <BottomSheetView style={styles.contentContainer}>
             <View style={styles.timerWrapper}>

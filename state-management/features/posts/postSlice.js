@@ -9,9 +9,8 @@ const postSlice = createSlice({
     setPosts: (state, action) => {
       return { ...state, data: action.payload };
     },
-  
   },
 });
 
-export const { setPosts, } = postSlice.actions;
+export const { setPosts } = postSlice.actions;
 export default postSlice.reducer;

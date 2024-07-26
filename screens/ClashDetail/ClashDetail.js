@@ -28,6 +28,7 @@ const ClashDetails = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let prevData = props?.route?.params;
+  let openVoiceSheet = props?.route?.params?.openVoiceSheet;
   const bottomVoiceSheetRef = useRef(null);
   const bottomFlagSheetRef = useRef(null);
   let postId = prevData?.id;
@@ -42,6 +43,9 @@ const ClashDetails = (props) => {
     if (postId && post?.author && !postUserViews[user_id]) {
       postUserViews[user_id] = true;
       dispatch(updatePost(postId, { views: postUserViews }));
+    }
+    if (openVoiceSheet) {
+      bottomVoiceSheetRef.current.present();
     }
   }, [dispatch, postId]);
 

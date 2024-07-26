@@ -19,6 +19,7 @@ import { getPercent } from "../../middleware";
 import RecordingPlayer from "../../globalComponents/RecordingPlayer";
 import RecordingButton from "../../globalComponents/RecordingButton";
 import { Audio } from "react-native-compressor";
+import { useRoute } from "@react-navigation/native";
 
 const NewPost = (props) => {
   let {} = props;
@@ -33,6 +34,7 @@ const NewPost = (props) => {
   const [recording, setRecording] = useState(false);
   const timerRef = useRef(null);
   const [recordingLimitReached, setrecordingLimitReached] = useState(false);
+  const news_post = useRoute().params?.news_post;
 
   let iconImages = [
     require("../../assets/icons/recorderVectorRed.png"),
@@ -84,7 +86,10 @@ const NewPost = (props) => {
   const onNext = async () => {
     const result = await Audio.compress(recording, { quality: "low" });
     if (result) {
-      props?.navigation?.navigate("AddPostDetails", { recording: result });
+      props?.navigation?.navigate("AddPostDetails", {
+        recording: result,
+        news_post: news_post,
+      });
     }
   };
 
@@ -149,7 +154,7 @@ const NewPost = (props) => {
             containerStyles={{
               backgroundColor: isRecordingCompleted
                 ? "rgba(255,255,255,0.2)"
-                : "rgba(256,83,74,0)",
+                : "rgba(256,83,74,0.1)",
             }}
             progressColor={isRecordingCompleted ? "#fff" : "#DB2727"}
           >
@@ -174,7 +179,9 @@ const NewPost = (props) => {
                 <CircleComponent
                   gap={1.3}
                   progress={null}
-                  containerStyles={{ backgroundColor: "transparent" }}
+                  containerStyles={{
+                    backgroundColor: isRecordingCompleted ? "#DB2727" : "#fff",
+                  }}
                 >
                   <Image
                     source={

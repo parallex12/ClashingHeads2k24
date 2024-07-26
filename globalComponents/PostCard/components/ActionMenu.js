@@ -27,17 +27,18 @@ const ActionMenu = (props) => {
     dislikes,
     likes,
     reactions,
-    clashes
+    clashes,
+    postDateAndViews,
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user_details = useSelector(selectAuthUser)
-  const [activeReaction, setActiveReaction] = useState({})
+  const user_details = useSelector(selectAuthUser);
+  const [activeReaction, setActiveReaction] = useState({});
 
   useEffect(() => {
-    if (!reactions) return
-    setActiveReaction({ old: reactions[user_details?.id] })
-  }, [reactions])
+    if (!reactions) return;
+    setActiveReaction({ old: reactions[user_details?.id] });
+  }, [reactions]);
 
   const FooterItem = ({ item, post_clashes_count }) => {
     return (
@@ -53,39 +54,45 @@ const ActionMenu = (props) => {
           />
         </View>
         <Text style={styles.actionText}>
-          {post_clashes_count || item?.title}
+          {post_clashes_count
+            ? post_clashes_count
+            : item?.title == "Clashes"
+            ? "Reply Clash"
+            : item?.title}
         </Text>
       </TouchableOpacity>
     );
   };
 
   const onReact = (type) => {
-    let c_reaction = activeReaction?.old || activeReaction?.new
+    let c_reaction = activeReaction?.old || activeReaction?.new;
     if (c_reaction == type) {
-      setActiveReaction({ new: null })
-      onReaction(type)
+      setActiveReaction({ new: null });
+      onReaction(type);
     } else {
-      setActiveReaction({ new: type })
-      onReaction(type)
+      setActiveReaction({ new: type });
+      onReaction(type);
     }
-    delete activeReaction['old']
-  }
+    delete activeReaction["old"];
+  };
 
-  let isLiked = activeReaction?.new == "like" || activeReaction?.old == "like"
-  let isDisLiked = activeReaction?.new == "dislike" || activeReaction?.old == "dislike"
-
+  let isLiked = activeReaction?.new == "like" || activeReaction?.old == "like";
+  let isDisLiked =
+    activeReaction?.new == "dislike" || activeReaction?.old == "dislike";
 
   let actions = [
     {
       title: activeReaction?.new == "like" ? eval(likes + 1) : likes,
-      iconImg: isLiked ? require("../../../assets/icons/post_cards/like_active.png")
+      iconImg: isLiked
+        ? require("../../../assets/icons/post_cards/like_active.png")
         : require("../../../assets/icons/post_cards/like.png"),
       onPress: () => onReact("like"),
     },
     {
       title: activeReaction?.new == "dislike" ? eval(dislikes + 1) : dislikes,
-      iconImg: isDisLiked ? require("../../../assets/icons/post_cards/dislike_active.png") :
-        require("../../../assets/icons/post_cards/dislike.png"),
+      iconImg: isDisLiked
+        ? require("../../../assets/icons/post_cards/dislike_active.png")
+        : require("../../../assets/icons/post_cards/dislike.png"),
       onPress: () => onReact("dislike"),
     },
     {
@@ -108,8 +115,9 @@ const ActionMenu = (props) => {
   return (
     <View style={styles.container}>
       {actions.map((item, index) => {
-        let clashes_temp=postClashes || clashes
-        let post_clashes_count = item?.title == "Clashes" && clashes_temp ? clashes_temp : null;
+        let clashes_temp = postClashes || clashes;
+        let post_clashes_count =
+          item?.title == "Clashes" && postClashes ? clashes_temp : null;
         return (
           <FooterItem
             index={index}
@@ -147,5 +155,4 @@ const _styles = ({ width, height }) =>
     actionText: font(12, "#6B7280", "Medium", 0, null, { marginLeft: 5 }),
   });
 
-
-export default ActionMenu
+export default ActionMenu;

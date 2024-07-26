@@ -5,7 +5,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { CalendarBottomSheetStyles, font } from "../../styles/Global/main";
 import {
   BottomSheetModal,
@@ -18,13 +18,14 @@ import { Calendar } from "react-native-calendars";
 import { getPercent } from "../../middleware";
 import { RFValue as rf } from "react-native-responsive-fontsize";
 import StandardButton from "../StandardButton";
+import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 
 const CalendarBottomSheet = (props) => {
   let { calendarSheetRef, calendarTimeSheetRef } = props;
   let { width, height } = useWindowDimensions();
   let styles = CalendarBottomSheetStyles({ width, height });
   const [selectedDay, setSelectedDay] = useState(null);
-
+  const dispatch=useDispatch()
   // variables
   const snapPoints = useMemo(() => ["25%", "60%"], []);
 
@@ -42,6 +43,7 @@ const CalendarBottomSheet = (props) => {
           index={1}
           snapPoints={snapPoints}
           backdropComponent={BackDrop}
+          onChange={(e) => dispatch(onUpdateBottomSheet(e))}
         >
           <BottomSheetView style={styles.contentContainer}>
             <View style={styles.titleWrapper}>
