@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
   fb_expo_app: expoAppReducer,
   posts: postsReducder,
   singlePost: singlePostReducer,
-  searched_users: searchedUserReducer,
+  searched: searchedUserReducer,
   challengeClash: challengeClashReducer,
   challengeClashes: allChallengeClashesReducer,
   challengeRequests: challengeRequestReducer,

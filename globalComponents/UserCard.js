@@ -25,7 +25,7 @@ const UserCard = (props) => {
             style={{ width: "100%", height: "100%" }}
           />
         </TouchableOpacity>
-        {author?.status &&<View style={styles.online}></View>}
+        {author?.status && <View style={styles.online}></View>}
       </View>
     );
   };
@@ -44,14 +44,16 @@ const UserCard = (props) => {
       <View style={styles.infoWrapper}>
         <View style={styles.infoTitleRow}>
           <Text style={styles.titleName}>{author?.realName}</Text>
-          <Image
-            source={require("../assets/icons/mStarIcon.png")}
-            resizeMode="contain"
-            style={{
-              width: getPercent(2, height),
-              height: getPercent(2, height),
-            }}
-          />
+          {author?.verified && (
+            <Image
+              source={require("../assets/icons/mStarIcon.png")}
+              resizeMode="contain"
+              style={{
+                width: getPercent(2, height),
+                height: getPercent(2, height),
+              }}
+            />
+          )}
         </View>
         <Text style={styles.slugText}>{author?.politics}</Text>
       </View>

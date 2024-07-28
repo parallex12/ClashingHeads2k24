@@ -25,7 +25,7 @@ import ContentLoader, {
 import CacheImage from "../../CacheImage";
 
 const Header = (props) => {
-  let { author, createdAt, profileStyles,onPostActions } = props;
+  let { author, createdAt, profileStyles, onPostActions } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const dispatch = useDispatch();
@@ -88,14 +88,16 @@ const Header = (props) => {
         <View style={styles.infoWrapper}>
           <View style={styles.infoTitleRow}>
             <Text style={styles.titleName}>{user_author?.realName}</Text>
-            <Image
-              source={require("../../../assets/icons/mStarIcon.png")}
-              resizeMode="contain"
-              style={{
-                width: getPercent(2, height),
-                height: getPercent(2, height),
-              }}
-            />
+            {user_author?.verified && (
+              <Image
+                source={require("../../../assets/icons/mStarIcon.png")}
+                resizeMode="contain"
+                style={{
+                  width: getPercent(2, height),
+                  height: getPercent(2, height),
+                }}
+              />
+            )}
           </View>
           <Text style={styles.slugText}>
             {user_author?.politics} - {post_past_time}
@@ -103,7 +105,7 @@ const Header = (props) => {
         </View>
       </TouchableOpacity>
       <View style={styles.settingsIconWrapper}>
-        <TouchableOpacity  style={styles.settingsIcon} onPress={onPostActions}>
+        <TouchableOpacity style={styles.settingsIcon} onPress={onPostActions}>
           <Entypo name="dots-three-horizontal" size={20} color="#7A8085" />
         </TouchableOpacity>
       </View>
@@ -156,9 +158,9 @@ const _styles = ({ width, height }) =>
       flex: 0.8,
       alignItems: "flex-end",
     },
-    settingsIcon:{
-      padding:5,
-    }
+    settingsIcon: {
+      padding: 5,
+    },
   });
 
 export default Header;

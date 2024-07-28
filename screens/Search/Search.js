@@ -4,11 +4,16 @@ import Header from "./components/Header";
 import UserCard from "../../globalComponents/UserCard";
 import ClashesResult from "./components/ClashesResult";
 import PeopleResult from "./components/PeopleResult";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import PostsResult from "./components/PostsResult";
 import NewsResult from "./components/NewsResult";
 import { useDispatch } from "react-redux";
-import { fetchUsersByQuery } from "../../state-management/features/searchedUsers/searchedUsersSlice";
+import {
+  fetchClashesByQuery,
+  fetchPostsByQuery,
+  fetchUsersByQuery,
+} from "../../state-management/features/searchedUsers/searchedUsersSlice";
+import debounce from "lodash/debounce";
 
 const Search = (props) => {
   let {} = props;
@@ -25,15 +30,29 @@ const Search = (props) => {
     <NewsResult searchQuery={searchQuery} />,
   ];
 
+  let filterQueryFunctions = [
+    fetchUsersByQuery,
+    fetchClashesByQuery,
+    fetchPostsByQuery,
+  ];
+
   useEffect(() => {
-    dispatch(fetchUsersByQuery(""));
-  }, []);
+    if (activeFilter == 3) return;
+    dispatch(filterQueryFunctions[activeFilter](""));
+  }, [activeFilter]);
+
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce((query) => {
+    setSearchQuery(query);
+      if (activeFilter == 3) return;
+      dispatch(filterQueryFunctions[activeFilter](query));
+    }, 500), // Adjust the delay as needed
+    [activeFilter]
+  );
 
   const onSearch = (query) => {
-    if (activeFilter == 0) {
-      setSearchQuery(query);
-      dispatch(fetchUsersByQuery(query));
-    }
+    debouncedSearch(query);
   };
 
   return (

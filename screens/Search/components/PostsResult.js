@@ -19,12 +19,15 @@ import PostCard from "../../../globalComponents/PostCard/PostCard";
 import { useSelector } from "react-redux";
 import { selectPosts } from "../../../state-management/features/posts";
 import { sortPostsByCreatedAt } from "../../../utils";
+import { memo } from "react";
+import { selectSearched } from "../../../state-management/features/searchedUsers";
+import { Instagram } from "react-content-loader/native";
 
 const PostsResult = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const posts = useSelector(selectPosts);
+  const { posts, loading } = useSelector(selectSearched);
 
   return (
     <View style={styles.container}>
@@ -34,14 +37,18 @@ const PostsResult = (props) => {
       </View>
       <ScrollView>
         <View style={styles.content}>
-          {sortPostsByCreatedAt(posts?.data)?.map((item, index) => {
-            if (index > 10) return;
-            return <PostCard divider data={item} key={index} />;
-          })}
+          {loading ? (
+            <Instagram />
+          ) : (
+            posts?.map((item, index) => {
+              if (index > 10) return;
+              return <PostCard divider data={item} key={index} />;
+            })
+          )}
         </View>
       </ScrollView>
     </View>
   );
 };
 
-export default PostsResult;
+export default memo(PostsResult);

@@ -46,7 +46,7 @@ const News = () => {
   const searchNews = async (text) => {
     try {
       const response = await axios.get(
-        `https://newsapi.org/v2/everything?q=${text}&apiKey=45b06648f48c47aaa5cad2280df9e6be`
+        `https://newsapi.org/v2/everything?q=${text}&apiKey=30026c906e3044828175b52bbe0736bd`
       );
       setNewsArr(sortPostsByCreatedAt(response.data.articles));
       setRefreshing(false);
