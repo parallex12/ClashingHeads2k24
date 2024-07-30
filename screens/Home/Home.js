@@ -40,6 +40,7 @@ import { getPercent, setAuthToken } from "../../middleware";
 import "../../utils/firebaseInitialize";
 import { useUserStatus } from "../../middleware/Hooks/useUserStatus";
 import PostActionsBottomSheet from "../../globalComponents/PostActionsBottomSheet/PostActionsBottomSheet";
+import { connectUserToDb } from "../../state-management/apiCalls/auth";
 
 const Home = (props) => {
   let {} = props;
@@ -62,10 +63,11 @@ const Home = (props) => {
 
   useEffect(() => {
     setContentLoading(true);
+
     dispatch(fetchCurrentUserDetails(auth().currentUser?.uid));
-    isUserProfileConnected(auth().currentUser?.uid)
+    connectUserToDb(user?.phoneNumber)
       .then((res) => {
-        dispatch(setUserDetails(res?.user));
+        dispatch(setUserDetails(res));
         if (res?.goTo) {
           props.navigation.reset({
             index: 0,
@@ -75,13 +77,6 @@ const Home = (props) => {
       })
       .catch((e) => {
         console.log(e);
-        if (e === 404) {
-          // props.navigation.reset({
-          //   index: 0,
-          //   routes: [{ name: "CommunityGuidelines" }],
-          // });
-          return;
-        }
         dispatch(logout());
       });
   }, []);

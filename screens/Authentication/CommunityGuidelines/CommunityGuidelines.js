@@ -14,14 +14,9 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
-import { addUser } from "../../../middleware/firebase";
 import auth from "@react-native-firebase/auth";
-import {
-  startLoading,
-  stopLoading,
-} from "../../../state-management/features/screen_loader/loaderSlice";
 import { selectAuthUser } from "../../../state-management/features/auth";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { update_user } from "../../../state-management/apiCalls/auth";
 
 const CommunityGuidelines = (props) => {
   let { route } = props;
@@ -29,31 +24,28 @@ const CommunityGuidelines = (props) => {
   let styles = _styles({ width, height });
   const user = auth().currentUser;
   const [loading, setLoading] = useState(false);
-  const user_profile_details = useSelector(selectAuthUser) || {};
+  const user_profile_details = useSelector(selectAuthUser)
 
   const onContinue = async () => {
     setLoading(true);
-    const db = getFirestore();
-    const usersRef = collection(db, "Users");
-
     try {
-      const usersSnapshot = await getDocs(usersRef);
-      const userCount = usersSnapshot.size;
-      const clashHash = `#${userCount + 1}`;
-
-      await addUser(user?.uid, {
+      await update_user(user_profile_details?.user?._id, {
         tos: true,
         createdAt: new Date().toISOString(),
         phone: user?.phoneNumber,
-        clashHash: user_profile_details?.clashHash || clashHash,
-      });
-
-      setLoading(false);
-      if (!user_profile_details?.hasPersonalInfo) {
-        props?.navigation?.navigate("PersonalInfo");
-      } else {
-        props?.navigation?.navigate("Home");
-      }
+        fb_id: user?.uid,
+      })
+        .then((res) => {
+          if (res?.acknowledged) {
+            props?.navigation?.navigate("PersonalInfo");
+          }
+          setLoading(false);
+        })
+        .catch((e) => {
+          console.log(e);
+          props?.navigation?.navigate("Home");
+          setLoading(false);
+        });
     } catch (error) {
       console.log(error);
       setLoading(false);

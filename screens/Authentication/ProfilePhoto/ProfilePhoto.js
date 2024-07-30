@@ -28,9 +28,13 @@ import {
   startLoading,
   stopLoading,
 } from "../../../state-management/features/screen_loader/loaderSlice";
-import { selectUserForm } from "../../../state-management/features/auth";
+import {
+  selectAuthUser,
+  selectUserForm,
+} from "../../../state-management/features/auth";
 import { Image as ImageCompress } from "react-native-compressor";
 import { Blurhash } from "react-native-blurhash";
+import { update_user } from "../../../state-management/apiCalls/auth";
 
 const ProfilePhoto = (props) => {
   let { route } = props;
@@ -38,7 +42,7 @@ const ProfilePhoto = (props) => {
   let styles = _styles({ width, height });
   const [profile, setProfile] = useState(null);
   const [profileHash, setProfileHash] = useState(null);
-  const user = auth().currentUser;
+  const { user } = useSelector(selectAuthUser);
   const [loading, setLoading] = useState(false);
 
   const onContinue = async () => {
@@ -53,7 +57,7 @@ const ProfilePhoto = (props) => {
                 profile_photo: res?.url,
                 profile_hash: profileHash,
               };
-              update_user_details(user?.uid, data).then((res) => {
+              update_user(user?._id, data).then((res) => {
                 props.navigation.reset({
                   index: 0,
                   routes: [{ name: "Home" }],

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 const initialState = {
@@ -47,14 +48,10 @@ export const {
 export const fetchCurrentUserDetails = (userId) => async (dispatch) => {
   dispatch(setLoading(true));
   try {
-    const db = getFirestore();
-    const userDoc = doc(db, "Users", userId);
-    const userSnapshot = await getDoc(userDoc);
+    const result = await axios.post(`/users/${userId}`);
 
-    if (userSnapshot.exists()) {
-      dispatch(
-        setUserDetails({ id: userSnapshot?.id, ...userSnapshot.data() })
-      );
+    if (result.data) {
+      dispatch(setUserDetails(result.data));
     } else {
       dispatch(setError("User not found"));
     }
@@ -64,4 +61,5 @@ export const fetchCurrentUserDetails = (userId) => async (dispatch) => {
     dispatch(setLoading(false));
   }
 };
+
 export default authSlice.reducer;

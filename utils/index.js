@@ -264,15 +264,6 @@ export const firebaseConfig = {
   measurementId: FIREBASE_MEASUREMENT_ID,
 };
 
-export const _setToken = () => {
-  try {
-    const auth = null;
-    const user = auth.currentUser;
-    setAuthToken(user?.accessToken);
-  } catch (e) {
-    console.log(e.message);
-  }
-};
 
 export const validateRequiredFields = (details, requiredFields) => {
   for (const field of requiredFields) {

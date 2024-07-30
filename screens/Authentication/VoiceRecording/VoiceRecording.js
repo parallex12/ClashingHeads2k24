@@ -29,13 +29,13 @@ import {
 } from "../../../state-management/features/auth";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Audio } from "react-native-compressor";
+import { update_user } from "../../../state-management/apiCalls/auth";
 
 const VoiceRecording = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [loading, setLoading] = useState(false);
-  const user = auth().currentUser;
   let iconImages = [
     require("../../../assets/icons/recorderVector.png"),
     require("../../../assets/icons/bgPlay.png"),
@@ -50,7 +50,7 @@ const VoiceRecording = (props) => {
   const [progress, setProgress] = useState(0);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
   const timerRef = useRef(null);
-  const user_profile_details = useSelector(selectAuthUser);
+  const { user } = useSelector(selectAuthUser);
   let recordingLimit = 15;
 
   const startRecording = async () => {
@@ -107,15 +107,15 @@ const VoiceRecording = (props) => {
           .then((res) => {
             if (res.url) {
               let data = { hasVoiceAdded: true, about_voice: res?.url };
-              update_user_details(user?.uid, data).then((res) => {
-                if (res?.code == 200) {
-                  if (!user_profile_details?.hasProfilePhoto) {
+              update_user(user?._id, data).then((res) => {
+                if (res?.acknowledged) {
+                  if (!user?.hasProfilePhoto) {
                     props?.navigation?.navigate("ProfilePhoto");
-                    setLoading(false);
                   } else {
                     props?.navigation?.navigate("Home");
                   }
                 }
+                setLoading(false);
               });
             }
           })

@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { AppNavigator } from "./routes/AppNavigator";
 import { useFonts } from "expo-font";
 import "react-native-gesture-handler";
-import { FontsConfig } from "./middleware";
+import { FontsConfig, setAuthToken } from "./middleware";
 import { LogBox } from "react-native";
 import { AuthNavigator } from "./routes/AuthNavigator";
 import { firebaseConfig } from "./utils";
@@ -16,12 +16,13 @@ import axios from "axios";
 import { QueryClient, QueryClientProvider } from "react-query";
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
-import "./utils/firebaseInitialize"
+import "./utils/firebaseInitialize";
 export default function App() {
-  // axios.defaults.baseURL = "http://62.135.167.72.host.secureserver.net:6500/ch_content/";
-  // axios.defaults.baseURL = "http://192.168.100.127:6500/ch_content/";
-  axios.defaults.baseURL =
-    "https://qrpwdz45cf.us-east-1.awsapprunner.com/ch_content/";
+  // axios.defaults.baseURL =
+  //   "https://clashing-heads-server.vercel.app/clashingheads_api";
+
+  axios.defaults.baseURL = "http://192.168.100.127:5000/clashingheads_api";
+
   const [fontsLoaded] = useFonts(FontsConfig);
   const config = {
     name: "SECONDARY_APP",
@@ -29,11 +30,13 @@ export default function App() {
   const queryClient = new QueryClient();
 
   useEffect(() => {
-    if (firebase.apps.length === 0) {
-      (async () => {
+    (async () => {
+      if (firebase.apps.length === 0) {
         await firebase.initializeApp(firebaseConfig, config);
-      })();
-    }
+      }
+      const idTokenResult = await auth().currentUser.getIdTokenResult();
+      setAuthToken(idTokenResult.token);
+    })();
   }, []);
 
   if (!fontsLoaded) {

@@ -35,7 +35,6 @@ const StandardInput = (props) => {
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     setDateOfBirth(currentDate);
-    console.log(event)
     onChangeText(currentDate);
   };
 

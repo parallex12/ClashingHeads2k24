@@ -58,7 +58,6 @@ const OTPVerification = (props) => {
       setLoading(true)
       await confirm.confirm(otpCode)
         .then(async (res) => {
-          console.log(res)
           dispatch(loginSuccess())
           setLoading(false)
         })
