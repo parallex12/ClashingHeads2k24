@@ -31,7 +31,7 @@ import {
   selectUserForm,
 } from "../../../state-management/features/auth";
 import auth from "@react-native-firebase/auth";
-import { setUserForm } from "../../../state-management/features/auth/authSlice";
+import { setUserDetails, setUserForm } from "../../../state-management/features/auth/authSlice";
 import { update_user } from "../../../state-management/apiCalls/auth";
 
 const PersonalInfo = (props) => {
@@ -39,12 +39,13 @@ const PersonalInfo = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_profile_details = useSelector(selectAuthUser);
-  const [form, setForm] = useState(user_profile_details?.user || {});
+  const [form, setForm] = useState(user_profile_details || {});
   const [errorField, setErrorField] = useState({});
   const user = auth().currentUser;
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  let userDbId = user_profile_details?.user?._id;
+  let userDbId = user_profile_details?._id;
+
 
   const onContinue = async () => {
     try {
@@ -82,8 +83,9 @@ const PersonalInfo = (props) => {
           update_user(userDbId, user_details)
             .then((res) => {
               dispatch(setUserForm({}));
-              if (res?.acknowledged) {
-                if (!user_profile_details?.user?.hasVoiceAdded) {
+              if (res) {
+                dispatch(setUserDetails(res))
+                if (!res?.hasVoiceAdded) {
                   props?.navigation?.navigate("VoiceRecording");
                 } else {
                   props?.navigation?.navigate("Home");

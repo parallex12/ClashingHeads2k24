@@ -56,7 +56,7 @@ const ClashCard = (props) => {
       dispatch(updateClashReaction(data, userId, reactionType));
     }
   };
-  
+
   const onAudioPlay = () => {
     let audioViews = { ...data?.listened } || {};
     if (!audioViews[userId]) {

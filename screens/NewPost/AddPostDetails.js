@@ -61,11 +61,7 @@ const AddPostDetails = (props) => {
     recording: props?.route?.params?.recording,
     post_image: null,
     createdAt: new Date().toISOString(),
-    author: user_profile?.id,
-    reactions: {},
-    likes: 0,
-    dislikes: 0,
-    clashes: 0,
+    author: user_profile?._id,
     privacy: null,
     post_image_hash: null,
     postReference: "original",
@@ -142,16 +138,14 @@ const AddPostDetails = (props) => {
         if (res.code == 200) {
           createPost(postForm)
             .then((res) => {
-              console.log("NP", res);
               let updatedPosts = [...posts?.data];
-              updatedPosts.push(res?.post_data);
+              updatedPosts.push(res);
               dispatch(setPosts(updatedPosts));
               props?.navigation.navigate("Home");
               setLoading(false);
             })
             .catch((e) => {
               setLoading(false);
-
               console.log(e);
               alert("Something Went wrong!.");
             });

@@ -23,37 +23,40 @@ import { fetchUserPostsAndChallenges } from "../../state-management/features/cha
 import DualClashCard from "../Search/components/DualClashCard";
 import VoiceRecorderBottomSheet from "../ChallengeRequests/components/VoiceRecorderBottomSheet";
 import auth from "@react-native-firebase/auth";
-import { fetchCurrentUserDetails } from "../../state-management/features/auth/authSlice";
+import {
+  fetchCurrentUserDetails,
+  setUserDetails,
+} from "../../state-management/features/auth/authSlice";
 import ContentLoader, {
   Facebook,
   Instagram,
   Code,
 } from "react-content-loader/native";
+import { get_user_profile } from "../../state-management/apiCalls/auth";
 
 const MyProfile = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user_details = useSelector(selectAuthUser);
-  let userID = auth().currentUser?.uid;
-  const [currentProfile, setCurrentProfile] = useState({
-    uri: user_details?.profile_photo || "",
-  });
+  const { _id, posts } = useSelector(selectAuthUser);
+  let userID = _id;
   const [currentChallenge, setCurrentChallenge] = useState(null);
+  const [loading, setLoading] = useState(false);
   const bottomVoiceSheetRef = useRef();
   const bottomFlagSheetRef = useRef();
-
-  const { posts, allRequests, loading } = useSelector(
-    (state) => state.challengeRequests
-  );
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (userID) {
-      dispatch(fetchCurrentUserDetails(userID));
-      dispatch(fetchUserPostsAndChallenges(userID));
+      get_user_profile(userID)
+        .then((res) => {
+          dispatch(setUserDetails(res));
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     }
-  }, []);
+  }, [userID]);
 
   return (
     <View style={styles.container}>
@@ -73,13 +76,9 @@ const MyProfile = (props) => {
             </View>
           ) : (
             <>
-              <ProfileCard
-                postsCount={posts?.length}
-                currentProfile={currentProfile}
-                setCurrentProfile={setCurrentProfile}
-              />
+              <ProfileCard />
 
-              {allRequests?.map((item, index) => {
+              {/* {allRequests?.map((item, index) => {
                 if (index > 10) return;
                 return (
                   <DualClashCard
@@ -102,9 +101,8 @@ const MyProfile = (props) => {
                     }
                   />
                 );
-              })}
+              })} */}
               {posts?.map((item, index) => {
-                if (index > 10) return;
                 return (
                   <PostCard
                     divider

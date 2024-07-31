@@ -30,6 +30,7 @@ import {
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Audio } from "react-native-compressor";
 import { update_user } from "../../../state-management/apiCalls/auth";
+import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 
 const VoiceRecording = (props) => {
   let { route } = props;
@@ -50,9 +51,10 @@ const VoiceRecording = (props) => {
   const [progress, setProgress] = useState(0);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
   const timerRef = useRef(null);
-  const { user } = useSelector(selectAuthUser);
+  const user= useSelector(selectAuthUser);
   let recordingLimit = 15;
-
+  const dispatch = useDispatch();
+  
   const startRecording = async () => {
     try {
       setIsRecording(true);
@@ -107,16 +109,23 @@ const VoiceRecording = (props) => {
           .then((res) => {
             if (res.url) {
               let data = { hasVoiceAdded: true, about_voice: res?.url };
-              update_user(user?._id, data).then((res) => {
-                if (res?.acknowledged) {
-                  if (!user?.hasProfilePhoto) {
-                    props?.navigation?.navigate("ProfilePhoto");
-                  } else {
-                    props?.navigation?.navigate("Home");
+              update_user(user?._id, data)
+                .then((res) => {
+                  if (res) {
+                    dispatch(setUserDetails(res));
+                    if (!res?.hasProfilePhoto) {
+                      props?.navigation?.navigate("ProfilePhoto");
+                    } else {
+                      props?.navigation?.navigate("Home");
+                    }
                   }
-                }
-                setLoading(false);
-              });
+                  setLoading(false);
+                })
+                .catch((e) => {
+                  console.log(e);
+                  setLoading(false);
+                  alert("Something went wrong. Try again.");
+                });
             }
           })
           .catch((e) => {

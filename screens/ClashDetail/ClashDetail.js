@@ -21,29 +21,38 @@ import {
 import auth from "@react-native-firebase/auth";
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
+import {
+  get_post_by_id,
+  update_post_by_id,
+} from "../../state-management/apiCalls/post";
+import { selectAuthUser } from "../../state-management/features/auth";
 
 const ClashDetails = (props) => {
   let {} = props;
   const dispatch = useDispatch();
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  let prevData = props?.route?.params;
+  const [clashTo, setClashTo] = useState("post");
+  const [postData, setPostData] = useState(null);
+  let prevPostData = props?.route?.params;
   let openVoiceSheet = props?.route?.params?.openVoiceSheet;
   const bottomVoiceSheetRef = useRef(null);
   const bottomFlagSheetRef = useRef(null);
-  let postId = prevData?.id;
-  const [clashTo, setClashTo] = useState("post");
-  const selectSinglePost = makeSelectSinglePost(postId);
-  const { post, subClashes, loading, error } = useSelector(selectSinglePost);
-  const user_id = auth().currentUser?.uid;
+  let postId = prevPostData?._id;
+  const { _id } = useSelector(selectAuthUser);
 
   useEffect(() => {
-    dispatch(fetchSinglePostAndClashes(postId));
-    let postUserViews = { ...post?.views } || {};
-    if (postId && post?.author && !postUserViews[user_id]) {
-      postUserViews[user_id] = true;
-      dispatch(updatePost(postId, { views: postUserViews }));
-    }
+    get_post_by_id(postId)
+      .then((res) => {
+        let views = [...res?.views];
+        if (!views?.includes(_id)) {
+          views.push(_id);
+          update_post_by_id(postId, { views });
+        }
+        setPostData(res);
+      })
+      .catch((e) => console.log(e));
+
     if (openVoiceSheet) {
       bottomVoiceSheetRef.current.present();
     }
@@ -71,23 +80,21 @@ const ClashDetails = (props) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <PostCard
-            loadedData={prevData}
             postDateAndViews
-            data={post} // Render post data from Redux state
-            postClashes={subClashes?.length} // Use subClashes length from Redux state
+            data={postData || prevPostData} // Render post data from Redux state
             onPostClashesPress={() => bottomVoiceSheetRef.current?.present()}
             onReportPress={() => bottomFlagSheetRef?.current?.present()}
-            views={Object.keys(post?.views || {})?.length}
+            views={postData?.views?.length}
             onProfilePress={() => props?.navigation?.navigate("UserProfile")}
           />
           <View style={styles.clashes_wrapper}>
-            {subClashes?.map((clash, index) => (
+            {postData?.clashes?.map((clash, index) => (
               <ClashCard
-                user_id={user_id}
-                hrLine={index !== subClashes.length - 1} // Show hrLine for all but the last clash
+                user_id={_id}
+                hrLine={index !== postData?.clashes.length - 1} // Show hrLine for all but the last clash
                 postDateAndViews
                 data={clash} // Render individual clash data
-                key={clash?.id} // Use a unique key for each ClashCard
+                key={clash?._id} // Use a unique key for each ClashCard
                 onPostClashesPress={() => {
                   setClashTo(clash);
                   bottomVoiceSheetRef.current?.present();

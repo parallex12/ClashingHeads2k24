@@ -17,6 +17,7 @@ import { useState } from "react";
 import auth from "@react-native-firebase/auth";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { update_user } from "../../../state-management/apiCalls/auth";
+import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 
 const CommunityGuidelines = (props) => {
   let { route } = props;
@@ -24,19 +25,21 @@ const CommunityGuidelines = (props) => {
   let styles = _styles({ width, height });
   const user = auth().currentUser;
   const [loading, setLoading] = useState(false);
-  const user_profile_details = useSelector(selectAuthUser)
+  const user_profile_details = useSelector(selectAuthUser);
+  const dispatch = useDispatch();
 
   const onContinue = async () => {
     setLoading(true);
     try {
       await update_user(user_profile_details?.user?._id, {
         tos: true,
-        createdAt: new Date().toISOString(),
         phone: user?.phoneNumber,
-        fb_id: user?.uid,
+        username: "",
+        email: "",
       })
         .then((res) => {
-          if (res?.acknowledged) {
+          dispatch(setUserDetails(res));
+          if (res) {
             props?.navigation?.navigate("PersonalInfo");
           }
           setLoading(false);

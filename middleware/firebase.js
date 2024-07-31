@@ -36,6 +36,7 @@ import { HOME_POSTS, USER_DB_DETAILS } from "../state-management/types/types";
 import store from "../state-management/store/store";
 import { setNewPostProgress } from "../state-management/features/screen_loader/loaderSlice";
 import axios from "axios";
+import { create_post } from "../state-management/apiCalls/post";
 
 export const getFirestoreDoc = async (collection, docID) => {
   try {
@@ -419,12 +420,11 @@ export const createPost = async (post_details, dispatch) => {
         );
         post_details["post_image"] = url;
       }
-
-      await addDoc(collection(db, "Posts"), post_details)
+      await create_post(post_details)
         .then((res) => {
           resolve({
             msg: "Post added successfully",
-            post_data: { id: res?.id, ...post_details },
+            post_data: res,
           });
         })
         .catch((error) => {

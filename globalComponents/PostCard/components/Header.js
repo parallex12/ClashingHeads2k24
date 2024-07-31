@@ -28,11 +28,10 @@ const Header = (props) => {
   let { author, createdAt, profileStyles, onPostActions } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const dispatch = useDispatch();
   let post_past_time = getTimeElapsed(createdAt);
   const navigation = useNavigation();
   const user_details = useSelector(selectAuthUser);
-  let user_author = author;
+
   const Profile = ({ source, profileStyles }) => {
     const [imageLoad, setImageLoad] = useState(true);
 
@@ -70,7 +69,7 @@ const Header = (props) => {
           flex: 1,
         }}
         onPress={() => {
-          if (author?.id == user_details?.id) {
+          if (author?._id == user_details?._id) {
             navigation?.navigate("MyProfile");
           } else {
             navigation?.navigate("UserProfile", {
@@ -81,14 +80,14 @@ const Header = (props) => {
       >
         <Profile
           source={{
-            uri: user_author?.profile_photo,
+            uri: author?.profile_photo,
           }}
           profileStyles={profileStyles}
         />
         <View style={styles.infoWrapper}>
           <View style={styles.infoTitleRow}>
-            <Text style={styles.titleName}>{user_author?.realName}</Text>
-            {user_author?.verified && (
+            <Text style={styles.titleName}>{author?.realName}</Text>
+            {author?.verified && (
               <Image
                 source={require("../../../assets/icons/mStarIcon.png")}
                 resizeMode="contain"
@@ -100,7 +99,7 @@ const Header = (props) => {
             )}
           </View>
           <Text style={styles.slugText}>
-            {user_author?.politics} - {post_past_time}
+            {author?.politics} - {post_past_time}
           </Text>
         </View>
       </TouchableOpacity>

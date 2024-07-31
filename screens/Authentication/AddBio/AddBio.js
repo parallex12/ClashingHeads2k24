@@ -36,16 +36,16 @@ import {
   setUserDetails,
   setUserForm,
 } from "../../../state-management/features/auth/authSlice";
+import { update_user } from "../../../state-management/apiCalls/auth";
 
 const AddBio = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user_profile_details = useSelector(selectAuthUser);
-  const [form, setForm] = useState(user_profile_details);
+  const user = useSelector(selectAuthUser);
+  const [form, setForm] = useState(user);
   const [errorField, setErrorField] = useState({});
   const [loading, setLoading] = useState(false);
-  const user = auth().currentUser;
   const dispatch = useDispatch();
 
   const onContinue = async () => {
@@ -57,11 +57,11 @@ const AddBio = (props) => {
       };
 
       setLoading(true)
-      update_user_details(user?.uid, updateDetails)
+      update_user(user?._id, updateDetails)
         .then((res) => {
           dispatch(setUserForm({}));
-          dispatch(setUserDetails(form));
-          if (res?.code == 200) {
+          dispatch(setUserDetails(res));
+          if (res) {
             props?.navigation?.navigate("MyProfile");
           }
           setLoading(false)

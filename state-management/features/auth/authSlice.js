@@ -49,7 +49,6 @@ export const fetchCurrentUserDetails = (userId) => async (dispatch) => {
   dispatch(setLoading(true));
   try {
     const result = await axios.post(`/users/${userId}`);
-
     if (result.data) {
       dispatch(setUserDetails(result.data));
     } else {

@@ -35,6 +35,7 @@ import {
 import { Image as ImageCompress } from "react-native-compressor";
 import { Blurhash } from "react-native-blurhash";
 import { update_user } from "../../../state-management/apiCalls/auth";
+import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 
 const ProfilePhoto = (props) => {
   let { route } = props;
@@ -42,9 +43,10 @@ const ProfilePhoto = (props) => {
   let styles = _styles({ width, height });
   const [profile, setProfile] = useState(null);
   const [profileHash, setProfileHash] = useState(null);
-  const { user } = useSelector(selectAuthUser);
+  const user = useSelector(selectAuthUser);
   const [loading, setLoading] = useState(false);
-
+  const dispatch=useDispatch()
+  
   const onContinue = async () => {
     try {
       if (profile) {
@@ -58,6 +60,7 @@ const ProfilePhoto = (props) => {
                 profile_hash: profileHash,
               };
               update_user(user?._id, data).then((res) => {
+                dispatch(setUserDetails(res))
                 props.navigation.reset({
                   index: 0,
                   routes: [{ name: "Home" }],
@@ -94,7 +97,6 @@ const ProfilePhoto = (props) => {
       setProfileHash("loading");
       const convertToblurhash = async () => {
         let _hash = await Blurhash.encode(profile, 4, 3);
-        console.log(_hash);
         setProfileHash(_hash);
       };
       convertToblurhash();

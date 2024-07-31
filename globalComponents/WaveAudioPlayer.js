@@ -82,7 +82,7 @@ const WaveAudioPlayer = (props) => {
       }
     } catch (e) {
       console.log(e);
-      console.log(soundRef)
+      console.log(soundRef);
     }
   };
 

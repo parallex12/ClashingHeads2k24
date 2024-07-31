@@ -41,33 +41,28 @@ import "../../utils/firebaseInitialize";
 import { useUserStatus } from "../../middleware/Hooks/useUserStatus";
 import PostActionsBottomSheet from "../../globalComponents/PostActionsBottomSheet/PostActionsBottomSheet";
 import { connectUserToDb } from "../../state-management/apiCalls/auth";
+import { get_all_posts_test } from "../../state-management/apiCalls/post";
 
 const Home = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const posts = useSelector(selectPosts);
   const bottomFlagSheetRef = useRef(null);
   const postActionsbottomSheetRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [postInteraction, setPostInteraction] = useState(null);
-  const [contentLoading, setContentLoading] = useState(true);
   const [lastVisiblePost, setLastVisiblePost] = useState(null);
   const [currentPosts, setCurrentPosts] = useState([]);
   const [reachedEnd, setReachedEnd] = useState(false);
   const dispatch = useDispatch();
   const user_details = useSelector(selectAuthUser);
   const user = auth().currentUser;
-  const userStatus = useUserStatus(user_details?.id);
 
   useEffect(() => {
-    setContentLoading(true);
-
-    dispatch(fetchCurrentUserDetails(auth().currentUser?.uid));
     connectUserToDb(user?.phoneNumber)
       .then((res) => {
-        dispatch(setUserDetails(res));
+        dispatch(setUserDetails(res?.user || res));
         if (res?.goTo) {
           props.navigation.reset({
             index: 0,
@@ -77,24 +72,14 @@ const Home = (props) => {
       })
       .catch((e) => {
         console.log(e);
-        dispatch(logout());
+        // dispatch(logout());
       });
   }, []);
 
-  const loadPosts = async (lastPost, type) => {
+  const loadPosts = async (type) => {
     try {
-      const { newposts, _lastVisiblePost } = await getPaginatedHomePosts(
-        lastPost
-      );
-
-      if (type == "refresh") {
-        setCurrentPosts(newposts);
-      } else {
-        setCurrentPosts((prev) => {
-          return [...prev, ...newposts];
-        });
-      }
-      setLastVisiblePost(_lastVisiblePost);
+      const res = await get_all_posts_test();
+      setCurrentPosts(res?.posts);
       setRefreshing(false);
     } catch (e) {
       console.log(e);
@@ -114,13 +99,7 @@ const Home = (props) => {
 
   const onLoadMore = () => {
     loadPosts(lastVisiblePost, "loadMore");
-    console.log("loadingMmore");
   };
-
-  // const sortedPosts = useMemo(() => {
-  //   // Sort posts by createdAt date
-  //   return sortPostsByCreatedAt(memoizedPosts);
-  // }, [memoizedPosts]);
 
   const renderFooter = () => {
     if (loadingMore && !reachedEnd) {
@@ -158,7 +137,6 @@ const Home = (props) => {
                 divider
                 desc_limit={1}
                 data={item}
-                postClashes={item?.clashes}
                 key={index}
                 onPostClashesPress={() =>
                   props?.navigation?.navigate("ClashDetails", { ...item })
@@ -171,7 +149,7 @@ const Home = (props) => {
               />
             );
           }}
-          keyExtractor={(item) => item?.id?.toString()}
+          keyExtractor={(item) => item?._id?.toString()}
           ListFooterComponent={renderFooter}
           onEndReached={onLoadMore}
           onEndReachedThreshold={0.6}

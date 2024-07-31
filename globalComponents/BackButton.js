@@ -12,13 +12,13 @@ const BackButton = (props) => {
   let navigation = useNavigation();
 
   const onPress = () => {
-    navigation?.goBack();
+    navigation?.goBack(); 
   };
 
-  if(!navigation?.canGoBack()){
-    return null
+  if (!navigation?.canGoBack()) {
+    return null;
   }
-  
+
   return (
     <TouchableOpacity
       style={[styles.container, customStyles]}

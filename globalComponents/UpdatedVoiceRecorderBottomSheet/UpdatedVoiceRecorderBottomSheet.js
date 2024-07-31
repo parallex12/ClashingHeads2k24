@@ -61,7 +61,6 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
     setCurrentVoiceMode((prev) => (prev == "mic" ? "sticker" : "mic"));
   };
 
-  console.log(recording);
 
   const onPost = async () => {
     setLoading(true);

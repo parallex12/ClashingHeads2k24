@@ -22,7 +22,7 @@ import { Image as ImageCompress } from "react-native-compressor";
 import { Blurhash } from "react-native-blurhash";
 
 const ProfileCard = (props) => {
-  let { currentProfile, setCurrentProfile, postsCount } = props;
+  let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_details = useSelector(selectAuthUser);
@@ -39,6 +39,8 @@ const ProfileCard = (props) => {
     employment,
     username,
     profile_hash,
+    posts,
+    profile_photo,
   } = user_details;
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -109,7 +111,7 @@ const ProfileCard = (props) => {
               />
             )}
             <Image
-              source={currentProfile}
+              source={{ uri: profile_photo }}
               resizeMode="cover"
               style={{ width: "100%", height: "100%" }}
               onLoad={() => setImageLoad(false)}
@@ -125,7 +127,7 @@ const ProfileCard = (props) => {
         <View style={styles.post_following_followers_cont}>
           <View style={styles.post_following_followers_Item}>
             <Text style={font(15, "#121212", "Bold", 3)}>
-              {postsCount || 0}
+              {posts?.length || 0}
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Posts</Text>
           </View>
@@ -162,9 +164,7 @@ const ProfileCard = (props) => {
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
           <Text style={font(16, "#111827", "Medium", 2)}>
-            <Text style={font(16, "#DB2727", "Semibold", 2)}>
-              {clashHash}{" "}
-            </Text>
+            <Text style={font(16, "#DB2727", "Semibold", 2)}>{clashHash} </Text>
             {realName || ""}
           </Text>
           <Image
@@ -181,18 +181,16 @@ const ProfileCard = (props) => {
         <Text style={font(10, "#DB2727", "Semibold", 2)}>@{username} </Text>
       </View>
       <TouchableOpacity style={styles.bioEditwrapper} onPress={onBioEditPress}>
-        {!bio && (
-          <View style={styles.bioicons}>
-            <Image
-              source={require("../../../assets/icons/profile_photo_icon.png")}
-              resizeMode="contain"
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            />
-          </View>
-        )}
+        <View style={styles.bioicons}>
+          <Image
+            source={require("../../../assets/icons/profile_photo_icon.png")}
+            resizeMode="contain"
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        </View>
         <Text style={font(11, "#6B7280", "Regular", 2)}>
           {bio || "Add your bio."}
         </Text>

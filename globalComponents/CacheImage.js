@@ -45,13 +45,7 @@ const CacheImage = (props) => {
     fetchImage();
   }, [uri]);
 
-  return (
-    <Image
-      source={{ uri: imageUri }}
-      style={style}
-      {...props}
-    />
-  );
+  return <Image source={{ uri: imageUri }} style={style} {...props} />;
 };
 
 export default CacheImage;
