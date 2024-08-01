@@ -402,11 +402,9 @@ export const uploadMedia = (media, path, mediaName) => {
   });
 };
 
-export const createPost = async (post_details, dispatch) => {
+export const createPost = async (post_details) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const db = getFirestore();
-
       let { url } = await uploadMedia(
         post_details?.recording,
         "post_recordings"

@@ -61,21 +61,14 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
     setCurrentVoiceMode((prev) => (prev == "mic" ? "sticker" : "mic"));
   };
 
-
   const onPost = async () => {
     setLoading(true);
     let clashDetails = {
-      id: generateUniqueId(),
       clashType: currentVoiceMode,
       selectedSticker: selectedSticker,
       recording: recording || null,
       postId,
-      likes: 0,
-      reactions: {},
-      dislikes: 0,
-      clashes: 0,
-      listened: 0,
-      author: user_profile?.id,
+      author: user_profile?._id,
       clashTo: clashTo,
       createdAt: new Date().toISOString(),
     };
@@ -85,7 +78,7 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
     ) {
       onPostClash(clashDetails);
       bottomVoiceSheetRef.current.close();
-      onReset()
+      onReset();
       setLoading(false);
     } else {
       alert("Record voice.");

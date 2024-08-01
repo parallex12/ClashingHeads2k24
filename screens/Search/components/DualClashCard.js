@@ -54,24 +54,8 @@ const DualClashCard = (props) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [voteData, setVoteData] = useState(data?.votes);
-  const hasCurrentUserVoted =voteData && voteData[currentUser?.id];
-  const [challenger, setChallenger] = useState(null);
-  const [opponent, setOpponent] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setVoteData(data?.votes);
-  }, [data?.votes]);
-
-  useEffect(() => {
-    (async () => {
-      let challenger_data = await fetchInstantUserById(data?.challenger);
-      let opponent_data = await fetchInstantUserById(data?.opponentId);
-      setChallenger(challenger_data);
-      setOpponent(opponent_data);
-      setLoading(false);
-    })();
-  }, []);
+  const hasCurrentUserVoted = voteData && voteData[currentUser?.id];
+  let { challenger, opponent } = data;
 
   const {
     challengerPercentage,
@@ -291,40 +275,34 @@ const DualClashCard = (props) => {
 
   return (
     <View style={styles.clashesCardCont}>
-      {loading ? (
-        <Instagram />
-      ) : (
-        <>
-          <Text style={styles.clashesCardTitle}>“{data?.title}”</Text>
-          <TouchableOpacity
-            style={styles.clashesCardUsersCont}
-            onPress={onPress}
-            activeOpacity={0.8}
-          >
-            {challenger && (
-              <ClashUserCard
-                user={challenger}
-                type="Challenger"
-                audio={data?.challenger_audio}
-                hasAccepted={true}
-                votes={voteData}
-              />
-            )}
-            <Text style={styles.vsText}>VS</Text>
-            {opponent && (
-              <ClashUserCard
-                user={opponent}
-                type="Opponent"
-                audio={data?.opponent_audio}
-                hasAccepted={data?.status === "accepted"}
-                votes={voteData}
-              />
-            )}
-          </TouchableOpacity>
-          <CardFooter />
-          {showVoting && <VotingFooter />}
-        </>
-      )}
+      <Text style={styles.clashesCardTitle}>“{data?.title}”</Text>
+      <TouchableOpacity
+        style={styles.clashesCardUsersCont}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        {challenger && (
+          <ClashUserCard
+            user={challenger}
+            type="Challenger"
+            audio={data?.challenger_audio}
+            hasAccepted={true}
+            votes={voteData}
+          />
+        )}
+        <Text style={styles.vsText}>VS</Text>
+        {opponent && (
+          <ClashUserCard
+            user={opponent}
+            type="Opponent"
+            audio={data?.opponent_audio}
+            hasAccepted={data?.status === "accepted"}
+            votes={voteData}
+          />
+        )}
+      </TouchableOpacity>
+      <CardFooter />
+      {showVoting && <VotingFooter />}
     </View>
   );
 };

@@ -26,6 +26,7 @@ import {
   update_post_by_id,
 } from "../../state-management/apiCalls/post";
 import { selectAuthUser } from "../../state-management/features/auth";
+import { create_clash } from "../../state-management/apiCalls/clash";
 
 const ClashDetails = (props) => {
   let {} = props;
@@ -59,6 +60,8 @@ const ClashDetails = (props) => {
   }, [dispatch, postId]);
 
   const onPostClash = async (clashDetails) => {
+    await create_clash(clashDetails);
+    return;
     dispatch(addClashToPost(postId, clashDetails));
     if (clashTo != "post") {
       dispatch(
@@ -68,6 +71,7 @@ const ClashDetails = (props) => {
       );
     }
   };
+
 
   return (
     <View style={styles.container}>

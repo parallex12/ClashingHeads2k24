@@ -14,6 +14,7 @@ import Header from "../Search/components/Header";
 import { TouchableOpacity } from "react-native";
 import { font } from "../../styles/Global/main";
 import VoiceRecorderBottomSheet from "./components/VoiceRecorderBottomSheet";
+import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 
 const ChallengeRequests = (props) => {
   let {} = props;
@@ -22,30 +23,24 @@ const ChallengeRequests = (props) => {
   const [activeFilter, setActiveFilter] = useState("Sent");
   let filtersOption = ["Sent", "Recieved"];
   const bottomVoiceSheetRef = useRef();
-  const dispatch = useDispatch();
   const user = useSelector(selectAuthUser);
-  const { allRequests, error } = useSelector(selectChallengeClashRequests);
   const [currentChallenge, setCurrentChallenge] = useState(null);
 
-  useEffect(() => {
-    if (user?.id) {
-      dispatch(fetchUserPostsAndChallenges(user.id));
-    }
-  }, [user, dispatch]);
+  let { challenges } = user;
 
   const memoizedRequestsRecieved = useMemo(() => {
-    return allRequests?.filter((e) => {
-      const isReceived = e?.opponentId === user?.id;
+    return challenges?.filter((e) => {
+      const isReceived = e?.opponent?._id === user?._id;
       return isReceived && e;
     });
-  }, [allRequests, activeFilter, user?.id]);
+  }, [activeFilter, user?._id]);
 
   const memoizedRequestsSent = useMemo(() => {
-    return allRequests?.filter((e) => {
-      const isSent = e?.challengerId === user?.id;
+    return challenges?.filter((e) => {
+      const isSent = e?.challenger?._id === user?._id;
       return isSent && e;
     });
-  }, [allRequests, activeFilter, user?.id]);
+  }, [activeFilter, user?._id]);
 
   const FilterItem = ({ data, index, count }) => {
     let conditional_style = {
@@ -71,7 +66,7 @@ const ChallengeRequests = (props) => {
     return activeFilter == "Sent"
       ? memoizedRequestsSent
       : memoizedRequestsRecieved;
-  }, [allRequests, activeFilter, user?.id]);
+  }, [activeFilter, user?._id]);
 
   return (
     <View style={styles.container}>
@@ -119,9 +114,12 @@ const ChallengeRequests = (props) => {
           })}
         </View>
       </ScrollView>
-      <VoiceRecorderBottomSheet
-        challengeId={currentChallenge}
+  
+      <UpdatedVoiceRecorderBottomSheet
+        clashTo={"challenge"}
+        postId={currentChallenge?._id}
         bottomVoiceSheetRef={bottomVoiceSheetRef}
+        // onPostClash={onPostClash}
       />
     </View>
   );

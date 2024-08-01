@@ -18,15 +18,21 @@ import { getPercent } from "../../middleware";
 import * as WebBrowser from "expo-web-browser";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
+import ContentLoader, {
+  Facebook,
+  Instagram,
+} from "react-content-loader/native";
 
 const News = () => {
   const [newsArr, setNewsArr] = useState([]);
-  const [refreshing, setRefreshing] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const currentUser = useSelector(selectAuthUser);
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
 
   useEffect(() => {
+    setLoading(true);
     loadDefaultNews();
     searchNews("politics");
   }, []);
@@ -38,6 +44,7 @@ const News = () => {
       );
       setNewsArr(sortPostsByCreatedAt(response.data.articles));
       setRefreshing(false);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching default news:", error);
     }
@@ -45,11 +52,16 @@ const News = () => {
 
   const searchNews = async (text) => {
     try {
+      if(text?.length==0){
+        loadDefaultNews()
+        return
+      }
       const response = await axios.get(
         `https://newsapi.org/v2/everything?q=${text}&apiKey=30026c906e3044828175b52bbe0736bd`
       );
       setNewsArr(sortPostsByCreatedAt(response.data.articles));
       setRefreshing(false);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching searched news:", error);
     }
@@ -57,11 +69,13 @@ const News = () => {
 
   const handleSearch = (text) => {
     setRefreshing(true);
+    setLoading(true);
     searchNews(text);
   };
 
   const onRefresh = () => {
     setRefreshing(true);
+    setLoading(true);
     loadDefaultNews();
   };
 
@@ -87,9 +101,15 @@ const News = () => {
         <View style={styles.content}>
           <SearchBar onChangeText={handleSearch} />
           <View style={styles.newsWrapper}>
-            {newsArr.map((item, index) => (
-              <NewsCard key={index} data={item} />
-            ))}
+            {loading ? (
+              <>
+                <Facebook />
+                <Facebook />
+                <Facebook />
+              </>
+            ) : (
+              newsArr.map((item, index) => <NewsCard key={index} data={item} />)
+            )}
           </View>
         </View>
       </ScrollView>

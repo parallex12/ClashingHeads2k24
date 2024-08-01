@@ -57,7 +57,6 @@ const singlePostSlice = createSlice({
         ...action.payload,
       };
     },
-   
   },
 });
 
@@ -113,14 +112,13 @@ export function generateUniqueId() {
 export const addClashToPost = (postId, clashData) => async (dispatch) => {
   try {
     dispatch(addClash({ ...clashData }));
-    const db = getFirestore();
-    const clashesRef = doc(db, "Posts", postId, "Clashes", clashData?.id);
+    console.log(clashData)
+    return
     if (clashData?.recording && clashData?.clashType == "mic") {
       await uploadMedia(clashData?.recording, "clashesAudios")
         .then(async (res) => {
           if (res?.url) {
             clashData["recording"] = res?.url;
-            console.log(clashData);
             await setDoc(clashesRef, clashData);
           }
         })

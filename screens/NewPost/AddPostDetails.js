@@ -76,7 +76,7 @@ const AddPostDetails = (props) => {
           description: news_post?.description,
           post_image: news_post?.urlToImage,
           createdAt: new Date().toISOString(),
-          author: user_profile?.id,
+          author: user_profile?._id,
           newsAuthor: news_post?.author,
           postReference: "news",
           newsUrl: news_post?.url,
@@ -153,7 +153,6 @@ const AddPostDetails = (props) => {
       })
       .catch((e) => {
         setLoading(false);
-
         alert(e?.msg);
       });
   };

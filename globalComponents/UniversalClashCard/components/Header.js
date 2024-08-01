@@ -14,6 +14,7 @@ import { memo } from "react";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
+import CacheImage from "../../CacheImage";
 
 const Header = (props) => {
   let { author, createdAt, onProfilePress, profileStyles } = props;
@@ -31,14 +32,13 @@ const Header = (props) => {
           style={styles.profileWrapper}
           onPress={onProfilePress}
         >
-          <Image
+          <CacheImage
             source={source}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
           />
         </TouchableOpacity>
-        {author?.status &&<View style={styles.online}></View>}
-
+        {author?.status && <View style={styles.online}></View>}
       </View>
     );
   };
@@ -50,7 +50,7 @@ const Header = (props) => {
           flexDirection: "row",
         }}
         onPress={() => {
-          if (user_author?.id == user_details?.id) {
+          if (user_author?._id == user_details?._id) {
             navigation?.navigate("MyProfile");
           } else {
             navigation?.navigate("UserProfile", {

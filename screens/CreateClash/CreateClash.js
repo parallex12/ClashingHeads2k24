@@ -37,57 +37,55 @@ import {
 } from "../../state-management/features/screen_loader/loaderSlice";
 import { addChallengeRequestForUser } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
 import { fetchAllChallengeClashes } from "../../state-management/features/allChallengeClashes/allChallengeClashesSlice";
+import { search_users } from "../../state-management/apiCalls/search";
+import { create_challenge_clash } from "../../state-management/apiCalls/challengeClash";
 
 const CreateClash = (props) => {
-  let { } = props;
+  let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_details = useSelector(selectAuthUser);
   const [recordedVoice, setRecordedVoice] = useState(null);
+  const [loading, setLoading] = useState(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const { users, loading } = useSelector(selectSearchedUsers);
   const [showUsers, setShowUsers] = useState(false);
+  const [foundUsers, setFoundUsers] = useState(null);
   const dispatch = useDispatch();
+
   const [clashForm, setClashForm] = useState({
     title: null,
-    challenger: user_details?.id, // The user who initiates the challenge
+    challenger: user_details?._id, // The user who initiates the challenge
     opponent: null, // The user who is being challenged
     challenger_audio: recordedVoice?.getURI(),
     opponent_audio: null,
-    createdAt: new Date().toISOString(),
-    opinions: 0,
-    voted: 0,
-    votes: {},
-    views: 0,
-    isChallengeDone: false,
     status: "pending",
   });
 
   const onSendRequest = async () => {
     clashForm["challenger_audio"] = await recordedVoice?.getURI();
-    clashForm["challengerId"] = user_details?.id, // The user who initiates the challenge
-      clashForm["opponentId"] = clashForm?.opponent?.id, // The user who is being challenged
-      await validate_clash_details(clashForm)
-        .then((res) => {
-          dispatch(startLoading());
-          if (res?.code == 200) {
-            createChallengeClash(clashForm)
-              .then((res) => {
-                dispatch(stopLoading());
-                dispatch(fetchAllChallengeClashes());
-                props?.navigation.navigate("Clashes")
-              })
-              .catch((e) => {
-                console.log(e);
-                dispatch(stopLoading());
-              });
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-          alert(e?.msg);
-        });
+    clashForm["opponent"] = clashForm?.opponent?._id;
+    setLoading(true);
+    await validate_clash_details(clashForm)
+      .then((res) => {
+        if (res?.code == 200) {
+          create_challenge_clash(clashForm)
+            .then((res) => {
+              console.log(res)
+              props?.navigation.navigate("Home");
+              setLoading(false);
+            })
+            .catch((e) => {
+              console.log(e);
+              setLoading(false);
+            });
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+        alert(e?.msg);
+        setLoading(false);
+      });
   };
 
   const debouncedSearch = useCallback(
@@ -104,11 +102,11 @@ const CreateClash = (props) => {
     }
   }, [searchQuery, debouncedSearch]);
 
-  const onSearchOpponent = (query) => {
+  const onSearchOpponent = async (query) => {
     setSearchQuery(query);
-    dispatch(fetchUsersByQuery(query));
+    let foundUsers = await search_users(query);
+    setFoundUsers(foundUsers);
   };
-
 
   return (
     <View style={styles.container}>
@@ -156,29 +154,23 @@ const CreateClash = (props) => {
               />
             }
           />
-          {showUsers ? (
-            loading ? (
-              <ActivityIndicator size="small" color="#222" />
-            ) : (
-              searchQuery?.length > 0 && (
-                <PeopleResult
-                  onCardPress={(item) => {
-                    setClashForm((prev) => {
-                      let alreadySelected = prev?.opponent?.id == item?.id;
-                      return {
-                        ...prev,
-                        opponent: alreadySelected ? null : item,
-                      };
-                    });
-                    setShowUsers(false);
-                    setSearchQuery("");
-                  }}
-                  isSelected={clashForm?.opponent?.id}
-                  users={[]}
-                />
-              )
-            )
-          ) : null}
+          {showUsers && searchQuery?.length > 0 && (
+            <PeopleResult
+              onPress={(item) => {
+                setClashForm((prev) => {
+                  let alreadySelected = prev?.opponent?._id == item?._id;
+                  return {
+                    ...prev,
+                    opponent: alreadySelected ? null : item,
+                  };
+                });
+                setShowUsers(false);
+                setSearchQuery("");
+              }}
+              isSelected={clashForm?.opponent?._id}
+              users={foundUsers}
+            />
+          )}
 
           {clashForm?.opponent && searchQuery?.length == 0 && (
             <UserCard
@@ -215,6 +207,7 @@ const CreateClash = (props) => {
         </View>
       </View>
       <StandardButton
+        loading={loading}
         title="Send  Clash Request"
         customStyles={{
           width: "90%",

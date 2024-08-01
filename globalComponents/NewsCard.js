@@ -12,12 +12,14 @@ import { AntDesign } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import * as WebBrowser from "expo-web-browser";
+import { useState } from "react";
 
 const NewsCard = (props) => {
   let { data, customStyles, placeholder } = props;
   let { width, height } = useWindowDimensions();
   let styles = NewsCardStyles({ width, height });
   let navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
 
   let { author, description, url, urlToImage, title, publishedAt, source } =
     data;
@@ -60,10 +62,15 @@ const NewsCard = (props) => {
         <View style={styles.newsCardThumbnailCont}>
           <Image
             source={
-              urlToImage ? { uri: urlToImage } : require("../assets/icon.png")
+              loading
+                ? require("../assets/icon.png")
+                : urlToImage
+                ? { uri: urlToImage }
+                : require("../assets/icon.png")
             }
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
+            onLoad={() => setLoading(false)}
           />
         </View>
         <View style={styles.newsContentWrapper}>

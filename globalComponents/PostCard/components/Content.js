@@ -21,18 +21,15 @@ const Content = memo((props) => {
   let {
     description,
     onAudioPlay,
-    noaudioreset,
     desc_limit,
     title,
     post_image,
     sticker,
     recording,
     post_image_hash,
-    loadedData
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  let navigation = useNavigation();
   const [downloadedAudio, setDownloadedAudio] = useState(null);
 
   const downloadCompressedAudio = async () => {

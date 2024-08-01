@@ -6,7 +6,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 
@@ -26,15 +26,16 @@ import {
 } from "../../state-management/features/challengeClash/challengeClashSlice";
 import { fetchInstantUserById } from "../../state-management/features/searchedUsers/searchedUsersSlice";
 import { Instagram } from "react-content-loader/native";
+import { selectAuthUser } from "../../state-management/features/auth";
+import { update_clash_by_id } from "../../state-management/apiCalls/clash";
 
 const ClashCard = (props) => {
   let { data, onPostClashesPress, challengeClash, hrLine, onReportPress } =
     props;
   let { width, height } = useWindowDimensions();
   let styles = ClashCardStyles({ width, height });
-  let navigation = useNavigation();
   let dispatch = useDispatch();
-  const userId = auth().currentUser?.uid; // replace with actual user ID from your auth state
+  const { _id } = useSelector(selectAuthUser);
   const [singleUser, setAuthor] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,47 +44,45 @@ const ClashCard = (props) => {
 
   useEffect(() => {
     (async () => {
-      let author_data = await fetchInstantUserById(data?.author);
-      setAuthor(author_data);
-      setLoading(false);
+      setAuthor(data?.author);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     })();
   }, [data]);
 
-  const handleReaction = (reactionType) => {
-    if (challengeClash) {
-      dispatch(updateSubClashReaction(data, userId, reactionType));
+  const handleReaction = async (type) => {
+    let likes = data?.likes?.filter((e) => e != _id);
+    let dislikes = data?.dislikes?.filter((e) => e != _id);
+    if (type == "like") {
+      likes.push(_id);
     } else {
-      dispatch(updateClashReaction(data, userId, reactionType));
+      dislikes.push(_id);
     }
+
+    await update_clash_by_id(data?._id, {
+      likes,
+      dislikes,
+    });
   };
 
-  const onAudioPlay = () => {
-    let audioViews = { ...data?.listened } || {};
-    if (!audioViews[userId]) {
-      audioViews[userId] = true;
-      if (challengeClash) {
-        dispatch(
-          updateSubClashDetails(data?.postId, data?.id, {
-            listened: audioViews,
-          })
-        );
-      } else {
-        dispatch(
-          updateClashDetails(data?.postId, data?.id, { listened: audioViews })
-        );
-      }
-    }
+  const onAudioPlay = async () => {
+    let audio_views = [...data?.listened];
+    if (audio_views?.includes(_id)) return;
+    audio_views.push(_id);
+    await update_clash_by_id(data?._id, { listened: audio_views });
   };
 
   let userMention =
     data?.clashTo != "post" ? data?.clashTo?.author?.username : null;
 
-  if (loading) {
-    return <Instagram style={{ alignSelf: "center" }} />;
+  if (!data || loading) {
+    return <Instagram />;
   }
 
   return (
     <View style={styles.container}>
+      {!data || (loading && <Instagram />)}
       {hrLine && <View style={styles.hrLine}></View>}
       <View style={styles.content}>
         <Header author={singleUser || {}} createdAt={data?.createdAt} />

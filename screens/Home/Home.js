@@ -40,7 +40,10 @@ import { getPercent, setAuthToken } from "../../middleware";
 import "../../utils/firebaseInitialize";
 import { useUserStatus } from "../../middleware/Hooks/useUserStatus";
 import PostActionsBottomSheet from "../../globalComponents/PostActionsBottomSheet/PostActionsBottomSheet";
-import { connectUserToDb } from "../../state-management/apiCalls/auth";
+import {
+  connectUserToDb,
+  get_user_profile,
+} from "../../state-management/apiCalls/auth";
 import { get_all_posts_test } from "../../state-management/apiCalls/post";
 
 const Home = (props) => {
@@ -56,13 +59,14 @@ const Home = (props) => {
   const [currentPosts, setCurrentPosts] = useState([]);
   const [reachedEnd, setReachedEnd] = useState(false);
   const dispatch = useDispatch();
-  const user_details = useSelector(selectAuthUser);
   const user = auth().currentUser;
 
   useEffect(() => {
     connectUserToDb(user?.phoneNumber)
-      .then((res) => {
-        dispatch(setUserDetails(res?.user || res));
+      .then(async (res) => {
+        let user_id = res?.user?._id || res?._id;
+        let user_profile = await get_user_profile(user_id);
+        dispatch(setUserDetails(user_profile));
         if (res?.goTo) {
           props.navigation.reset({
             index: 0,

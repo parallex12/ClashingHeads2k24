@@ -13,6 +13,8 @@ import { useNavigation } from "@react-navigation/native";
 import { onShareApp } from "../../../utils";
 import { useEffect, useState } from "react";
 import auth from "@react-native-firebase/auth";
+import { selectAuthUser } from "../../../state-management/features/auth";
+import { useSelector } from "react-redux";
 
 const ActionMenu = (props) => {
   let {
@@ -22,18 +24,15 @@ const ActionMenu = (props) => {
     onReportPress,
     dislikes,
     likes,
-    reactions,
     listened,
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const navigation = useNavigation();
-  const [activeReaction, setActiveReaction] = useState({});
-
+  const [reactions, setReactions] = useState({});
+  const { _id } = useSelector(selectAuthUser);
   useEffect(() => {
-    if (!reactions) return;
-    setActiveReaction({ old: reactions[auth().currentUser?.uid] });
-  }, [reactions]);
+    setReactions({ likes, dislikes });
+  }, [likes, dislikes]);
 
   const FooterItem = ({ item, index }) => {
     return (
@@ -54,38 +53,34 @@ const ActionMenu = (props) => {
   };
 
   const onReact = (type) => {
-    let c_reaction = activeReaction?.old || activeReaction?.new;
-    if (c_reaction == type) {
-      setActiveReaction({ new: null });
-      handleReaction(type);
-    } else {
-      setActiveReaction({ new: type });
-      handleReaction(type);
-    }
-    delete activeReaction["old"];
+    let _likes = reactions?.likes?.filter((e) => e != _id);
+    let _dislikes = reactions?.dislikes?.filter((e) => e != _id);
+    type == "like" ? _likes.push(_id) : _dislikes.push(_id);
+    setReactions({ likes: _likes, dislikes: _dislikes });
+    handleReaction(type);
   };
 
-  let isLiked = activeReaction?.new == "like" || activeReaction?.old == "like";
-  let isDisLiked =
-    activeReaction?.new == "dislike" || activeReaction?.old == "dislike";
-  let listenedViews = Object.keys(listened || {}).length;
+  let isLiked = reactions?.likes?.includes(_id);
+  let isDisLiked = reactions?.dislikes?.includes(_id);
+  let listenedViews = listened?.length;
+
   let actions = [
     {
-      title: likes,
+      title: reactions?.likes?.length,
       iconImg: isLiked
         ? require("../../../assets/icons/post_cards/like_active.png")
         : require("../../../assets/icons/post_cards/like.png"),
       onPress: () => onReact("like"),
     },
     {
-      title: dislikes,
+      title: reactions?.dislikes?.length,
       iconImg: isDisLiked
         ? require("../../../assets/icons/post_cards/dislike_active.png")
         : require("../../../assets/icons/post_cards/dislike.png"),
       onPress: () => onReact("dislike"),
     },
     {
-      title: clashes,
+      title: "Reply Clash",
       iconImg: require("../../../assets/icons/post_cards/sound.png"),
       onPress: () => onPostClashesPress(),
     },

@@ -55,7 +55,7 @@ const UserCard = (props) => {
             />
           )}
         </View>
-        <Text style={styles.slugText}>{author?.politics}</Text>
+        <Text style={styles.slugText}>{author?.politics+" @"+author?.username}</Text>
       </View>
       {selectable ? (
         isSelected ? (

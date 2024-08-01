@@ -28,6 +28,7 @@ import { fetchAllChallengeClashes } from "../../state-management/features/allCha
 import StandardButton from "../../globalComponents/StandardButton";
 import { sortPostsByCreatedAt } from "../../utils";
 import RoomCard from "./components/RoomCard";
+import { get_all_challenges } from "../../state-management/apiCalls/challengeClash";
 
 const Clashes = (props) => {
   let {} = props;
@@ -36,20 +37,18 @@ const Clashes = (props) => {
   const navigation = useNavigation();
   const [page, setPage] = useState(1);
   const dispatch = useDispatch();
-  const clashes = useSelector(selectAllChallengeClashes);
-  const loading = useSelector(selectChallengeClashLoading);
-  const error = useSelector(selectChallengeClashError);
   const [refreshing, setRefreshing] = useState(false);
+  const [clashes, setClashes] = useState([]);
 
   useEffect(() => {
-    dispatch(fetchAllChallengeClashes());
-  }, [dispatch, page]);
+    getChallenges();
+  }, [page]);
 
-  const loadMoreClashes = () => {
-    if (!loading) {
-      setPage((prevPage) => prevPage + 1);
-    }
+  const getChallenges = async () => {
+    let all_ch = await get_all_challenges(page);
+    setClashes(all_ch?.challenges);
   };
+
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -58,7 +57,7 @@ const Clashes = (props) => {
   }, []);
 
   let memoizedClashes = useMemo(() => {
-    return sortPostsByCreatedAt(clashes?.filter((e) => e?.status != "pending"));
+    return clashes
   }, [clashes]);
 
   return (
@@ -100,17 +99,17 @@ const Clashes = (props) => {
             <Text style={font(13, "#FFFFFF", "Semibold")}>Create Room</Text>
           </TouchableOpacity>
           {[1]?.map((item, index) => {
-              return (
-                <RoomCard
-                  onCardPress={() => navigation.navigate("ClashRoom")}
-                  active={index == 0}
-                  is_featured={index == 0}
-                  is_public={index % 2 == 0}
-                  is_private={index % 2 == 1}
-                  key={index}
-                />
-              );
-            })}
+            return (
+              <RoomCard
+                onCardPress={() => navigation.navigate("ClashRoom")}
+                active={index == 0}
+                is_featured={index == 0}
+                is_public={index % 2 == 0}
+                is_private={index % 2 == 1}
+                key={index}
+              />
+            );
+          })}
           {/* Clash cards here */}
           <View style={styles.cardsWrapper}>
             {memoizedClashes?.map((item, index) => {
@@ -127,7 +126,6 @@ const Clashes = (props) => {
                 />
               );
             })}
-           
           </View>
           {/* {clashes?.length > 0 && <StandardButton
             title={loading ? "Loading..." : "Load More"}
