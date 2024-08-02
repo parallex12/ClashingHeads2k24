@@ -1,21 +1,9 @@
 import * as React from "react";
-import {
-  NavigationContainer,
-  useNavigation,
-  useNavigationState,
-} from "@react-navigation/native";
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
-} from "@react-navigation/drawer";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import Home from "../screens/Home/Home";
 import ClashDetails from "../screens/ClashDetail/ClashDetail";
-import {
-  createStackNavigator,
-  TransitionPresets,
-} from "@react-navigation/stack";
+import { createStackNavigator } from "@react-navigation/stack";
 import SideMenu from "../globalComponents/SideMenu/SideMenu";
 import Search from "../screens/Search/Search";
 import Messages from "../screens/Messages/Messages";
@@ -42,19 +30,9 @@ import AccountSettings from "../screens/AccountSettings/AccountSettings";
 import SecuritySettings from "../screens/SecuritySettings/SecuritySettings";
 import NotificationSettings from "../screens/NotificationSettings/NotificationSettings";
 import PrivacySettings from "../screens/PrivacySettings/PrivacySettings";
-import {
-  firebase_expo_app_initialize,
-  user_auth,
-} from "../state-management/atoms/atoms";
 import FullScreenLoader from "../globalComponents/FullScreenLoader/FullScreenLoader";
-import { firebaseConfig } from "../utils";
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectAuthUser,
-  selectIsAuth,
-} from "../state-management/features/auth";
+import { selectIsAuth } from "../state-management/features/auth";
 import ChallengeRequests from "../screens/ChallengeRequests/ChallengeRequests";
 import ChallengeClash from "../screens/ChallengeClash/ChallengeClash";
 import AddBio from "../screens/Authentication/AddBio/AddBio";
@@ -66,7 +44,6 @@ import CalendarScreen from "../screens/Calendar/CalendarScreen";
 import BottomMenu from "../globalComponents/BottomMenu/BottomMenu";
 import { onScreenChange } from "../state-management/features/bottom_menu/bottom_menuSlice";
 import ChatScreen from "../screens/ChatScreen/ChatScreen";
-import PostActionsBottomSheet from "../globalComponents/PostActionsBottomSheet/PostActionsBottomSheet";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -151,13 +128,12 @@ const HomeScreens = () => {
 
 function AppNavigation() {
   const navigation = useNavigation();
-  const dispatch=useDispatch()
-  React.useEffect(()=>{
-    navigation.addListener("state",()=>{
-      dispatch(onScreenChange(navigation.getCurrentRoute()?.name))
-    })
-
-  },[navigation.getCurrentRoute()])
+  const dispatch = useDispatch();
+  React.useEffect(() => {
+    navigation.addListener("state", () => {
+      dispatch(onScreenChange(navigation.getCurrentRoute()?.name));
+    });
+  }, [navigation.getCurrentRoute()]);
 
   return (
     <Navigator

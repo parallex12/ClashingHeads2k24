@@ -13,12 +13,6 @@ import CountryCodeField from "../../../globalComponents/CountryCodeField";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useState } from "react";
-import auth from "@react-native-firebase/auth";
-import {
-  startLoading,
-  stopLoading,
-} from "../../../state-management/features/screen_loader/loaderSlice";
-import { setUserForm } from "../../../state-management/features/auth/authSlice";
 import { useNavigation } from "@react-navigation/native";
 
 const Signup = (props) => {
@@ -42,9 +36,8 @@ const Signup = (props) => {
       return;
     }
     setLoading(true);
-    dispatch(setUserForm({ phone: phone_number_raw }));
     setTimeout(() => {
-      navigation?.navigate("OTPVerification");
+      navigation?.navigate("OTPVerification", { phone: phone_number_raw });
       setLoading(false);
     }, 1000);
   };

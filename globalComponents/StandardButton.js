@@ -8,7 +8,8 @@ import {
 import { connect } from "react-redux";
 import { standardButtonStyles } from "../styles/Global/main";
 const StandardButton = (props) => {
-  let { customStyles, loading, rightIcon, textStyles, onPress, title } = props;
+  let { customStyles,loading, rightIcon, textStyles, onPress, title } =
+    props;
   let { width, height } = useWindowDimensions();
   let styles = standardButtonStyles({ width, height });
 
@@ -21,7 +22,7 @@ const StandardButton = (props) => {
         <ActivityIndicator size="small" color="#fff" />
       ) : (
         <>
-          <Text style={[styles.text, textStyles]}>{title}</Text>
+          {title &&<Text style={[styles.text, textStyles]}>{title}</Text>}
           {rightIcon && rightIcon}
         </>
       )}

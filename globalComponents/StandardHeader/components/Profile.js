@@ -20,19 +20,18 @@ const Profile = (props) => {
   const [imageLoad, setImageLoad] = useState(true);
 
   let profileImg = {
-    uri:
-      source ||
-      "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
+    uri: source,
   };
 
   const onMenu = () => {
-    navigation.navigate("MyProfile")
+    navigation.navigate("MyProfile");
     // navigation.dispatch(DrawerActions.openDrawer());
   };
 
+
   return (
     <TouchableOpacity style={styles.container} onPress={onMenu}>
-      <View style={[styles.profileWrapper,customStyles]}>
+      <View style={[styles.profileWrapper, customStyles]}>
         {imageLoad && profile_hash && (
           <Blurhash
             blurhash={profile_hash}
@@ -45,7 +44,7 @@ const Profile = (props) => {
           />
         )}
         <Image
-          source={profileImg}
+          source={source?profileImg:require('../../../assets/icons/42.png')}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
           onLoad={() => setImageLoad(false)}

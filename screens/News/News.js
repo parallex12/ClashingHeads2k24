@@ -34,7 +34,6 @@ const News = () => {
   useEffect(() => {
     setLoading(true);
     loadDefaultNews();
-    searchNews("politics");
   }, []);
 
   const loadDefaultNews = async () => {

@@ -22,19 +22,13 @@ import {
   where,
 } from "firebase/firestore";
 import "firebase/compat/database";
-
 import { validateRequiredFields } from "../utils";
-import { useRecoilState } from "recoil";
-import { home_posts, user_auth } from "../state-management/atoms/atoms";
 import {
   getDownloadURL,
   getStorage,
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { HOME_POSTS, USER_DB_DETAILS } from "../state-management/types/types";
-import store from "../state-management/store/store";
-import { setNewPostProgress } from "../state-management/features/screen_loader/loaderSlice";
 import axios from "axios";
 import { create_post } from "../state-management/apiCalls/post";
 
@@ -260,7 +254,7 @@ export const validate_user_details = async (details, user_profile_details) => {
 export const validate_post_details = async (details) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const requiredFields = ["author", "title", "recording"];
+      const requiredFields = ["author", "title"];
       const validation = validateRequiredFields(details, requiredFields);
       if (!validation.isValid) {
         reject({ msg: validation.msg, field: validation.field });
@@ -405,12 +399,13 @@ export const uploadMedia = (media, path, mediaName) => {
 export const createPost = async (post_details) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let { url } = await uploadMedia(
-        post_details?.recording,
-        "post_recordings"
-      );
-      post_details["recording"] = url;
-
+      if (post_details?.recording) {
+        let { url } = await uploadMedia(
+          post_details?.recording,
+          "post_recordings"
+        );
+        post_details["recording"] = url;
+      }
       if (post_details?.post_image) {
         let { url } = await uploadMedia(
           post_details?.post_image,

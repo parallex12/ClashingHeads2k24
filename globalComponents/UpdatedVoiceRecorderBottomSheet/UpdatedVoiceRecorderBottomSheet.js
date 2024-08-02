@@ -36,7 +36,14 @@ import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu
 import { isBottomSheetOpen } from "../../state-management/features/bottom_menu";
 
 const UpdatedVoiceRecorderBottomSheet = (props) => {
-  let { bottomVoiceSheetRef, postId, clashTo, onPostClash } = props;
+  let {
+    bottomVoiceSheetRef,
+    stickers,
+    postBtnTitle,
+    postId,
+    clashTo,
+    onPostClash,
+  } = props;
   let { width, height } = useWindowDimensions();
   let styles = UpdatedVoiceRecorderBottomSheetStyles({ width, height });
   const [currentVoiceMode, setCurrentVoiceMode] = useState("mic");
@@ -143,16 +150,22 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
         >
           <BottomSheetView style={styles.contentContainer}>
             <View style={styles.micWrapper}>
-              <TouchableOpacity
-                style={styles.changeModeBtn}
-                onPress={onChangeMode}
-              >
-                {currentVoiceMode == "sticker" ? (
-                  <FontAwesome name="microphone" size={24} color="#fff" />
-                ) : (
-                  <MaterialIcons name="emoji-emotions" size={24} color="#fff" />
-                )}
-              </TouchableOpacity>
+              {stickers && (
+                <TouchableOpacity
+                  style={styles.changeModeBtn}
+                  onPress={onChangeMode}
+                >
+                  {currentVoiceMode == "sticker" ? (
+                    <FontAwesome name="microphone" size={24} color="#fff" />
+                  ) : (
+                    <MaterialIcons
+                      name="emoji-emotions"
+                      size={24}
+                      color="#fff"
+                    />
+                  )}
+                </TouchableOpacity>
+              )}
               {currentVoiceMode == "sticker" ? (
                 <Image
                   source={stickerArr[selectedSticker || 0].img}
@@ -174,24 +187,26 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
                 />
               )}
             </View>
-            <View style={styles.quickAudioWrapper}>
-              {currentVoiceMode == "mic" ? (
-                <>
-                  <Emojis onEmojiPress={(item) => console.log(item)} />
-                </>
-              ) : (
-                <View style={{ paddingVertical: getPercent(1, height) }}>
-                  <Stickers
-                    selectedSticker={selectedSticker}
-                    setSelectedSticker={setSelectedSticker}
-                  />
-                </View>
-              )}
-            </View>
+            {stickers && (
+              <View style={styles.quickAudioWrapper}>
+                {currentVoiceMode == "mic" ? (
+                  <>
+                    <Emojis onEmojiPress={(item) => console.log(item)} />
+                  </>
+                ) : (
+                  <View style={{ paddingVertical: getPercent(1, height) }}>
+                    <Stickers
+                      selectedSticker={selectedSticker}
+                      setSelectedSticker={setSelectedSticker}
+                    />
+                  </View>
+                )}
+              </View>
+            )}
 
             {currentVoiceMode != "mic" && (
               <StandardButton
-                title="Post"
+                title={postBtnTitle || "Post"}
                 loading={loading}
                 customStyles={{ width: "45%", marginVertical: 20 }}
                 onPress={onPost}
@@ -200,7 +215,7 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
             {!isRecording && recording && (
               <View style={styles.postBtnsWrapper}>
                 <StandardButton
-                  title="Post"
+                  title={postBtnTitle || "Post"}
                   loading={loading}
                   customStyles={{ width: "45%", marginVertical: 20 }}
                   onPress={onPost}

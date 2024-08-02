@@ -48,7 +48,6 @@ const CountryCodeField = (props) => {
         show={show}
         // when picker button press you will get the country object with dial code
         pickerButtonOnPress={(item) => {
-          console.log(item);
           setCountryDetails(item);
           setCountry({ dial_code: item?.dial_code, flag: item?.flag });
           setShow(false);
@@ -61,4 +60,4 @@ const CountryCodeField = (props) => {
 const mapStateToProps = (state) => ({
   errors: state.errors.errors,
 });
-export default CountryCodeField
+export default CountryCodeField;

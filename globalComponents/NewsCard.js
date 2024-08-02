@@ -53,7 +53,7 @@ const NewsCard = (props) => {
   };
 
   const onMicPress = () => {
-    navigation.navigate("NewPost", { news_post: data });
+    navigation.navigate("AddPostDetails", { news_post: data });
   };
 
   return (
@@ -62,11 +62,7 @@ const NewsCard = (props) => {
         <View style={styles.newsCardThumbnailCont}>
           <Image
             source={
-              loading
-                ? require("../assets/icon.png")
-                : urlToImage
-                ? { uri: urlToImage }
-                : require("../assets/icon.png")
+              urlToImage ? { uri: urlToImage } : require("../assets/icon.png")
             }
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}

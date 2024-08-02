@@ -17,58 +17,61 @@ import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
 import PinCodeInput from "../../../globalComponents/PinCodeInput";
 import { selectUserForm } from "../../../state-management/features/auth";
-import { loginSuccess, setUserForm } from "../../../state-management/features/auth/authSlice";
-import { startLoading, stopLoading } from "../../../state-management/features/screen_loader/loaderSlice";
+import {
+  loginSuccess,
+  setUserForm,
+} from "../../../state-management/features/auth/authSlice";
 import auth from "@react-native-firebase/auth";
 
 const OTPVerification = (props) => {
-  let { } = props;
+  let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  let { phone } = props?.route?.params;
   const [otpCode, setOtpCode] = useState(null);
-  const dispatch = useDispatch()
-  const form = useSelector(selectUserForm)
-  const [confirm, setConfirm] = useState(null)
+  const dispatch = useDispatch();
+  const [confirm, setConfirm] = useState(null);
   const [loading, setLoading] = useState(false);
 
   async function signInWithPhoneNumber(phoneNumber) {
     await auth()
       .signInWithPhoneNumber(phoneNumber)
       .then((res) => {
-        setConfirm(res)
-        setLoading(false)
+        setConfirm(res);
+        setLoading(false);
       })
       .catch((e) => {
         console.log(e);
-        setLoading(false)
+        setLoading(false);
         alert("Something went wrong try again!");
-        props?.navigation.goBack()
+        props?.navigation.goBack();
       });
   }
 
   useEffect(() => {
-    if(!form?.phone)return
-    signInWithPhoneNumber(form?.phone)
-  }, [])
+    if (!phone) return;
+    signInWithPhoneNumber(phone);
+  }, []);
 
   const onContinue = async () => {
-    if (!confirm) return
+    if (!confirm) return;
     try {
       if (otpCode?.length != 6) return alert("Invalid OTP.");
-      setLoading(true)
-      await confirm.confirm(otpCode)
+      setLoading(true);
+      await confirm
+        .confirm(otpCode)
         .then(async (res) => {
-          dispatch(loginSuccess())
-          setLoading(false)
+          dispatch(loginSuccess());
+          setLoading(false);
         })
         .catch((e) => {
           console.log("e", e);
-          setLoading(false)
+          setLoading(false);
           alert("Something went wrong try again!");
         });
     } catch (error) {
-      console.log(error)
-      setLoading(false)
+      console.log(error);
+      setLoading(false);
       console.log("Invalid code.");
       alert("Something went wrong try again!");
     }
@@ -92,9 +95,9 @@ const OTPVerification = (props) => {
             <PinCodeInput setOtpCode={setOtpCode} />
           </View>
           <Text style={font(10, "#252525", "Regular", 3, 20)}>
-            You will receive your verification code on your given number{" "}
-            {form?.phone}. If you didn’t get the number then you can change or
-            edit the number.{" "}
+            You will receive your verification code on your given number {phone}
+            . If you didn’t get the number then you can change or edit the
+            number.{" "}
             <Text style={font(10, "#8E70F5", "Regular", 3)}>Change</Text>
           </Text>
           <StandardButton
@@ -112,4 +115,4 @@ const OTPVerification = (props) => {
   );
 };
 
-export default OTPVerification
+export default OTPVerification;

@@ -1,50 +1,30 @@
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   RefreshControl,
-  ScrollView,
   Text,
-  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
 import { styles as _styles } from "../../styles/Home/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { font, fontTest } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig, sortPostsByCreatedAt } from "../../utils";
-import { getFirestore } from "firebase/firestore";
 import { connect, useDispatch, useSelector } from "react-redux";
 import auth from "@react-native-firebase/auth";
-import firebase from "firebase/compat/app";
-import { selectAuthUser } from "../../state-management/features/auth";
-import {
-  getFBAccessToken,
-  getHomePosts,
-  getPaginatedHomePosts,
-  getRecommendedPosts,
-  isUserProfileConnected,
-} from "../../middleware/firebase";
-import {
-  fetchCurrentUserDetails,
-  logout,
-  setUserDetails,
-} from "../../state-management/features/auth/authSlice";
-import { selectPosts } from "../../state-management/features/posts";
+import { setUserDetails } from "../../state-management/features/auth/authSlice";
 import { getPercent, setAuthToken } from "../../middleware";
-import "../../utils/firebaseInitialize";
-import { useUserStatus } from "../../middleware/Hooks/useUserStatus";
 import PostActionsBottomSheet from "../../globalComponents/PostActionsBottomSheet/PostActionsBottomSheet";
 import {
   connectUserToDb,
   get_user_profile,
 } from "../../state-management/apiCalls/auth";
 import { get_all_posts_test } from "../../state-management/apiCalls/post";
+import { stopLoading } from "../../state-management/features/screen_loader/loaderSlice";
 
 const Home = (props) => {
   let {} = props;
@@ -78,7 +58,7 @@ const Home = (props) => {
         console.log(e);
         // dispatch(logout());
       });
-  }, []);
+  }, [user]);
 
   const loadPosts = async (type) => {
     try {
@@ -123,10 +103,18 @@ const Home = (props) => {
       <View style={styles.header2Wrapper}>
         <Text style={font(18, "#111827", "Semibold")}>Clashing Heads</Text>
         <StandardButton
-          title="Reply Clash"
           customStyles={styles.header2WrapperBtn}
-          textStyles={font(12, "#FFFFFF", "Semibold")}
-          onPress={() => props?.navigation.navigate("NewPost")}
+          onPress={() => props?.navigation.navigate("Notifications")}
+          rightIcon={
+            <Image
+              source={require("../../assets/icons/notificationWhite.png")}
+              resizeMode="contain"
+              style={{
+                width: "100%",
+                height: getPercent(4, height),
+              }}
+            />
+          }
         />
       </View>
       <View style={styles.content}>

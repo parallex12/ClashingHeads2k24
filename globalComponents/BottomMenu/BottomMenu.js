@@ -34,19 +34,19 @@ let navArr = [
     activeIcon: require("../../assets/BottomMenuIcons/homeActive.png"),
     route: "Home",
   },
-  {
-    title: "Clashes",
-    icon: require("../../assets/BottomMenuIcons/clashes.png"),
-    activeIcon: require("../../assets/BottomMenuIcons/clashesActive.png"),
-    route: "Clashes",
-  },
+
   {
     title: "News",
     icon: require("../../assets/BottomMenuIcons/news.png"),
     activeIcon: require("../../assets/BottomMenuIcons/newsActive.png"),
     route: "News",
   },
-  
+  {
+    title: "Create",
+    icon: require("../../assets/BottomMenuIcons/plusIcon.png"),
+    activeIcon: require("../../assets/BottomMenuIcons/plusIconactive.png"),
+    route: "AddPostDetails",
+  },
   {
     title: "Chat",
     icon: require("../../assets/BottomMenuIcons/chat.png"),
@@ -68,7 +68,7 @@ const BottomMenu = (props) => {
   const activeMenu = useSelector(activeMenuItem);
   const _isSideMenuOpen = useSelector(isSideMenuOpen);
   const _currentActiveScreen = useSelector(currentActiveScreen);
-  const _isBottomSheetOpen=useSelector(isBottomSheetOpen)
+  const _isBottomSheetOpen = useSelector(isBottomSheetOpen);
   const dispatch = useDispatch();
   let navigation = useNavigation();
 
@@ -81,7 +81,8 @@ const BottomMenu = (props) => {
     "Messages",
     "MyProfile",
     "Connections",
-    "CalendarScreen"
+    "CalendarScreen",
+    "NewPost",
   ];
   const currentRouteName = _currentActiveScreen;
   const onPressItem = (item) => {
@@ -115,6 +116,7 @@ const BottomMenu = (props) => {
             style={{ width: "100%", height: "100%" }}
           />
         </View>
+
         <Text
           style={font(
             10,
@@ -129,7 +131,11 @@ const BottomMenu = (props) => {
     );
   };
 
-  if (_isSideMenuOpen == "open" || !allowedScreens?.includes(currentRouteName) || _isBottomSheetOpen===1)
+  if (
+    _isSideMenuOpen == "open" ||
+    !allowedScreens?.includes(currentRouteName) ||
+    _isBottomSheetOpen === 1
+  )
     return null;
 
   return (

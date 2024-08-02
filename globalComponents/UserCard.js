@@ -9,6 +9,9 @@ import {
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import { getPercent } from "../middleware";
 import { font } from "../styles/Global/main";
+import CacheImage from "./CacheImage";
+import { memo, useState } from "react";
+import { Blurhash } from "react-native-blurhash";
 
 const UserCard = (props) => {
   let { author, selectable, isSelected, onCardPress } = props;
@@ -16,13 +19,27 @@ const UserCard = (props) => {
   let styles = _styles({ width, height });
 
   const Profile = ({ source }) => {
+    const [imageLoad, setImageLoad] = useState(true);
+
     return (
       <View style={styles.container}>
         <TouchableOpacity style={styles.profileWrapper}>
-          <Image
+          {imageLoad && author?.profile_hash && (
+            <Blurhash
+              blurhash={author?.profile_hash}
+              style={{
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                zIndex: 999,
+              }}
+            />
+          )}
+          <CacheImage
             source={source}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
+            onLoad={() => setImageLoad(false)}
           />
         </TouchableOpacity>
         {author?.status && <View style={styles.online}></View>}
@@ -55,7 +72,9 @@ const UserCard = (props) => {
             />
           )}
         </View>
-        <Text style={styles.slugText}>{author?.politics+" @"+author?.username}</Text>
+        <Text style={styles.slugText}>
+          {author?.politics + " @" + author?.username}
+        </Text>
       </View>
       {selectable ? (
         isSelected ? (
@@ -113,4 +132,4 @@ const _styles = ({ width, height }) =>
     slugText: font(12, "#6B7280", "Regular"),
   });
 
-export default UserCard;
+export default memo(UserCard);

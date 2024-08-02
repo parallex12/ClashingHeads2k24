@@ -47,13 +47,14 @@ const Clashes = (props) => {
   const getChallenges = async () => {
     let all_ch = await get_all_challenges(page);
     setClashes(all_ch?.challenges);
+    setRefreshing(false);
   };
 
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setPage(1);
-    setRefreshing(false);
+    getChallenges();
   }, []);
 
   let memoizedClashes = useMemo(() => {

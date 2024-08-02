@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Button,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -19,24 +18,9 @@ import { getPercent, postprivacyoptions } from "../../middleware";
 import StandardHeader2 from "../../globalComponents/StandardHeader2/StandardHeader2";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  home_posts,
-  screen_loader,
-  user_auth,
-  user_db_details,
-} from "../../state-management/atoms/atoms";
 import { createPost, validate_post_details } from "../../middleware/firebase";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectAuthUser,
-  selectIsAuth,
-} from "../../state-management/features/auth";
-import {
-  startLoading,
-  stopLoading,
-} from "../../state-management/features/screen_loader/loaderSlice";
-import { serializeTimestamp, setForm } from "../../utils";
+import { selectAuthUser } from "../../state-management/features/auth";
 import { setPosts } from "../../state-management/features/posts/postSlice";
 import { selectPosts } from "../../state-management/features/posts";
 import { Image as ImageCompress } from "react-native-compressor";
@@ -44,27 +28,35 @@ import PrivacyBottomSheet from "./components/PrivacyBottomSheet";
 import { Blurhash } from "react-native-blurhash";
 import { Entypo } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
+import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
+import WaveAudioPlayer from "../../globalComponents/WaveAudioPlayer";
+import FindUserSheet from "./components/FindUserSheet";
+import ChallengeHeader from "./components/ChallengeHeader";
+
 const AddPostDetails = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const userAuth = useSelector(selectIsAuth);
   const [imageHashingLoad, setimageHashingLoad] = useState(false);
   const [loading, setLoading] = useState(false);
   const user_profile = useSelector(selectAuthUser);
+  const [tempOpponent, setTempOpponent] = useState(null);
   const posts = useSelector(selectPosts);
   const privacybottomSheetRef = useRef(null);
+  const friendsbottomSheetRef = useRef(null);
+  const voicebottomSheetRef = useRef(null);
   const dispatch = useDispatch();
   const news_post = useRoute().params?.news_post;
 
   const [postForm, setPostForm] = useState({
-    recording: props?.route?.params?.recording,
+    recording: null,
     post_image: null,
     createdAt: new Date().toISOString(),
     author: user_profile?._id,
     privacy: null,
     post_image_hash: null,
     postReference: "original",
+    clashType:"post"
   });
 
   useEffect(() => {
@@ -80,6 +72,7 @@ const AddPostDetails = (props) => {
           newsAuthor: news_post?.author,
           postReference: "news",
           newsUrl: news_post?.url,
+          clashType:"news"
         };
       });
     }
@@ -157,12 +150,30 @@ const AddPostDetails = (props) => {
       });
   };
 
+  const onRecordingReset = () => {
+    setPostForm((prev) => {
+      return { ...prev, recording: null };
+    });
+  };
+
+  const onVoiceUpdate = (audioData) => {
+    setPostForm((prev) => {
+      return { ...prev, recording: audioData?.recording };
+    });
+  };
+  const onOpponent = (user) => {
+    setPostForm((prev) => {
+      return { ...prev, opponent: user?._id, clashType: "challenge" };
+    });
+    setTempOpponent(user);
+  };
+
   return (
     <View style={styles.container}>
       <StandardHeader2
         containerStyles={{ height: getPercent(14, height) }}
         backButton
-        title="New Post"
+        title="Create Clash"
         searchIcon={false}
         rightIcon={
           <StandardButton
@@ -206,6 +217,36 @@ const AddPostDetails = (props) => {
               value={postForm?.description}
             />
           </View>
+          <TouchableOpacity
+            style={styles.challengeBtn}
+            onPress={() => friendsbottomSheetRef.current.present()}
+          >
+            {postprivacyoptions[1]?.icon}
+            <Text
+              style={font(12, "#111827", "Medium", 10, null, {
+                marginHorizontal: 5,
+              })}
+            >
+              Challenge anyone
+            </Text>
+            <AntDesign
+              name="caretdown"
+              size={12}
+              color="#111827"
+              style={{
+                marginLeft: 8,
+              }}
+            />
+          </TouchableOpacity>
+          {postForm?.clashType=="challenge" && (
+            <ChallengeHeader
+              data={{
+                challenger: user_profile,
+                opponent: tempOpponent,
+                title: postForm?.title,
+              }}
+            />
+          )}
           <View style={styles.mediaWrapper}>
             <View style={styles.imageActionsWrapper}>
               <StandardButton
@@ -231,6 +272,13 @@ const AddPostDetails = (props) => {
               />
             )}
           </View>
+          {postForm?.recording && (
+            <WaveAudioPlayer
+              source={postForm?.recording}
+              audioResetBtn
+              audioResetFunc={onRecordingReset}
+            />
+          )}
         </View>
       </ScrollView>
       <KeyboardAvoidingView
@@ -247,9 +295,20 @@ const AddPostDetails = (props) => {
                 marginRight: 5,
               }}
             />
-            <Text style={font(13, "#000000", "Medium")}>
-              Upload Photo/Video
-            </Text>
+            <Text style={font(13, "#000000", "Medium")}>Upload Photo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.recordBtn}
+            onPress={() => voicebottomSheetRef.current.present()}
+          >
+            <Image
+              source={require("../../assets/images/mic_rec.png")}
+              resizeMode="contain"
+              style={{
+                width: "75%",
+                height: "75%",
+              }}
+            />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.privacyBtn}
@@ -278,6 +337,18 @@ const AddPostDetails = (props) => {
         setPostForm={setPostForm}
         postForm={postForm}
         bottomSheetRef={privacybottomSheetRef}
+      />
+
+      <FindUserSheet
+        callBackUser={onOpponent}
+        bottomSheetRef={friendsbottomSheetRef}
+      />
+      <UpdatedVoiceRecorderBottomSheet
+        postId={null}
+        clashTo={null}
+        onPostClash={onVoiceUpdate}
+        bottomVoiceSheetRef={voicebottomSheetRef}
+        postBtnTitle="Confirm"
       />
     </View>
   );

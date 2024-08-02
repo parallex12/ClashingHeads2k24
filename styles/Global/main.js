@@ -37,19 +37,19 @@ export const ImageViewerStyles = ({ width, height }) =>
     },
     fullScreenContainer: {
       flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.9)',
-      justifyContent: 'center',
-      alignItems: 'center',
+      backgroundColor: "rgba(0,0,0,0.9)",
+      justifyContent: "center",
+      alignItems: "center",
     },
     fullScreenBackground: {
-      width: '100%',
-      height: '100%',
-      justifyContent: 'center',
-      alignItems: 'center',
+      width: "100%",
+      height: "100%",
+      justifyContent: "center",
+      alignItems: "center",
     },
     fullScreenImage: {
-      width: '100%',
-      height: '100%',
+      width: "100%",
+      height: "100%",
     },
   });
 
@@ -259,16 +259,16 @@ export const NewsCardStyles = ({ width, height }) =>
       overflow: "hidden",
       marginRight: 10,
     },
-    micWrapper:{
+    micWrapper: {
       width: getPercent(9, width),
       height: getPercent(9, width),
       borderRadius: 100,
       overflow: "hidden",
-      position:'absolute',
-      right:0,
-      alignItems:'center',
-      justifyContent:'center'
-    }
+      position: "absolute",
+      right: 0,
+      alignItems: "center",
+      justifyContent: "center",
+    },
   });
 
 //SettingSwitchCard Styles  starts here
@@ -665,7 +665,6 @@ export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
 export const UpdatedVoiceRecorderBottomSheetStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      flex: 1,
     },
     contentContainer: {
       flex: 1,
@@ -753,11 +752,10 @@ export const SideMenuStyles = ({ width, height }) =>
   StyleSheet.create({
     listWrapper: {
       flex: 1,
-      
     },
     listContainer: {
       flex: 1,
-      paddingBottom:getPercent(3,height)
+      paddingBottom: getPercent(3, height),
     },
     footerWrapper: {},
     listItem: {
@@ -854,7 +852,7 @@ export const BottomMenuStyles = ({ width, height }) =>
       width: "100%",
       height: getPercent(9.5, height),
       alignItems: "center",
-      justifyContent: "space-around",
+      justifyContent: "center",
       position: "absolute",
       bottom: 0,
       borderColor: "#EEECEC",
@@ -867,14 +865,17 @@ export const BottomMenuStyles = ({ width, height }) =>
       backgroundColor: "#ffffff",
     },
     bottomMenuItem: {
+      flex:1,
       height: getPercent(5, height),
       alignItems: "center",
       justifyContent: "center",
+
     },
     itemIconWrapper: {
       width: getPercent(3, height),
       height: getPercent(3, height),
     },
+    
   });
 
 //StandardHeader2 Styles starts here

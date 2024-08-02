@@ -3,10 +3,9 @@ import axios from "axios";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 const initialState = {
-  user: null,
+  user: {},
   loading: false,
   error: null,
-  otp_confirm: null,
   isAuth: false,
   userForm: {},
 };
@@ -22,10 +21,7 @@ const authSlice = createSlice({
       return { ...state, error: action.payload };
     },
     logout: (state) => {
-      return { ...state, isAuth: false, user: null };
-    },
-    confirmOtp: (state, action) => {
-      return { ...state, otp_confirm: action.payload };
+      return { ...state, isAuth: false, user: {}, userForm: {} };
     },
     setUserForm: (state, action) => {
       return { ...state, userForm: action.payload };
@@ -38,7 +34,6 @@ const authSlice = createSlice({
 
 export const {
   loginSuccess,
-  confirmOtp,
   setUserDetails,
   loginFailure,
   logout,

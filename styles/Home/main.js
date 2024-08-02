@@ -25,8 +25,8 @@ export const styles = ({ width, height }) =>
       borderBottomWidth: 5,
     },
     header2WrapperBtn: {
-      width: getPercent(40, width),
+      width: getPercent(4, height),
       height: getPercent(4, height),
-      paddingHorizontal: getPercent(4, width),
+      paddingHorizontal: getPercent(1, width),
     },
   });

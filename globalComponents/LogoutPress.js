@@ -27,9 +27,15 @@ const LogoutPress = (props) => {
 
   const onLogout = async () => {
     navigation.dispatch(DrawerActions.closeDrawer());
-    console.log(store.getState())
-    await auth().signOut();
-    dispatch(logout());
+    await auth()
+      .signOut()
+      .then((res) => {
+        dispatch(logout());
+      })
+      .catch((e) => {
+        console.log(e);
+        dispatch(logout());
+      });
   };
 
   return (

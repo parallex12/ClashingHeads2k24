@@ -5,23 +5,18 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { styles as _styles } from "../../../styles/Signin/main";
 import { font } from "../../../styles/Global/main";
 import CountryCodeField from "../../../globalComponents/CountryCodeField";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
-import { useEffect, useRef, useState } from "react";
-import {
-  startLoading,
-  stopLoading,
-} from "../../../state-management/features/screen_loader/loaderSlice";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { setUserForm } from "../../../state-management/features/auth/authSlice";
-import store from "../../../state-management/store/store";
+import { startLoading } from "../../../state-management/features/screen_loader/loaderSlice";
 
 const Signin = (props) => {
-  let { setForm } = props;
+  let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [country, setCountry] = useState({ dial_code: "+1", flag: "🇺🇸" });
@@ -29,6 +24,10 @@ const Signin = (props) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    dispatch(startLoading());
+  }, []);
 
   const onSignup = () => {
     navigation?.navigate("Signup");
@@ -40,14 +39,13 @@ const Signin = (props) => {
       alert("Phone number required.");
       return;
     }
-    setLoading(true)
-    dispatch(setUserForm({ phone: phone_number_raw }));
+    setLoading(true);
     setTimeout(() => {
-      navigation?.navigate("OTPVerification");
-      setLoading(false)
+      navigation?.navigate("OTPVerification", { phone: phone_number_raw });
+      setLoading(false);
     }, 1000);
   };
-  
+
   return (
     <View style={styles.container}>
       <ScrollView

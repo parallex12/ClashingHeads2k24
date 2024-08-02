@@ -40,9 +40,12 @@ export const ClashesResultStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
-      alignSelf:'center'
+      paddingHorizontal: getPercent(3, width),
+      alignSelf: "center",
     },
-    clashesCardTitle: font(16, "#1F2937", "Medium", 5),
+    clashesCardTitle: font(16, "#1F2937", "Medium", 5, null, {
+      textAlign: "center",
+    }),
     clashesCardUsersCont: {
       flex: 1,
       marginVertical: getPercent(2, height),

@@ -44,6 +44,29 @@ export const PrivacyBottomSheetStyles = ({ width, height }) =>
     },
   });
 
+//FindFriendsSheetStyles  starts here
+export const FindFriendsSheetStyles = ({ width, height }) =>
+  StyleSheet.create({
+    content: {
+      flex: 1,
+      paddingHorizontal: getPercent(3, width),
+      paddingVertical: getPercent(2, height),
+    },
+    searchInputWrapper: {
+      height: getPercent(5, height),
+      backgroundColor: "#F6F7F8",
+      borderRadius: 100,
+      paddingHorizontal: getPercent(3, width),
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: getPercent(0.5, height),
+      marginVertical: getPercent(1.5, height),
+    },
+    users_wrapper: {
+      flex: 0.9,
+    },
+  });
+
 //AddPostDetailsStyles  starts here
 export const AddPostDetailsStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -52,13 +75,13 @@ export const AddPostDetailsStyles = ({ width, height }) =>
       backgroundColor: "#ffffff",
     },
     content: {
-      flex: 1,
-      paddingVertical: getPercent(2, height),
+      paddingHorizontal: getPercent(3, width),
+      paddingBottom: getPercent(10, height),
       alignItems: "center",
       justifyContent: "space-between",
     },
     postInputWrapper: {
-      width: "95%",
+      width: "100%",
       minHeight: getPercent(5, height),
       paddingHorizontal: getPercent(5, width),
       paddingVertical: getPercent(2, width),
@@ -99,7 +122,7 @@ export const AddPostDetailsStyles = ({ width, height }) =>
       backgroundColor: "rgba(0,0,0,0.5)",
       alignItems: "center",
       justifyContent: "center",
-      padding:0
+      padding: 0,
     },
     postInput: {
       flex: 1,
@@ -108,7 +131,7 @@ export const AddPostDetailsStyles = ({ width, height }) =>
     },
     postBottomActionsWrapper: {
       width: "100%",
-      height: getPercent(8, height),
+      height: getPercent(10, height),
       borderTopWidth: 1,
       paddingHorizontal: getPercent(5, width),
       position: "absolute",
@@ -128,12 +151,32 @@ export const AddPostDetailsStyles = ({ width, height }) =>
     },
     privacyBtn: {
       width: "30%",
-      minHeight: getPercent(4, height),
+      minHeight: getPercent(4.5, height),
       borderRadius: 100,
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: 5,
       backgroundColor: "#F3F4F6",
       flexDirection: "row",
+    },
+    challengeBtn: {
+      minHeight: getPercent(4.5, height),
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#F3F4F6",
+      flexDirection: "row",
+      paddingHorizontal: getPercent(3, width),
+      alignSelf: "flex-end",
+    },
+    recordBtn: {
+      width: getPercent(4.5, height),
+      height: getPercent(4.5, height),
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#F3F4F6",
+      padding: 2,
+      marginRight: 10,
     },
   });
