@@ -40,11 +40,22 @@ const FindUserSheet = (props) => {
   const [searched_users, setSearched_users] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("a");
-  const current_user=useSelector(selectAuthUser)
+  const current_user = useSelector(selectAuthUser);
+  let { following, followers } = current_user;
 
   useEffect(() => {
+    const mergedUsers = mergeAndRemoveDuplicates(following, followers);
+    setSearched_users(mergedUsers);
     searchUsers(searchQuery);
-  }, [searchQuery]);
+  }, [searchQuery, following, followers]);
+
+  const mergeAndRemoveDuplicates = (arr1, arr2) => {
+    const merged = [...arr1, ...arr2];
+    const uniqueUsers = Array.from(new Set(merged.map((user) => user._id))).map(
+      (id) => merged.find((user) => user._id === id)
+    );
+    return uniqueUsers;
+  };
 
   const searchUsers = async (searchQuery) => {
     let searched_users = await search_users(searchQuery);
@@ -92,7 +103,7 @@ const FindUserSheet = (props) => {
             <FlatList
               data={memoizedUsers}
               renderItem={({ item, index }) => {
-                if(item?._id==current_user?._id)return null
+                if (item?._id == current_user?._id) return null;
                 return (
                   <UserCard
                     selectable

@@ -53,8 +53,9 @@ const DualClashCard = (props) => {
   const navigation = useNavigation();
   const [voteData, setVoteData] = useState(null);
   const [hasCurrentUserVoted, setHasCurrentUserVoted] = useState(null);
-  data["challenger"] = data?.author;
-  let { challenger, opponent } = data;
+  let { opponent } = data;
+
+  let challenger = data?.author;
 
   const {
     challengerPercentage,
@@ -264,7 +265,7 @@ const DualClashCard = (props) => {
             {challengerPercentage}% ({challengerVotes} Votes)
           </Text>
           <Text style={styles.votingItemTextOpponent}>
-            {data?.challenger?.realName}
+            {challenger?.realName}
           </Text>
         </View>
         <View style={style2}>
@@ -272,7 +273,7 @@ const DualClashCard = (props) => {
             {opponentPercentage}% ({opponentVotes} Votes)
           </Text>
           <Text style={styles.votingItemTextOpponent}>
-            {data?.opponent?.realName}
+            {opponent?.realName}
           </Text>
         </View>
       </View>

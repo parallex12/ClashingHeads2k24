@@ -19,15 +19,25 @@ import PostCard from "../../../globalComponents/PostCard/PostCard";
 import { useSelector } from "react-redux";
 import { selectPosts } from "../../../state-management/features/posts";
 import { sortPostsByCreatedAt } from "../../../utils";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { selectSearched } from "../../../state-management/features/searchedUsers";
 import { Instagram } from "react-content-loader/native";
+import { search_posts } from "../../../state-management/apiCalls/search";
+import { useNavigation } from "@react-navigation/native";
 
 const PostsResult = (props) => {
-  let {} = props;
+  let { searchQuery } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const { posts, loading } = useSelector(selectSearched);
+  const [posts, setPosts] = useState([]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    (async () => {
+      let searched_posts = await search_posts(searchQuery);
+      setPosts(searched_posts);
+    })();
+  }, [searchQuery]);
 
   return (
     <View style={styles.container}>
@@ -37,14 +47,9 @@ const PostsResult = (props) => {
       </View>
       <ScrollView>
         <View style={styles.content}>
-          {loading ? (
-            <Instagram />
-          ) : (
-            posts?.map((item, index) => {
-              if (index > 10) return;
-              return <PostCard divider data={item} key={index} />;
-            })
-          )}
+          {posts?.map((item, index) => {
+            return <PostCard divider data={item} key={index} />;
+          })}
         </View>
       </ScrollView>
     </View>

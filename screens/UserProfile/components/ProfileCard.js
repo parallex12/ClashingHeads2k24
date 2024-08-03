@@ -19,6 +19,10 @@ import { update_user_details } from "../../../middleware/firebase";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 import { download } from "react-native-compressor";
 import { Blurhash } from "react-native-blurhash";
+import {
+  follow_user,
+  unfollow_user,
+} from "../../../state-management/apiCalls/userRelation";
 
 const ProfileCard = (props) => {
   let { user } = props;
@@ -34,7 +38,7 @@ const ProfileCard = (props) => {
     school,
     employment,
     username,
-    id,
+    _id,
     profile_hash,
     following,
     followers,
@@ -46,23 +50,32 @@ const ProfileCard = (props) => {
   const dispatch = useDispatch();
   const current_user = useSelector(selectAuthUser);
   const followButtonTypes = ["Following", "Follow", "Follow back"];
-  const currentUserfollowing = { ...current_user?.following } || {};
-  const currentOtherUserfollowers = { ...following } || {};
-  const hasCurrentUserFollowed = 0;
-  const hasOpponentUserFollowed = currentOtherUserfollowers[current_user?.id];
+  const [currentFollowButtonState, setCurrentFollowButtonState] = useState();
+  const [isCurrentUserFollower, setIsCurrentUserFollower] = useState();
+  const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState();
   const [downloadedAudio, setDownloadedAudio] = useState(null);
 
-  let currentFollowButtonState = hasCurrentUserFollowed
-    ? followButtonTypes[0]
-    : hasOpponentUserFollowed
-    ? followButtonTypes[2]
-    : followButtonTypes[1];
+  useEffect(() => {
+    setIsCurrentUserFollower(
+      followers?.find((e) => e?._id == current_user?._id)
+    );
+    setIsCurrentUserFollowing(
+      following?.find((e) => e?._id == current_user?._id)
+    );
+  }, [following, followers]);
 
   useEffect(() => {
+    setCurrentFollowButtonState(
+      isCurrentUserFollower
+        ? followButtonTypes[0]
+        : isCurrentUserFollowing
+        ? followButtonTypes[2]
+        : followButtonTypes[1]
+    );
     return () => {
       sound.current && sound.current.unloadAsync();
     };
-  }, []);
+  }, [isCurrentUserFollowing,isCurrentUserFollower]);
 
   const downloadCompressedAudio = async () => {
     const downloadFileUrl = await download(about_voice, (progress) => {});
@@ -100,46 +113,27 @@ const ProfileCard = (props) => {
 
   const onFollow = () => {
     if (!current_user || !user) return;
-
     if (
       currentFollowButtonState == "Follow" ||
       currentFollowButtonState == "Follow back"
     ) {
-      currentUserfollowing[user?.id] = user;
-      currentOtherUserfollowers[current_user?.id] = current_user;
-      dispatch(
-        setUserDetails({ ...current_user, following: currentUserfollowing })
-      );
-      update_user_details(current_user?.id, {
-        following: currentUserfollowing,
-      });
-      update_user_details(user?.id, { followers: currentOtherUserfollowers });
+      setIsCurrentUserFollower(current_user)
+      follow_user(current_user?._id, _id);
       return;
     }
 
     if (currentFollowButtonState == "Following") {
-      delete currentUserfollowing[user?.id];
-      dispatch(
-        setUserDetails({ ...current_user, following: currentUserfollowing })
-      );
-      update_user_details(current_user?.id, {
-        following: currentUserfollowing,
-      });
-      if (hasCurrentUserFollowed && hasOpponentUserFollowed) {
-        delete currentOtherUserfollowers[current_user?.id];
-        update_user_details(user?.id, { followers: currentOtherUserfollowers });
-      }
-      return;
+      setIsCurrentUserFollower(null)
+      unfollow_user(current_user?._id, _id);
     }
   };
 
   const onMessage = () => {
-    navigation.navigate("ChatScreen", { userId: id });
+    navigation.navigate("ChatScreen", { userId: _id });
   };
   const onFollowView = () => {
     navigation.navigate("Connections", { user });
   };
-
 
   const CardHeader = ({ user }) => {
     const [imageLoad, setImageLoad] = useState(true);

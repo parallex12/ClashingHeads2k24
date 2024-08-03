@@ -8,30 +8,17 @@ import {
 } from "react-native";
 import { styles as _styles } from "../../styles/MyProfile/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import ProfileCard from "./components/ProfileCard";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { useEffect, useRef, useState } from "react";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { getPercent } from "../../middleware";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectAuthDetailsLoading,
-  selectAuthUser,
-} from "../../state-management/features/auth";
-import { fetchUserPostsAndChallenges } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
+import { selectAuthUser } from "../../state-management/features/auth";
 import DualClashCard from "../Search/components/DualClashCard";
 import VoiceRecorderBottomSheet from "../ChallengeRequests/components/VoiceRecorderBottomSheet";
-import auth from "@react-native-firebase/auth";
-import {
-  fetchCurrentUserDetails,
-  setUserDetails,
-} from "../../state-management/features/auth/authSlice";
-import ContentLoader, {
-  Facebook,
-  Instagram,
-  Code,
-} from "react-content-loader/native";
+import { setUserDetails } from "../../state-management/features/auth/authSlice";
+import ContentLoader, { Instagram } from "react-content-loader/native";
 import { get_user_profile } from "../../state-management/apiCalls/auth";
 
 const MyProfile = (props) => {
@@ -58,7 +45,6 @@ const MyProfile = (props) => {
     }
   }, [userID]);
 
-
   return (
     <View style={styles.container}>
       <StandardHeader
@@ -78,32 +64,26 @@ const MyProfile = (props) => {
           ) : (
             <>
               <ProfileCard />
-
-              {/* {allRequests?.map((item, index) => {
-                if (index > 10) return;
-                return (
-                  <DualClashCard
-                    onAcceptRequest={() => {
-                      alert("Record your opinion to accept the challenge.");
-                      setCurrentChallenge(item?.id);
-                      bottomVoiceSheetRef.current?.present();
-                    }}
-                    onCancelRequest={() => null}
-                    request_type={
-                      item?.opponentId == user_details?.id ? "Recieved" : "Sent"
-                    }
-                    key={index}
-                    data={item}
-                    onPress={() =>
-                      props?.navigation?.navigate("ChallengeClash", { ...item })
-                    }
-                    onClashesPress={() =>
-                      props?.navigation?.navigate("ChallengeClash", { ...item })
-                    }
-                  />
-                );
-              })} */}
               {posts?.map((item, index) => {
+                if (item?.clashType == "challenge") {
+                  return (
+                    <DualClashCard
+                      divider
+                      onPress={() =>
+                        props?.navigation?.navigate("ChallengeClash", {
+                          ...item,
+                        })
+                      }
+                      onClashesPress={() =>
+                        props?.navigation?.navigate("ChallengeClash", {
+                          ...item,
+                        })
+                      }
+                      key={index}
+                      data={item}
+                    />
+                  );
+                }
                 return (
                   <PostCard
                     divider

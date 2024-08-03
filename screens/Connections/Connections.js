@@ -26,8 +26,8 @@ const Connections = (props) => {
   const current_user = useSelector(selectAuthUser);
   const loading = false;
   const dispatch = useDispatch();
-  let following = Object.values({ ...user?.following });
-  let followers = Object.values({ ...user?.followers });
+  let following = [...user?.following]
+  let followers = [...user?.followers]
   let usersToShow = [followers, following, [], []];
   const navigation = useNavigation();
 
@@ -45,7 +45,7 @@ const Connections = (props) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             {usersToShow[active]?.map((item, index) => {
-              let isDisplayedUserMe = current_user?.id == item?.id;
+              let isDisplayedUserMe = current_user?._id == item?._id;
               return (
                 <UserCard
                   isDisplayedUserMe={isDisplayedUserMe}
@@ -53,7 +53,6 @@ const Connections = (props) => {
                   key={index}
                   onPress={() => {
                     if (isDisplayedUserMe) {
-                      console.log(isDisplayedUserMe);
                       navigation?.navigate("MyProfile");
                     } else {
                       navigation?.navigate("UserProfile", {

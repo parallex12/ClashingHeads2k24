@@ -71,7 +71,25 @@ const UserProfile = (props) => {
               <ProfileCard postsCount={posts?.length} user={profile || user} />
 
               {posts?.map((item, index) => {
-                if (index > 10) return;
+                if (item?.clashType == "challenge") {
+                  return (
+                    <DualClashCard
+                      divider
+                      onPress={() =>
+                        props?.navigation?.navigate("ChallengeClash", {
+                          ...item,
+                        })
+                      }
+                      onClashesPress={() =>
+                        props?.navigation?.navigate("ChallengeClash", {
+                          ...item,
+                        })
+                      }
+                      key={index}
+                      data={item}
+                    />
+                  );
+                }
                 return (
                   <PostCard
                     divider
@@ -84,24 +102,7 @@ const UserProfile = (props) => {
                   />
                 );
               })}
-              {/* {allRequests?.map((item, index) => {
-                if (item?.status != "accepted") return;
-                if (index > 10) return;
-                return (
-                  <DualClashCard
-                    onCancelRequest={() => null}
-                    request_type={"Sent"}
-                    key={index}
-                    data={item}
-                    onPress={() =>
-                      props?.navigation?.navigate("ChallengeClash", { ...item })
-                    }
-                    onClashesPress={() =>
-                      props?.navigation?.navigate("ChallengeClash", { ...item })
-                    }
-                  />
-                );
-              })} */}
+             
             </>
           )}
         </View>

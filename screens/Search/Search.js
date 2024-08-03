@@ -14,12 +14,14 @@ import {
   fetchUsersByQuery,
 } from "../../state-management/features/searchedUsers/searchedUsersSlice";
 import debounce from "lodash/debounce";
+import { Instagram } from "react-content-loader/native";
 
 const Search = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   const [activeFilter, setActiveFilter] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("a");
+  const [loading, setLoading] = useState(false);
   let styles = _styles({ width, height });
   const dispatch = useDispatch();
 
@@ -30,29 +32,18 @@ const Search = (props) => {
     <NewsResult searchQuery={searchQuery} />,
   ];
 
-  let filterQueryFunctions = [
-    fetchUsersByQuery,
-    fetchClashesByQuery,
-    fetchPostsByQuery,
-  ];
-
-  useEffect(() => {
-    if (activeFilter == 3) return;
-    dispatch(filterQueryFunctions[activeFilter](""));
-  }, [activeFilter]);
-
   // Debounced search function
   const debouncedSearch = useCallback(
     debounce((query) => {
-    setSearchQuery(query);
-      if (activeFilter == 3) return;
-      dispatch(filterQueryFunctions[activeFilter](query));
+      setSearchQuery(query);
+      setLoading(false);
     }, 500), // Adjust the delay as needed
     [activeFilter]
   );
 
   const onSearch = (query) => {
     debouncedSearch(query);
+    setLoading(true);
   };
 
   return (
@@ -64,7 +55,7 @@ const Search = (props) => {
       />
       <ScrollView>
         <View style={styles.resultCardWrapper}>
-          {resultOptions[activeFilter]}
+          {loading ? <Instagram /> : resultOptions[activeFilter]}
         </View>
       </ScrollView>
     </View>

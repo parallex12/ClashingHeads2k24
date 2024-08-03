@@ -17,16 +17,26 @@ import { font } from "../../../styles/Global/main";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import { useSelector } from "react-redux";
 import { selectAllChallengeClashes } from "../../../state-management/features/allChallengeClashes";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import DualClashCard from "./DualClashCard";
 import { selectSearched } from "../../../state-management/features/searchedUsers";
 import { Instagram } from "react-content-loader/native";
+import { search_clashes, search_posts } from "../../../state-management/apiCalls/search";
+import { useNavigation } from "@react-navigation/native";
 
 const ClashesResult = (props) => {
-  let {} = props;
+  let { searchQuery } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const { clashes, loading } = useSelector(selectSearched);
+  const [clashes, setClashes] = useState([]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    (async () => {
+      let searched_clashes = await search_clashes(searchQuery);
+      setClashes(searched_clashes);
+    })();
+  }, [searchQuery]);
 
   return (
     <View style={styles.container}>
@@ -34,24 +44,21 @@ const ClashesResult = (props) => {
         <MaterialCommunityIcons name="fire" size={24} color="#4B4EFC" />
         <Text style={font(14, "#111827", "Medium")}>Trending Clashes</Text>
       </View>
-      {loading ? (
-        <Instagram />
-      ) : (
-        clashes?.map((item, index) => {
-          return (
-            <DualClashCard
-              key={index}
-              data={item}
-              onPress={() =>
-                props?.navigation?.navigate("ChallengeClash", { ...item })
-              }
-              onClashesPress={() =>
-                props?.navigation?.navigate("ChallengeClash", { ...item })
-              }
-            />
-          );
-        })
-      )}
+      {clashes?.map((item, index) => {
+        return (
+          <DualClashCard
+            divider
+            key={index}
+            data={item}
+            onPress={() =>
+              navigation?.navigate("ChallengeClash", { ...item })
+            }
+            onClashesPress={() =>
+              navigation?.navigate("ChallengeClash", { ...item })
+            }
+          />
+        );
+      })}
     </View>
   );
 };

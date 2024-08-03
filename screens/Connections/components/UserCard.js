@@ -14,56 +14,52 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { update_user_details } from "../../../middleware/firebase";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
+import { useEffect, useRef, useState } from "react";
+import {
+  follow_user,
+  unfollow_user,
+} from "../../../state-management/apiCalls/userRelation";
 
 const UserCard = (props) => {
-  let { user, isDisplayedUserMe,onPress } = props;
+  let { user, isDisplayedUserMe, onPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const current_user = useSelector(selectAuthUser);
   const followButtonTypes = ["Following", "Follow", "Follow back"];
-  const currentUserfollowing = { ...current_user?.following } || {};
-  const currentOtherUserfollowers = { ...user?.following } || {};
-  const hasCurrentUserFollowed = currentUserfollowing[user?.id];
-  const hasOpponentUserFollowed = currentOtherUserfollowers[current_user?.id];
-  const dispatch = useDispatch();
-  let currentFollowButtonState = hasCurrentUserFollowed
-    ? followButtonTypes[0]
-    : hasOpponentUserFollowed
-    ? followButtonTypes[2]
-    : followButtonTypes[1];
+  const [currentFollowButtonState, setCurrentFollowButtonState] = useState();
+  const [isCurrentUserFollower, setIsCurrentUserFollower] = useState();
+  const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState();
+  let { followers, following, _id } = user;
+
+  useEffect(() => {
+    setIsCurrentUserFollower(followers?.includes(current_user?._id));
+    setIsCurrentUserFollowing(following?.includes(current_user?._id));
+  }, [following, followers]);
+
+  useEffect(() => {
+    setCurrentFollowButtonState(
+      isCurrentUserFollower
+        ? followButtonTypes[0]
+        : isCurrentUserFollowing
+        ? followButtonTypes[2]
+        : followButtonTypes[1]
+    );
+  }, [isCurrentUserFollowing, isCurrentUserFollower]);
 
   const onFollow = () => {
     if (!current_user || !user) return;
-
     if (
       currentFollowButtonState == "Follow" ||
       currentFollowButtonState == "Follow back"
     ) {
-      currentUserfollowing[user?.id] = user;
-      currentOtherUserfollowers[current_user?.id] = current_user;
-      dispatch(
-        setUserDetails({ ...current_user, following: currentUserfollowing })
-      );
-      update_user_details(current_user?.id, {
-        following: currentUserfollowing,
-      });
-      update_user_details(user?.id, { followers: currentOtherUserfollowers });
+      setIsCurrentUserFollower(current_user);
+      follow_user(current_user?._id, _id);
       return;
     }
 
     if (currentFollowButtonState == "Following") {
-      delete currentUserfollowing[user?.id];
-      dispatch(
-        setUserDetails({ ...current_user, following: currentUserfollowing })
-      );
-      update_user_details(current_user?.id, {
-        following: currentUserfollowing,
-      });
-      if (hasCurrentUserFollowed && hasOpponentUserFollowed) {
-        delete currentOtherUserfollowers[current_user?.id];
-        update_user_details(user?.id, { followers: currentOtherUserfollowers });
-      }
-      return;
+      setIsCurrentUserFollower(null);
+      unfollow_user(current_user?._id, _id);
     }
   };
 
