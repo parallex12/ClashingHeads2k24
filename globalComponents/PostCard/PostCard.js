@@ -50,7 +50,7 @@ const PostCard = memo((props) => {
         style={[
           styles.container,
           {
-            borderBottomWidth: divider ? 10 : 0,
+            borderTopWidth: divider ? 10 : 0,
           },
         ]}
         onPress={() => navigation?.navigate("ClashDetails", data)}

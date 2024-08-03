@@ -13,7 +13,10 @@ import { isAppLoading } from "../../state-management/features/screen_loader";
 import { getPercent } from "../../middleware";
 import * as Animatable from "react-native-animatable";
 import auth from "@react-native-firebase/auth";
-import { loginSuccess, logout } from "../../state-management/features/auth/authSlice";
+import {
+  loginSuccess,
+  logout,
+} from "../../state-management/features/auth/authSlice";
 import { selectIsAuth } from "../../state-management/features/auth";
 import { stopLoading } from "../../state-management/features/screen_loader/loaderSlice";
 
@@ -26,8 +29,6 @@ const FullScreenLoader = (props) => {
   const slideAnim = useRef(new Animated.Value(paths[0])).current;
   const userAuth = useSelector(selectIsAuth);
   const dispatch = useDispatch();
-
-console.log(userAuth)
 
   useEffect(() => {
     if (loading == "default") {
@@ -59,9 +60,9 @@ console.log(userAuth)
         useNativeDriver: true,
       }).start(() => setPaths(paths.reverse()));
     }
-  }, [loading, slideAnim]);
+  }, [loading, slideAnim, userAuth]);
 
-  if (!loading) return null;
+  if (!loading || loading == "default") return null;
 
   return (
     <Animated.View

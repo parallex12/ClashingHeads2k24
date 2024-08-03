@@ -417,7 +417,6 @@ export const calculateVotes = (votes, challengerId, opponentId) => {
   let challengerVotes = 0;
   let opponentVotes = 0;
   const voteCounts = {};
-
   // Iterate through the votes
   for (const voterId in votes) {
     const selectedCandidateId = votes[voterId];

@@ -25,6 +25,13 @@ import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 import VoiceRecorderBottomSheet from "../../globalComponents/VoiceRecorderBottomSheet/VoiceRecorderBottomSheet";
 import { font } from "../../styles/Global/main";
 import { Instagram } from "react-content-loader/native";
+import {
+  get_post_by_id,
+  update_post_by_id,
+} from "../../state-management/apiCalls/post";
+import { selectAuthUser } from "../../state-management/features/auth";
+import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
+import { create_clash } from "../../state-management/apiCalls/clash";
 
 const SubClashes = React.memo(
   ({
@@ -70,43 +77,37 @@ const ChallengeClash = (props) => {
   let prevData = props?.route?.params;
   const bottomVoiceSheetRef = useRef(null);
   const bottomFlagSheetRef = useRef(null);
-  let clashId = prevData?.id;
   const [clashTo, setClashTo] = useState("post");
-  const { challengeClash, subClashes, loading, error } =
-    useSelector(selectChallengeClash);
-  const user_id = auth().currentUser?.uid;
+  const [postData, setPostData] = useState("post");
+  const currentUser = useSelector(selectAuthUser);
+  let { _id } = currentUser;
+  let postId = prevData?._id;
+  let openVoiceSheet = props?.route?.params?.openVoiceSheet;
+
   const createdAtDate = useMemo(
-    () => new Date(challengeClash?.createdAt).toDateString(),
-    [challengeClash?.createdAt]
+    () => new Date(prevData?.createdAt).toDateString(),
+    [prevData?.createdAt]
   );
 
   useEffect(() => {
-    if (!error) return;
-    console.log(error);
-  }, [error]);
+    get_post_by_id(postId)
+      .then((res) => {
+        let views = [...res?.views];
+        if (!views?.includes(_id)) {
+          views.push(_id);
+          update_post_by_id(postId, { views });
+        }
+        setPostData(res);
+      })
+      .catch((e) => console.log(e));
 
-  useEffect(() => {
-    dispatch(fetchChallengeClashAndSubClashes(clashId));
-    let postUserViews = { ...challengeClash?.views } || {};
-    if (clashId && challengeClash && !postUserViews[user_id]) {
-      postUserViews[user_id] = true;
-      dispatch(updateChallengeClash(clashId, { views: postUserViews }));
+    if (openVoiceSheet) {
+      bottomVoiceSheetRef.current.present();
     }
-  }, [dispatch, clashId]);
+  }, [dispatch, postId]);
 
   const onPostClash = async (clashDetails) => {
-    dispatch(addSubClashToChallenge(clashId, clashDetails));
-    dispatch(
-      updateChallengeClash(clashId, { opinions: eval(subClashes?.length + 1) })
-    );
-
-    if (clashTo != "post") {
-      dispatch(
-        updateSubClashDetails(clashId, clashTo?.id, {
-          clashes: eval(clashTo?.clashes + 1),
-        })
-      );
-    }
+    await create_clash(clashDetails);
   };
 
   return (
@@ -123,31 +124,23 @@ const ChallengeClash = (props) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             <DualClashCard
-              request_type={
-                challengeClash?.opponentId == user_id ? "Recieved" : "Sent"
-              }
-              data={prevData}
-              onPress={null}
               showVoting
-              postDateAndViews
-              subClashes={subClashes} // Use subClashes length from Redux state
-              onClashesPress={() => bottomVoiceSheetRef.current?.present()}
-              onReportPress={() => bottomFlagSheetRef?.current?.present()}
-              views={Object.keys(challengeClash?.views || {})?.length}
-              onProfilePress={() => props?.navigation?.navigate("UserProfile")}
+              divider
+              data={postData || prevData}
+              onClashesPress={() => bottomVoiceSheetRef.current.present()}
             />
             <View style={styles.postDateAndViews}>
               <Text style={font(10, "#9CA3AF", "Regular")}>
                 Posted on {createdAtDate}
               </Text>
               <Text style={font(10, "#111827", "Bold")}>
-                {Object.keys(challengeClash?.views || {})?.length || 0}{" "}
+                {prevData?.views?.length || 0}{" "}
                 <Text style={font(10, "#9CA3AF", "Regular")}>Views</Text>
               </Text>
             </View>
             <SubClashes
-              subClashes={subClashes}
-              user_id={user_id}
+              subClashes={postData?.clashes}
+              user_id={_id}
               bottomVoiceSheetRef={bottomVoiceSheetRef}
               bottomFlagSheetRef={bottomFlagSheetRef}
               setClashTo={setClashTo}
@@ -155,14 +148,15 @@ const ChallengeClash = (props) => {
           </View>
         </ScrollView>
       )}
-      <VoiceRecorderBottomSheet
+      <UpdatedVoiceRecorderBottomSheet
         clashTo={clashTo}
-        postId={clashId}
+        postId={postId}
         bottomVoiceSheetRef={bottomVoiceSheetRef}
         onPostClash={onPostClash}
+        stickers
       />
       <FlagReportBottomSheet
-        postId={clashId}
+        postId={postId}
         bottomSheetRef={bottomFlagSheetRef}
       />
       {/* <BottomMenu /> */}

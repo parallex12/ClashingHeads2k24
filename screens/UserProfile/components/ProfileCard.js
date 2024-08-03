@@ -36,16 +36,19 @@ const ProfileCard = (props) => {
     username,
     id,
     profile_hash,
+    following,
+    followers,
+    posts,
   } = user;
-console.log(clashHash)
+
   const [isPlaying, setIsPlaying] = useState(false);
   const sound = useRef(new Audio.Sound());
   const dispatch = useDispatch();
   const current_user = useSelector(selectAuthUser);
   const followButtonTypes = ["Following", "Follow", "Follow back"];
   const currentUserfollowing = { ...current_user?.following } || {};
-  const currentOtherUserfollowers = { ...user?.following } || {};
-  const hasCurrentUserFollowed = currentUserfollowing[user?.id];
+  const currentOtherUserfollowers = { ...following } || {};
+  const hasCurrentUserFollowed = 0;
   const hasOpponentUserFollowed = currentOtherUserfollowers[current_user?.id];
   const [downloadedAudio, setDownloadedAudio] = useState(null);
 
@@ -137,6 +140,7 @@ console.log(clashHash)
     navigation.navigate("Connections", { user });
   };
 
+
   const CardHeader = ({ user }) => {
     const [imageLoad, setImageLoad] = useState(true);
 
@@ -167,7 +171,7 @@ console.log(clashHash)
         <View style={styles.post_following_followers_cont}>
           <View style={styles.post_following_followers_Item}>
             <Text style={font(15, "#121212", "Bold", 3)}>
-              {user?.posts || 0}
+              {posts?.length || 0}
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Posts</Text>
           </View>
@@ -176,7 +180,7 @@ console.log(clashHash)
             onPress={onFollowView}
           >
             <Text style={font(15, "#121212", "Bold", 3)}>
-              {Object.keys(user?.followers || {})?.length}
+              {followers?.length}
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Followers</Text>
           </TouchableOpacity>
@@ -185,7 +189,7 @@ console.log(clashHash)
             onPress={onFollowView}
           >
             <Text style={font(15, "#121212", "Bold", 3)}>
-              {Object.keys(user?.following || {})?.length}
+              {following?.length}
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Following</Text>
           </TouchableOpacity>

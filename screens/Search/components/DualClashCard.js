@@ -23,14 +23,11 @@ import { selectAuthUser } from "../../../state-management/features/auth";
 import { updateChallengeClash } from "../../../state-management/features/challengeClash/challengeClashSlice";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
-import { selectFetchedSingeUser } from "../../../state-management/features/searchedUsers";
-import { Instagram } from "react-content-loader/native";
-import {
-  fetchInstantUserById,
-  fetchUserById,
-} from "../../../state-management/features/searchedUsers/searchedUsersSlice";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { Blurhash } from "react-native-blurhash";
 import { download } from "react-native-compressor";
+import Content from "../../../globalComponents/PostCard/components/Content";
+import { update_post_by_id } from "../../../state-management/apiCalls/post";
 
 const DualClashCard = (props) => {
   const {
@@ -39,13 +36,14 @@ const DualClashCard = (props) => {
     onAcceptRequest,
     onCancelRequest,
     onPress,
-    subClashes,
     onClashesPress,
     onReportPress,
     views,
     onProfilePress,
     showVoting,
     postDateAndViews,
+    showAudioDuration,
+    divider,
   } = props;
 
   const { width, height } = useWindowDimensions();
@@ -53,8 +51,9 @@ const DualClashCard = (props) => {
   const currentUser = useSelector(selectAuthUser);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [voteData, setVoteData] = useState(data?.votes);
-  const hasCurrentUserVoted = voteData && voteData[currentUser?.id];
+  const [voteData, setVoteData] = useState(null);
+  const [hasCurrentUserVoted, setHasCurrentUserVoted] = useState(null);
+  data["challenger"] = data?.author;
   let { challenger, opponent } = data;
 
   const {
@@ -62,44 +61,43 @@ const DualClashCard = (props) => {
     opponentPercentage,
     opponentVotes,
     challengerVotes,
-  } = calculateVotes(voteData, data?.challengerId, data?.opponentId);
+  } = calculateVotes(voteData, challenger?._id, opponent?._id);
+
+  useEffect(() => {
+    let votes = { ...data?.votes };
+    setHasCurrentUserVoted(votes[currentUser?._id]);
+    setVoteData(votes);
+  }, [data]);
 
   const onVotePress = useCallback(
-    (selectedUserId, hasCurrentUserVoted) => {
+    async (selectedUserId, hasCurrentUserVoted) => {
       const updatedVotes = { ...voteData };
-      if (hasCurrentUserVoted) {
-        if (hasCurrentUserVoted === selectedUserId) {
-          delete updatedVotes[currentUser?.id];
-          dispatch(
-            updateChallengeClash(data?.id, {
-              votes: updatedVotes,
-              voted: data?.voted - 1,
-            })
-          );
-        } else {
-          updatedVotes[currentUser?.id] = selectedUserId;
-          dispatch(updateChallengeClash(data?.id, { votes: updatedVotes }));
-        }
+      if (hasCurrentUserVoted === selectedUserId) {
+        delete updatedVotes[currentUser?._id];
+
+        await update_post_by_id(data?._id, {
+          votes: updatedVotes,
+        });
       } else {
-        updatedVotes[currentUser?.id] = selectedUserId;
-        dispatch(
-          updateChallengeClash(data?.id, {
-            votes: updatedVotes,
-            voted: data?.voted + 1,
-          })
-        );
+        updatedVotes[currentUser?._id] = selectedUserId;
+        await update_post_by_id(data?._id, { votes: updatedVotes });
       }
+      setHasCurrentUserVoted(updatedVotes[currentUser?._id]);
       setVoteData(updatedVotes);
     },
-    [currentUser, data?.id, voteData, dispatch, data?.voted]
+    [currentUser, voteData]
   );
 
   const ClashUserCard = memo(({ user, type, audio, hasAccepted, votes }) => {
     const [imageLoad, setImageLoad] = useState(true);
     const [downloadedAudio, setDownloadedAudio] = useState(null);
     const downloadCompressedAudio = async () => {
-      const downloadFileUrl = await download(audio, (progress) => {});
-      setDownloadedAudio(downloadFileUrl);
+      try {
+        const downloadFileUrl = await download(audio, (progress) => {});
+        setDownloadedAudio(downloadFileUrl);
+      } catch (e) {
+        console.log(e, "issue");
+      }
     };
 
     useEffect(() => {
@@ -111,9 +109,9 @@ const DualClashCard = (props) => {
     return (
       <View style={styles.clashUserItem}>
         <TouchableOpacity
-          style={styles.clashUserItem}
+          style={styles.clashUserItemInner}
           onPress={() => {
-            if (user?.id == currentUser?.id) {
+            if (user?._id == currentUser?._id) {
               navigation?.navigate("MyProfile");
             } else {
               navigation?.navigate("UserProfile", {
@@ -149,36 +147,44 @@ const DualClashCard = (props) => {
         </TouchableOpacity>
         {audio && (
           <WaveAudioPlayer
-            showDuration
+            showDuration={showAudioDuration}
             iconSize={15}
-            source={downloadedAudio}
+            source={downloadedAudio || audio}
           />
         )}
         {!hasAccepted &&
           (request_type === "Recieved" ? (
-            <StandardButton
-              title="Accept Request"
-              customStyles={styles.requetBtn}
-              textStyles={styles.requetBtnText}
-              onPress={onAcceptRequest}
-            />
+            <View style={styles.actionBtnRow}>
+              <StandardButton
+                rightIcon={<FontAwesome5 name="times" size={15} color="#fff" />}
+                customStyles={styles.requetBtn}
+                textStyles={styles.requetBtnText}
+                onPress={onCancelRequest}
+              />
+              <StandardButton
+                rightIcon={<Entypo name="check" size={15} color="#fff" />}
+                customStyles={styles.acceptBtn}
+                textStyles={styles.requetBtnText}
+                onPress={onAcceptRequest}
+              />
+            </View>
           ) : request_type === "Sent" ? (
             <StandardButton
               title="Request Sent"
-              customStyles={styles.requetBtn}
+              customStyles={styles.VoteBtn}
               textStyles={styles.requetBtnText}
               onPress={onCancelRequest}
             />
           ) : null)}
-        {data?.status === "accepted" && showVoting && (
+        {data?.status === "live" && showVoting && (
           <StandardButton
-            title={hasCurrentUserVoted === user?.id ? "THANKS" : "VOTE ME"}
+            title={hasCurrentUserVoted === user?._id ? "THANKS" : "VOTE ME"}
             rightIcon={
               <Entypo name="thumbs-up" size={RFValue(12)} color="#fff" />
             }
-            customStyles={styles.requetBtn}
+            customStyles={styles.VoteBtn}
             textStyles={styles.requetBtnText}
-            onPress={() => onVotePress(user?.id, hasCurrentUserVoted)}
+            onPress={() => onVotePress(user?._id, hasCurrentUserVoted)}
           />
         )}
       </View>
@@ -192,7 +198,7 @@ const DualClashCard = (props) => {
         <Text
           style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
         >
-          {data?.voted} Voted
+          {Object.keys(data?.votes || {})?.length} Voted
         </Text>
       </View>
       <TouchableOpacity
@@ -207,7 +213,7 @@ const DualClashCard = (props) => {
         <Text
           style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
         >
-          {data?.opinions} Opinions
+          {data?.clashes?.length} Opinions
         </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.cardFooterItem} onPress={onReportPress}>
@@ -274,36 +280,39 @@ const DualClashCard = (props) => {
   });
 
   return (
-    <View style={styles.clashesCardCont}>
-      <Text style={styles.clashesCardTitle}>“{data?.title}”</Text>
-      <TouchableOpacity
-        style={styles.clashesCardUsersCont}
-        onPress={onPress}
-        activeOpacity={0.8}
-      >
-        {challenger && (
-          <ClashUserCard
-            user={challenger}
-            type="Challenger"
-            audio={data?.challenger_audio}
-            hasAccepted={true}
-            votes={voteData}
-          />
-        )}
-        <Text style={styles.vsText}>VS</Text>
-        {opponent && (
-          <ClashUserCard
-            user={opponent}
-            type="Opponent"
-            audio={data?.opponent_audio}
-            hasAccepted={data?.status === "accepted"}
-            votes={voteData}
-          />
-        )}
-      </TouchableOpacity>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.clashesCardCont}
+      onPress={onPress}
+    >
+      <View style={styles.body}>
+        <Text style={styles.clashesCardTitle}>{data?.title}</Text>
+        <View style={styles.clashesCardUsersCont} activeOpacity={0.8}>
+          {challenger && (
+            <ClashUserCard
+              user={challenger}
+              type="Challenger"
+              audio={data?.recording}
+              hasAccepted={true}
+              votes={voteData}
+            />
+          )}
+          <Text style={styles.vsText}>VS</Text>
+          {opponent && (
+            <ClashUserCard
+              user={opponent}
+              type="Opponent"
+              audio={data?.opponent_audio}
+              hasAccepted={data?.status === "live"}
+              votes={voteData}
+            />
+          )}
+        </View>
+        <Content {...data} desc_limit={2} recording={null} title={null} />
+      </View>
       <CardFooter />
       {showVoting && <VotingFooter />}
-    </View>
+    </TouchableOpacity>
   );
 };
 

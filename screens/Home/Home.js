@@ -24,7 +24,11 @@ import {
   get_user_profile,
 } from "../../state-management/apiCalls/auth";
 import { get_all_posts_test } from "../../state-management/apiCalls/post";
-import { stopLoading } from "../../state-management/features/screen_loader/loaderSlice";
+import {
+  startLoading,
+  stopLoading,
+} from "../../state-management/features/screen_loader/loaderSlice";
+import DualClashCard from "../Search/components/DualClashCard";
 
 const Home = (props) => {
   let {} = props;
@@ -42,6 +46,7 @@ const Home = (props) => {
   const user = auth().currentUser;
 
   useEffect(() => {
+    dispatch(startLoading("auth"));
     connectUserToDb(user?.phoneNumber)
       .then(async (res) => {
         let user_id = res?.user?._id || res?._id;
@@ -111,7 +116,7 @@ const Home = (props) => {
               resizeMode="contain"
               style={{
                 width: "100%",
-                height: getPercent(4, height),
+                height: getPercent(3, height),
               }}
             />
           }
@@ -124,6 +129,21 @@ const Home = (props) => {
           }
           data={memoizedPosts}
           renderItem={({ item, index }) => {
+            if (item?.clashType == "challenge") {
+              return (
+                <DualClashCard
+                  divider
+                  onPress={() =>
+                    props?.navigation?.navigate("ChallengeClash", { ...item })
+                  }
+                  onClashesPress={() =>
+                    props?.navigation?.navigate("ChallengeClash", { ...item })
+                  }
+                  key={index}
+                  data={item}
+                />
+              );
+            }
             return (
               <PostCard
                 divider

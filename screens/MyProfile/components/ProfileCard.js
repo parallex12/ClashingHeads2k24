@@ -136,7 +136,7 @@ const ProfileCard = (props) => {
             onPress={onFollowView}
           >
             <Text style={font(15, "#121212", "Bold", 3)}>
-              {Object.keys(followers || {}).length}
+              {followers?.length}
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Followers</Text>
           </TouchableOpacity>
@@ -145,7 +145,7 @@ const ProfileCard = (props) => {
             onPress={onFollowView}
           >
             <Text style={font(15, "#121212", "Bold", 3)}>
-              {Object.keys(following || {}).length}
+              {following?.length}
             </Text>
             <Text style={font(13, "#121212", "Regular", 3)}>Following</Text>
           </TouchableOpacity>

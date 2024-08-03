@@ -58,3 +58,17 @@ export const get_all_challenges = async (page) => {
     }
   });
 };
+
+
+export const get_challenge_by_user = async (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await axios.get(`/posts/challenge/${id}`);
+      const postDoc = result?.data;
+      resolve(postDoc);
+    } catch (error) {
+      console.log("Error getting Challenge post:", error);
+      reject(error);
+    }
+  });
+};

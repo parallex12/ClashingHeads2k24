@@ -40,11 +40,18 @@ export const ClashesResultStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
-      paddingHorizontal: getPercent(3, width),
       alignSelf: "center",
+    },
+    body: {
+      flex: 1,
+      width: "100%",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: getPercent(3, width),
     },
     clashesCardTitle: font(16, "#1F2937", "Medium", 5, null, {
       textAlign: "center",
+      width: "90%",
     }),
     clashesCardUsersCont: {
       flex: 1,
@@ -53,9 +60,13 @@ export const ClashesResultStyles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal: getPercent(2, width),
     },
     clashUserItem: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    clashUserItemInner: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
@@ -76,7 +87,12 @@ export const ClashesResultStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "center",
     },
-    requetBtn: {
+    actionBtnRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    VoteBtn: {
       minWidth: getPercent(22, width),
       height: getPercent(7, width),
       flexDirection: "row",
@@ -84,8 +100,25 @@ export const ClashesResultStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-around",
     },
+    requetBtn: {
+      width: getPercent(7, width),
+      height: getPercent(7, width),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-around",
+      margin: 5,
+    },
+    acceptBtn: {
+      width: getPercent(7, width),
+      height: getPercent(7, width),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-around",
+      margin: 5,
+      backgroundColor: "#6FCF97",
+    },
     requetBtnText: {
-      fontSize: rf(13),
+      fontSize: rf(12),
       fontFamily: "BLP",
       marginRight: 8,
     },

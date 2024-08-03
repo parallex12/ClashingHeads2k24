@@ -61,15 +61,6 @@ const ClashDetails = (props) => {
 
   const onPostClash = async (clashDetails) => {
     await create_clash(clashDetails);
-    return;
-    dispatch(addClashToPost(postId, clashDetails));
-    if (clashTo != "post") {
-      dispatch(
-        updateClashDetails(postId, clashTo?.id, {
-          clashes: eval(clashTo?.clashes + 1),
-        })
-      );
-    }
   };
 
 

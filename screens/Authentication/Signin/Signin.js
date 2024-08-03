@@ -26,7 +26,7 @@ const Signin = (props) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    dispatch(startLoading());
+    // dispatch(startLoading("auth"));
   }, []);
 
   const onSignup = () => {

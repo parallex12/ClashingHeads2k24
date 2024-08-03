@@ -21,6 +21,7 @@ import { fetchUserPostsAndChallenges } from "../../state-management/features/cha
 import DualClashCard from "../Search/components/DualClashCard";
 import { selectAuthUser } from "../../state-management/features/auth";
 import ContentLoader, { Instagram } from "react-content-loader/native";
+import { get_user_profile } from "../../state-management/apiCalls/auth";
 
 const UserProfile = (props) => {
   let {} = props;
@@ -29,15 +30,23 @@ const UserProfile = (props) => {
   let user = props?.route?.params?.user;
   const bottomFlagSheetRef = useRef();
   const dispatch = useDispatch();
-  const { posts, allRequests, loading, relatedUser } = useSelector(
-    (state) => state.challengeRequests
-  );
+  const [profile, setProfile] = useState({});
+  const [loading, setLoading] = useState(true);
+  let { posts } = profile;
 
   useEffect(() => {
-    if (user) {
-      dispatch(fetchUserPostsAndChallenges(user?.id));
+    if (user?._id) {
+      get_user_profile(user?._id)
+        .then((res) => {
+          setProfile(res);
+          setLoading(false);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     }
-  }, [user]);
+  }, [user?._id]);
+
 
   return (
     <View style={styles.container}>
@@ -52,12 +61,14 @@ const UserProfile = (props) => {
             <View style={styles.ContentLoader}>
               <ContentLoader style={{ flex: 1 }} />
               {new Array(2).fill().map((item, index) => {
-                return <Instagram style={{ alignSelf: "center" }} key={index} />;
+                return (
+                  <Instagram style={{ alignSelf: "center" }} key={index} />
+                );
               })}
             </View>
           ) : (
             <>
-              <ProfileCard postsCount={posts?.length} user={relatedUser || user} />
+              <ProfileCard postsCount={posts?.length} user={profile || user} />
 
               {posts?.map((item, index) => {
                 if (index > 10) return;
@@ -73,7 +84,7 @@ const UserProfile = (props) => {
                   />
                 );
               })}
-              {allRequests?.map((item, index) => {
+              {/* {allRequests?.map((item, index) => {
                 if (item?.status != "accepted") return;
                 if (index > 10) return;
                 return (
@@ -90,7 +101,7 @@ const UserProfile = (props) => {
                     }
                   />
                 );
-              })}
+              })} */}
             </>
           )}
         </View>

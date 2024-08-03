@@ -158,8 +158,8 @@ export const AppNavigator = () => {
   return (
     <NavigationContainer>
       <AppNavigation />
-      <FullScreenLoader />
       <BottomMenu />
+      <FullScreenLoader />
     </NavigationContainer>
   );
 };
