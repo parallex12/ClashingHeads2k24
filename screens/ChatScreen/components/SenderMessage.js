@@ -16,7 +16,7 @@ const SenderMessage = (props) => {
     <>
       <Text style={styles.time}>{formatTime(data?.createdAt)}</Text>
       <View style={styles.container}>
-        <Text style={styles.text}>{data?.text}</Text>
+        <Text style={styles.text}>{data?.message}</Text>
       </View>
     </>
   );

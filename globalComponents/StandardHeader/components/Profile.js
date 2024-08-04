@@ -11,23 +11,31 @@ import { Entypo } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { Blurhash } from "react-native-blurhash";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectAuthUser } from "../../../state-management/features/auth";
 
 const Profile = (props) => {
-  let { source, menu, profile_hash, customStyles } = props;
+  let { data, source, menu, profile_hash, customStyles } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
   const [imageLoad, setImageLoad] = useState(true);
-
+  const currentUser = useSelector(selectAuthUser);
+  let userId = data?._id;
   let profileImg = {
     uri: source,
   };
 
   const onMenu = () => {
-    navigation.navigate("MyProfile");
+    if (userId == currentUser?._id) {
+      navigation?.navigate("MyProfile");
+    } else {
+      navigation?.navigate("UserProfile", {
+        user: data,
+      });
+    }
     // navigation.dispatch(DrawerActions.openDrawer());
   };
-
 
   return (
     <TouchableOpacity style={styles.container} onPress={onMenu}>
@@ -44,7 +52,7 @@ const Profile = (props) => {
           />
         )}
         <Image
-          source={source?profileImg:require('../../../assets/icons/42.png')}
+          source={source ? profileImg : require("../../../assets/icons/42.png")}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
           onLoad={() => setImageLoad(false)}

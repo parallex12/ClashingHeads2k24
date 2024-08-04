@@ -33,118 +33,83 @@ import { selectAuthUser } from "../../state-management/features/auth";
 import StandardHeader2 from "../../globalComponents/StandardHeader2/StandardHeader2";
 import Header from "./components/Header";
 import { fetchInstantUserById } from "../../state-management/features/searchedUsers/searchedUsersSlice";
+import {
+  create_get_user_chat,
+  get_messages,
+  send_message,
+} from "../../state-management/apiCalls/chat";
 
 const ChatScreen = (props) => {
   const currentUser = useSelector(selectAuthUser);
-  const currentUserId = currentUser?.id;
+  const currentUserId = currentUser?._id;
   const route = useRoute();
-  const userId = route.params?.userId;
-  const otherUserData = route.params?.otherUserData;
+  const loaded_chat_data = route.params?.chat_data;
+  let { _id, participants } = loaded_chat_data;
+  const otherUserData = participants?.filter((e) => e?._id != currentUserId)[0];
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [chatId, setChatId] = useState(null);
-  const [other_UserData, setOtherUserData] = useState(otherUserData);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      if (otherUserData) return;
-      let other_user_data = await fetchInstantUserById(userId);
-      setLoading(false);
-      setOtherUserData(other_user_data);
-    })();
-  }, []);
+    setMessages(loaded_chat_data?.messages);
+    if (participants?.length > 0) {
+      getMessages();
+    }
+  }, [participants]);
 
-  useEffect(() => {
-    if (!userId) return;
-    const initializeChat = async () => {
-      if (!currentUserId) return;
-      const chatId = generateChatId(currentUserId, userId);
-      setChatId(chatId);
-
-      const db = getFirestore();
-      const chatRef = doc(db, "chats", chatId);
-      const docSnap = await getDoc(chatRef);
-
-      if (!docSnap.exists()) {
-        await setDoc(chatRef, {
-          participants: [currentUserId, userId].sort(),
-          createdAt: serverTimestamp(),
-        });
-      }
-
-      const messagesRef = collection(db, "chats", chatId, "messages");
-      const messagesQuery = query(messagesRef, orderBy("createdAt", "desc"));
-
-      // Return the unsubscribe function directly
-      return onSnapshot(messagesQuery, (snapshot) => {
-        const messagesList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setMessages(messagesList);
-        setLoading(false);
-      });
-    };
-
-    let unsubscribe;
-    initializeChat().then((unsub) => {
-      unsubscribe = unsub;
-    });
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [userId, currentUserId, otherUserData]);
+  const getMessages = async () => {
+    let _p = participants?.map((i) => i?._id);
+    let _m = await create_get_user_chat({participants:_p});
+    setMessages(_m?.messages);
+  };
 
   const handleSend = async (message) => {
-    const db = getFirestore();
-    const messagesRef = collection(db, "chats", chatId, "messages");
-
-    await addDoc(messagesRef, {
-      text: message,
-      createdAt: serverTimestamp(),
-      userId: currentUserId,
-    });
+    try {
+      let message_details = {
+        chatId: _id,
+        sender: currentUserId,
+        message,
+      };
+      setMessages((prev) => [...prev, message_details]);
+      await send_message(message_details);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Header
         backButton
-        data={other_UserData}
+        data={otherUserData}
         containerStyles={{ height: getPercent(15, height) }}
         rightIcon={null}
       />
-      {!chatId || loading ? (
-        <ActivityIndicator />
-      ) : (
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-          <ImageBackground
-            source={require("../../assets/chatbg.jpg")}
-            style={styles.content}
-            resizeMode="cover"
-          >
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={messages}
-              renderItem={({ item }) => {
-                return item.userId === currentUserId ? (
-                  <SenderMessage data={item} />
-                ) : (
-                  <RecieverMessage data={item} />
-                );
-              }}
-              keyExtractor={(item) => item.id}
-              inverted
-            />
-          </ImageBackground>
-          <TypingComponent onSend={handleSend} />
-        </KeyboardAvoidingView>
-      )}
+
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+        <ImageBackground
+          source={require("../../assets/chatbg.jpg")}
+          style={styles.content}
+          resizeMode="cover"
+        >
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={messages}
+            renderItem={({ item }) => {
+              let senderId = item?.sender?._id || item?.sender;
+              return senderId === currentUserId ? (
+                <SenderMessage data={item} />
+              ) : (
+                <RecieverMessage data={item} />
+              );
+            }}
+            keyExtractor={(item) => item._id}
+            inverted
+          />
+        </ImageBackground>
+        <TypingComponent onSend={handleSend} />
+      </KeyboardAvoidingView>
     </View>
   );
 };

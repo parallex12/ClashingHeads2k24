@@ -109,6 +109,13 @@ export const RecieverMessagestyles = ({ width, height }) =>
       fontFamily: "Regular",
       color: "#222",
     },
+    time: {
+      fontSize: rf(9),
+      fontFamily: "Medium",
+      color: "#222",
+      textAlign: "left",
+      marginBottom: getPercent(0.5, height),
+    },
   });
 
 //EmptyBoxStyles Styles starts here

@@ -22,6 +22,7 @@ const Header = (props) => {
       <View style={styles.col1}>
         <BackButton color="#fff" />
         <Profile
+          data={data}
           source={data?.profile_photo}
           profile_hash={data?.profile_hash}
           customStyles={{

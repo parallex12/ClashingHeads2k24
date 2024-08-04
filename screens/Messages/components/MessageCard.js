@@ -21,20 +21,13 @@ const MessageCard = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
+  let { messages } = data;
   const [singleUser, setSingleUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const currentUser = useSelector(selectAuthUser);
-  const currentUserId = currentUser?.id;
-  let userId = data?.participants?.filter((e) => e != currentUserId)[0];
-
-  useEffect(() => {
-    (async () => {
-      if (!data) return;
-      let author_data = await fetchInstantUserById(userId);
-      setSingleUser(author_data);
-      setLoading(false);
-    })();
-  }, [data]);
+  const currentUserId = currentUser?._id;
+  let otherUser = data?.participants?.filter((e) => e?._id != currentUserId)[0];
+  let lastMessage = messages[messages?.length - 1] || {};
 
   const Profile = ({ source }) => {
     return (
@@ -52,10 +45,7 @@ const MessageCard = (props) => {
   };
 
   const onCardPress = () => {
-    navigation.navigate("ChatScreen", {
-      userId: userId,
-      otherUserData: singleUser,
-    });
+    navigation.navigate("ChatScreen", { chat_data: data });
   };
 
   if (loading) {
@@ -71,17 +61,17 @@ const MessageCard = (props) => {
       <Profile
         source={{
           uri:
-            singleUser?.profile_photo ||
+            otherUser?.profile_photo ||
             "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
         }}
       />
       <View style={styles.infoWrapper}>
-        <Text style={styles.titleName}>{singleUser.realName}</Text>
-        <Text style={styles.slugText}>{data?.lastMessage?.text}</Text>
+        <Text style={styles.titleName}>{otherUser?.realName}</Text>
+        <Text style={styles.slugText}>{lastMessage?.message}</Text>
       </View>
       <View style={styles.rightActions}>
         <Text style={styles.timeText}>
-          {formatTime(data?.lastMessage?.createdAt)}
+          {formatTime(lastMessage?.createdAt)}
         </Text>
         <View style={styles.counterWrapper}>
           <Text style={styles.counterText}>50</Text>

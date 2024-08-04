@@ -273,7 +273,7 @@ export const generateChatId = (userId1, userId2) => {
 
 export const formatTime = (timestamp) => {
   if (!timestamp) return "sending...";
-  const date = timestamp?.toDate(); // Convert Firestore Timestamp to JavaScript Date object
+  const date = new Date(timestamp); 
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const ampm = hours >= 12 ? "PM" : "AM";

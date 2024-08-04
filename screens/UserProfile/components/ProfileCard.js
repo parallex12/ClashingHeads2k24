@@ -75,7 +75,7 @@ const ProfileCard = (props) => {
     return () => {
       sound.current && sound.current.unloadAsync();
     };
-  }, [isCurrentUserFollowing,isCurrentUserFollower]);
+  }, [isCurrentUserFollowing, isCurrentUserFollower]);
 
   const downloadCompressedAudio = async () => {
     const downloadFileUrl = await download(about_voice, (progress) => {});
@@ -117,19 +117,24 @@ const ProfileCard = (props) => {
       currentFollowButtonState == "Follow" ||
       currentFollowButtonState == "Follow back"
     ) {
-      setIsCurrentUserFollower(current_user)
+      setIsCurrentUserFollower(current_user);
       follow_user(current_user?._id, _id);
       return;
     }
 
     if (currentFollowButtonState == "Following") {
-      setIsCurrentUserFollower(null)
+      setIsCurrentUserFollower(null);
       unfollow_user(current_user?._id, _id);
     }
   };
 
   const onMessage = () => {
-    navigation.navigate("ChatScreen", { userId: _id });
+    navigation.navigate("ChatScreen", {
+      chat_data: {
+        participants: [current_user, user],
+        messages: [],
+      },
+    });
   };
   const onFollowView = () => {
     navigation.navigate("Connections", { user });
