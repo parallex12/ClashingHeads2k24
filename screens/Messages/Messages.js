@@ -1,4 +1,5 @@
 import {
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -17,6 +18,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { get_user_chats } from "../../state-management/apiCalls/chat";
+import { useSocket } from "../../state-management/apiCalls/SocketContext";
 
 const Messages = (props) => {
   let {} = props;
@@ -25,13 +27,28 @@ const Messages = (props) => {
   const [chats, setChats] = useState([]);
   const currentUser = useSelector(selectAuthUser);
   const currentUserId = currentUser?._id;
+  const socket = useSocket();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchChats = async () => {
+    const chats = await get_user_chats(currentUserId);
+    setChats(chats);
+    setRefreshing(false);
+  };
 
   useEffect(() => {
-    (async () => {
-      let chats = await get_user_chats(currentUserId);
-      setChats(chats);
-    })();
-  }, [currentUser]);
+    fetchChats();
+
+    if (socket) {
+      // Listen for real-time chat updates
+      socket.on("messagesRead", (message) => {
+        fetchChats();
+      });
+      socket.on("message", (message) => {
+        fetchChats();
+      });
+    }
+  }, [socket, currentUserId]);
 
   const PlusIconButton = () => {
     const onPlusPress = () => {
@@ -45,6 +62,16 @@ const Messages = (props) => {
     );
   };
 
+  const unReadMsgs = chats?.reduce((p, c) => {
+    let obj = c?.unreadMessagesCount;
+    return eval(obj[currentUserId] + p);
+  }, 0);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchChats();
+  };
+
   return (
     <View style={styles.container}>
       <StandardHeader
@@ -52,7 +79,11 @@ const Messages = (props) => {
         containerStyles={{ height: getPercent(15, height) }}
         rightIcon={<PlusIconButton />}
       />
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.content}>
           <View style={styles.searchHeader}>
             <SearchBar />
@@ -62,7 +93,7 @@ const Messages = (props) => {
           </View>
           <View style={styles.buttonsWrapper}>
             <Text style={font(12, "#6B7280", "Medium")}>
-              Unread messages ({chats?.length})
+              Unread messages ({unReadMsgs || 0})
             </Text>
             <TouchableOpacity style={styles.groupsBtn}>
               <Text style={font(12, "#000000", "Medium")}>Groups</Text>

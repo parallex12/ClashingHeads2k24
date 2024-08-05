@@ -15,7 +15,6 @@ export const styles = ({ width, height }) =>
       height: getPercent(80, height),
       // paddingTop: getPercent(3, height),
       paddingHorizontal: getPercent(3.5, width),
-      bottom: getPercent(2, height),
     },
   });
 

@@ -133,6 +133,7 @@ const ProfileCard = (props) => {
       chat_data: {
         participants: [current_user, user],
         messages: [],
+        _id:null
       },
     });
   };

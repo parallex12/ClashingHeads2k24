@@ -29,6 +29,7 @@ import {
   stopLoading,
 } from "../../state-management/features/screen_loader/loaderSlice";
 import DualClashCard from "../Search/components/DualClashCard";
+import io from "socket.io-client";
 
 const Home = (props) => {
   let {} = props;
@@ -44,7 +45,10 @@ const Home = (props) => {
   const [reachedEnd, setReachedEnd] = useState(false);
   const dispatch = useDispatch();
   const user = auth().currentUser;
+  // Connect to socket.io server
+  // const socket = connectSocket(1);
 
+  
   useEffect(() => {
     dispatch(startLoading("auth"));
     connectUserToDb(user?.phoneNumber)

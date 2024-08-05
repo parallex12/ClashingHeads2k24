@@ -77,7 +77,13 @@ export const SenderMessagestyles = ({ width, height }) =>
       fontFamily: "Medium",
       color: "#222",
       textAlign: "right",
-      marginBottom: getPercent(0.5, height),
+      marginRight: 5,
+    },
+    infoWrapper: {
+      flexDirection: "row",
+      alignSelf: "flex-end",
+      alignItems: "center",
+      justifyContent: "center",
     },
   });
 
@@ -89,32 +95,30 @@ export const RecieverMessagestyles = ({ width, height }) =>
       paddingHorizontal: getPercent(4, width),
       paddingVertical: getPercent(1, height),
       minHeight: getPercent(5, height),
-      backgroundColor: "#ffffff",
-      borderRadius: 15,
+      backgroundColor: "#9CA3AF",
+      borderRadius: 10,
       alignItems: "center",
       justifyContent: "center",
       alignSelf: "flex-start",
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
       marginVertical: getPercent(1, height),
     },
     text: {
       fontSize: rf(13),
       fontFamily: "Regular",
-      color: "#222",
+      color: "#fff",
     },
     time: {
       fontSize: rf(9),
       fontFamily: "Medium",
       color: "#222",
       textAlign: "left",
-      marginBottom: getPercent(0.5, height),
+      marginRight: 5,
+    },
+    infoWrapper: {
+      flexDirection: "row",
+      alignSelf: "flex-start",
+      alignItems: "center",
+      justifyContent: "center",
     },
   });
 
@@ -671,8 +675,7 @@ export const VoiceRecorderBottomSheetStyles = ({ width, height }) =>
 //UpdatedVoiceRecorderBottomSheetStyles  Styles starts here
 export const UpdatedVoiceRecorderBottomSheetStyles = ({ width, height }) =>
   StyleSheet.create({
-    container: {
-    },
+    container: {},
     contentContainer: {
       flex: 1,
       paddingHorizontal: getPercent(5, width),
@@ -872,17 +875,15 @@ export const BottomMenuStyles = ({ width, height }) =>
       backgroundColor: "#ffffff",
     },
     bottomMenuItem: {
-      flex:1,
+      flex: 1,
       height: getPercent(5, height),
       alignItems: "center",
       justifyContent: "center",
-
     },
     itemIconWrapper: {
       width: getPercent(3, height),
       height: getPercent(3, height),
     },
-    
   });
 
 //StandardHeader2 Styles starts here

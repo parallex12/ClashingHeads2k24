@@ -42,7 +42,6 @@ export const update_user_chat = async (id, chat_details) => {
 export const create_get_user_chat = async (participants) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(participants);
       const result = await axios.post(`/chat/connect`, participants);
       const chatDocs = result?.data;
       resolve(chatDocs);
@@ -65,11 +64,15 @@ export const send_message = async (message_details) => {
     }
   });
 };
-
-export const get_messages = async (id) => {
+export const get_messages = async (id, page = 1, limit = 10) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await axios.get(`/message/${id}`);
+      const result = await axios.get(`/message/${id}`, {
+        params: {
+          page,
+          limit,
+        },
+      });
       const messageDocs = result?.data;
       resolve(messageDocs);
     } catch (error) {

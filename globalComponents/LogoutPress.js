@@ -20,10 +20,12 @@ import {
 } from "../state-management/types/types";
 import { logout } from "../state-management/features/auth/authSlice";
 import store from "../state-management/store/store";
+import { useSocket } from "../state-management/apiCalls/SocketContext";
 
 const LogoutPress = (props) => {
   let navigation = useNavigation();
   const dispatch = useDispatch();
+  const socket = useSocket();
 
   const onLogout = async () => {
     navigation.dispatch(DrawerActions.closeDrawer());
@@ -31,6 +33,8 @@ const LogoutPress = (props) => {
       .signOut()
       .then((res) => {
         dispatch(logout());
+        socket.disconnect();
+
       })
       .catch((e) => {
         console.log(e);

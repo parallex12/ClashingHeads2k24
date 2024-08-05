@@ -21,13 +21,14 @@ const MessageCard = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
-  let { messages } = data;
+  let { messages, unreadMessagesCount, lastMessage, _id } = data;
   const [singleUser, setSingleUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const currentUser = useSelector(selectAuthUser);
   const currentUserId = currentUser?._id;
   let otherUser = data?.participants?.filter((e) => e?._id != currentUserId)[0];
-  let lastMessage = messages[messages?.length - 1] || {};
+
+  let unRead = unreadMessagesCount[currentUserId];
 
   const Profile = ({ source }) => {
     return (
@@ -67,15 +68,17 @@ const MessageCard = (props) => {
       />
       <View style={styles.infoWrapper}>
         <Text style={styles.titleName}>{otherUser?.realName}</Text>
-        <Text style={styles.slugText}>{lastMessage?.message}</Text>
+        <Text style={styles.slugText} numberOfLines={1}>{lastMessage?.message}</Text>
       </View>
       <View style={styles.rightActions}>
         <Text style={styles.timeText}>
           {formatTime(lastMessage?.createdAt)}
         </Text>
-        <View style={styles.counterWrapper}>
-          <Text style={styles.counterText}>50</Text>
-        </View>
+        {unRead > 0 && (
+          <View style={styles.counterWrapper}>
+            <Text style={styles.counterText}>{unRead}</Text>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );

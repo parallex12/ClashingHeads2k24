@@ -11,12 +11,12 @@ import { firebaseConfig } from "./utils";
 import firebase from "@react-native-firebase/app";
 import auth from "@react-native-firebase/auth";
 import store from "./state-management/store/store";
-import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import { QueryClient, QueryClientProvider } from "react-query";
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 import "./utils/firebaseInitialize";
+import { SocketProvider } from "./state-management/apiCalls/SocketContext";
+
 export default function App() {
   // axios.defaults.baseURL =
   //   "https://clashing-heads-server.vercel.app/clashingheads_api";
@@ -27,7 +27,6 @@ export default function App() {
   const config = {
     name: "SECONDARY_APP",
   };
-  const queryClient = new QueryClient();
 
   useEffect(() => {
     (async () => {
@@ -45,9 +44,9 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
+      <SocketProvider>
         <AppNavigator />
-      </QueryClientProvider>
+      </SocketProvider>
     </Provider>
   );
 }
