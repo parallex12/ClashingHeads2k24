@@ -1,11 +1,4 @@
-import {
-  Button,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Text, View, useWindowDimensions } from "react-native";
 import { styles as _styles } from "../../styles/Invite/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import { getPercent } from "../../middleware";
@@ -96,7 +89,7 @@ const Invite = (props) => {
               inputStyles={{
                 width: getPercent(57, width),
                 height: getPercent(5, height),
-                marginTop:0
+                marginTop: 0,
               }}
               containerStyles={{
                 marginVertical: 0,

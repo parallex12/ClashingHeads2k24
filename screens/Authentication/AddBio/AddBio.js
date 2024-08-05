@@ -1,45 +1,24 @@
 import {
-  ActivityIndicator,
-  Image,
   KeyboardAvoidingView,
   ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/PersonalInfo/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
-import {
-  bioFields,
-  getPercent,
-  politicsCategory,
-  registrationFields,
-} from "../../../middleware";
+import { bioFields, getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
-import {
-  update_user_details,
-  validate_user_details,
-} from "../../../middleware/firebase";
 import { Entypo } from "@expo/vector-icons";
-import {
-  selectAuthUser,
-  selectUserForm,
-} from "../../../state-management/features/auth";
-import auth from "@react-native-firebase/auth";
-import {
-  setUserDetails,
-  setUserForm,
-} from "../../../state-management/features/auth/authSlice";
+import { selectAuthUser } from "../../../state-management/features/auth";
+import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 import { update_user } from "../../../state-management/apiCalls/auth";
 
 const AddBio = (props) => {
-  let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user = useSelector(selectAuthUser);
@@ -56,18 +35,17 @@ const AddBio = (props) => {
         employment: form?.employment || null,
       };
 
-      setLoading(true)
+      setLoading(true);
       update_user(user?._id, updateDetails)
         .then((res) => {
-          dispatch(setUserForm({}));
           dispatch(setUserDetails(res));
           if (res) {
             props?.navigation?.navigate("MyProfile");
           }
-          setLoading(false)
+          setLoading(false);
         })
         .catch((e) => {
-          setLoading(false)
+          setLoading(false);
           console.log(e.message);
           alert("Something went wrong try again!");
         });

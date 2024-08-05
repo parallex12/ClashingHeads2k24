@@ -2,23 +2,16 @@ import { ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { styles as _styles } from "../../styles/ChallengeRequests/main";
 import { useEffect, useMemo, useRef, useState } from "react";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
-import {
-  fetchUserPostsAndChallenges,
-  updateChallengeRequestForUser,
-} from "../../state-management/features/challengeRequests/challengeRequestsSlice";
-import { selectChallengeClashRequests } from "../../state-management/features/challengeRequests";
-import DualClashCard from "../Search/components/DualClashCard";
-import Header from "../Search/components/Header";
 import { TouchableOpacity } from "react-native";
 import { font } from "../../styles/Global/main";
-import VoiceRecorderBottomSheet from "./components/VoiceRecorderBottomSheet";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 import { get_challenge_by_user } from "../../state-management/apiCalls/challengeClash";
 import { Instagram } from "react-content-loader/native";
 import { update_post_by_id } from "../../state-management/apiCalls/post";
 import { uploadMedia } from "../../middleware/firebase";
+import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 
 const ChallengeRequests = (props) => {
   let {} = props;
@@ -87,7 +80,7 @@ const ChallengeRequests = (props) => {
     let { url } = await uploadMedia(argData?.recording, "post_recordings");
     let updatedData = {
       status: "live",
-      opponent_audio: argData?.recording,
+      opponent_audio: url,
     };
     setChallenges((prev) => {
       return prev.map((e) => {
@@ -95,7 +88,7 @@ const ChallengeRequests = (props) => {
           return {
             ...e,
             status: "live",
-            opponent_audio: url,
+            opponent_audio: argData?.recording,
           };
         }
         return e;
@@ -103,7 +96,7 @@ const ChallengeRequests = (props) => {
     });
 
     await update_post_by_id(currentChallenge, updatedData);
-    alert("Congrats! Challenge is live now.")
+    alert("Congrats! Challenge is live now.");
   };
 
   return (
@@ -134,7 +127,7 @@ const ChallengeRequests = (props) => {
           ) : (
             memoizedRequests?.map((item, index) => {
               return (
-                <DualClashCard
+                <ChallengeCard
                   onAcceptRequest={() => {
                     alert("Record your opinion to accept the challenge.");
                     setCurrentChallenge(item?._id);

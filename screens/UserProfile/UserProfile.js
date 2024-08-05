@@ -1,27 +1,15 @@
-import {
-  ActivityIndicator,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { ScrollView, View, useWindowDimensions } from "react-native";
 import { styles as _styles } from "../../styles/UserProfile/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import ProfileCard from "./components/ProfileCard";
 import PostCard from "../../globalComponents/PostCard/PostCard";
-import { useRecoilState } from "recoil";
-import { global_posts, home_posts } from "../../state-management/atoms/atoms";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { getPercent } from "../../middleware";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchUserPostsAndChallenges } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
-import DualClashCard from "../Search/components/DualClashCard";
-import { selectAuthUser } from "../../state-management/features/auth";
+import { useDispatch } from "react-redux";
 import ContentLoader, { Instagram } from "react-content-loader/native";
 import { get_user_profile } from "../../state-management/apiCalls/auth";
+import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 
 const UserProfile = (props) => {
   let {} = props;
@@ -46,7 +34,6 @@ const UserProfile = (props) => {
         });
     }
   }, [user?._id]);
-
 
   return (
     <View style={styles.container}>
@@ -73,7 +60,7 @@ const UserProfile = (props) => {
               {posts?.map((item, index) => {
                 if (item?.clashType == "challenge") {
                   return (
-                    <DualClashCard
+                    <ChallengeCard
                       divider
                       onPress={() =>
                         props?.navigation?.navigate("ChallengeClash", {
@@ -102,7 +89,6 @@ const UserProfile = (props) => {
                   />
                 );
               })}
-             
             </>
           )}
         </View>

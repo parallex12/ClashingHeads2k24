@@ -14,6 +14,7 @@ import { getPercent } from "../middleware";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { Audio } from "expo-av";
 import { font } from "../styles/Global/main";
+import { download } from "react-native-compressor";
 
 const WaveAudioPlayer = (props) => {
   const {
@@ -24,6 +25,7 @@ const WaveAudioPlayer = (props) => {
     localSource,
     afterAudioPlayed,
     audioResetFunc,
+    localAudio
   } = props;
   const { width, height } = useWindowDimensions();
   const waveAnime = useRef(new Animated.Value(0)).current;
@@ -35,8 +37,21 @@ const WaveAudioPlayer = (props) => {
   const [remainingTime, setRemainingTime] = useState(0);
   const styles = _styles({ width, height });
   const [isBuffering, setIsBuffering] = useState(false); // Initialize to true
+  const [downloadedAudio, setDownloadedAudio] = useState(null);
+
+  const downloadCompressedAudio = async () => {
+    try {
+      const downloadFileUrl = await download(source, (progress) => {});
+      setDownloadedAudio(downloadFileUrl);
+    } catch (e) {
+      console.log(e, "issue");
+    }
+  };
 
   useEffect(() => {
+    if (source && !localAudio) {
+      downloadCompressedAudio();
+    }
     return () => {
       unloadAudio();
     };
@@ -51,7 +66,7 @@ const WaveAudioPlayer = (props) => {
       });
 
       const { sound, status } = await Audio.Sound.createAsync(
-        localSource ? localSource : { uri: source },
+        localSource ? localSource : { uri: downloadedAudio || source },
         { shouldPlay: false }
       );
 

@@ -1,28 +1,11 @@
-import {
-  Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Text, View, useWindowDimensions } from "react-native";
 import { ClashesResultStyles as _styles } from "../../../styles/Search/main";
-import {
-  MaterialCommunityIcons,
-  MaterialIcons,
-  FontAwesome6,
-} from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
-import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
-import { useSelector } from "react-redux";
-import { selectAllChallengeClashes } from "../../../state-management/features/allChallengeClashes";
 import { memo, useEffect, useState } from "react";
-import DualClashCard from "./DualClashCard";
-import { selectSearched } from "../../../state-management/features/searchedUsers";
-import { Instagram } from "react-content-loader/native";
-import { search_clashes, search_posts } from "../../../state-management/apiCalls/search";
+import { search_clashes } from "../../../state-management/apiCalls/search";
 import { useNavigation } from "@react-navigation/native";
+import ChallengeCard from "../../../globalComponents/ChallengeCard/ChallengeCard";
 
 const ClashesResult = (props) => {
   let { searchQuery } = props;
@@ -46,13 +29,11 @@ const ClashesResult = (props) => {
       </View>
       {clashes?.map((item, index) => {
         return (
-          <DualClashCard
+          <ChallengeCard
             divider
             key={index}
             data={item}
-            onPress={() =>
-              navigation?.navigate("ChallengeClash", { ...item })
-            }
+            onPress={() => navigation?.navigate("ChallengeClash", { ...item })}
             onClashesPress={() =>
               navigation?.navigate("ChallengeClash", { ...item })
             }

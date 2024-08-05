@@ -1,30 +1,11 @@
-import {
-  Image,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
+import { View, useWindowDimensions } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-
-import auth from "@react-native-firebase/auth";
 import { ClashCardStyles } from "../../styles/Global/main";
-import {
-  updateClashDetails,
-  updateClashReaction,
-} from "../../state-management/features/singlePost/singlePostSlice";
 import Header from "./components/Header";
 import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
 import { stickerArr } from "../../utils";
-import {
-  updateSubClashDetails,
-  updateSubClashReaction,
-} from "../../state-management/features/challengeClash/challengeClashSlice";
-import { fetchInstantUserById } from "../../state-management/features/searchedUsers/searchedUsersSlice";
 import { Instagram } from "react-content-loader/native";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { update_clash_by_id } from "../../state-management/apiCalls/clash";
@@ -34,7 +15,6 @@ const ClashCard = (props) => {
     props;
   let { width, height } = useWindowDimensions();
   let styles = ClashCardStyles({ width, height });
-  let dispatch = useDispatch();
   const { _id } = useSelector(selectAuthUser);
   const [singleUser, setAuthor] = useState(null);
   const [loading, setLoading] = useState(true);

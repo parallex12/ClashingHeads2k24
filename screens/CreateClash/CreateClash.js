@@ -1,13 +1,4 @@
-import {
-  FlatList,
-  Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Text, View, useWindowDimensions } from "react-native";
 import { styles as _styles } from "../../styles/CreateClash/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import { getPercent } from "../../middleware";
@@ -20,23 +11,10 @@ import { RFValue } from "react-native-responsive-fontsize";
 import WaveAudioPlayer from "../../globalComponents/WaveAudioPlayer";
 import WaveAudioRecorder from "../../globalComponents/WaveAudioRecorder";
 import StandardButton from "../../globalComponents/StandardButton";
-import RecordingPlayer from "../../globalComponents/RecordingPlayer";
-import { fetchUsersByQuery } from "../../state-management/features/searchedUsers/searchedUsersSlice";
-import { selectSearchedUsers } from "../../state-management/features/searchedUsers/searchedUsersSelector";
 import _ from "lodash"; // Import lodash
 import UserCard from "../../globalComponents/UserCard";
-import { ActivityIndicator } from "react-native";
 import PeopleResult from "../Search/components/PeopleResult";
-import {
-  createChallengeClash,
-  validate_clash_details,
-} from "../../middleware/firebase";
-import {
-  startLoading,
-  stopLoading,
-} from "../../state-management/features/screen_loader/loaderSlice";
-import { addChallengeRequestForUser } from "../../state-management/features/challengeRequests/challengeRequestsSlice";
-import { fetchAllChallengeClashes } from "../../state-management/features/allChallengeClashes/allChallengeClashesSlice";
+import { validate_clash_details } from "../../middleware/firebase";
 import { search_users } from "../../state-management/apiCalls/search";
 import { create_challenge_clash } from "../../state-management/apiCalls/challengeClash";
 
@@ -71,7 +49,7 @@ const CreateClash = (props) => {
         if (res?.code == 200) {
           create_challenge_clash(clashForm)
             .then((res) => {
-              console.log(res)
+              console.log(res);
               props?.navigation.navigate("Home");
               setLoading(false);
             })

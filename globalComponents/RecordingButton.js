@@ -5,10 +5,8 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
 import { RecordingButtonStyles } from "../styles/Global/main";
 import { Audio } from "expo-av";
-import { styles } from "../styles/Home/main";
 import { useEffect } from "react";
 const RecordingButton = (props) => {
   let {

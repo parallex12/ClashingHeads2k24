@@ -8,14 +8,6 @@ import {
   FIREBASE_APP_ID,
   FIREBASE_MEASUREMENT_ID,
 } from "@env";
-// import { getAuth } from "firebase/auth";
-import { setAuthToken } from "../middleware";
-import {
-  FIREBASE_EXPO_APP,
-  REGISTRATIONFORM,
-  SCREEN_LOADER,
-} from "../state-management/types/types";
-import store from "../state-management/store/store";
 
 export const EmojisArr = [
   {
@@ -264,7 +256,6 @@ export const firebaseConfig = {
   measurementId: FIREBASE_MEASUREMENT_ID,
 };
 
-
 export const validateRequiredFields = (details, requiredFields) => {
   for (const field of requiredFields) {
     if (!details[field]) {
@@ -386,17 +377,7 @@ export const handleReaction = async ({
   }
 };
 
-export const setLoading = (state) => {
-  store.dispatch({ type: SCREEN_LOADER, payload: state });
-};
 
-export const setForm = (form) => {
-  store.dispatch({ type: REGISTRATIONFORM, payload: form });
-};
-
-export const setFirebaseExpoApp = (app) => {
-  store.dispatch({ type: FIREBASE_EXPO_APP, payload: app });
-};
 
 // src/utils/timestamp.js
 import { Timestamp } from "@firebase/firestore";

@@ -8,14 +8,9 @@ import {
 } from "react-native";
 import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import FlagReportBottomSheet from "../../FlagReportBottomSheet/FlagReportBottomSheet";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { onShareApp } from "../../../utils";
-import { user_db_details } from "../../../state-management/atoms/atoms";
-import { useRecoilValue } from "recoil";
-import { connect, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 
 const ActionMenu = (props) => {

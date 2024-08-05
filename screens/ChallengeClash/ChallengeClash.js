@@ -1,28 +1,11 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { styles as _styles } from "../../styles/ChallengeClash/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import { getPercent } from "../../middleware";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import auth from "@react-native-firebase/auth";
-import DualClashCard from "../Search/components/DualClashCard";
-import {
-  addSubClashToChallenge,
-  fetchChallengeClashAndSubClashes,
-  updateChallengeClash,
-  updateSubClashDetails,
-} from "../../state-management/features/challengeClash/challengeClashSlice";
-import { selectChallengeClash } from "../../state-management/features/challengeClash";
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
-import VoiceRecorderBottomSheet from "../../globalComponents/VoiceRecorderBottomSheet/VoiceRecorderBottomSheet";
 import { font } from "../../styles/Global/main";
 import { Instagram } from "react-content-loader/native";
 import {
@@ -32,6 +15,7 @@ import {
 import { selectAuthUser } from "../../state-management/features/auth";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 import { create_clash } from "../../state-management/apiCalls/clash";
+import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 
 const SubClashes = React.memo(
   ({
@@ -52,7 +36,7 @@ const SubClashes = React.memo(
             hrLine={index !== subClashes.length - 1}
             postDateAndViews
             data={clash}
-            key={clash?.id}
+            key={clash?._id}
             onPostClashesPress={() => {
               setClashTo(clash);
               bottomVoiceSheetRef.current?.present();
@@ -123,11 +107,12 @@ const ChallengeClash = (props) => {
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
-            <DualClashCard
+            <ChallengeCard
               showVoting
               divider
               data={postData || prevData}
               onClashesPress={() => bottomVoiceSheetRef.current.present()}
+              onReportPress={() => bottomFlagSheetRef.current.present()}
             />
             <View style={styles.postDateAndViews}>
               <Text style={font(10, "#9CA3AF", "Regular")}>

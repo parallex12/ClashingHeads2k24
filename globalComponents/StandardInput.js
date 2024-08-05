@@ -6,14 +6,44 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
 import { StandardInputStyles } from "../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
-import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { politicsCategory } from "../middleware";
+
+const DropDown = ({ options, onDropDownChange }) => {
+  let { width, height } = useWindowDimensions();
+  let styles = StandardInputStyles({ width, height });
+
+  let activeRadioStyle = {
+    backgroundColor: "#fff",
+    borderColor: "#222",
+    borderWidth: 3,
+  };
+
+  return (
+    <View style={styles.dropDownContainer}>
+      <ScrollView style={{ flex: 1 }}>
+        {options?.map((item, index) => {
+          let isActive = value == item?.title;
+          return (
+            <TouchableOpacity
+              style={styles.dropDownItem}
+              key={index}
+              onPress={() => onDropDownChange(item)}
+            >
+              <View
+                style={[styles.radioCircle, isActive ? activeRadioStyle : {}]}
+              ></View>
+              <Text style={styles.dropDownItemText}>{item?.title}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
+};
 
 const StandardInput = (props) => {
   let {
@@ -41,36 +71,6 @@ const StandardInput = (props) => {
   const onDropDownChange = (info) => {
     setDropDownShow(false);
     onChangeText(info?.title);
-  };
-
-  const DropDown = ({ options }) => {
-    let activeRadioStyle = {
-      backgroundColor: "#fff",
-      borderColor: "#222",
-      borderWidth: 3,
-    };
-
-    return (
-      <View style={styles.dropDownContainer}>
-        <ScrollView style={{ flex: 1 }}>
-          {options?.map((item, index) => {
-            let isActive = value == item?.title;
-            return (
-              <TouchableOpacity
-                style={styles.dropDownItem}
-                key={index}
-                onPress={() => onDropDownChange(item)}
-              >
-                <View
-                  style={[styles.radioCircle, isActive ? activeRadioStyle : {}]}
-                ></View>
-                <Text style={styles.dropDownItemText}>{item?.title}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
-    );
   };
 
   return (
@@ -110,7 +110,12 @@ const StandardInput = (props) => {
             style={styles.input}
             onPress={() => setDropDownShow(true)}
           >
-            {dropDownshow && <DropDown options={politicsCategory} />}
+            {dropDownshow && (
+              <DropDown
+                onDropDownChange={onDropDownChange}
+                options={politicsCategory}
+              />
+            )}
             <Text style={styles.inputText}>{value || data?.placeholder}</Text>
           </TouchableOpacity>
         ) : null}

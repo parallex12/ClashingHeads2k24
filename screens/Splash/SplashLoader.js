@@ -6,23 +6,11 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { styles as _styles } from "../../styles/SplashLoader/main";
-import { useEffect } from "react";
-import {
-  Logout,
-  getFirestoreDoc,
-  isUserProfileConnected,
-} from "../../middleware/firebase";
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { firebaseConfig } from "../../utils";
-import { user_auth } from "../../state-management/atoms/atoms";
-import { useRecoilState, useRecoilValue } from "recoil";
 
 const SplashLoader = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [userAuth, setUserAuth] = useRecoilState(user_auth);
 
   return (
     <View style={styles.container}>

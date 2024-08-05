@@ -5,12 +5,11 @@ import {
   ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
-  Text,
   View,
   useWindowDimensions,
 } from "react-native";
 import { styles as _styles } from "../../styles/ChatScreen/main";
-import { generateChatId, getPercent } from "../../middleware";
+import { getPercent } from "../../middleware";
 import TypingComponent from "./components/TypingComponent";
 import SenderMessage from "./components/SenderMessage";
 import RecieverMessage from "./components/RecieverMessage";
@@ -22,7 +21,6 @@ import {
   create_get_user_chat,
   get_messages,
 } from "../../state-management/apiCalls/chat";
-import { generateUniqueId } from "../../state-management/features/singlePost/singlePostSlice";
 import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
 import { useSocket } from "../../state-management/apiCalls/SocketContext";
 
@@ -113,7 +111,6 @@ const ChatScreen = (props) => {
       scrollToEnd();
     }
     setScrollToEndOnUpdate(false); // Reset after scrolling
-
   }, [messages]);
 
   const getMessages = async () => {
@@ -144,27 +141,30 @@ const ChatScreen = (props) => {
   const loadMoreMessages = async () => {
     if (hasMore && !loading) {
       setLoading(true);
-  
+
       try {
         // Fetch new messages
         let fetchedMessages = await get_messages(roomId, page, 10);
-  
+
         // Create a set of existing message IDs to avoid duplicates
         const existingMessageIds = new Set(messages.map((msg) => msg._id));
-  
+
         // Filter out duplicate messages
         const uniqueFetchedMessages = fetchedMessages.filter(
           (msg) => !existingMessageIds.has(msg._id)
         );
-  
+
         if (uniqueFetchedMessages.length === 0) {
           setHasMore(false);
         } else {
-          setMessages((prevMessages) => [...prevMessages, ...uniqueFetchedMessages]);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            ...uniqueFetchedMessages,
+          ]);
           setPage(page + 1);
         }
       } catch (error) {
-        console.error('Error loading more messages:', error);
+        console.error("Error loading more messages:", error);
       } finally {
         setLoading(false);
       }

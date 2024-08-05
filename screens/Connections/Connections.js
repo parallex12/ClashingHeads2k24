@@ -1,14 +1,11 @@
 import {
   ActivityIndicator,
   ScrollView,
-  Text,
-  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
 import { styles as _styles } from "../../styles/Connections/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import { getPercent } from "../../middleware";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
@@ -26,8 +23,8 @@ const Connections = (props) => {
   const current_user = useSelector(selectAuthUser);
   const loading = false;
   const dispatch = useDispatch();
-  let following = [...user?.following]
-  let followers = [...user?.followers]
+  let following = [...user?.following];
+  let followers = [...user?.followers];
   let usersToShow = [followers, following, [], []];
   const navigation = useNavigation();
 
@@ -58,7 +55,6 @@ const Connections = (props) => {
                       navigation?.navigate("UserProfile", {
                         user: item,
                       });
-                     
                     }
                   }}
                 />

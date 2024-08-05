@@ -7,7 +7,6 @@ const initialState = {
   loading: false,
   error: null,
   isAuth: false,
-  userForm: {},
 };
 
 const authSlice = createSlice({
@@ -23,22 +22,14 @@ const authSlice = createSlice({
     logout: (state) => {
       return { ...state, isAuth: false, user: {}, userForm: {} };
     },
-    setUserForm: (state, action) => {
-      return { ...state, userForm: action.payload };
-    },
     setUserDetails: (state, action) => {
       return { ...state, user: action.payload };
     },
   },
 });
 
-export const {
-  loginSuccess,
-  setUserDetails,
-  loginFailure,
-  logout,
-  setUserForm,
-} = authSlice.actions;
+export const { loginSuccess, setUserDetails, loginFailure, logout } =
+  authSlice.actions;
 
 export const fetchCurrentUserDetails = (userId) => async (dispatch) => {
   dispatch(setLoading(true));

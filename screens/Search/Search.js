@@ -1,18 +1,12 @@
 import { ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { styles as _styles } from "../../styles/Search/main";
 import Header from "./components/Header";
-import UserCard from "../../globalComponents/UserCard";
 import ClashesResult from "./components/ClashesResult";
 import PeopleResult from "./components/PeopleResult";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback,  useState } from "react";
 import PostsResult from "./components/PostsResult";
 import NewsResult from "./components/NewsResult";
 import { useDispatch } from "react-redux";
-import {
-  fetchClashesByQuery,
-  fetchPostsByQuery,
-  fetchUsersByQuery,
-} from "../../state-management/features/searchedUsers/searchedUsersSlice";
 import debounce from "lodash/debounce";
 import { Instagram } from "react-content-loader/native";
 

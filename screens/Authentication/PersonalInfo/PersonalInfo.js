@@ -1,51 +1,33 @@
 import {
-  ActivityIndicator,
-  Image,
   KeyboardAvoidingView,
   ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/PersonalInfo/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
-import {
-  getPercent,
-  politicsCategory,
-  registrationFields,
-} from "../../../middleware";
+import { getPercent, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
-import {
-  update_user_details,
-  validate_user_details,
-} from "../../../middleware/firebase";
+import { validate_user_details } from "../../../middleware/firebase";
 import { Entypo } from "@expo/vector-icons";
-import {
-  selectAuthUser,
-  selectUserForm,
-} from "../../../state-management/features/auth";
-import auth from "@react-native-firebase/auth";
-import { setUserDetails, setUserForm } from "../../../state-management/features/auth/authSlice";
+import { selectAuthUser } from "../../../state-management/features/auth";
+import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 import { update_user } from "../../../state-management/apiCalls/auth";
 
 const PersonalInfo = (props) => {
-  let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_profile_details = useSelector(selectAuthUser);
   const [form, setForm] = useState(user_profile_details || {});
   const [errorField, setErrorField] = useState({});
-  const user = auth().currentUser;
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   let userDbId = user_profile_details?._id;
-
 
   const onContinue = async () => {
     try {
@@ -82,9 +64,8 @@ const PersonalInfo = (props) => {
 
           update_user(userDbId, user_details)
             .then((res) => {
-              dispatch(setUserForm({}));
               if (res) {
-                dispatch(setUserDetails(res))
+                dispatch(setUserDetails(res));
                 if (!res?.hasVoiceAdded) {
                   props?.navigation?.navigate("VoiceRecording");
                 } else {

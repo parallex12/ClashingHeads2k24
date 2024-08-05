@@ -27,7 +27,6 @@ export const ProfileCardstyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       width: "100%",
-      borderBottomWidth: 10,
       borderColor: "#F7F8F8",
     },
     cardHeaderContainer: {
@@ -36,7 +35,7 @@ export const ProfileCardstyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-between",
       paddingHorizontal: getPercent(3, width),
-      paddingVertical: 10,
+      paddingTop: 10,
     },
     cardHeaderProfileWrapper: {},
     cardHeaderProfile: {

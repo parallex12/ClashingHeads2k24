@@ -1,17 +1,6 @@
-import {
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
-import { connect } from "react-redux";
-import { RecordingButtonStyles } from "../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
-import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native";
 import { Audio } from "expo-av";
-import { useEffect, useState } from "react";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { useEffect } from "react";
 
 const RecordingPlayer = (props) => {
   let {
@@ -45,11 +34,11 @@ const RecordingPlayer = (props) => {
       setTimer(seconds);
       // Update state to reflect whether the sound is playing or not
       setIsAudioPlaying(isPlaying);
-      if (progressPercentage==100) {
+      if (progressPercentage == 100) {
         setProgress(0);
-        setTimer(0)
+        setTimer(0);
         console.log("Finsihed", progressPercentage);
-      } 
+      }
     });
   }
 
@@ -66,8 +55,6 @@ const RecordingPlayer = (props) => {
       : undefined;
   }, [sound]);
 
-
-  
   return (
     <TouchableOpacity onPress={isAudioPlaying ? stopSound : playSound}>
       {props?.children}

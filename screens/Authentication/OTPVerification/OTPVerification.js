@@ -1,14 +1,5 @@
-import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { useDispatch } from "react-redux";
 import { styles as _styles } from "../../../styles/OTPVerification/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
@@ -16,11 +7,7 @@ import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
 import PinCodeInput from "../../../globalComponents/PinCodeInput";
-import { selectUserForm } from "../../../state-management/features/auth";
-import {
-  loginSuccess,
-  setUserForm,
-} from "../../../state-management/features/auth/authSlice";
+import { loginSuccess } from "../../../state-management/features/auth/authSlice";
 import auth from "@react-native-firebase/auth";
 
 const OTPVerification = (props) => {

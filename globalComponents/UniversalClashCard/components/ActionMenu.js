@@ -8,13 +8,31 @@ import {
 } from "react-native";
 import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import { onShareApp } from "../../../utils";
 import { useEffect, useState } from "react";
-import auth from "@react-native-firebase/auth";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { useSelector } from "react-redux";
+
+const FooterItem = ({ item, index }) => {
+  let { width, height } = useWindowDimensions();
+  let styles = _styles({ width, height });
+
+  return (
+    <TouchableOpacity
+      style={styles.FooterItem}
+      onPress={() => item?.onPress(item)}
+    >
+      <View style={styles.iconImage}>
+        <Image
+          source={item?.iconImg}
+          resizeMode="contain"
+          style={{ width: "100%", height: "100%" }}
+        />
+      </View>
+      <Text style={styles.actionText}>{item?.title}</Text>
+    </TouchableOpacity>
+  );
+};
 
 const ActionMenu = (props) => {
   let {
@@ -33,24 +51,6 @@ const ActionMenu = (props) => {
   useEffect(() => {
     setReactions({ likes, dislikes });
   }, [likes, dislikes]);
-
-  const FooterItem = ({ item, index }) => {
-    return (
-      <TouchableOpacity
-        style={styles.FooterItem}
-        onPress={() => item?.onPress(item)}
-      >
-        <View style={styles.iconImage}>
-          <Image
-            source={item?.iconImg}
-            resizeMode="contain"
-            style={{ width: "100%", height: "100%" }}
-          />
-        </View>
-        <Text style={styles.actionText}>{item?.title}</Text>
-      </TouchableOpacity>
-    );
-  };
 
   const onReact = (type) => {
     let _likes = reactions?.likes?.filter((e) => e != _id);

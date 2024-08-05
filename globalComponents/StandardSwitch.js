@@ -1,16 +1,9 @@
-import {
-  Switch,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
-import { connect } from "react-redux";
+import { Switch, useWindowDimensions } from "react-native";
 import { StandardSwitchStyles } from "../styles/Global/main";
 import { useState } from "react";
 
 const StandardSwitch = (props) => {
-  let { customStyles, is_enabled, textStyles, onPress, title, toggle_Switch } =
-    props;
+  let { is_enabled, toggle_Switch } = props;
   let { width, height } = useWindowDimensions();
   let styles = StandardSwitchStyles({ width, height });
   const [isEnabled, setIsEnabled] = useState(false);

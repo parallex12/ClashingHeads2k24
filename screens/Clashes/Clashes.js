@@ -9,26 +9,13 @@ import {
 } from "react-native";
 import { styles as _styles } from "../../styles/Clashes/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
-import PostCard from "../../globalComponents/PostCard/PostCard";
-import { useRecoilState } from "recoil";
-import { global_posts } from "../../state-management/atoms/atoms";
 import { font } from "../../styles/Global/main";
 import { useNavigation } from "@react-navigation/native";
-import DualClashCard from "../Search/components/DualClashCard";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectAllChallengeClashes,
-  selectChallengeClashError,
-  selectChallengeClashLoading,
-  selectLastVisibleClash,
-} from "../../state-management/features/allChallengeClashes";
-import { fetchAllChallengeClashes } from "../../state-management/features/allChallengeClashes/allChallengeClashesSlice";
-import StandardButton from "../../globalComponents/StandardButton";
-import { sortPostsByCreatedAt } from "../../utils";
 import RoomCard from "./components/RoomCard";
 import { get_all_challenges } from "../../state-management/apiCalls/challengeClash";
+import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 
 const Clashes = (props) => {
   let {} = props;
@@ -50,7 +37,6 @@ const Clashes = (props) => {
     setRefreshing(false);
   };
 
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setPage(1);
@@ -58,7 +44,7 @@ const Clashes = (props) => {
   }, []);
 
   let memoizedClashes = useMemo(() => {
-    return clashes
+    return clashes;
   }, [clashes]);
 
   return (
@@ -115,7 +101,7 @@ const Clashes = (props) => {
           <View style={styles.cardsWrapper}>
             {memoizedClashes?.map((item, index) => {
               return (
-                <DualClashCard
+                <ChallengeCard
                   key={index}
                   data={item}
                   onPress={() =>

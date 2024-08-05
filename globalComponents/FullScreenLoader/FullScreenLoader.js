@@ -2,7 +2,6 @@ import {
   Animated,
   Image,
   Text,
-  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
@@ -13,10 +12,7 @@ import { isAppLoading } from "../../state-management/features/screen_loader";
 import { getPercent } from "../../middleware";
 import * as Animatable from "react-native-animatable";
 import auth from "@react-native-firebase/auth";
-import {
-  loginSuccess,
-  logout,
-} from "../../state-management/features/auth/authSlice";
+import { logout } from "../../state-management/features/auth/authSlice";
 import { selectIsAuth } from "../../state-management/features/auth";
 import { stopLoading } from "../../state-management/features/screen_loader/loaderSlice";
 

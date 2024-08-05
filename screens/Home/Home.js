@@ -10,26 +10,22 @@ import {
 import { styles as _styles } from "../../styles/Home/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import PostCard from "../../globalComponents/PostCard/PostCard";
-import { font, fontTest } from "../../styles/Global/main";
+import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import auth from "@react-native-firebase/auth";
 import { setUserDetails } from "../../state-management/features/auth/authSlice";
-import { getPercent, setAuthToken } from "../../middleware";
+import { getPercent } from "../../middleware";
 import PostActionsBottomSheet from "../../globalComponents/PostActionsBottomSheet/PostActionsBottomSheet";
 import {
   connectUserToDb,
   get_user_profile,
 } from "../../state-management/apiCalls/auth";
 import { get_all_posts_test } from "../../state-management/apiCalls/post";
-import {
-  startLoading,
-  stopLoading,
-} from "../../state-management/features/screen_loader/loaderSlice";
-import DualClashCard from "../Search/components/DualClashCard";
-import io from "socket.io-client";
+import { startLoading } from "../../state-management/features/screen_loader/loaderSlice";
+import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 
 const Home = (props) => {
   let {} = props;
@@ -48,7 +44,6 @@ const Home = (props) => {
   // Connect to socket.io server
   // const socket = connectSocket(1);
 
-  
   useEffect(() => {
     dispatch(startLoading("auth"));
     connectUserToDb(user?.phoneNumber)
@@ -135,7 +130,7 @@ const Home = (props) => {
           renderItem={({ item, index }) => {
             if (item?.clashType == "challenge") {
               return (
-                <DualClashCard
+                <ChallengeCard
                   divider
                   onPress={() =>
                     props?.navigation?.navigate("ChallengeClash", { ...item })
@@ -143,6 +138,7 @@ const Home = (props) => {
                   onClashesPress={() =>
                     props?.navigation?.navigate("ChallengeClash", { ...item })
                   }
+                  onReportPress={() => bottomFlagSheetRef.current.present()}
                   key={index}
                   data={item}
                 />
@@ -150,7 +146,7 @@ const Home = (props) => {
             }
             return (
               <PostCard
-                divider
+                divider={index != 0}
                 desc_limit={1}
                 data={item}
                 key={index}

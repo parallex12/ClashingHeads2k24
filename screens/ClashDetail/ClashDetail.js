@@ -1,24 +1,11 @@
 import { ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { styles as _styles } from "../../styles/ClashDetails/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import PostCard from "../../globalComponents/PostCard/PostCard";
 import { getPercent } from "../../middleware";
 import { useEffect, useRef, useState } from "react";
-import VoiceRecorderBottomSheet from "../../globalComponents/VoiceRecorderBottomSheet/VoiceRecorderBottomSheet";
-import { useRecoilState } from "recoil";
-import { isVoiceModalOpen_Recoil } from "../../state-management/atoms/atoms";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { makeSelectSinglePost } from "../../state-management/features/singlePost";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addClashToPost,
-  fetchSinglePostAndClashes,
-  generateUniqueId,
-  updateClashDetails,
-  updatePost,
-} from "../../state-management/features/singlePost/singlePostSlice";
-import auth from "@react-native-firebase/auth";
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 import {
@@ -63,7 +50,6 @@ const ClashDetails = (props) => {
     await create_clash(clashDetails);
   };
 
-
   return (
     <View style={styles.container}>
       <StandardHeader
@@ -106,6 +92,7 @@ const ClashDetails = (props) => {
         postId={postId}
         bottomVoiceSheetRef={bottomVoiceSheetRef}
         onPostClash={onPostClash}
+        stickers
       />
       <FlagReportBottomSheet
         postId={postId}

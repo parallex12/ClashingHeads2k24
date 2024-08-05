@@ -1,6 +1,4 @@
 import {
-  Image,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -10,15 +8,14 @@ import { UserCardStyles as _styles } from "../../../styles/Connections/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
-import { update_user_details } from "../../../middleware/firebase";
-import { setUserDetails } from "../../../state-management/features/auth/authSlice";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   follow_user,
   unfollow_user,
 } from "../../../state-management/apiCalls/userRelation";
+import CacheImage from "../../../globalComponents/CacheImage";
 
 const UserCard = (props) => {
   let { user, isDisplayedUserMe, onPress } = props;
@@ -66,10 +63,11 @@ const UserCard = (props) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.profile}>
-        <Image
+        <CacheImage
           source={{ uri: user?.profile_photo }}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
+          hash={user?.profile_hash}
         />
       </View>
       <View style={styles.userInfoWrapper}>

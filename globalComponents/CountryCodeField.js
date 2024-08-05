@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
 import { CountryCodeFieldStyles } from "../styles/Global/main";
 import { CountryPicker } from "react-native-country-codes-picker";
 import { View } from "react-native";
@@ -57,7 +56,5 @@ const CountryCodeField = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.errors.errors,
-});
+
 export default CountryCodeField;

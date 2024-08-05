@@ -9,24 +9,17 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/VoiceRecording/main";
 import { font } from "../../../styles/Global/main";
-import { getPercent, registrationFields } from "../../../middleware";
+import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import CircleComponent from "./components/CircleComponent";
 import RecordingButton from "../../../globalComponents/RecordingButton";
 import RecordingPlayer from "../../../globalComponents/RecordingPlayer";
-import { update_user_details, uploadMedia } from "../../../middleware/firebase";
-import auth from "@react-native-firebase/auth";
-import {
-  startLoading,
-  stopLoading,
-} from "../../../state-management/features/screen_loader/loaderSlice";
-import {
-  selectAuthUser,
-  selectUserForm,
-} from "../../../state-management/features/auth";
+import { uploadMedia } from "../../../middleware/firebase";
+
+import { selectAuthUser } from "../../../state-management/features/auth";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Audio } from "react-native-compressor";
 import { update_user } from "../../../state-management/apiCalls/auth";
@@ -51,10 +44,10 @@ const VoiceRecording = (props) => {
   const [progress, setProgress] = useState(0);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
   const timerRef = useRef(null);
-  const user= useSelector(selectAuthUser);
+  const user = useSelector(selectAuthUser);
   let recordingLimit = 15;
   const dispatch = useDispatch();
-  
+
   const startRecording = async () => {
     try {
       setIsRecording(true);

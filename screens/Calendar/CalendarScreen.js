@@ -1,9 +1,6 @@
 import {
-  Button,
   Image,
-  ScrollView,
   Text,
-  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";

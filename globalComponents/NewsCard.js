@@ -2,47 +2,43 @@ import {
   Image,
   Pressable,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
 import { NewsCardStyles, font } from "../styles/Global/main";
-import { AntDesign } from "@expo/vector-icons";
-import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import * as WebBrowser from "expo-web-browser";
-import { useState } from "react";
+
+const CardFooter = ({ publishedAt, urlToImage, source }) => {
+  let { width, height } = useWindowDimensions();
+  let styles = NewsCardStyles({ width, height });
+  return (
+    <View style={styles.cardFooterWrapper}>
+      <View style={styles.cardFootercompanyLogo}>
+        <Image
+          source={
+            urlToImage ? { uri: urlToImage } : require("../assets/icon.png")
+          }
+          resizeMode="cover"
+          style={styles.companyLogo}
+        />
+        <Text style={font(13, "#6B7287", "Regular")}>{source?.name}</Text>
+      </View>
+      <Text style={font(12, "#6B7287", "Regular")}>
+        {publishedAt && new Date(publishedAt).toDateString()}
+      </Text>
+    </View>
+  );
+};
 
 const NewsCard = (props) => {
   let { data, customStyles, placeholder } = props;
   let { width, height } = useWindowDimensions();
   let styles = NewsCardStyles({ width, height });
   let navigation = useNavigation();
-  const [loading, setLoading] = useState(true);
 
-  let { author, description, url, urlToImage, title, publishedAt, source } =
-    data;
-
-  const CardFooter = () => {
-    return (
-      <View style={styles.cardFooterWrapper}>
-        <View style={styles.cardFootercompanyLogo}>
-          <Image
-            source={
-              urlToImage ? { uri: urlToImage } : require("../assets/icon.png")
-            }
-            resizeMode="cover"
-            style={styles.companyLogo}
-          />
-          <Text style={font(13, "#6B7287", "Regular")}>{source?.name}</Text>
-        </View>
-        <Text style={font(12, "#6B7287", "Regular")}>
-          {publishedAt && new Date(publishedAt).toDateString()}
-        </Text>
-      </View>
-    );
-  };
+  let { description, url, urlToImage, title } = data;
 
   const handlePress = async () => {
     if (data.url) {
@@ -66,7 +62,6 @@ const NewsCard = (props) => {
             }
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
-            onLoad={() => setLoading(false)}
           />
         </View>
         <View style={styles.newsContentWrapper}>
@@ -83,7 +78,7 @@ const NewsCard = (props) => {
           </TouchableOpacity>
         </View>
       </View>
-      <CardFooter />
+      <CardFooter {...data} />
     </Pressable>
   );
 };

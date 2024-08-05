@@ -1,13 +1,5 @@
-import {
-  Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/CommunityGuidelines/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
@@ -20,7 +12,6 @@ import { update_user } from "../../../state-management/apiCalls/auth";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 
 const CommunityGuidelines = (props) => {
-  let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user = auth().currentUser;

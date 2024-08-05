@@ -7,7 +7,6 @@ import {
 } from "react-native";
 import { styles as _styles } from "../../styles/EditPersonalInformation/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import { font } from "../../styles/Global/main";
 import StandardInput from "../../globalComponents/StandardInput";
 import { getPercent, registrationFields } from "../../middleware";

@@ -8,7 +8,30 @@ import {
 } from "react-native";
 import { TabSelectorStyles as _styles } from "../../../styles/Connections/main";
 import { font } from "../../../styles/Global/main";
-import { useState } from "react";
+
+const MenuItem = (props) => {
+  let { item, index, setActive, active } = props;
+  let color = active == index ? "#DB2727" : "#9CA3AF";
+  let bordercolor = active == index ? "#DB2727" : "transparent";
+  let { width, height } = useWindowDimensions();
+  let styles = _styles({ width, height });
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.ItemWrapper,
+        {
+          borderColor: bordercolor,
+        },
+      ]}
+      onPress={() => setActive(index)}
+    >
+      <Text style={font(14, color, active == index ? "Medium" : "Regular", 10)}>
+        {item?.total} {item?.label}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
 const TabSelector = (props) => {
   let { setActive, active, user } = props;
@@ -38,29 +61,6 @@ const TabSelector = (props) => {
     },
   ];
 
-  const MenuItem = ({ item, index }) => {
-    let color = active == index ? "#DB2727" : "#9CA3AF";
-    let bordercolor = active == index ? "#DB2727" : "transparent";
-
-    return (
-      <TouchableOpacity
-        style={[
-          styles.ItemWrapper,
-          {
-            borderColor: bordercolor,
-          },
-        ]}
-        onPress={() => setActive(index)}
-      >
-        <Text
-          style={font(14, color, active == index ? "Medium" : "Regular", 10)}
-        >
-          {item?.total} {item?.label}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <View style={styles.container}>
       <ScrollView
@@ -69,7 +69,15 @@ const TabSelector = (props) => {
         showsHorizontalScrollIndicator={false}
       >
         {tabItems?.map((item, index) => {
-          return <MenuItem index={index} item={item} key={index} />;
+          return (
+            <MenuItem
+              setActive={setActive}
+              active={active}
+              index={index}
+              item={item}
+              key={index}
+            />
+          );
         })}
       </ScrollView>
     </View>

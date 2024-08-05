@@ -1,13 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
-import { connect } from "react-redux";
+import { View, TextInput, useWindowDimensions } from "react-native";
 import { PinCodeInputStyles } from "../styles/Global/main";
 
 const PinCodeInput = (props) => {
@@ -37,7 +29,8 @@ const PinCodeInput = (props) => {
   };
 
   const handleChangeText = (text, index) => {
-    const newOtpCode = otpCode.slice(0, index) + text + otpCode.slice(index + 1);
+    const newOtpCode =
+      otpCode.slice(0, index) + text + otpCode.slice(index + 1);
 
     setOtpCodeLocal(newOtpCode);
     setOtpCode(newOtpCode);
@@ -53,7 +46,9 @@ const PinCodeInput = (props) => {
         <View style={styles.otpComp} key={index}>
           <TextInput
             style={styles.otp_input}
-            maxLength={1}Community Guidelines
+            maxLength={1}
+            Community
+            Guidelines
             keyboardType="numeric"
             onChangeText={(text) => handleChangeText(text, index)}
             ref={(ref) => (pinInputs.current[index] = ref)}
@@ -72,5 +67,4 @@ const PinCodeInput = (props) => {
   );
 };
 
-
-export default PinCodeInput
+export default PinCodeInput;

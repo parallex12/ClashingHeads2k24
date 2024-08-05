@@ -1,6 +1,5 @@
 import {
   Image,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -15,14 +14,12 @@ import { Audio } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { useDispatch, useSelector } from "react-redux";
-import { update_user_details } from "../../../middleware/firebase";
-import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 import { download } from "react-native-compressor";
-import { Blurhash } from "react-native-blurhash";
 import {
   follow_user,
   unfollow_user,
 } from "../../../state-management/apiCalls/userRelation";
+import CardHeader from "./CardHeader";
 
 const ProfileCard = (props) => {
   let { user } = props;
@@ -39,10 +36,8 @@ const ProfileCard = (props) => {
     employment,
     username,
     _id,
-    profile_hash,
     following,
     followers,
-    posts,
   } = user;
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -108,6 +103,7 @@ const ProfileCard = (props) => {
       }
     } catch (error) {
       console.log("Error playing audio", error);
+      sound.current.unloadAsync();
     }
   };
 
@@ -133,69 +129,9 @@ const ProfileCard = (props) => {
       chat_data: {
         participants: [current_user, user],
         messages: [],
-        _id:null
+        _id: null,
       },
     });
-  };
-  const onFollowView = () => {
-    navigation.navigate("Connections", { user });
-  };
-
-  const CardHeader = ({ user }) => {
-    const [imageLoad, setImageLoad] = useState(true);
-
-    return (
-      <View style={styles.cardHeaderContainer}>
-        <View style={styles.cardHeaderProfileWrapper}>
-          <View style={styles.cardHeaderProfile}>
-            {imageLoad && profile_hash && (
-              <Blurhash
-                blurhash={profile_hash}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  position: "absolute",
-                  zIndex: 999,
-                }}
-              />
-            )}
-            <Image
-              source={{ uri: user?.profile_photo }}
-              resizeMode="cover"
-              style={{ width: "100%", height: "100%" }}
-              onLoad={() => setImageLoad(false)}
-            />
-          </View>
-          <View style={styles.cardHeaderProfileOnlineDot}></View>
-        </View>
-        <View style={styles.post_following_followers_cont}>
-          <View style={styles.post_following_followers_Item}>
-            <Text style={font(15, "#121212", "Bold", 3)}>
-              {posts?.length || 0}
-            </Text>
-            <Text style={font(13, "#121212", "Regular", 3)}>Posts</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.post_following_followers_Item}
-            onPress={onFollowView}
-          >
-            <Text style={font(15, "#121212", "Bold", 3)}>
-              {followers?.length}
-            </Text>
-            <Text style={font(13, "#121212", "Regular", 3)}>Followers</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.post_following_followers_Item}
-            onPress={onFollowView}
-          >
-            <Text style={font(15, "#121212", "Bold", 3)}>
-              {following?.length}
-            </Text>
-            <Text style={font(13, "#121212", "Regular", 3)}>Following</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
   };
 
   const onBioEditPress = () => {

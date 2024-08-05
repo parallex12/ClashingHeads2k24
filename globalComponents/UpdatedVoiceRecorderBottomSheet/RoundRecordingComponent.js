@@ -1,28 +1,19 @@
-import {
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Image, Text, View, useWindowDimensions } from "react-native";
+import { useState } from "react";
 import { font, RoundRecordingComponentStyles } from "../../styles/Global/main";
 import CircleComponent from "../../screens/NewPost/components/CircleComponent";
 import RecordingPlayer from "../RecordingPlayer";
-import { getPercent } from "../../middleware";
 
 const RoundRecordingComponent = (props) => {
   let {
     progress,
     setProgress,
     isRecordingCompleted,
-    setIsRecordingCompleted,
     isAudioPlaying,
     setIsAudioPlaying,
     timer,
     setTimer,
     recording,
-    setRecording,
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = RoundRecordingComponentStyles({ width, height });

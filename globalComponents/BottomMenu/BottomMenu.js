@@ -5,27 +5,15 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BottomMenuStyles, font } from "../../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
-import { RFValue } from "react-native-responsive-fontsize";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
 import {
-  DrawerActions,
-  useNavigation,
-  useNavigationState,
-  useRoute,
-  DrawerRouter,
-} from "@react-navigation/native";
-import { useEffect, useState } from "react";
-import {
-  activeMenuItem,
   currentActiveScreen,
   isBottomSheetOpen,
   isSideMenuOpen,
 } from "../../state-management/features/bottom_menu";
 import { onMenuPress } from "../../state-management/features/bottom_menu/bottom_menuSlice";
-import { useDrawerStatus } from "@react-navigation/drawer";
-import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 let navArr = [
   {
@@ -61,30 +49,30 @@ let navArr = [
   },
 ];
 
-const BottomMenu = (props) => {
-  let { active } = props;
+const allowedScreens = [
+  "Home",
+  "Clashes",
+  "ClashDetails",
+  "UserProfile",
+  "News",
+  "Messages",
+  "MyProfile",
+  "Connections",
+  "CalendarScreen",
+  "NewPost",
+];
+
+const BottomMenuItem = ({ item, index, currentRouteName }) => {
   let { width, height } = useWindowDimensions();
   let styles = BottomMenuStyles({ width, height });
-  const activeMenu = useSelector(activeMenuItem);
-  const _isSideMenuOpen = useSelector(isSideMenuOpen);
-  const _currentActiveScreen = useSelector(currentActiveScreen);
-  const _isBottomSheetOpen = useSelector(isBottomSheetOpen);
+  let isActiveItem = currentRouteName == item?.route;
   const dispatch = useDispatch();
   let navigation = useNavigation();
+  let shouldActiveMenuIcon =
+    !navArr?.filter((e) => e?.route == currentRouteName)?.length > 0 &&
+    allowedScreens?.includes(currentRouteName) &&
+    item?.route == "Home";
 
-  const allowedScreens = [
-    "Home",
-    "Clashes",
-    "ClashDetails",
-    "UserProfile",
-    "News",
-    "Messages",
-    "MyProfile",
-    "Connections",
-    "CalendarScreen",
-    "NewPost",
-  ];
-  const currentRouteName = _currentActiveScreen;
   const onPressItem = (item) => {
     if (item?.route == "menu") {
       navigation.dispatch(DrawerActions.openDrawer());
@@ -95,41 +83,42 @@ const BottomMenu = (props) => {
     }
   };
 
-  const BottomMenuItem = ({ item, index }) => {
-    let isActiveItem = currentRouteName == item?.route;
-    let shouldActiveMenuIcon =
-      !navArr?.filter((e) => e?.route == currentRouteName)?.length > 0 &&
-      allowedScreens?.includes(currentRouteName) &&
-      item?.route == "Home";
+  return (
+    <TouchableOpacity
+      style={styles.bottomMenuItem}
+      onPress={() => onPressItem(item, index)}
+    >
+      <View style={styles.itemIconWrapper}>
+        <Image
+          source={
+            isActiveItem || shouldActiveMenuIcon ? item.activeIcon : item.icon
+          }
+          resizeMode="contain"
+          style={{ width: "100%", height: "100%" }}
+        />
+      </View>
 
-    return (
-      <TouchableOpacity
-        style={styles.bottomMenuItem}
-        onPress={() => onPressItem(item, index)}
+      <Text
+        style={font(
+          10,
+          isActiveItem || shouldActiveMenuIcon ? "#DB2727" : "#718093",
+          "Regular",
+          4
+        )}
       >
-        <View style={styles.itemIconWrapper}>
-          <Image
-            source={
-              isActiveItem || shouldActiveMenuIcon ? item.activeIcon : item.icon
-            }
-            resizeMode="contain"
-            style={{ width: "100%", height: "100%" }}
-          />
-        </View>
+        {item?.title}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
-        <Text
-          style={font(
-            10,
-            isActiveItem || shouldActiveMenuIcon ? "#DB2727" : "#718093",
-            "Regular",
-            4
-          )}
-        >
-          {item?.title}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
+const BottomMenu = (props) => {
+  let { width, height } = useWindowDimensions();
+  let styles = BottomMenuStyles({ width, height });
+  const _isSideMenuOpen = useSelector(isSideMenuOpen);
+  const _currentActiveScreen = useSelector(currentActiveScreen);
+  const _isBottomSheetOpen = useSelector(isBottomSheetOpen);
+  const currentRouteName = _currentActiveScreen;
 
   if (
     _isSideMenuOpen == "open" ||
@@ -141,7 +130,14 @@ const BottomMenu = (props) => {
   return (
     <View style={styles.container}>
       {navArr?.map((item, index) => {
-        return <BottomMenuItem item={item} index={index} key={index} />;
+        return (
+          <BottomMenuItem
+            currentRouteName={currentRouteName}
+            item={item}
+            index={index}
+            key={index}
+          />
+        );
       })}
     </View>
   );

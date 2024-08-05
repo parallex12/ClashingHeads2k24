@@ -1,27 +1,9 @@
-import {
-  Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { PostsResultStyles as _styles } from "../../../styles/Search/main";
-import {
-  MaterialCommunityIcons,
-  MaterialIcons,
-  FontAwesome6,
-} from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
-import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import PostCard from "../../../globalComponents/PostCard/PostCard";
-import { useSelector } from "react-redux";
-import { selectPosts } from "../../../state-management/features/posts";
-import { sortPostsByCreatedAt } from "../../../utils";
 import { memo, useEffect, useState } from "react";
-import { selectSearched } from "../../../state-management/features/searchedUsers";
-import { Instagram } from "react-content-loader/native";
 import { search_posts } from "../../../state-management/apiCalls/search";
 import { useNavigation } from "@react-navigation/native";
 
@@ -30,7 +12,6 @@ const PostsResult = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [posts, setPosts] = useState([]);
-  const navigation = useNavigation();
 
   useEffect(() => {
     (async () => {

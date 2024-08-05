@@ -44,33 +44,21 @@ const Content = memo((props) => {
   }, [recording]);
 
   const PostImage = ({ source, onPress }) => {
-    const [imageLoad, setImageLoad] = useState(true);
+    console.log(post_image_hash)
     return (
       <TouchableOpacity style={styles.postImageWrapper} activeOpacity={0.9}>
-        {imageLoad && post_image_hash && (
-          <Blurhash
-            blurhash={post_image_hash}
-            style={{
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-              zIndex: 999,
-            }}
-          />
-        )}
         {source?.uri ? (
           <CacheImage
             source={source}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
-            onLoad={() => setImageLoad(false)}
+            hash={post_image_hash}
           />
         ) : (
           <Image
             source={source}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
-            onLoad={() => setImageLoad(false)}
           />
         )}
       </TouchableOpacity>
@@ -78,9 +66,14 @@ const Content = memo((props) => {
   };
 
   return (
-        <View style={styles.container} activeOpacity={1}>
+    <View style={styles.container} activeOpacity={1}>
       {title && <Text style={styles.title}>{title}</Text>}
-      {post_image && <ImageViewer source={{ uri: post_image }} post_image_hash={post_image_hash} />}
+      {post_image && (
+        <ImageViewer
+          source={{ uri: post_image }}
+          post_image_hash={post_image_hash}
+        />
+      )}
       {/* {post_image && <PostImage source={{ uri: post_image }} />} */}
       {sticker && <PostImage source={sticker?.img} />}
       {recording && (

@@ -1,39 +1,24 @@
-import {
-  Animated,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { UpdatedVoiceRecorderBottomSheetStyles } from "../../styles/Global/main";
 import {
   BottomSheetModal,
   BottomSheetView,
   BottomSheetModalProvider,
-  useBottomSheet,
 } from "@gorhom/bottom-sheet";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { isVoiceModalOpen_Recoil } from "../../state-management/atoms/atoms";
-import { useRecoilValue } from "recoil";
+import { useMemo, useRef, useState } from "react";
 import BackDrop from "./BackDrop";
 import { Image } from "react-native";
 import Emojis from "./Emojis";
-import WaveAudioPlayer from "../WaveAudioPlayer";
 import StandardButton from "../StandardButton";
-import WaveAudioRecorder from "../WaveAudioRecorder";
 import { formatDuration, stickerArr } from "../../utils";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Stickers from "./Stickers";
 import { getPercent } from "../../middleware";
 import { selectAuthUser } from "../../state-management/features/auth";
-import { generateUniqueId } from "../../state-management/features/singlePost/singlePostSlice";
-import { uploadMedia } from "../../middleware/firebase";
-import RecordingPlayer from "../RecordingPlayer";
 import RoundRecordingComponent from "./RoundRecordingComponent";
 import RecordingButton from "../RecordingButton";
 import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
-import { isBottomSheetOpen } from "../../state-management/features/bottom_menu";
 
 const UpdatedVoiceRecorderBottomSheet = (props) => {
   let {

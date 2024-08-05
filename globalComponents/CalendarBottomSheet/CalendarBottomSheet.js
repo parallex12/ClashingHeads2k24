@@ -16,7 +16,6 @@ import BackDrop from "./BackDrop";
 import { useEffect, useMemo, useState } from "react";
 import { Calendar } from "react-native-calendars";
 import { getPercent } from "../../middleware";
-import { RFValue as rf } from "react-native-responsive-fontsize";
 import StandardButton from "../StandardButton";
 import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 

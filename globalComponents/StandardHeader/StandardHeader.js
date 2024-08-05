@@ -1,15 +1,6 @@
-import {
-  ImageBackground,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
-import { connect, useSelector } from "react-redux";
-import { font, StandardHeaderStyles } from "../../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
-import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation } from "@react-navigation/native";
+import { ImageBackground, Text, View, useWindowDimensions } from "react-native";
+import { useSelector } from "react-redux";
+import { StandardHeaderStyles } from "../../styles/Global/main";
 import Profile from "./components/Profile";
 import SearchIcon from "./components/SearchIcon";
 import Logo from "./components/Logo";
@@ -42,7 +33,6 @@ const StandardHeader = (props) => {
       resizeMode="cover"
     >
       <View style={styles.col1}>
-
         {profile && (
           <Profile
             source={user_profile?.profile_photo}

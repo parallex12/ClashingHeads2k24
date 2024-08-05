@@ -7,9 +7,6 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { StandardHeader2Styles } from "../../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
-import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation } from "@react-navigation/native";
 import Profile from "./components/Profile";
 import SearchIcon from "./components/SearchIcon";
 import Logo from "./components/Logo";

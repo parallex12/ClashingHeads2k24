@@ -28,6 +28,7 @@ import { Blurhash } from "react-native-blurhash";
 import { download } from "react-native-compressor";
 import Content from "../../../globalComponents/PostCard/components/Content";
 import { update_post_by_id } from "../../../state-management/apiCalls/post";
+import CacheImage from "../../../globalComponents/CacheImage";
 
 const DualClashCard = (props) => {
   const {
@@ -122,7 +123,7 @@ const DualClashCard = (props) => {
           }}
         >
           <View style={styles.clashUserProfile}>
-            {imageLoad && user?.profile_hash && (
+            {/* {imageLoad && user?.profile_hash && (
               <Blurhash
                 blurhash={user?.profile_hash}
                 style={{
@@ -132,9 +133,9 @@ const DualClashCard = (props) => {
                   zIndex: 999,
                 }}
               />
-            )}
-            <Image
-              source={{ uri: user?.profile_photo }}
+            )} */}
+            <CacheImage
+              source={{uri:user?.profile_photo}}
               resizeMode="contain"
               style={{ width: "100%", height: "100%" }}
               cachePolicy="memory-disk"

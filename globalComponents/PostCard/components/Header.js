@@ -1,6 +1,5 @@
 import {
   Image,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,18 +10,28 @@ import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { getTimeElapsed } from "../../../utils";
-import { memo, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
-import { Blurhash } from "react-native-blurhash";
-import { fetchUserById } from "../../../state-management/features/searchedUsers/searchedUsersSlice";
-import { selectFetchedSingeUser } from "../../../state-management/features/searchedUsers";
-import ContentLoader, {
-  Facebook,
-  Instagram,
-} from "react-content-loader/native";
 import CacheImage from "../../CacheImage";
+
+const Profile = ({ source, profileStyles, user }) => {
+  let { width, height } = useWindowDimensions();
+  let styles = _styles({ width, height });
+  return (
+    <View style={[styles.container, { ...profileStyles }]}>
+      <View style={styles.profileWrapper}>
+        <CacheImage
+          source={source}
+          resizeMode="cover"
+          style={{ width: "100%", height: "100%" }}
+          hash={user?.profile_hash}
+        />
+      </View>
+      {user?.status == "online" && <View style={styles.online}></View>}
+    </View>
+  );
+};
 
 const Header = (props) => {
   let { author, createdAt, profileStyles, onPostActions } = props;
@@ -31,35 +40,6 @@ const Header = (props) => {
   let post_past_time = getTimeElapsed(createdAt);
   const navigation = useNavigation();
   const user_details = useSelector(selectAuthUser);
-
-  const Profile = ({ source, profileStyles }) => {
-    const [imageLoad, setImageLoad] = useState(true);
-
-    return (
-      <View style={[styles.container, { ...profileStyles }]}>
-        <View style={styles.profileWrapper}>
-          {imageLoad && user_details?.profile_hash && (
-            <Blurhash
-              blurhash={user_details?.profile_hash}
-              style={{
-                width: "100%",
-                height: "100%",
-                position: "absolute",
-                zIndex: 999,
-              }}
-            />
-          )}
-          <CacheImage
-            source={source}
-            resizeMode="cover"
-            style={{ width: "100%", height: "100%" }}
-            onLoad={() => setImageLoad(false)}
-          />
-        </View>
-        {author?.status == "online" && <View style={styles.online}></View>}
-      </View>
-    );
-  };
 
   return (
     <View style={styles.container}>
@@ -82,6 +62,7 @@ const Header = (props) => {
           source={{
             uri: author?.profile_photo,
           }}
+          user={author}
           profileStyles={profileStyles}
         />
         <View style={styles.infoWrapper}>

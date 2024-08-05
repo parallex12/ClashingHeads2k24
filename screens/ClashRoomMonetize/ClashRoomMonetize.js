@@ -9,7 +9,7 @@ import { styles as _styles } from "../../styles/ClashRoomMonetize/main";
 import Header from "./components/Header";
 import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
-import { getPercent, registrationFields } from "../../middleware";
+import { getPercent } from "../../middleware";
 import { useNavigation } from "@react-navigation/native";
 import StandardInput from "../../globalComponents/StandardInput";
 import { useState } from "react";

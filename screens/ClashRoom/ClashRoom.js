@@ -7,14 +7,12 @@ import {
 } from "react-native";
 import { styles as _styles } from "../../styles/ClashRoom/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import { getPercent } from "../../middleware";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { font } from "../../styles/Global/main";
 import ClashersCard from "./components/ClashersCard";
 import TranscriptCard from "./components/TranscriptCard";
 import BottomActionsMenu from "./components/BottomActionsMenu";
-import VoiceRecorderBottomSheet from "../../globalComponents/VoiceRecorderBottomSheet/VoiceRecorderBottomSheet";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Pressable } from "react-native";
@@ -126,9 +124,8 @@ const ClashRoom = (props) => {
       </ScrollView>
       {showPricePopup && <PricingPopup />}
       <BottomActionsMenu
-        onMicPress={() => bottomVoiceSheetRef.current?.present()}
+      // onMicPress={() => bottomVoiceSheetRef.current?.present()}
       />
-      <VoiceRecorderBottomSheet bottomVoiceSheetRef={bottomVoiceSheetRef} />
     </View>
   );
 };

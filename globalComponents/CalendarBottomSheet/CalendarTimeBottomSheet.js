@@ -1,12 +1,10 @@
 import {
-  KeyboardAvoidingView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect } from "react-redux";
 import { CalendarTimeBottomSheetStyles, font } from "../../styles/Global/main";
 import {
   BottomSheetModal,
@@ -14,13 +12,59 @@ import {
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
 import BackDrop from "./BackDrop";
-import { useEffect, useMemo, useState } from "react";
-import { Calendar } from "react-native-calendars";
+import { useMemo, useState } from "react";
 import { getPercent } from "../../middleware";
-import { RFValue as rf } from "react-native-responsive-fontsize";
 import StandardButton from "../StandardButton";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
+
+const TimeComponent = () => {
+  let { width, height } = useWindowDimensions();
+  let styles = CalendarTimeBottomSheetStyles({ width, height });
+  const [selectedMode, setSelectedMode] = useState("AM");
+  let activeStyles = (mode) =>
+    selectedMode == mode
+      ? styles.am_pm_active_wrapper
+      : styles.am_pm_disable_wrapper;
+
+  let activeTextStyles = (mode) =>
+    selectedMode == mode
+      ? font(12, "#FFFFFF", "Regular")
+      : font(12, "#111827", "Regular");
+
+  return (
+    <View style={styles.timeComponentWrapper}>
+      <View style={styles.hour_minutes_wrapper}>
+        <TextInput
+          placeholderTextColor="#9CA3AF"
+          maxLength={2}
+          keyboardType="default"
+          placeholder="Hr"
+          style={styles.hour_minutes_input_wrapper}
+        />
+        <Text style={font(13, "#9CA3AF", "Regular")}>:</Text>
+        <TextInput
+          placeholderTextColor="#9CA3AF"
+          placeholder="Min"
+          style={styles.hour_minutes_input_wrapper}
+        />
+      </View>
+      <View style={styles.am_pm_wrapper}>
+        <TouchableOpacity
+          style={activeStyles("AM")}
+          onPress={() => setSelectedMode("AM")}
+        >
+          <Text style={activeTextStyles("AM")}>AM</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={activeStyles("PM")}
+          onPress={() => setSelectedMode("PM")}
+        >
+          <Text style={activeTextStyles("PM")}>PM</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
 const CalendarTimeBottomSheet = (props) => {
   let { calendarTimeSheetRef } = props;
@@ -35,53 +79,6 @@ const CalendarTimeBottomSheet = (props) => {
   // variables
   const snapPoints = useMemo(() => ["25%", "50%"], []);
   const navigation = useNavigation();
-  const TimeComponent = () => {
-    const [selectedMode, setSelectedMode] = useState("AM");
-
-    let activeStyles = (mode) =>
-      selectedMode == mode
-        ? styles.am_pm_active_wrapper
-        : styles.am_pm_disable_wrapper;
-
-    let activeTextStyles = (mode) =>
-      selectedMode == mode
-        ? font(12, "#FFFFFF", "Regular")
-        : font(12, "#111827", "Regular");
-
-    return (
-      <View style={styles.timeComponentWrapper}>
-        <View style={styles.hour_minutes_wrapper}>
-          <TextInput
-            placeholderTextColor="#9CA3AF"
-            maxLength={2}
-            keyboardType="default"
-            placeholder="Hr"
-            style={styles.hour_minutes_input_wrapper}
-          />
-          <Text style={font(13, "#9CA3AF", "Regular")}>:</Text>
-          <TextInput
-            placeholderTextColor="#9CA3AF"
-            placeholder="Min"
-            style={styles.hour_minutes_input_wrapper}
-          />
-        </View>
-        <View style={styles.am_pm_wrapper}>
-          <TouchableOpacity
-            style={activeStyles("AM")}
-            onPress={() => setSelectedMode("AM")}
-          >
-            <Text style={activeTextStyles("AM")}>AM</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={activeStyles("PM")}
-            onPress={() => setSelectedMode("PM")}
-          >
-            <Text style={activeTextStyles("PM")}>PM</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
 
   return (
     <BottomSheetModalProvider>

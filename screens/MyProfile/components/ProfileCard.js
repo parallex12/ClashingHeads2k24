@@ -11,14 +11,12 @@ import { font } from "../../../styles/Global/main";
 import { getPercent } from "../../../middleware";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Entypo, AntDesign } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
-import { Audio as AudioCompress, download } from "react-native-compressor";
-import { Image as ImageCompress } from "react-native-compressor";
+import { download } from "react-native-compressor";
 import { Blurhash } from "react-native-blurhash";
 
 const ProfileCard = (props) => {
@@ -51,7 +49,6 @@ const ProfileCard = (props) => {
     const downloadFileUrl = await download(about_voice, (progress) => {});
     setDownloadedAudio(downloadFileUrl);
   };
-
   useEffect(() => {
     if (about_voice) {
       downloadCompressedAudio();

@@ -6,12 +6,11 @@ import {
   View,
   useWindowDimensions,
   Modal,
-  StyleSheet
+  StyleSheet,
 } from "react-native";
 import { ImageViewerStyles } from "../../styles/Global/main";
 import CacheImage from "../CacheImage";
 import { useState } from "react";
-import { Blurhash } from "react-native-blurhash";
 
 const ImageViewer = (props) => {
   let { source, post_image_hash } = props;
@@ -27,30 +26,18 @@ const ImageViewer = (props) => {
         activeOpacity={0.9}
         onPress={() => setModalVisible(true)}
       >
-        {imageLoad && post_image_hash && (
-          <Blurhash
-            blurhash={post_image_hash}
-            style={{
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-              zIndex: 999,
-            }}
-          />
-        )}
         {source?.uri ? (
           <CacheImage
             source={source}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
-            onLoad={() => setImageLoad(false)}
+            hash={post_image_hash}
           />
         ) : (
           <Image
             source={source}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
-            onLoad={() => setImageLoad(false)}
           />
         )}
       </TouchableOpacity>
@@ -71,7 +58,7 @@ const ImageViewer = (props) => {
                 source={source}
                 resizeMode="contain"
                 style={styles.fullScreenImage}
-                onLoad={() => setImageLoad(false)}
+                hash={post_image_hash}
               />
             ) : (
               <Image

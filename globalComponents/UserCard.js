@@ -11,41 +11,29 @@ import { getPercent } from "../middleware";
 import { font } from "../styles/Global/main";
 import CacheImage from "./CacheImage";
 import { memo, useState } from "react";
-import { Blurhash } from "react-native-blurhash";
+
+const Profile = ({ source, user }) => {
+  let { width, height } = useWindowDimensions();
+  let styles = _styles({ width, height });
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.profileWrapper}>
+        <CacheImage
+          source={source}
+          resizeMode="cover"
+          style={{ width: "100%", height: "100%" }}
+          hash={user?.profile_hash}
+        />
+      </TouchableOpacity>
+      {user?.status && <View style={styles.online}></View>}
+    </View>
+  );
+};
 
 const UserCard = (props) => {
   let { author, selectable, isSelected, onCardPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-
-  const Profile = ({ source }) => {
-    const [imageLoad, setImageLoad] = useState(true);
-
-    return (
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.profileWrapper}>
-          {imageLoad && author?.profile_hash && (
-            <Blurhash
-              blurhash={author?.profile_hash}
-              style={{
-                width: "100%",
-                height: "100%",
-                position: "absolute",
-                zIndex: 999,
-              }}
-            />
-          )}
-          <CacheImage
-            source={source}
-            resizeMode="cover"
-            style={{ width: "100%", height: "100%" }}
-            onLoad={() => setImageLoad(false)}
-          />
-        </TouchableOpacity>
-        {author?.status && <View style={styles.online}></View>}
-      </View>
-    );
-  };
 
   return (
     <TouchableOpacity
@@ -57,6 +45,7 @@ const UserCard = (props) => {
         source={{
           uri: author?.profile_photo,
         }}
+        user={author}
       />
       <View style={styles.infoWrapper}>
         <View style={styles.infoTitleRow}>

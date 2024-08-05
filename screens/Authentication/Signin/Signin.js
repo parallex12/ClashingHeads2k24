@@ -13,7 +13,6 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { startLoading } from "../../../state-management/features/screen_loader/loaderSlice";
 
 const Signin = (props) => {
   let {} = props;
@@ -24,10 +23,6 @@ const Signin = (props) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    // dispatch(startLoading("auth"));
-  }, []);
 
   const onSignup = () => {
     navigation?.navigate("Signup");

@@ -5,7 +5,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { PostActionsBottomSheetStyles, font } from "../../styles/Global/main";
 import {
   BottomSheetModal,
@@ -13,16 +13,65 @@ import {
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
 import BackDrop from "./BackDrop";
-import StandardButton from "../StandardButton";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { MaterialIcons, FontAwesome, AntDesign } from "@expo/vector-icons";
-import { getPercent } from "../../middleware";
 import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { update_user_details } from "../../middleware/firebase";
 import { setUserDetails } from "../../state-management/features/auth/authSlice";
+
+const categories = [
+  {
+    key: "clash",
+    label: "Clash",
+    icon: (
+      <MaterialIcons
+        name="local-fire-department"
+        size={RFValue(16)}
+        color="#DB2727"
+      />
+    ),
+  },
+  {
+    key: "message",
+    label: "Send direct message",
+    icon: <FontAwesome name="send-o" size={RFValue(13)} color="#6B7280" />,
+  },
+  {
+    key: "invite_to_room",
+    label: "Invite user to clash room",
+    icon: <AntDesign name="adduser" size={RFValue(16)} color="#6B7280" />,
+  },
+  {
+    key: "add_to_favorites",
+    label: "Add to favorites",
+    icon: (
+      <MaterialIcons
+        name="favorite-border"
+        size={RFValue(15)}
+        color="#6B7280"
+      />
+    ),
+  },
+  {
+    key: "remove_from_favorites",
+    label: "Remove from favorites",
+    icon: <MaterialIcons name="favorite" size={RFValue(15)} color="#DB2727" />,
+  },
+  {
+    key: "report_post",
+    label: "Report post",
+    icon: (
+      <MaterialIcons
+        name="report-gmailerrorred"
+        size={RFValue(16)}
+        color="#6B7280"
+      />
+    ),
+  },
+];
 
 const PostActionsBottomSheet = (props) => {
   let { bottomSheetRef, data } = props;
@@ -33,59 +82,6 @@ const PostActionsBottomSheet = (props) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const user_details = useSelector(selectAuthUser);
-
-  const categories = [
-    {
-      key: "clash",
-      label: "Clash",
-      icon: (
-        <MaterialIcons
-          name="local-fire-department"
-          size={RFValue(16)}
-          color="#DB2727"
-        />
-      ),
-    },
-    {
-      key: "message",
-      label: "Send direct message",
-      icon: <FontAwesome name="send-o" size={RFValue(13)} color="#6B7280" />,
-    },
-    {
-      key: "invite_to_room",
-      label: "Invite user to clash room",
-      icon: <AntDesign name="adduser" size={RFValue(16)} color="#6B7280" />,
-    },
-    {
-      key: "add_to_favorites",
-      label: "Add to favorites",
-      icon: (
-        <MaterialIcons
-          name="favorite-border"
-          size={RFValue(15)}
-          color="#6B7280"
-        />
-      ),
-    },
-    {
-      key: "remove_from_favorites",
-      label: "Remove from favorites",
-      icon: (
-        <MaterialIcons name="favorite" size={RFValue(15)} color="#DB2727" />
-      ),
-    },
-    {
-      key: "report_post",
-      label: "Report post",
-      icon: (
-        <MaterialIcons
-          name="report-gmailerrorred"
-          size={RFValue(16)}
-          color="#6B7280"
-        />
-      ),
-    },
-  ];
 
   const editList = [
     {
@@ -124,7 +120,7 @@ const PostActionsBottomSheet = (props) => {
       update_user_details(user_details?.id, {
         my_favorites: updatedAr,
       });
-      dispatch(setUserDetails({ ...user_details, my_favorites: updatedAr }))
+      dispatch(setUserDetails({ ...user_details, my_favorites: updatedAr }));
     }
 
     if (option?.key == "remove_from_favorites") {
@@ -132,7 +128,7 @@ const PostActionsBottomSheet = (props) => {
       update_user_details(user_details?.id, {
         my_favorites: updatedAr,
       });
-      dispatch(setUserDetails({ ...user_details, my_favorites: updatedAr }))
+      dispatch(setUserDetails({ ...user_details, my_favorites: updatedAr }));
     }
 
     bottomSheetRef.current.close();

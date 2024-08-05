@@ -21,8 +21,6 @@ import * as ImagePicker from "expo-image-picker";
 import { createPost, validate_post_details } from "../../middleware/firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
-import { setPosts } from "../../state-management/features/posts/postSlice";
-import { selectPosts } from "../../state-management/features/posts";
 import { Image as ImageCompress } from "react-native-compressor";
 import PrivacyBottomSheet from "./components/PrivacyBottomSheet";
 import { Blurhash } from "react-native-blurhash";
@@ -41,7 +39,6 @@ const AddPostDetails = (props) => {
   const [loading, setLoading] = useState(false);
   const user_profile = useSelector(selectAuthUser);
   const [tempOpponent, setTempOpponent] = useState(null);
-  const posts = useSelector(selectPosts);
   const privacybottomSheetRef = useRef(null);
   const friendsbottomSheetRef = useRef(null);
   const voicebottomSheetRef = useRef(null);
@@ -131,9 +128,6 @@ const AddPostDetails = (props) => {
         if (res.code == 200) {
           createPost(postForm)
             .then((res) => {
-              let updatedPosts = [...posts?.data];
-              updatedPosts.push(res);
-              dispatch(setPosts(updatedPosts));
               props?.navigation.navigate("Home");
               setLoading(false);
             })
@@ -277,6 +271,7 @@ const AddPostDetails = (props) => {
               source={postForm?.recording}
               audioResetBtn
               audioResetFunc={onRecordingReset}
+              localAudio
             />
           )}
         </View>

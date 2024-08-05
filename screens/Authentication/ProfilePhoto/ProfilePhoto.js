@@ -4,49 +4,32 @@ import {
   Platform,
   ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/ProfilePhoto/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
 import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  registrationForm,
-  screen_loader,
-  user_auth,
-} from "../../../state-management/atoms/atoms";
 import * as ImagePicker from "expo-image-picker";
-import { update_user_details, uploadMedia } from "../../../middleware/firebase";
-import auth from "@react-native-firebase/auth";
-import {
-  startLoading,
-  stopLoading,
-} from "../../../state-management/features/screen_loader/loaderSlice";
-import {
-  selectAuthUser,
-  selectUserForm,
-} from "../../../state-management/features/auth";
+import { uploadMedia } from "../../../middleware/firebase";
+import { selectAuthUser } from "../../../state-management/features/auth";
 import { Image as ImageCompress } from "react-native-compressor";
 import { Blurhash } from "react-native-blurhash";
 import { update_user } from "../../../state-management/apiCalls/auth";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 
 const ProfilePhoto = (props) => {
-  let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [profile, setProfile] = useState(null);
   const [profileHash, setProfileHash] = useState(null);
   const user = useSelector(selectAuthUser);
   const [loading, setLoading] = useState(false);
-  const dispatch=useDispatch()
-  
+  const dispatch = useDispatch();
+
   const onContinue = async () => {
     try {
       if (profile) {
@@ -60,7 +43,7 @@ const ProfilePhoto = (props) => {
                 profile_hash: profileHash,
               };
               update_user(user?._id, data).then((res) => {
-                dispatch(setUserDetails(res))
+                dispatch(setUserDetails(res));
                 props.navigation.reset({
                   index: 0,
                   routes: [{ name: "Home" }],

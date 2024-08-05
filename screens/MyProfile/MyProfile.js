@@ -1,11 +1,4 @@
-import {
-  ActivityIndicator,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { ScrollView, View, useWindowDimensions } from "react-native";
 import { styles as _styles } from "../../styles/MyProfile/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import ProfileCard from "./components/ProfileCard";
@@ -15,11 +8,10 @@ import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/
 import { getPercent } from "../../middleware";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
-import DualClashCard from "../Search/components/DualClashCard";
-import VoiceRecorderBottomSheet from "../ChallengeRequests/components/VoiceRecorderBottomSheet";
 import { setUserDetails } from "../../state-management/features/auth/authSlice";
 import ContentLoader, { Instagram } from "react-content-loader/native";
 import { get_user_profile } from "../../state-management/apiCalls/auth";
+import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 
 const MyProfile = (props) => {
   let {} = props;
@@ -27,9 +19,7 @@ const MyProfile = (props) => {
   let styles = _styles({ width, height });
   const { _id, posts } = useSelector(selectAuthUser);
   let userID = _id;
-  const [currentChallenge, setCurrentChallenge] = useState(null);
   const [loading, setLoading] = useState(false);
-  const bottomVoiceSheetRef = useRef();
   const bottomFlagSheetRef = useRef();
   const dispatch = useDispatch();
 
@@ -67,7 +57,7 @@ const MyProfile = (props) => {
               {posts?.map((item, index) => {
                 if (item?.clashType == "challenge") {
                   return (
-                    <DualClashCard
+                    <ChallengeCard
                       divider
                       onPress={() =>
                         props?.navigation?.navigate("ChallengeClash", {
@@ -100,10 +90,6 @@ const MyProfile = (props) => {
           )}
         </View>
       </ScrollView>
-      <VoiceRecorderBottomSheet
-        challengeId={currentChallenge}
-        bottomVoiceSheetRef={bottomVoiceSheetRef}
-      />
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
     </View>
   );

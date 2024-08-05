@@ -19,6 +19,170 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//ChallengeCardStyles starts here
+export const ChallengeCardStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    headerCont: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: 15,
+    },
+    clashesCardWrapper: {
+      flex: 1,
+      borderColor: "#F7F8F8",
+    },
+    clashesCardCont: {
+      width: "95%",
+      minHeight: getPercent(15, height),
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: "#E5E7EB",
+      paddingTop: 20,
+      marginVertical: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      alignSelf: "center",
+    },
+    body: {
+      flex: 1,
+      width: "100%",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: getPercent(3, width),
+    },
+    clashesCardTitle: font(16, "#1F2937", "Medium", 5, null, {
+      textAlign: "center",
+      width: "90%",
+    }),
+    clashesCardUsersCont: {
+      flex: 1,
+      marginVertical: getPercent(2, height),
+      width: "100%",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    clashUserItem: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    clashUserItemInner: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: getPercent(1, width),
+    },
+    clashUserProfile: {
+      width: getPercent(16, width),
+      height: getPercent(16, width),
+      borderRadius: 100,
+      marginVertical: 4,
+      overflow: "hidden",
+    },
+    votedBtn: {
+      width: getPercent(4, height),
+      height: getPercent(4, height),
+      borderRadius: 100,
+      backgroundColor: "rgba(219,39,39,1)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    actionBtnRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    VoteBtn: {
+      minWidth: getPercent(22, width),
+      height: getPercent(7, width),
+      flexDirection: "row",
+      paddingHorizontal: 10,
+      alignItems: "center",
+      justifyContent: "space-around",
+    },
+    requetBtn: {
+      width: getPercent(7, width),
+      height: getPercent(7, width),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-around",
+      margin: 5,
+    },
+    acceptBtn: {
+      width: getPercent(7, width),
+      height: getPercent(7, width),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-around",
+      margin: 5,
+      backgroundColor: "#6FCF97",
+    },
+    requetBtnText: {
+      fontSize: rf(12),
+      fontFamily: "BLP",
+      marginRight: 8,
+    },
+    cardFooterWrapper: {
+      width: "100%",
+      height: getPercent(5, height),
+      borderTopWidth: 1,
+      borderColor: "#E5E7EB",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 10,
+    },
+    cardFooterItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      marginHorizontal: 10,
+    },
+    vsText: {
+      fontSize: rf(28),
+      color: "#DB2727",
+      fontFamily: "BLP",
+      alignSelf: "flex-start",
+      top: getPercent(3, height),
+    },
+    votingFooterWrapper: {
+      width: "100%",
+      height: getPercent(10, height),
+      backgroundColor: "#E5E7EB",
+    },
+    votingItem: {
+      width: "100%",
+      height: getPercent(5, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: getPercent(3, width),
+      backgroundColor: "rgba(219,39,39,0.24)",
+    },
+    votingItemText: {
+      fontSize: rf(11),
+      fontFamily: "Semibold",
+      color: "#000000",
+    },
+    votingItemOpponent: {
+      width: "100%",
+      height: getPercent(5, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: getPercent(3, width),
+    },
+    votingItemTextOpponent: {
+      fontSize: rf(11),
+      fontFamily: "Regular",
+      color: "#000000",
+    },
+  });
 //ImageViewerStyles starts here
 export const ImageViewerStyles = ({ width, height }) =>
   StyleSheet.create({

@@ -27,7 +27,6 @@ export const ProfileCardstyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       width: "100%",
-      borderBottomWidth: 10,
       borderColor: "#F7F8F8",
     },
     cardHeaderContainer: {
