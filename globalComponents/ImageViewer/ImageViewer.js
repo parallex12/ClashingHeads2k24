@@ -18,9 +18,9 @@ const ImageViewer = (props) => {
   let styles = ImageViewerStyles({ width, height });
   const [imageLoad, setImageLoad] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
-
+  
   return (
-    <View style={styles.container}>
+    <>
       <TouchableOpacity
         style={styles.postImageWrapper}
         activeOpacity={0.9}
@@ -71,7 +71,7 @@ const ImageViewer = (props) => {
           </TouchableOpacity>
         </View>
       </Modal>
-    </View>
+    </>
   );
 };
 

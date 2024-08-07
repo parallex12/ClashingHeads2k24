@@ -27,7 +27,7 @@ const CardFooter = memo((data) => {
       <View style={styles.cardFooterItem}>
         <FontAwesome6 name="users" size={15} color="#6B7280" />
         <Text
-          style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
+          style={font(15, "#6B7280", "Regular", 0, null, { marginLeft: 5 })}
         >
           {Object.keys(votes || {})?.length} Voted
         </Text>
@@ -42,7 +42,7 @@ const CardFooter = memo((data) => {
       >
         <MaterialIcons name="multitrack-audio" size={15} color="#6B7280" />
         <Text
-          style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
+          style={font(15, "#6B7280", "Regular", 0, null, { marginLeft: 5 })}
         >
           {clashes?.length} Opinions
         </Text>
@@ -54,7 +54,7 @@ const CardFooter = memo((data) => {
           style={{ width: getPercent(4, width), height: getPercent(4, width) }}
         />
         <Text
-          style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
+          style={font(15, "#6B7280", "Regular", 0, null, { marginLeft: 5 })}
         >
           Report
         </Text>
@@ -69,7 +69,7 @@ const CardFooter = memo((data) => {
           style={{ width: getPercent(4, width), height: getPercent(4, width) }}
         />
         <Text
-          style={font(12, "#6B7280", "Regular", 0, null, { marginLeft: 10 })}
+          style={font(15, "#6B7280", "Regular", 0, null, { marginLeft: 5 })}
         >
           Share
         </Text>

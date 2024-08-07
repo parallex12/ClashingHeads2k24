@@ -30,14 +30,14 @@ const NotificationCard = (props) => {
         />
       </View>
       <View style={styles.content}>
-        <Text style={font(13, "#7D7C7C", "Regular", 2)}>
-          <Text style={font(14, "#263238", "Semibold")}>Demo </Text>
+      <Text style={font(16, "#7D7C7C", "Regular", 2)}>
+          <Text style={font(16, "#263238", "Semibold")}>Demo </Text>
           This is demo notification for Clashing Heads
         </Text>
-        <Text style={font(10, "#4B5563", "Regular", 5)}>1hr ago</Text>
+        <Text style={font(13, "#4B5563", "Regular", 5)}>1hr ago</Text>
       </View>
       <TouchableOpacity style={styles.dotIconBtn}>
-        <Entypo name="dots-three-horizontal" size={24} color="#DB2727" />
+        <Entypo name="dots-three-horizontal" size={18} color="#DB2727" />
       </TouchableOpacity>
     </View>
   );

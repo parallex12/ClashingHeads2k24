@@ -7,7 +7,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { NewsCardStyles, font } from "../styles/Global/main";
-import { useNavigation } from "@react-navigation/native";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
 import * as WebBrowser from "expo-web-browser";
 
 const CardFooter = ({ publishedAt, urlToImage, source }) => {
@@ -43,8 +43,11 @@ const NewsCard = (props) => {
   const handlePress = async () => {
     if (data.url) {
       await WebBrowser.openBrowserAsync(url, {
-        presentationStyle: "popover", // Use PAGE_SHEET presentation style
+        presentationStyle: "currentContext", // Use PAGE_SHEET presentation style
+        enableBarCollapsing:true,
+        readerMode:true
       });
+      navigation.dispatch(DrawerActions.closeDrawer());
     }
   };
 

@@ -11,6 +11,7 @@ import Profile from "./components/Profile";
 import SearchIcon from "./components/SearchIcon";
 import Logo from "./components/Logo";
 import BackButton from "../BackButton";
+import { StatusBar } from "expo-status-bar";
 
 const StandardHeader2 = (props) => {
   let {
@@ -27,6 +28,7 @@ const StandardHeader2 = (props) => {
 
   return (
     <View style={[styles.container, containerStyles]}>
+      <StatusBar style="dark" />
       <View style={styles.col1}>
         {profile && <Profile />}
         {backButton && <BackButton color="#0D0D0D" />}

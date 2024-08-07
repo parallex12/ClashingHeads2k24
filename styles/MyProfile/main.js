@@ -15,6 +15,9 @@ export const styles = ({ width, height }) =>
       zIndex: 9,
       paddingBottom: getPercent(12, height),
     },
+    innercontent: {
+      paddingHorizontal: getPercent(3, width),
+    },
     ContentLoader: {
       width: "100%",
       paddingHorizontal: getPercent(3, width),
@@ -60,15 +63,17 @@ export const ProfileCardstyles = ({ width, height }) =>
       justifyContent: "center",
     },
     post_following_followers_cont: {
-      height: getPercent(5, height),
+      flex: 1,
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-between",
+      justifyContent: "space-around",
+      paddingHorizontal: 5,
     },
     post_following_followers_Item: {
+      flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal: 20,
+      paddingHorizontal: 5,
     },
     userInfoWrapper: {
       paddingHorizontal: getPercent(3, width),
@@ -86,14 +91,14 @@ export const ProfileCardstyles = ({ width, height }) =>
     },
     listenButton: {
       marginHorizontal: 4,
-      height: getPercent(4.55, height),
+      minHeight: getPercent(4.55, height),
       flexDirection: "row-reverse",
       alignItems: "center",
       justifyContent: "center",
     },
     bioEditwrapper: {
       width: "100%",
-      paddingVertical: getPercent(0.5, height),
+      paddingVertical: getPercent(0.2, height),
       paddingHorizontal: getPercent(3, width),
       alignItems: "center",
       flexDirection: "row",

@@ -8,11 +8,8 @@ import {
 } from "react-native";
 import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
 import WaveAudioPlayer from "../../WaveAudioPlayer";
-import { useNavigation } from "@react-navigation/native";
 import { memo, useEffect, useState } from "react";
-import { Blurhash } from "react-native-blurhash";
 import { download } from "react-native-compressor";
 import CacheImage from "../../CacheImage";
 import ImageViewer from "../../ImageViewer/ImageViewer";
@@ -44,7 +41,6 @@ const Content = memo((props) => {
   }, [recording]);
 
   const PostImage = ({ source, onPress }) => {
-    console.log(post_image_hash)
     return (
       <TouchableOpacity style={styles.postImageWrapper} activeOpacity={0.9}>
         {source?.uri ? (
@@ -64,7 +60,7 @@ const Content = memo((props) => {
       </TouchableOpacity>
     );
   };
-
+  
   return (
     <View style={styles.container} activeOpacity={1}>
       {title && <Text style={styles.title}>{title}</Text>}
@@ -104,7 +100,7 @@ const _styles = ({ width, height }) =>
       minHeight: getPercent(5, height),
       justifyContent: "space-around",
     },
-    title: font(14, "#1C1C1C", "Medium", 15),
+    title: font(17, "#1C1C1C", "Medium", 15),
     postImageWrapper: {
       width: "100%",
       minHeight: getPercent(15, height),
@@ -115,7 +111,7 @@ const _styles = ({ width, height }) =>
       zIndex: 2,
       marginBottom: getPercent(1, height),
     },
-    smallText: font(12, "#111827", "Regular", 10),
+    smallText: font(15, "#111827", "Regular", 10),
     bgTouchable: {
       width: "100%",
       height: "100%",

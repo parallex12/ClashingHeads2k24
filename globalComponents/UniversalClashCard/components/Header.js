@@ -16,6 +16,23 @@ import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
 import CacheImage from "../../CacheImage";
 
+const Profile = ({ source, profileStyles,author,onProfilePress}) => {
+  let { width, height } = useWindowDimensions();
+  let styles = _styles({ width, height });
+  return (
+    <View style={[styles.container, { ...profileStyles }]}>
+      <TouchableOpacity style={styles.profileWrapper} onPress={onProfilePress}>
+        <CacheImage
+          source={source}
+          resizeMode="cover"
+          style={{ width: "100%", height: "100%" }}
+        />
+      </TouchableOpacity>
+      {author?.status && <View style={styles.online}></View>}
+    </View>
+  );
+};
+
 const Header = (props) => {
   let { author, createdAt, onProfilePress, profileStyles } = props;
   let { width, height } = useWindowDimensions();
@@ -24,24 +41,6 @@ const Header = (props) => {
   let post_past_time = getTimeElapsed(createdAt);
   const user_details = useSelector(selectAuthUser);
   const navigation = useNavigation();
-
-  const Profile = ({ source, profileStyles }) => {
-    return (
-      <View style={[styles.container, { ...profileStyles }]}>
-        <TouchableOpacity
-          style={styles.profileWrapper}
-          onPress={onProfilePress}
-        >
-          <CacheImage
-            source={source}
-            resizeMode="cover"
-            style={{ width: "100%", height: "100%" }}
-          />
-        </TouchableOpacity>
-        {author?.status && <View style={styles.online}></View>}
-      </View>
-    );
-  };
 
   return (
     <View style={styles.container}>
@@ -64,6 +63,8 @@ const Header = (props) => {
             uri: user_author?.profile_photo,
           }}
           profileStyles={profileStyles}
+          author={author}
+          onProfilePress={onProfilePress}
         />
         <View style={styles.infoWrapper}>
           <View style={styles.infoTitleRow}>
@@ -117,6 +118,7 @@ const _styles = ({ width, height }) =>
       justifyContent: "center",
       zIndex: 2,
     },
+    
     infoWrapper: {
       flex: 1,
       paddingHorizontal: getPercent(3, width),
@@ -125,8 +127,8 @@ const _styles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
     },
-    titleName: font(14, "#111827", "Medium", 2, null, { marginRight: 10 }),
-    slugText: font(12, "#6B7280", "Regular"),
+    titleName: font(17, "#111827", "Medium", 2, null, { marginRight: 10 }),
+    slugText: font(15, "#6B7280", "Regular"),
   });
 
 export default Header;

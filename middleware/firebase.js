@@ -399,6 +399,7 @@ export const uploadMedia = (media, path, mediaName) => {
 export const createPost = async (post_details) => {
   return new Promise(async (resolve, reject) => {
     try {
+      
       if (post_details?.recording) {
         let { url } = await uploadMedia(
           post_details?.recording,
@@ -413,6 +414,7 @@ export const createPost = async (post_details) => {
         );
         post_details["post_image"] = url;
       }
+      
       await create_post(post_details)
         .then((res) => {
           resolve({

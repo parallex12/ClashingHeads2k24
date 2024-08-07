@@ -53,7 +53,7 @@ const AddPostDetails = (props) => {
     privacy: null,
     post_image_hash: null,
     postReference: "original",
-    clashType:"post"
+    clashType: "post",
   });
 
   useEffect(() => {
@@ -69,7 +69,7 @@ const AddPostDetails = (props) => {
           newsAuthor: news_post?.author,
           postReference: "news",
           newsUrl: news_post?.url,
-          clashType:"news"
+          clashType: "news",
         };
       });
     }
@@ -165,7 +165,7 @@ const AddPostDetails = (props) => {
   return (
     <View style={styles.container}>
       <StandardHeader2
-        containerStyles={{ height: getPercent(14, height) }}
+        containerStyles={{ height: getPercent(12, height) }}
         backButton
         title="Create Clash"
         searchIcon={false}
@@ -217,7 +217,7 @@ const AddPostDetails = (props) => {
           >
             {postprivacyoptions[1]?.icon}
             <Text
-              style={font(12, "#111827", "Medium", 10, null, {
+              style={font(15, "#111827", "Medium", 10, null, {
                 marginHorizontal: 5,
               })}
             >
@@ -232,7 +232,7 @@ const AddPostDetails = (props) => {
               }}
             />
           </TouchableOpacity>
-          {postForm?.clashType=="challenge" && (
+          {postForm?.clashType == "challenge" && (
             <ChallengeHeader
               data={{
                 challenger: user_profile,
@@ -290,7 +290,7 @@ const AddPostDetails = (props) => {
                 marginRight: 5,
               }}
             />
-            <Text style={font(13, "#000000", "Medium")}>Upload Photo</Text>
+            <Text style={font(15, "#000000", "Medium")}>Upload Photo</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.recordBtn}
@@ -311,7 +311,7 @@ const AddPostDetails = (props) => {
           >
             {postprivacyoptions[postForm?.privacy]?.icon}
             <Text
-              style={font(12, "#111827", "Medium", 10, null, {
+              style={font(15, "#111827", "Medium", 10, null, {
                 marginHorizontal: 5,
               })}
             >

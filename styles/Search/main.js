@@ -297,10 +297,11 @@ export const headerStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-between",
       paddingHorizontal: getPercent(3, width),
+      paddingVertical:getPercent(0.5,height)
     },
     filterItem: {
       paddingHorizontal: getPercent(6, width),
-      height: getPercent(5, height),
+      minHeight: getPercent(4, height),
       borderRadius: 100,
       marginRight: 10,
       alignItems: "center",

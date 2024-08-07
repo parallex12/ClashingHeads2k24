@@ -21,13 +21,14 @@ export const NotificationCardStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       width: "100%",
-      height: getPercent(10, height),
+      minHeight: getPercent(10, height),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       borderBottomWidth: 1,
       borderColor: "#E5E7EB",
       paddingHorizontal: getPercent(3, width),
+      paddingVertical: getPercent(2, height),
     },
     bellIcon: {
       width: getPercent(11, width),
@@ -40,13 +41,11 @@ export const NotificationCardStyles = ({ width, height }) =>
     },
     content: {
       flex: 0.95,
-      height: "80%",
       paddingHorizontal: 10,
       justifyContent: "center",
       alignItems: "flex-start",
     },
     dotIconBtn: {
-      height: "80%",
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: 10,

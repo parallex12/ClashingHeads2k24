@@ -14,6 +14,7 @@ export const styles = ({ width, height }) =>
       paddingTop: getPercent(1, height),
       zIndex: 9,
       paddingBottom: getPercent(12, height),
+      paddingHorizontal: getPercent(3, width),
     },
     clashes_wrapper: {
       width: "100%",

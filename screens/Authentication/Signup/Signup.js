@@ -57,18 +57,22 @@ const Signup = (props) => {
             />
           </View>
           <View style={styles.formWrapper}>
-            <Text style={font(22, "#000000", "Semibold", 3)}>Sign Up</Text>
-            <Text style={font(14, "#6B7280", "Regular", 5)}>
+            <Text style={font(25, "#000000", "Semibold", 3)}>Sign Up</Text>
+            <Text style={font(17, "#6B7280", "Regular", 5)}>
               Enter Your Phone Number
             </Text>
             <CountryCodeField
               setCountry={setCountry}
               onChangeText={(val) => setPhoneNumber(val)}
             />
-            <Text style={font(10, "#252525", "Regular", 3, 20)}>
+            <Text
+              style={font(15, "#252525", "Regular", 3, 20, {
+                textAlign: "justify",
+              })}
+            >
               We will send a text with a verification code. Message and date
               rates may apply, By continuing, you agree to our{" "}
-              <Text style={font(10, "#DB2727", "Regular", 3)}>
+              <Text style={font(15, "#DB2727", "Regular", 3)}>
                 Terms of Services & Privacy Policy.
               </Text>
             </Text>
@@ -82,10 +86,10 @@ const Signup = (props) => {
               onPress={onContinue}
             />
             <Text
-              style={font(13, "#252525", "Regular", 3, null, styles.signupText)}
+              style={font(17, "#252525", "Regular", 3, null, styles.signupText)}
             >
               Already have an account?{" "}
-              <Text onPress={onLogin} style={font(13, "#DB2727", "Medium", 3)}>
+              <Text onPress={onLogin} style={font(17, "#DB2727", "Medium", 3)}>
                 Sign In
               </Text>
             </Text>

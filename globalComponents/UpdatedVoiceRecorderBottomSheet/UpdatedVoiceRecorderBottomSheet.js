@@ -6,7 +6,7 @@ import {
   BottomSheetView,
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import BackDrop from "./BackDrop";
 import { Image } from "react-native";
 import Emojis from "./Emojis";
@@ -45,13 +45,20 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
 
   const dispatch = useDispatch();
   // variables
-  const snapPoints = useMemo(() => ["25%", "55%"], []);
-  let duration = formatDuration(timer);
+  const snapPoints = useMemo(() => ["25%", "60%"], []);
+  // let duration = formatDuration(timer);
+  let recordingLimit = 20;
   let user_profile = useSelector(selectAuthUser);
 
   const onChangeMode = () => {
     setCurrentVoiceMode((prev) => (prev == "mic" ? "sticker" : "mic"));
   };
+
+  useEffect(() => {
+    if (selectedSticker) {
+      onReset();
+    }
+  }, [selectedSticker]);
 
   const onPost = async () => {
     setLoading(true);
@@ -84,7 +91,7 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
       setProgress(0);
       timerRef.current = setInterval(() => {
         setTimer((prevTimer) => {
-          if (prevTimer >= 15) {
+          if (prevTimer >= recordingLimit) {
             setrecordingLimitReached(true);
             return prevTimer;
           }
@@ -92,7 +99,7 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
         });
         setProgress((prevProgress) => {
           if (prevProgress >= 100) return 100;
-          return prevProgress + 100 / 15;
+          return prevProgress + 100 / recordingLimit;
         });
       }, 1000);
     } catch (error) {
@@ -197,12 +204,12 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
                 onPress={onPost}
               />
             )}
-            {!isRecording && recording && (
+            {!isRecording && recording && currentVoiceMode == "mic" && (
               <View style={styles.postBtnsWrapper}>
                 <StandardButton
                   title={postBtnTitle || "Post"}
                   loading={loading}
-                  customStyles={{ width: "45%", marginVertical: 20 }}
+                  customStyles={{ width: "45%", paddingVertical: 10 }}
                   onPress={onPost}
                 />
                 <StandardButton
@@ -211,6 +218,7 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
                     width: "45%",
                     backgroundColor: "#E5E7EB",
                     alignSelf: "center",
+                    paddingVertical: 10,
                   }}
                   textStyles={{
                     color: "#222",

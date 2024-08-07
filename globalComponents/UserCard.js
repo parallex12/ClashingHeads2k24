@@ -117,8 +117,8 @@ const _styles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
     },
-    titleName: font(14, "#111827", "Medium", 2, null, { marginRight: 10 }),
-    slugText: font(12, "#6B7280", "Regular"),
+    titleName: font(17, "#111827", "Medium", 2, null, { marginRight: 10 }),
+    slugText: font(14, "#6B7280", "Regular"),
   });
 
 export default memo(UserCard);

@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import io from "socket.io-client";
+import { selectAuthUser } from "../features/auth";
 
 const SocketContext = createContext();
 
@@ -7,10 +9,11 @@ const SOCKET_URL = "http://192.168.100.127:5000";
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
+  const currentUser = useSelector(selectAuthUser);
 
   useEffect(() => {
     const socketInstance = io(SOCKET_URL, {
-      transports: ['websocket'],
+      transports: ["websocket"],
     });
 
     socketInstance.on("connect", () => {
@@ -28,10 +31,14 @@ export const SocketProvider = ({ children }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (currentUser && socket) {
+      socket.emit("appjoin", {userId:currentUser?._id});
+    }
+  }, [currentUser,socket]);
+
   return (
-    <SocketContext.Provider value={socket}>
-      {children}
-    </SocketContext.Provider>
+    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
   );
 };
 

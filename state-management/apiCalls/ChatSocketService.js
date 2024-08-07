@@ -2,9 +2,10 @@ import { useSocket } from "./SocketContext";
 
 export const useChatSocketService = () => {
   const socket = useSocket();
-  const joinRoom = (room) => {
+  const joinRoom = (room, userId) => {
     if (socket) {
-      socket.emit("join", room);
+      socket.emit("join", { room, userId });
+      socket.emit("readMessages", { chatId: room, userId });
       console.log("Room Joined:", room);
     }
   };
@@ -16,9 +17,9 @@ export const useChatSocketService = () => {
     }
   };
 
-  const sendMessage = (room, message) => {
+  const sendMessage = (room, message, participants) => {
     if (socket) {
-      socket.emit("message", { room, message });
+      socket.emit("message", { room, message, participants });
       console.log("Message Sent:", message);
     }
   };
@@ -29,12 +30,28 @@ export const useChatSocketService = () => {
       console.log("Message Listener Registered");
     }
   };
-  const readMessages = (chatId, userId) => {
+
+  const receiveChat = (callback) => {
     if (socket) {
-      socket.emit("readMessages", { chatId, userId });
+      socket.on("screenchats", callback);
+      console.log("screenchats Listener Registered");
+    }
+  };
+
+  const listenreadMessages = (callback) => {
+    if (socket) {
+      socket.on("messagesRead", callback);
       console.log("Message Reader Registered");
     }
   };
 
-  return { socket, joinRoom, leaveRoom, sendMessage, receiveMessage,readMessages };
+  return {
+    socket,
+    joinRoom,
+    leaveRoom,
+    sendMessage,
+    receiveMessage,
+    listenreadMessages,
+    receiveChat,
+  };
 };

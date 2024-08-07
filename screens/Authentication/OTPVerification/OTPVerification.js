@@ -73,19 +73,19 @@ const OTPVerification = (props) => {
         <View style={styles.content}>
           <BackButton />
           <View style={styles.formWrapper}>
-            <Text style={font(22, "#000000", "Semibold", 3)}>
+            <Text style={font(25, "#000000", "Semibold", 3)}>
               Verification Code
             </Text>
-            <Text style={font(14, "#6B7280", "Regular", 5)}>
+            <Text style={font(17, "#6B7280", "Regular", 5)}>
               Please enter 6 digit code
             </Text>
             <PinCodeInput setOtpCode={setOtpCode} />
           </View>
-          <Text style={font(10, "#252525", "Regular", 3, 20)}>
+          <Text style={font(15, "#252525", "Regular", 3, 20)}>
             You will receive your verification code on your given number {phone}
             . If you didn’t get the number then you can change or edit the
             number.{" "}
-            <Text style={font(10, "#8E70F5", "Regular", 3)}>Change</Text>
+            <Text style={font(15, "#8E70F5", "Regular", 3)}>Change</Text>
           </Text>
           <StandardButton
             title="Continue"

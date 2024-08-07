@@ -6,6 +6,7 @@ import SearchIcon from "./components/SearchIcon";
 import Logo from "./components/Logo";
 import BackButton from "../BackButton";
 import { selectAuthUser } from "../../state-management/features/auth";
+import { StatusBar } from "expo-status-bar";
 
 const StandardHeader = (props) => {
   let {
@@ -30,13 +31,15 @@ const StandardHeader = (props) => {
         { backgroundColor: plainBg ? plainBg : "transparent" },
       ]}
       source={require("../../assets/images/headerBg.png")}
-      resizeMode="cover"
+      resizeMode="stretch"
     >
+      <StatusBar style="light" />
       <View style={styles.col1}>
         {profile && (
           <Profile
             source={user_profile?.profile_photo}
             profile_hash={user_profile?.profile_hash}
+            data={user_profile}
           />
         )}
         {backButton && <BackButton color="#FFFFFF" />}

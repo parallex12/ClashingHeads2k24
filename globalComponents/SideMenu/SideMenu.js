@@ -26,7 +26,6 @@ const ListItem = ({ data }) => {
   let styles = SideMenuStyles({ width, height });
   const navigation = useNavigation();
 
-
   if (data?.type == "logout") {
     return (
       <LogoutPress style={styles.listItem}>
@@ -37,13 +36,14 @@ const ListItem = ({ data }) => {
             style={{ width: "100%", height: "100%" }}
           />
         </View>
-        <Text style={font(12, "#FFFFFF", "Regular", 0, null, { flex: 1 })}>
+        <Text style={font(16, "#FFFFFF", "Regular", 0, null, { flex: 1 })}>
           {data?.title}
         </Text>
         <Entypo name="chevron-right" size={20} color="#ffffff" />
       </LogoutPress>
     );
   }
+
   return (
     <TouchableOpacity
       style={styles.listItem}
@@ -58,7 +58,7 @@ const ListItem = ({ data }) => {
           style={{ width: "100%", height: "100%" }}
         />
       </View>
-      <Text style={font(12, "#FFFFFF", "Regular", 0, null, { flex: 1 })}>
+      <Text style={font(16, "#FFFFFF", "Regular", 0, null, { flex: 1 })}>
         {data?.title}
       </Text>
       <Entypo name="chevron-right" size={20} color="#ffffff" />
@@ -96,21 +96,21 @@ const SideMenu = (props) => {
               hash={user_details?.profile_hash}
             />
           </View>
-          <View style={styles.info}>
+          <TouchableOpacity
+            style={styles.info}
+            onPress={() => navigation?.navigate("MyProfile")}
+          >
             <View style={styles.userName}>
-              <Text style={font(14, "#FFFFFF", "Semibold", 5)}>
+              <Text style={font(16, "#FFFFFF", "Semibold", 3)}>
                 {user_details?.realName}
               </Text>
             </View>
-            <TouchableOpacity
-              style={styles.viewProfileBtn}
-              onPress={() => navigation?.navigate("MyProfile")}
-            >
-              <Text style={font(11, "#FFFFFF", "Regular", 2)}>
-                View Profile
+            <View style={styles.viewProfileBtn}>
+              <Text style={font(13, "#FFFFFF", "Regular")}>
+                @{user_details?.username}
               </Text>
-            </TouchableOpacity>
-          </View>
+            </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.listContainer}>
           {sideMenuOptions?.map((item, index) => {

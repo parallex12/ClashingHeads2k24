@@ -31,7 +31,7 @@ const Connections = (props) => {
   return (
     <View style={styles.container}>
       <StandardHeader
-        title={user?.realName || user?.username}
+        title={`@${user?.username}` || user?.realName}
         backButton
         containerStyles={{ height: getPercent(15, height) }}
       />

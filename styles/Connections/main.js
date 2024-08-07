@@ -22,7 +22,7 @@ export const TabSelectorStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       width: "100%",
-      height: getPercent(5, height),
+      minHeight: getPercent(5, height),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "flex-start",
@@ -35,6 +35,7 @@ export const TabSelectorStyles = ({ width, height }) =>
       paddingHorizontal: getPercent(3, width),
       borderBottomWidth: 2,
       marginRight: getPercent(3, width),
+      paddingVertical: getPercent(1, height),
     },
   });
 
@@ -56,7 +57,6 @@ export const UserCardStyles = ({ width, height }) =>
       width: getPercent(5, height),
       height: getPercent(5, height),
       borderRadius: 100,
-      borderWidth: 1,
       borderColor: "#9CA3AF",
       overflow: "hidden",
     },

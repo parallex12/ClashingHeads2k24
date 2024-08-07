@@ -134,17 +134,13 @@ const ProfileCard = (props) => {
     });
   };
 
-  const onBioEditPress = () => {
-    navigation.navigate("AddBio");
-  };
-
   return (
     <View style={styles.container}>
       <CardHeader user={user} />
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
-          <Text style={font(16, "#111827", "Medium", 2)}>
-            <Text style={font(16, "#", "Semibold", 2)}>#{clashHash} </Text>
+          <Text style={font(19, "#111827", "Medium", 2)}>
+            <Text style={font(19, "#", "Semibold", 2)}>#{clashHash} </Text>
             {realName || ""}
           </Text>
           <Image
@@ -157,62 +153,23 @@ const ProfileCard = (props) => {
             }}
           />
         </View>
-        <Text style={font(12, "#6B7280", "Regular", 2)}>{politics}</Text>
-        <Text style={font(10, "#DB2727", "Semibold", 2)}>@{username} </Text>
+        <Text style={font(15, "#6B7280", "Regular", 2)}>{politics}</Text>
+        <Text style={font(13, "#DB2727", "Semibold", 2)}>@{username} </Text>
       </View>
       {bio && (
-        <TouchableOpacity
-          style={styles.bioEditwrapper}
-          onPress={onBioEditPress}
-        >
-          <View style={styles.bioicons}>
-            <Image
-              source={require("../../../assets/icons/profile_photo_icon.png")}
-              resizeMode="contain"
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            />
-          </View>
-          <Text style={font(11, "#6B7280", "Regular", 2)}>{bio}</Text>
-        </TouchableOpacity>
+        <View style={styles.bioEditwrapper}>
+          <Text style={font(14, "#6B7280", "Regular")}>{bio}</Text>
+        </View>
       )}
       {school && (
-        <TouchableOpacity
-          style={styles.bioEditwrapper}
-          onPress={onBioEditPress}
-        >
-          <View style={styles.bioicons}>
-            <Image
-              source={require("../../../assets/icons/school.png")}
-              resizeMode="contain"
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            />
-          </View>
-          <Text style={font(11, "#6B7280", "Regular", 2)}>{school}</Text>
-        </TouchableOpacity>
+        <View style={styles.bioEditwrapper}>
+          <Text style={font(14, "#6B7280", "Regular")}>{school}</Text>
+        </View>
       )}
       {employment && (
-        <TouchableOpacity
-          style={styles.bioEditwrapper}
-          onPress={onBioEditPress}
-        >
-          <View style={styles.bioicons}>
-            <Image
-              source={require("../../../assets/icons/employee.png")}
-              resizeMode="contain"
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            />
-          </View>
-          <Text style={font(11, "#6B7280", "Regular", 2)}>{employment}</Text>
-        </TouchableOpacity>
+        <View style={styles.bioEditwrapper}>
+          <Text style={font(14, "#6B7280", "Regular")}>{employment}</Text>
+        </View>
       )}
       <View style={styles.action_buttons_wrapper}>
         <StandardButton

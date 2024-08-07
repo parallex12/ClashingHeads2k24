@@ -109,18 +109,17 @@ const ChallengeClash = (props) => {
           <View style={styles.content}>
             <ChallengeCard
               showVoting
-              divider
               data={postData || prevData}
               onClashesPress={() => bottomVoiceSheetRef.current.present()}
               onReportPress={() => bottomFlagSheetRef.current.present()}
             />
             <View style={styles.postDateAndViews}>
-              <Text style={font(10, "#9CA3AF", "Regular")}>
+              <Text style={font(13, "#9CA3AF", "Regular")}>
                 Posted on {createdAtDate}
               </Text>
-              <Text style={font(10, "#111827", "Bold")}>
+              <Text style={font(13, "#111827", "Bold")}>
                 {prevData?.views?.length || 0}{" "}
-                <Text style={font(10, "#9CA3AF", "Regular")}>Views</Text>
+                <Text style={font(13, "#9CA3AF", "Regular")}>Views</Text>
               </Text>
             </View>
             <SubClashes

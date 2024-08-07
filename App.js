@@ -16,6 +16,7 @@ LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 import "./utils/firebaseInitialize";
 import { SocketProvider } from "./state-management/apiCalls/SocketContext";
+import { StatusBar } from "expo-status-bar";
 
 export default function App() {
   // axios.defaults.baseURL =
@@ -45,6 +46,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <SocketProvider>
+        <StatusBar style="light"/>
         <AppNavigator />
       </SocketProvider>
     </Provider>

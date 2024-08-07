@@ -15,7 +15,6 @@ export const styles = ({ width, height }) =>
       paddingBottom: getPercent(2, height),
       paddingHorizontal: getPercent(3, width),
       justifyContent: 'space-between',
-      alignItems: 'center'
     },
     filtersWrapper: {
       flexDirection: "row",

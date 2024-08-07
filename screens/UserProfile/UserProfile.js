@@ -56,39 +56,42 @@ const UserProfile = (props) => {
           ) : (
             <>
               <ProfileCard postsCount={posts?.length} user={profile || user} />
-
-              {posts?.map((item, index) => {
-                if (item?.clashType == "challenge") {
+              <View style={styles.innercontent}>
+                {posts?.map((item, index) => {
+                  if (item?.clashType == "challenge") {
+                    return (
+                      <ChallengeCard
+                        divider
+                        onPress={() =>
+                          props?.navigation?.navigate("ChallengeClash", {
+                            ...item,
+                          })
+                        }
+                        onClashesPress={() =>
+                          props?.navigation?.navigate("ChallengeClash", {
+                            ...item,
+                          })
+                        }
+                        key={index}
+                        data={item}
+                      />
+                    );
+                  }
                   return (
-                    <ChallengeCard
+                    <PostCard
                       divider
-                      onPress={() =>
-                        props?.navigation?.navigate("ChallengeClash", {
-                          ...item,
-                        })
-                      }
-                      onClashesPress={() =>
-                        props?.navigation?.navigate("ChallengeClash", {
-                          ...item,
-                        })
-                      }
-                      key={index}
                       data={item}
+                      key={index}
+                      onReportPress={() =>
+                        bottomFlagSheetRef?.current?.present()
+                      }
+                      onPostClashesPress={() =>
+                        props?.navigation?.navigate("ClashDetails", { ...item })
+                      }
                     />
                   );
-                }
-                return (
-                  <PostCard
-                    divider
-                    data={item}
-                    key={index}
-                    onReportPress={() => bottomFlagSheetRef?.current?.present()}
-                    onPostClashesPress={() =>
-                      props?.navigation?.navigate("ClashDetails", { ...item })
-                    }
-                  />
-                );
-              })}
+                })}
+              </View>
             </>
           )}
         </View>

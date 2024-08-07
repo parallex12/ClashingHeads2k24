@@ -37,7 +37,7 @@ const PrivacyBottomSheet = (props) => {
         enableContentPanningGesture={false}
       >
         <BottomSheetView style={styles.content}>
-          <Text style={font(15, "#111827", "Regular")}>Choose Audience</Text>
+          <Text style={font(18, "#111827", "Regular")}>Choose Audience</Text>
           <View style={{ marginVertical: getPercent(2, height), flex: 0.8 }}>
             {postprivacyoptions?.map((item, index) => {
               return (
@@ -52,7 +52,7 @@ const PrivacyBottomSheet = (props) => {
                 >
                   {item?.icon}
                   <Text
-                    style={font(13, "#6B7280", "Light", 0, null, {
+                    style={font(15, "#6B7280", "Light", 0, null, {
                       marginLeft: 10,
                       flex: 1,
                     })}
@@ -76,8 +76,8 @@ const PrivacyBottomSheet = (props) => {
             title="Done"
             customStyles={{
               width: "50%",
-              marginVertical: 10,
               alignSelf: "center",
+              paddingVertical:10
             }}
             onPress={() => bottomSheetRef.current.close()}
           />

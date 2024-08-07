@@ -44,10 +44,11 @@ const ChallengeRequests = (props) => {
 
   const memoizedRequestsSent = useMemo(() => {
     return challenges?.filter((e) => {
-      const isSent = e?.challenger?._id === user?._id;
+      const isSent = e?.author?._id === user?._id;
       return isSent && e;
     });
   }, [activeFilter, user?._id, challenges]);
+
 
   const FilterItem = ({ data, index, count }) => {
     let conditional_style = {

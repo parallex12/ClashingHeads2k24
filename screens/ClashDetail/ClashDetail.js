@@ -1,4 +1,10 @@
-import { ScrollView, Text, View, useWindowDimensions } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { styles as _styles } from "../../styles/ClashDetails/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import PostCard from "../../globalComponents/PostCard/PostCard";
@@ -22,6 +28,7 @@ const ClashDetails = (props) => {
   let styles = _styles({ width, height });
   const [clashTo, setClashTo] = useState("post");
   const [postData, setPostData] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   let prevPostData = props?.route?.params;
   let openVoiceSheet = props?.route?.params?.openVoiceSheet;
   const bottomVoiceSheetRef = useRef(null);
@@ -38,16 +45,24 @@ const ClashDetails = (props) => {
           update_post_by_id(postId, { views });
         }
         setPostData(res);
+        setRefreshing(false);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        console.log(e);
+        setRefreshing(false);
+      });
 
     if (openVoiceSheet) {
       bottomVoiceSheetRef.current.present();
     }
-  }, [dispatch, postId]);
+  }, [dispatch, postId, refreshing]);
 
   const onPostClash = async (clashDetails) => {
     await create_clash(clashDetails);
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
   };
 
   return (
@@ -58,7 +73,12 @@ const ClashDetails = (props) => {
         title="Post"
         searchIcon={false}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.content}>
           <PostCard
             postDateAndViews

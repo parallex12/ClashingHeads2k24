@@ -17,7 +17,65 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import { download } from "react-native-compressor";
-import { Blurhash } from "react-native-blurhash";
+import ImageViewer from "../../../globalComponents/ImageViewer/ImageViewer";
+
+const CardHeader = (props) => {
+  let { width, height } = useWindowDimensions();
+  let styles = _styles({ width, height });
+  const navigation = useNavigation();
+  let { followers, following, posts, profile_photo, profile_hash } = props;
+
+  const onFollowView = () => {
+    navigation.navigate("Connections", { user: props });
+  };
+
+  return (
+    <View style={styles.cardHeaderContainer}>
+      <View style={styles.cardHeaderProfileWrapper}>
+        <View style={styles.cardHeaderProfile}>
+          <ImageViewer
+            source={{ uri: profile_photo }}
+            resizeMode="cover"
+            style={{ width: "100%", height: "100%" }}
+            post_image_hash={profile_hash}
+          />
+        </View>
+        <TouchableOpacity
+          style={styles.cardHeaderProfileCameraIcon}
+          onPress={() => navigation.navigate("ProfilePhoto")}
+        >
+          <AntDesign name="camerao" size={18} color="#DB2727" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.post_following_followers_cont}>
+        <View style={styles.post_following_followers_Item}>
+          <Text style={font(19, "#121212", "Bold", 2)}>
+            {posts?.length || 0}
+          </Text>
+          <Text style={font(17, "#121212", "Regular", 2)}>Posts</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.post_following_followers_Item}
+          onPress={onFollowView}
+        >
+          <Text style={font(19, "#121212", "Bold", 2)}>
+            {followers?.length}
+          </Text>
+          <Text style={font(17, "#121212", "Regular", 3)}>Followers</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.post_following_followers_Item}
+          onPress={onFollowView}
+        >
+          <Text style={font(19, "#121212", "Bold", 3)}>
+            {following?.length}
+          </Text>
+          <Text style={font(17, "#121212", "Regular", 3)}>Following</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
 const ProfileCard = (props) => {
   let {} = props;
@@ -29,16 +87,11 @@ const ProfileCard = (props) => {
     realName,
     about_voice,
     clashHash,
-    followers,
     politics,
-    following,
     bio,
     school,
     employment,
     username,
-    profile_hash,
-    posts,
-    profile_photo,
   } = user_details;
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -85,83 +138,17 @@ const ProfileCard = (props) => {
     }
   };
 
-  const onFollowView = () => {
-    navigation.navigate("Connections", { user: user_details });
-  };
-
-  const CardHeader = () => {
-    const [imageLoad, setImageLoad] = useState(true);
-
-    return (
-      <View style={styles.cardHeaderContainer}>
-        <View style={styles.cardHeaderProfileWrapper}>
-          <View style={styles.cardHeaderProfile}>
-            {imageLoad && profile_hash && (
-              <Blurhash
-                blurhash={profile_hash}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  position: "absolute",
-                  zIndex: 999,
-                }}
-              />
-            )}
-            <Image
-              source={{ uri: profile_photo }}
-              resizeMode="cover"
-              style={{ width: "100%", height: "100%" }}
-              onLoad={() => setImageLoad(false)}
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.cardHeaderProfileCameraIcon}
-            onPress={() => navigation.navigate("ProfilePhoto")}
-          >
-            <AntDesign name="camerao" size={18} color="#DB2727" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.post_following_followers_cont}>
-          <View style={styles.post_following_followers_Item}>
-            <Text style={font(15, "#121212", "Bold", 3)}>
-              {posts?.length || 0}
-            </Text>
-            <Text style={font(13, "#121212", "Regular", 3)}>Posts</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.post_following_followers_Item}
-            onPress={onFollowView}
-          >
-            <Text style={font(15, "#121212", "Bold", 3)}>
-              {followers?.length}
-            </Text>
-            <Text style={font(13, "#121212", "Regular", 3)}>Followers</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.post_following_followers_Item}
-            onPress={onFollowView}
-          >
-            <Text style={font(15, "#121212", "Bold", 3)}>
-              {following?.length}
-            </Text>
-            <Text style={font(13, "#121212", "Regular", 3)}>Following</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
   const onBioEditPress = () => {
     navigation.navigate("AddBio");
   };
 
   return (
     <View style={styles.container}>
-      <CardHeader />
+      <CardHeader {...user_details} />
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
-          <Text style={font(16, "#111827", "Medium", 2)}>
-            <Text style={font(16, "#DB2727", "Semibold", 2)}>{clashHash} </Text>
+          <Text style={font(19, "#111827", "Medium", 2)}>
+            <Text style={font(19, "#DB2727", "Semibold")}>{clashHash} </Text>
             {realName || ""}
           </Text>
           <Image
@@ -172,54 +159,61 @@ const ProfileCard = (props) => {
               height: getPercent(2, height),
               marginLeft: 5,
             }}
+            y
           />
         </View>
-        <Text style={font(12, "#6B7280", "Regular", 2)}>{politics}</Text>
-        <Text style={font(10, "#DB2727", "Semibold", 2)}>@{username} </Text>
+        <Text style={font(13, "#6B7280", "Regular", 2)}>{politics}</Text>
+        <Text style={font(13, "#DB2727", "Semibold", 2)}>@{username} </Text>
       </View>
       <TouchableOpacity style={styles.bioEditwrapper} onPress={onBioEditPress}>
-        <View style={styles.bioicons}>
-          <Image
-            source={require("../../../assets/icons/profile_photo_icon.png")}
-            resizeMode="contain"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
-        </View>
-        <Text style={font(11, "#6B7280", "Regular", 2)}>
+        {!bio && (
+          <View style={styles.bioicons}>
+            <Image
+              source={require("../../../assets/icons/profile_photo_icon.png")}
+              resizeMode="contain"
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+            />
+          </View>
+        )}
+        <Text style={font(14, "#6B7280", "Regular", 3)}>
           {bio || "Add your bio."}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.bioEditwrapper} onPress={onBioEditPress}>
-        <View style={styles.bioicons}>
-          <Image
-            source={require("../../../assets/icons/school.png")}
-            resizeMode="contain"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
-        </View>
-        <Text style={font(11, "#6B7280", "Regular", 2)}>
+        {!school && (
+          <View style={styles.bioicons}>
+            <Image
+              source={require("../../../assets/icons/school.png")}
+              resizeMode="contain"
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+            />
+          </View>
+        )}
+        <Text style={font(14, "#6B7280", "Regular", 3)}>
           {school || "Add School"}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.bioEditwrapper} onPress={onBioEditPress}>
-        <View style={styles.bioicons}>
-          <Image
-            source={require("../../../assets/icons/employee.png")}
-            resizeMode="contain"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
-        </View>
-        <Text style={font(11, "#6B7280", "Regular", 2)}>
-          {employment || "Add Employment"}{" "}
+        {!employment && (
+          <View style={styles.bioicons}>
+            <Image
+              source={require("../../../assets/icons/employee.png")}
+              resizeMode="contain"
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+            />
+          </View>
+        )}
+        <Text style={font(14, "#6B7280", "Regular", 2)}>
+          {employment || "Add Employment"}
         </Text>
       </TouchableOpacity>
       <View style={styles.action_buttons_wrapper}>
@@ -244,9 +238,9 @@ const ProfileCard = (props) => {
           }
           onPress={playAudio}
         />
-        <TouchableOpacity style={styles.settingsButton}>
+        {/* <TouchableOpacity style={styles.settingsButton}>
           <Entypo name="dots-three-horizontal" size={20} color="#111827" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );

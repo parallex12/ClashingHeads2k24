@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { styles as _styles } from "../../styles/ChatScreen/main";
-import { getPercent } from "../../middleware";
+import { generateChatId, getPercent } from "../../middleware";
 import TypingComponent from "./components/TypingComponent";
 import SenderMessage from "./components/SenderMessage";
 import RecieverMessage from "./components/RecieverMessage";
@@ -25,9 +25,13 @@ import { useChatSocketService } from "../../state-management/apiCalls/ChatSocket
 import { useSocket } from "../../state-management/apiCalls/SocketContext";
 
 const ChatScreen = (props) => {
-  const socket = useSocket();
-  const { joinRoom, leaveRoom, readMessages, receiveMessage, sendMessage } =
-    useChatSocketService();
+  const {
+    joinRoom,
+    leaveRoom,
+    listenreadMessages,
+    receiveMessage,
+    sendMessage,
+  } = useChatSocketService();
   const currentUser = useSelector(selectAuthUser);
   const currentUserId = currentUser?._id;
   const route = useRoute();
@@ -52,19 +56,6 @@ const ChatScreen = (props) => {
       getMessages();
     }
     listenForMessage();
-    socket.on("messagesRead", (updatedMessages) => {
-      setMessages((prevMessages) => {
-        const updatedMessagesMap = new Map(
-          updatedMessages.map((msg) => [msg._id, msg])
-        );
-
-        return prevMessages.map((msg) =>
-          updatedMessagesMap.has(msg._id)
-            ? updatedMessagesMap.get(msg._id)
-            : msg
-        );
-      });
-    });
 
     // Add keyboard event listeners
     const keyboardDidShowListener = Keyboard.addListener(
@@ -80,6 +71,7 @@ const ChatScreen = (props) => {
       // Clean up keyboard event listeners
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
+      leaveRoom(roomId);
     };
   }, [participants]);
 
@@ -89,10 +81,7 @@ const ChatScreen = (props) => {
         let filterMsgs = prevMessages?.filter((e) => e?._id != message?._id);
         return [message, ...filterMsgs];
       });
-      if (roomId) {
-        console.log(roomId);
-        readMessages(roomId, currentUserId);
-      }
+
       // Scroll to end when new messages arrive if needed
       if (scrollToEndOnUpdate) {
         scrollToEnd();
@@ -113,13 +102,18 @@ const ChatScreen = (props) => {
     setScrollToEndOnUpdate(false); // Reset after scrolling
   }, [messages]);
 
+  useEffect(() => {
+    listenreadMessages((resM) => {
+      console.log(resM);
+    });
+  }, []);
+
   const getMessages = async () => {
     let _p = participants?.map((i) => i?._id);
     let _m = await create_get_user_chat({ participants: _p });
     setRoomId(_m?._id);
-    joinRoom(_m?._id);
+    joinRoom(_m?._id, currentUserId);
     setMessages(_m?.messages);
-    readMessages(_m?._id, currentUserId);
     setLoading(false);
     scrollToEnd();
   };
@@ -131,8 +125,9 @@ const ChatScreen = (props) => {
         sender: currentUserId,
         message,
       };
+      let _p = participants?.map((i) => i?._id);
       // await send_message(message_details);
-      sendMessage(roomId, message_details); // Emit the message via socket
+      sendMessage(roomId, message_details, _p); // Emit the message via socket
     } catch (e) {
       console.log(e);
     }
@@ -206,14 +201,16 @@ const ChatScreen = (props) => {
                 <RecieverMessage data={item} />
               );
             }}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item) =>
+              item._id + generateChatId(item._id, Math.random())
+            }
             onEndReached={loadMoreMessages}
             onEndReachedThreshold={0.2}
             onScroll={handleScroll}
             inverted
             ListFooterComponent={
               loading && hasMore ? (
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#222" />
               ) : null
             }
           />

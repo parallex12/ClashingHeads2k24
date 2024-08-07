@@ -15,6 +15,9 @@ export const styles = ({ width, height }) =>
       zIndex: 9,
       paddingBottom: getPercent(12, height),
     },
+    innercontent:{
+      paddingHorizontal: getPercent(3, width),
+    },
     ContentLoader: {
       width: "100%",
       paddingHorizontal: getPercent(3, width),
@@ -61,15 +64,17 @@ export const ProfileCardstyles = ({ width, height }) =>
       borderColor: "#ffffff",
     },
     post_following_followers_cont: {
-      height: getPercent(5, height),
+      flex: 1,
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-between",
+      justifyContent: "space-around",
+      paddingHorizontal: 5,
     },
     post_following_followers_Item: {
+      flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal: 20,
+      paddingHorizontal: 5,
     },
     userInfoWrapper: {
       paddingHorizontal: getPercent(3, width),
@@ -94,8 +99,7 @@ export const ProfileCardstyles = ({ width, height }) =>
       justifyContent: "center",
     },
     volumeIcon: {
-      width: "20%",
-      height: "75%",
+      width: "18%",
       marginRight: 8,
     },
     followButton: {

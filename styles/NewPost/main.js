@@ -150,14 +150,14 @@ export const AddPostDetailsStyles = ({ width, height }) =>
       justifyContent: "flex-start",
     },
     privacyBtn: {
-      width: "30%",
+      minWidth: "30%",
       minHeight: getPercent(4.5, height),
       borderRadius: 100,
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal: 5,
       backgroundColor: "#F3F4F6",
       flexDirection: "row",
+      paddingHorizontal: getPercent(2, width),
     },
     challengeBtn: {
       minHeight: getPercent(4.5, height),

@@ -33,9 +33,8 @@ const ClashUserCard = memo((data) => {
     showVoting,
     votes,
     _id,
-    setVoteData
+    setVoteData,
   } = data;
-
 
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
@@ -90,8 +89,8 @@ const ClashUserCard = memo((data) => {
             hash={user?.profile_hash}
           />
         </View>
-        <Text style={font(14, "#000000", "Semibold", 3)}>{user?.realName}</Text>
-        <Text style={font(12, "#9CA3AF", "Medium", 3)}>{type}</Text>
+        <Text style={font(17, "#000000", "Semibold", 3)}>{user?.realName}</Text>
+        <Text style={font(15, "#9CA3AF", "Medium")}>{type}</Text>
       </TouchableOpacity>
       {audio && (
         <WaveAudioPlayer
@@ -118,7 +117,7 @@ const ClashUserCard = memo((data) => {
           </View>
         ) : request_type === "Sent" ? (
           <StandardButton
-            title="Request Sent"
+            title="Cancel"
             customStyles={styles.VoteBtn}
             textStyles={styles.requetBtnText}
             onPress={onCancelRequest}
@@ -127,9 +126,7 @@ const ClashUserCard = memo((data) => {
       {data?.status === "live" && showVoting && (
         <StandardButton
           title={hasCurrentUserVoted === user?._id ? "THANKS" : "VOTE ME"}
-          rightIcon={
-            <Entypo name="thumbs-up" size={RFValue(12)} color="#fff" />
-          }
+          rightIcon={<Entypo name="thumbs-up" size={15} color="#fff" />}
           customStyles={styles.VoteBtn}
           textStyles={styles.requetBtnText}
           onPress={() => onVotePress(user?._id)}

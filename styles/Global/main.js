@@ -6,14 +6,15 @@ import { getPercent } from "../../middleware";
 export const standardButtonStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      height: getPercent(5, height),
+      minHeight: getPercent(4, height),
+      maxHeight: getPercent(9, height),
       backgroundColor: "#DB2727",
       borderRadius: 100,
       alignItems: "center",
       justifyContent: "center",
     },
     text: {
-      fontSize: rf(13),
+      fontSize: 16,
       fontFamily: "Medium",
       color: "#fff",
     },
@@ -35,7 +36,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       borderColor: "#F7F8F8",
     },
     clashesCardCont: {
-      width: "95%",
+      width: "100%",
       minHeight: getPercent(15, height),
       borderRadius: 12,
       borderWidth: 1,
@@ -48,13 +49,12 @@ export const ChallengeCardStyles = ({ width, height }) =>
       alignSelf: "center",
     },
     body: {
-      flex: 1,
       width: "100%",
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: getPercent(3, width),
     },
-    clashesCardTitle: font(16, "#1F2937", "Medium", 5, null, {
+    clashesCardTitle: font(19, "#1F2937", "Medium", 5, null, {
       textAlign: "center",
       width: "90%",
     }),
@@ -93,6 +93,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       justifyContent: "center",
     },
     actionBtnRow: {
+      flex:1,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
@@ -106,24 +107,26 @@ export const ChallengeCardStyles = ({ width, height }) =>
       justifyContent: "space-around",
     },
     requetBtn: {
-      width: getPercent(7, width),
-      height: getPercent(7, width),
+      width: getPercent(4, height),
+      height: getPercent(4, height),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-around",
+      borderRadius:100,
       margin: 5,
     },
     acceptBtn: {
-      width: getPercent(7, width),
-      height: getPercent(7, width),
+      width: getPercent(4, height),
+      height: getPercent(4, height),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-around",
       margin: 5,
+      borderRadius:100,
       backgroundColor: "#6FCF97",
     },
     requetBtnText: {
-      fontSize: rf(12),
+      fontSize: 15,
       fontFamily: "BLP",
       marginRight: 8,
     },
@@ -134,17 +137,17 @@ export const ChallengeCardStyles = ({ width, height }) =>
       borderColor: "#E5E7EB",
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
-      padding: 10,
+      justifyContent: "space-between",
+      paddingHorizontal:getPercent(3,width),
     },
     cardFooterItem: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      marginHorizontal: 10,
+      paddingHorizontal:5
     },
     vsText: {
-      fontSize: rf(28),
+      fontSize: 30,
       color: "#DB2727",
       fontFamily: "BLP",
       alignSelf: "flex-start",
@@ -163,9 +166,10 @@ export const ChallengeCardStyles = ({ width, height }) =>
       justifyContent: "space-between",
       paddingHorizontal: getPercent(3, width),
       backgroundColor: "rgba(219,39,39,0.24)",
+      paddingVertical:5
     },
     votingItemText: {
-      fontSize: rf(11),
+      fontSize: 15,
       fontFamily: "Semibold",
       color: "#000000",
     },
@@ -176,9 +180,11 @@ export const ChallengeCardStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-between",
       paddingHorizontal: getPercent(3, width),
+      paddingVertical:5
+
     },
     votingItemTextOpponent: {
-      fontSize: rf(11),
+      fontSize: 15,
       fontFamily: "Regular",
       color: "#000000",
     },
@@ -223,7 +229,7 @@ export const SenderMessagestyles = ({ width, height }) =>
     container: {
       backgroundColor: "#DB2727",
       maxWidth: "85%",
-      paddingHorizontal: getPercent(2, width),
+      paddingHorizontal: getPercent(3, width),
       paddingVertical: getPercent(1, height),
       minHeight: getPercent(5, height),
       borderRadius: 10,
@@ -232,12 +238,12 @@ export const SenderMessagestyles = ({ width, height }) =>
       marginVertical: getPercent(0.5, height),
     },
     text: {
-      fontSize: rf(13),
+      fontSize: 15,
       fontFamily: "Regular",
       color: "#fff",
     },
     time: {
-      fontSize: rf(9),
+      fontSize: 12,
       fontFamily: "Medium",
       color: "#222",
       textAlign: "right",
@@ -264,15 +270,15 @@ export const RecieverMessagestyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "center",
       alignSelf: "flex-start",
-      marginVertical: getPercent(1, height),
+      marginVertical: getPercent(0.2, height),
     },
     text: {
-      fontSize: rf(13),
+      fontSize: 15,
       fontFamily: "Regular",
       color: "#fff",
     },
     time: {
-      fontSize: rf(9),
+      fontSize: 12,
       fontFamily: "Medium",
       color: "#222",
       textAlign: "left",
@@ -340,7 +346,7 @@ export const TypingComponentstyles = ({ width, height }) =>
       padding: 2,
     },
     input: {
-      fontSize: rf(11),
+      fontSize: 15,
       color: "#222",
       fontFamily: "Regular",
       width: "100%",
@@ -371,13 +377,13 @@ export const FullScreenLoaderStyles = ({ width, height }) =>
       backgroundColor: "#DB2727",
     },
     title: {
-      fontSize: rf(22),
+      fontSize: 25,
       fontFamily: "BLP",
       color: "#fff",
       marginVertical: getPercent(2, height),
     },
     slug: {
-      fontSize: rf(12),
+      fontSize: 15,
       fontFamily: "Regular",
       color: "#fff",
       position: "absolute",
@@ -894,6 +900,7 @@ export const UpdatedVoiceRecorderBottomSheetStyles = ({ width, height }) =>
       color: "#4B4EFC",
     },
     postBtnsWrapper: {
+      flex:1,
       width: "100%",
       flexDirection: "row",
       alignItems: "center",
@@ -905,7 +912,7 @@ export const UpdatedVoiceRecorderBottomSheetStyles = ({ width, height }) =>
 export const SearchBarStyles = ({ width, height }) =>
   StyleSheet.create({
     searchRow: {
-      flex: 0.9,
+      flex: 1,
       flexDirection: "row",
       alignItems: "center",
     },
@@ -941,8 +948,7 @@ export const SideMenuStyles = ({ width, height }) =>
       marginVertical: getPercent(0.5, height),
     },
     listIcon: {
-      width: "7%",
-      height: "100%",
+      width: "8%",
       marginRight: 12,
     },
     profileView: {
@@ -979,15 +985,15 @@ export const ClashCardStyles = ({ width, height }) =>
     contentCardWrapper: {
       width: "87%",
       alignSelf: "flex-end",
-      marginTop: getPercent(1, height),
-      marginBottom: getPercent(2, height),
+      marginVertical: getPercent(1, height),
     },
     hrLine: {
       width: 1,
-      height: "100%",
+      height: "95%",
       backgroundColor: "#E5E7EB",
       position: "absolute",
-      left: "5%",
+      left:'4%',
+      top:'5%'
     },
   });
 
@@ -1002,7 +1008,6 @@ export const PostCardStyles = ({ width, height }) =>
       borderColor: "#F7F8F8",
     },
     content: {
-      paddingHorizontal: getPercent(3, width),
       alignItems: "center",
       justifyContent: "center",
     },
@@ -1024,7 +1029,7 @@ export const BottomMenuStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       width: "100%",
-      height: getPercent(9.5, height),
+      minHeight: getPercent(9.5, height),
       alignItems: "center",
       justifyContent: "center",
       position: "absolute",
@@ -1034,19 +1039,18 @@ export const BottomMenuStyles = ({ width, height }) =>
       borderRadius: 20,
       flexDirection: "row",
       paddingHorizontal: getPercent(2, width),
-      paddingBottom: 5,
+      paddingVertical:5,      
       zIndex: 99999,
       backgroundColor: "#ffffff",
     },
     bottomMenuItem: {
       flex: 1,
-      height: getPercent(5, height),
       alignItems: "center",
       justifyContent: "center",
     },
     itemIconWrapper: {
-      width: getPercent(3, height),
-      height: getPercent(3, height),
+      width: getPercent(3.2, height),
+      height: getPercent(3.2, height),
     },
   });
 
@@ -1107,7 +1111,7 @@ export const StandardHeaderStyles = ({ width, height }) =>
       alignItems: "flex-end",
       justifyContent: "center",
     },
-    title: font(17, "#FFFFFF", "Semibold"),
+    title: font(21, "#FFFFFF", "Semibold"),
   });
 
 //RecordingButton Stylesstarts here
@@ -1121,7 +1125,7 @@ export const RecordingButtonStyles = ({ width, height }) =>
       justifyContent: "center",
     },
     text: {
-      fontSize: rf(13),
+      fontSize: 15,
       fontFamily: "Medium",
       color: "#fff",
     },
@@ -1136,7 +1140,7 @@ export const StandardInputStyles = ({ width, height }) =>
       marginVertical: getPercent(1, height),
     },
     titleText: {
-      fontSize: rf(12),
+      fontSize: 15,
       fontFamily: "Medium",
       color: "#111827",
     },
@@ -1155,14 +1159,14 @@ export const StandardInputStyles = ({ width, height }) =>
     },
     input: {
       flex: 1,
-      fontSize: rf(10),
+      fontSize: 15,
       fontFamily: "Regular",
       color: "#111827",
       justifyContent: "center",
       alignItems: "flex-start",
     },
     inputText: {
-      fontSize: rf(10),
+      fontSize: 15,
       fontFamily: "Regular",
       color: "#111827",
     },
@@ -1201,7 +1205,7 @@ export const StandardInputStyles = ({ width, height }) =>
       flexDirection: "row",
     },
     dropDownItemText: {
-      fontSize: rf(12),
+      fontSize: 15,
       fontFamily: "Medium",
       color: "#111827",
       marginLeft: 10,
@@ -1242,7 +1246,7 @@ export const PinCodeInputStyles = ({ width, height }) =>
     otp_input: {
       width: "100%",
       flex: 1,
-      fontSize: rf(25),
+      fontSize: 28,
       fontFamily: "Medium",
       color: "#222",
       textAlign: "center",
@@ -1277,7 +1281,7 @@ export const CountryCodeFieldStyles = ({ width, height }) =>
       justifyContent: "center",
     },
     codeText: {
-      fontSize: rf(15),
+      fontSize: 18,
       fontFamily: "Regular",
       color: "#000000",
     },
@@ -1285,7 +1289,7 @@ export const CountryCodeFieldStyles = ({ width, height }) =>
       flex: 1,
       padding: 10,
       alignItems: "center",
-      fontSize: rf(14),
+      fontSize: 17,
       fontFamily: "Regular",
       color: "#74737A",
     },
@@ -1310,7 +1314,7 @@ export const loaderStyles = ({ width, height }) =>
 //global fonts Styles starts here
 export const font = (s, c, fm, mv, lh, extras) =>
   StyleSheet.create({
-    fontSize: RFValue(s) - 1,
+    fontSize: s,
     color: c,
     fontFamily: fm,
     marginVertical: mv,

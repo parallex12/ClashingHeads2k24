@@ -26,6 +26,7 @@ import {
 import { get_all_posts_test } from "../../state-management/apiCalls/post";
 import { startLoading } from "../../state-management/features/screen_loader/loaderSlice";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
+import { useSocket } from "../../state-management/apiCalls/SocketContext";
 
 const Home = (props) => {
   let {} = props;
@@ -41,8 +42,6 @@ const Home = (props) => {
   const [reachedEnd, setReachedEnd] = useState(false);
   const dispatch = useDispatch();
   const user = auth().currentUser;
-  // Connect to socket.io server
-  // const socket = connectSocket(1);
 
   useEffect(() => {
     dispatch(startLoading("auth"));
@@ -105,7 +104,7 @@ const Home = (props) => {
     <View style={styles.container}>
       <StandardHeader searchIcon profile logo />
       <View style={styles.header2Wrapper}>
-        <Text style={font(18, "#111827", "Semibold")}>Clashing Heads</Text>
+        <Text style={font(21, "#111827", "Semibold")}>Clashing Heads</Text>
         <StandardButton
           customStyles={styles.header2WrapperBtn}
           onPress={() => props?.navigation.navigate("Notifications")}

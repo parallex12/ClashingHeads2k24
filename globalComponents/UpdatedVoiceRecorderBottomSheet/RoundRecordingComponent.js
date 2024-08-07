@@ -79,13 +79,13 @@ const RoundRecordingComponent = (props) => {
         </CircleComponent>
       </CircleComponent>
       <View style={styles.textWrapper}>
-        <Text style={font(16, `${"#1F2937"}`, "Bold", 5)}>
+        <Text style={font(19, `${"#1F2937"}`, "Bold", 3)}>
           {`${timer % 60} secs`}
         </Text>
-        <Text style={font(13, `${"#9CA3AF"}`, "Regular", 5)}>
+        <Text style={font(15, `${"#9CA3AF"}`, "Regular", 3)}>
           {isRecordingCompleted
             ? "Confirm your opinion and Post"
-            : "Record your max 15-second opinion on this post"}
+            : "Record your max 20-second opinion on this post"}
         </Text>
       </View>
     </View>

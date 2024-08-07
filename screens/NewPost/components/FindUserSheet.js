@@ -84,13 +84,13 @@ const FindUserSheet = (props) => {
         enableContentPanningGesture={false}
       >
         <BottomSheetView style={styles.content}>
-          <Text style={font(15, "#111827", "Regular")}>
+          <Text style={font(18, "#111827", "Regular")}>
             Choose your opponent
           </Text>
           <View style={styles.searchInputWrapper}>
             <AntDesign name="search1" size={RFValue(15)} color="#9CA3AF" />
             <TextInput
-              style={font(12, "#9CA3AF", "Regular", 0, null, {
+              style={font(15, "#9CA3AF", "Regular", 0, null, {
                 marginLeft: 8,
                 flex: 1,
               })}
@@ -124,7 +124,7 @@ const FindUserSheet = (props) => {
             title="Confirm"
             customStyles={{
               width: "50%",
-              marginVertical: 10,
+              paddingVertical: 10,
               alignSelf: "center",
             }}
             onPress={onUserSelect}

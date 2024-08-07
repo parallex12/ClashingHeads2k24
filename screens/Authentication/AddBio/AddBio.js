@@ -77,8 +77,8 @@ const AddBio = (props) => {
         <View style={styles.content}>
           <BackButton />
           <View style={styles.formWrapper}>
-            <Text style={font(20, "#120D26", "Semibold", 3)}>Edit Bio</Text>
-            <Text style={font(12, "#4B5563", "Regular", 7)}>
+            <Text style={font(23, "#120D26", "Semibold", 3)}>Edit Bio</Text>
+            <Text style={font(15, "#4B5563", "Regular", 7)}>
               This will help people understand you better.
             </Text>
             <View style={styles.formWrapper}>

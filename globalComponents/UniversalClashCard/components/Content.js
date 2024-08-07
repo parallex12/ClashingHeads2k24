@@ -12,6 +12,7 @@ import WaveAudioPlayer from "../../WaveAudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 import { memo, useEffect, useState } from "react";
 import { download } from "react-native-compressor";
+import ImageViewer from "../../ImageViewer/ImageViewer";
 
 const PostImage = ({ source, onPress }) => {
   let { width, height } = useWindowDimensions();
@@ -22,10 +23,11 @@ const PostImage = ({ source, onPress }) => {
       onPress={onPress}
       activeOpacity={0.9}
     >
-      <Image
+      <ImageViewer
         source={source}
         resizeMode="cover"
         style={{ width: "100%", height: "100%" }}
+        post_image_hash={null}
       />
     </TouchableOpacity>
   );
@@ -35,16 +37,13 @@ const Content = memo((props) => {
   let { onAudioPlay, sticker, recording, userMention } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
- 
+  
   return (
     <View style={styles.container} activeOpacity={1}>
       {/* <Text style={font(12, "#c5c5c5", "Medium", 10)}>@{userMention}</Text> */}
       {sticker && <PostImage source={sticker?.img} />}
       {recording && (
-        <WaveAudioPlayer
-          afterAudioPlayed={onAudioPlay}
-          source={recording}
-        />
+        <WaveAudioPlayer afterAudioPlayed={onAudioPlay} source={recording} />
       )}
       {sticker && (
         <WaveAudioPlayer

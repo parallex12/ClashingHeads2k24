@@ -45,7 +45,7 @@ const ChallengeCard = (props) => {
       style={[
         styles.clashesCardWrapper,
         {
-          borderTopWidth: divider ? 10 : 0,
+          borderBottomWidth: divider ? 10 : 0,
         },
       ]}
     >
@@ -93,6 +93,7 @@ const ChallengeCard = (props) => {
           </View>
           <Content {...data} desc_limit={2} recording={null} title={null} />
         </View>
+
         <CardFooter
           votes={data?.votes}
           status={data?.status}

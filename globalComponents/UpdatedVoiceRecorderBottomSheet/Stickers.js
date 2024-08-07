@@ -8,8 +8,9 @@ import { StickersStyles } from "../../styles/Global/main";
 import { stickerArr } from "../../utils";
 import { ScrollView } from "react-native";
 import WaveAudioPlayer from "../WaveAudioPlayer";
+import { useState } from "react";
 
-const StickersItem = ({ item, index, onPress }) => {
+const StickersItem = ({ item, index, onPress, selectedSticker }) => {
   let { width, height } = useWindowDimensions();
   let styles = StickersStyles({ width, height });
   return (
@@ -40,10 +41,13 @@ const Stickers = (props) => {
         {stickerArr?.map((item, index) => {
           return (
             <StickersItem
-              onPress={() => setSelectedSticker(index)}
+              onPress={() => {
+                setSelectedSticker(index);
+              }}
               key={index}
               index={index}
               item={item}
+              selectedSticker={selectedSticker}
             />
           );
         })}

@@ -21,7 +21,7 @@ const SearchBar = (props) => {
       <View style={styles.searchInputWrapper}>
         <AntDesign name="search1" size={RFValue(15)} color="#9CA3AF" />
         <TextInput
-          style={font(12, "#9CA3AF", "Regular", 0, null, {
+          style={font(15, "#9CA3AF", "Regular", 0, null, {
             marginLeft: 8,
             flex: 1,
           })}

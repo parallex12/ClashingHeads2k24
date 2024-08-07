@@ -31,7 +31,7 @@ const FlagReportBottomSheet = (props) => {
   const CardHeader = () => {
     return (
       <View style={styles.card_header_wrapper}>
-        <Text style={font(15, "#181725", "Semibold")}>FLAG REPORT</Text>
+        <Text style={font(18, "#181725", "Semibold")}>FLAG REPORT</Text>
         <TouchableOpacity
           onPress={() => {
             bottomSheetRef.current?.close();
@@ -78,18 +78,18 @@ const FlagReportBottomSheet = (props) => {
             <ScrollView>
               <View style={styles.contentContainer}>
                 <Text
-                  style={font(14, "#111827", "Semibold", 8, 22, {
+                  style={font(17, "#111827", "Semibold", 8, 22, {
                     textAlign: "justify",
                   })}
                 >
                   Terms -{" "}
-                  <Text style={font(14, "#111827", "Regular")}>
+                  <Text style={font(17, "#111827", "Regular")}>
                     Do not troll or flag other Clashers with fake flags or
                     simply because you disagree with them or you may be subject
                     to disciplinary action yourself
                   </Text>
                 </Text>
-                <Text style={font(14, "#111827", "Semibold", 8, 22)}>
+                <Text style={font(17, "#111827", "Semibold", 8, 22)}>
                   Fake news or purposeful misinformation will not be tolerated
                 </Text>
                 <View style={styles.categoriesWrapper}>
@@ -126,7 +126,7 @@ const FlagReportBottomSheet = (props) => {
                             style={{ marginRight: 10 }}
                           />
                         )}
-                        <Text style={font(15, "#111827", "Regular")}>
+                        <Text style={font(18, "#111827", "Regular")}>
                           {item?.label}
                         </Text>
                       </TouchableOpacity>

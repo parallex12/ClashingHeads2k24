@@ -15,12 +15,24 @@ import { selectAuthUser } from "../../../state-management/features/auth";
 import { Facebook } from "react-content-loader/native";
 import CacheImage from "../../../globalComponents/CacheImage";
 
-const Profile = ({ source,user }) => {
+const Profile = ({ source, user, isUserMe }) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+  const navigation = useNavigation();
+
+  const onProfilePress = () => {
+    if (isUserMe) {
+      navigation?.navigate("MyProfile");
+    } else {
+      navigation?.navigate("UserProfile", {
+        user,
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.profileWrapper}>
+      <TouchableOpacity style={styles.profileWrapper} onPress={onProfilePress}>
         <CacheImage
           source={source}
           resizeMode="cover"
@@ -43,7 +55,7 @@ const MessageCard = (props) => {
   const currentUser = useSelector(selectAuthUser);
   const currentUserId = currentUser?._id;
   let otherUser = data?.participants?.filter((e) => e?._id != currentUserId)[0];
-
+  let isUserMe = otherUser?._id == currentUser?._id;
   let unRead = unreadMessagesCount[currentUserId];
 
   const onCardPress = () => {
@@ -67,6 +79,7 @@ const MessageCard = (props) => {
             "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
         }}
         user={otherUser}
+        isUserMe={isUserMe}
       />
       <View style={styles.infoWrapper}>
         <Text style={styles.titleName}>{otherUser?.realName}</Text>
@@ -122,8 +135,8 @@ const _styles = ({ width, height }) =>
       flex: 1,
       paddingHorizontal: getPercent(5, width),
     },
-    titleName: font(14, "#111827", "Medium", 5, null, { marginRight: 10 }),
-    slugText: font(12, "#111827", "Regular", 3),
+    titleName: font(17, "#111827", "Medium", 2, null, { marginRight: 10 }),
+    slugText: font(15, "#111827", "Regular", 3),
     rightActions: {
       flex: 0.3,
       height: getPercent(6, height),
@@ -131,17 +144,17 @@ const _styles = ({ width, height }) =>
       justifyContent: "space-between",
       paddingVertical: 1,
     },
-    timeText: font(11, "#6B7280", "Regular", 0),
+    timeText: font(14, "#6B7280", "Regular", 0),
     counterWrapper: {
-      minWidth: getPercent(5, width),
-      minHeight: getPercent(5, width),
+      minWidth: getPercent(6, width),
+      minHeight: getPercent(6, width),
       backgroundColor: "#DB2727",
       borderRadius: 100,
       padding: 4,
       alignItems: "center",
       justifyContent: "center",
     },
-    counterText: font(10, "#FFFFFF", "Medium"),
+    counterText: font(13, "#FFFFFF", "Medium"),
   });
 
 export default MessageCard;

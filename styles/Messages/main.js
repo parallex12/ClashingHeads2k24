@@ -52,11 +52,10 @@ export const styles = ({ width, height }) =>
       flexDirection: "row",
     },
     groupsBtnNumberWrapper: {
-      width: getPercent(5, width),
-      height: getPercent(5, width),
+      width: getPercent(3, height),
+      height: getPercent(3, height),
       backgroundColor: "#111827",
       borderRadius: 100,
-      padding: 5,
       marginLeft: 10,
       alignItems: "center",
       justifyContent: "center",
