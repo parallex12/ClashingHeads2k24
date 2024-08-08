@@ -30,7 +30,8 @@ const Messages = (props) => {
   const currentUserId = currentUser?._id;
   const socket = useSocket();
   const [refreshing, setRefreshing] = useState(false);
-  const { receiveChat } = useChatSocketService();
+  const { receiveChat, listenreadMessages } = useChatSocketService();
+
   const fetchChats = async () => {
     const chats = await get_user_chats(currentUserId);
     setChats(chats);
@@ -39,28 +40,42 @@ const Messages = (props) => {
 
   useEffect(() => {
     if (chats?.length == 0) {
-      fetchChats();
+      // fetchChats();
+      setChats(currentUser?.chats);
     }
-    if (socket) {
-      listenForChange();
-    }
-    return () => {
-      console.log("disconnected")
-      socket.off("screenchats"); // Cleanup listener on unmount
-    };
-  }, [socket, currentUserId]);
+    listenForChange();
+    listenreadMessages((result) => {
+      const { updatedChat } = result;
+      setChats((prevChats) => {
+        // Filter out the old version of the chat if it exists
+        const updatedChats = prevChats.filter(
+          (chat) => chat._id !== updatedChat._id
+        );
+        // Add the updated chat
+        updatedChats.push(updatedChat);
+        // Return the updated chat list
+        return updatedChats;
+      });
+    });
+    // return () => {
+    //   console.log("disconnected");
+    //   socket.off("screenchats"); // Cleanup listener on unmount
+    // };
+  }, [currentUserId]);
 
   const listenForChange = () => {
     receiveChat((message) => {
-      console.log("recieved Screen",message )
+      console.log("recieved Screen", message);
       setChats((prevChats) => {
         const updatedChats = prevChats.map((chat) => {
-          if (chat._id === message.chatId) {
+          if (chat?._id === message?.chatId) {
+            let isUserSender = currentUserId == message?.sender;
             // Increment unread messages count
             const updatedUnreadMessagesCount = {
               ...chat.unreadMessagesCount,
-              [currentUserId]:
-                (chat.unreadMessagesCount[currentUserId] || 0) + 1,
+              [currentUserId]: !isUserSender
+                ? chat.unreadMessagesCount[currentUserId] + 1
+                : chat.unreadMessagesCount[currentUserId],
             };
             return {
               ...chat,

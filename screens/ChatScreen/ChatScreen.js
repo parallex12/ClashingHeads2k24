@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -23,6 +23,7 @@ import {
 } from "../../state-management/apiCalls/chat";
 import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
 import { useSocket } from "../../state-management/apiCalls/SocketContext";
+import { Socket } from "socket.io-client";
 
 const ChatScreen = (props) => {
   const {
@@ -32,6 +33,7 @@ const ChatScreen = (props) => {
     receiveMessage,
     sendMessage,
   } = useChatSocketService();
+  const socket = useSocket();
   const currentUser = useSelector(selectAuthUser);
   const currentUserId = currentUser?._id;
   const route = useRoute();
@@ -46,6 +48,7 @@ const ChatScreen = (props) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [scrollToEndOnUpdate, setScrollToEndOnUpdate] = useState(true);
+  const roomIdRef = useRef(roomId);
 
   // Reference to FlatList for scrolling
   const flatListRef = useRef(null);
@@ -56,7 +59,16 @@ const ChatScreen = (props) => {
       getMessages();
     }
     listenForMessage();
+    listenreadMessages((result) => {
+      let { unreadMessages } = result;
+      setMessages((prevMessages) => {
+        let readMessagesSet = new Set(unreadMessages?.map((i) => i?._id));
 
+        return prevMessages.map((msg) =>
+          readMessagesSet.has(msg._id) ? { ...msg, read: true } : msg
+        );
+      });
+    });
     // Add keyboard event listeners
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
@@ -71,7 +83,7 @@ const ChatScreen = (props) => {
       // Clean up keyboard event listeners
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
-      leaveRoom(roomId);
+      leaveRoom(roomIdRef?.current);
     };
   }, [participants]);
 
@@ -81,6 +93,7 @@ const ChatScreen = (props) => {
         let filterMsgs = prevMessages?.filter((e) => e?._id != message?._id);
         return [message, ...filterMsgs];
       });
+      socket.emit("readMessages", { chatId: _id, userId: currentUserId });
 
       // Scroll to end when new messages arrive if needed
       if (scrollToEndOnUpdate) {
@@ -102,17 +115,13 @@ const ChatScreen = (props) => {
     setScrollToEndOnUpdate(false); // Reset after scrolling
   }, [messages]);
 
-  useEffect(() => {
-    listenreadMessages((resM) => {
-      console.log(resM);
-    });
-  }, []);
-
   const getMessages = async () => {
     let _p = participants?.map((i) => i?._id);
     let _m = await create_get_user_chat({ participants: _p });
+    roomIdRef.current = _m?._id;
     setRoomId(_m?._id);
     joinRoom(_m?._id, currentUserId);
+    socket.emit("readMessages", { chatId: _id, userId: currentUserId });
     setMessages(_m?.messages);
     setLoading(false);
     scrollToEnd();
@@ -174,6 +183,10 @@ const ChatScreen = (props) => {
     }
   };
 
+  const memoizeMessages = useMemo(() => {
+    return messages;
+  }, [messages, listenreadMessages]);
+
   return (
     <View style={styles.container}>
       <Header
@@ -192,7 +205,7 @@ const ChatScreen = (props) => {
           <FlatList
             ref={flatListRef}
             showsVerticalScrollIndicator={false}
-            data={messages}
+            data={memoizeMessages}
             renderItem={({ item }) => {
               let senderId = item?.sender?._id || item?.sender;
               return senderId === currentUserId ? (

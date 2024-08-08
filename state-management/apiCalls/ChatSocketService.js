@@ -5,7 +5,6 @@ export const useChatSocketService = () => {
   const joinRoom = (room, userId) => {
     if (socket) {
       socket.emit("join", { room, userId });
-      socket.emit("readMessages", { chatId: room, userId });
       console.log("Room Joined:", room);
     }
   };

@@ -50,7 +50,7 @@ const MessageCard = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
-  let { messages, unreadMessagesCount, lastMessage, _id } = data;
+  let { messages, unreadMessagesCount, lastMessage, _id } = data || {};
   const [loading, setLoading] = useState(false);
   const currentUser = useSelector(selectAuthUser);
   const currentUserId = currentUser?._id;
