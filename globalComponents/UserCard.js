@@ -31,7 +31,7 @@ const Profile = ({ source, user }) => {
 };
 
 const UserCard = (props) => {
-  let { author, selectable, isSelected, onCardPress } = props;
+  let { author, selectable, isSelected, onCardPress, icon } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
@@ -65,15 +65,21 @@ const UserCard = (props) => {
           {author?.politics + " @" + author?.username}
         </Text>
       </View>
-      {selectable ? (
-        isSelected ? (
-          <Ionicons name="radio-button-on" size={24} color="#DB2727" />
+      {icon ? (
+        selectable ? (
+          isSelected ? (
+            <Ionicons name="radio-button-on" size={24} color="#DB2727" />
+          ) : (
+            <Ionicons
+              name="radio-button-off-outline"
+              size={24}
+              color="#E5E7EB"
+            />
+          )
         ) : (
-          <Ionicons name="radio-button-off-outline" size={24} color="#E5E7EB" />
+          <Entypo name="chevron-right" size={20} color="#7A8085" />
         )
-      ) : (
-        <Entypo name="chevron-right" size={20} color="#7A8085" />
-      )}
+      ) : null}
     </TouchableOpacity>
   );
 };

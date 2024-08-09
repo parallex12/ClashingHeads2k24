@@ -4,6 +4,7 @@ import { RFValue as rf } from "react-native-responsive-fontsize";
 import axios from "axios";
 import auth from "@react-native-firebase/auth";
 import { FontAwesome6, FontAwesome5, Fontisto } from "@expo/vector-icons";
+import { delete_user_chat } from "../state-management/apiCalls/chat";
 
 export const FontsConfig = {
   Light: require("../assets/fonts/SF-Pro-Text-Light.otf"),
@@ -273,7 +274,7 @@ export const generateChatId = (userId1, userId2) => {
 
 export const formatTime = (timestamp) => {
   if (!timestamp) return "sending...";
-  const date = new Date(timestamp); 
+  const date = new Date(timestamp);
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const ampm = hours >= 12 ? "PM" : "AM";
@@ -281,3 +282,31 @@ export const formatTime = (timestamp) => {
   const formattedMinutes = minutes < 10 ? "0" + minutes : minutes; // Add leading zero if minutes < 10
   return `${formattedHours}:${formattedMinutes} ${ampm}`;
 };
+
+export const messageMenuOptions = [
+  {
+    title: "Reply",
+  },
+  {
+    title: "Report",
+  },
+  {
+    title: "Delete",
+  },
+];
+
+export const chatMenuOptions = [
+  {
+    title: "Block",
+  },
+  {
+    title: "Report",
+  },
+  {
+    title: "Delete chat",
+    onPress: async (_id, cb) => {
+      await delete_user_chat(_id);
+      cb();
+    },
+  },
+];

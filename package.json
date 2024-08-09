@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@brnho/react-native-context-menu": "^1.0.4",
     "@config-plugins/react-native-webrtc": "^9.0.0",
     "@gorhom/bottom-sheet": "^4",
     "@react-native-async-storage/async-storage": "1.23.1",
@@ -48,6 +49,7 @@
     "react-native-blurhash": "^2.0.3",
     "react-native-calendars": "^1.1305.0",
     "react-native-compressor": "^1.8.25",
+    "react-native-context-menu-view": "^1.16.0",
     "react-native-country-codes-picker": "^2.3.5",
     "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "~2.16.1",

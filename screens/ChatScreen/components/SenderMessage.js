@@ -5,35 +5,81 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { SenderMessagestyles as _styles } from "../../../styles/Global/main";
-import { formatTime } from "../../../middleware";
+import {
+  formatTime,
+  getPercent,
+  messageMenuOptions,
+} from "../../../middleware";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
+import ImageViewer from "../../../globalComponents/ImageViewer/ImageViewer";
+import { memo } from "react";
+import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
+import ContextMenu from "react-native-context-menu-view";
+
 const SenderMessage = (props) => {
-  let { data } = props;
+  let { data,onMessageItemMenuSelect } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let time = formatTime(data?.createdAt);
+  let { media } = data;
+
+  let expandWidth = { width: getPercent(65, width) };
+
+  let msgBg = {
+    backgroundColor:
+      data?.message?.length > 0 || media?.image ? "#DB2727" : "rgba(0,0,0,0.3)",
+  };
+
+  const onContextMenuSelect = (e) => {
+    const index = e.nativeEvent.index;
+    onMessageItemMenuSelect(index, data?._id);
+  };
+
   return (
-    <>
-      <View style={styles.infoWrapper}>
-        <Text style={styles.time}>{time}</Text>
-        {data?.status == "sending" ? (
-          <MaterialIcons name="timelapse" size={RFValue(12)} color="grey" />
-        ) : data?.status == "delivered" ? (
-          <Ionicons
-            name="checkmark-done"
-            size={RFValue(12)}
-            color={data?.read ? "blue" : "grey"}
-          />
-        ) : (
-          <MaterialIcons name="error" size={RFValue(12)} color="#DB2727" />
-        )}
+    <ContextMenu
+      actions={messageMenuOptions}
+      onPress={onContextMenuSelect}
+      previewBackgroundColor="rgba(0,0,0,0)"
+    >
+      <View style={styles.mainCont}>
+        <View
+          style={[
+            styles.container,
+            msgBg,
+            media?.image || media?.audio ? expandWidth : null,
+          ]}
+        >
+          {media?.image && (
+            <View style={styles.mediaWrapper}>
+              <ImageViewer
+                source={{ uri: media?.image }}
+                style={styles.mediaImg}
+              />
+            </View>
+          )}
+          {media?.audio && <WaveAudioPlayer source={media?.audio} />}
+          {data?.message?.length > 0 && (
+            <Text style={styles.text}>{data?.message}</Text>
+          )}
+        </View>
+        <View style={styles.infoWrapper}>
+          <Text style={styles.time}>{time}</Text>
+          {data?.status == "sending" ? (
+            <MaterialIcons name="timelapse" size={RFValue(12)} color="grey" />
+          ) : data?.status == "delivered" ? (
+            <Ionicons
+              name="checkmark-done"
+              size={RFValue(12)}
+              color={data?.read ? "blue" : "grey"}
+            />
+          ) : (
+            <MaterialIcons name="error" size={RFValue(12)} color="#DB2727" />
+          )}
+        </View>
       </View>
-      <View style={styles.container}>
-        <Text style={styles.text}>{data?.message}</Text>
-      </View>
-    </>
+    </ContextMenu>
   );
 };
 
-export default SenderMessage;
+export default memo(SenderMessage);

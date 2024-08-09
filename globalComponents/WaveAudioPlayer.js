@@ -56,6 +56,7 @@ const WaveAudioPlayer = (props) => {
       unloadAudio();
     };
   }, [localSource, source]);
+  
 
   const loadAudio = async () => {
     try {

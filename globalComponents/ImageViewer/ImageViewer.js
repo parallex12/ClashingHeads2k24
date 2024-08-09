@@ -13,12 +13,12 @@ import CacheImage from "../CacheImage";
 import { useState } from "react";
 
 const ImageViewer = (props) => {
-  let { source, post_image_hash } = props;
+  let { source, post_image_hash, isLocal } = props;
   let { width, height } = useWindowDimensions();
   let styles = ImageViewerStyles({ width, height });
   const [imageLoad, setImageLoad] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
-  
+
   return (
     <>
       <TouchableOpacity
@@ -32,6 +32,7 @@ const ImageViewer = (props) => {
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
             hash={post_image_hash}
+            isLocal={isLocal}
           />
         ) : (
           <Image

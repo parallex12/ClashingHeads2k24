@@ -52,6 +52,11 @@ export const FindFriendsSheetStyles = ({ width, height }) =>
       paddingHorizontal: getPercent(3, width),
       paddingVertical: getPercent(2, height),
     },
+    headerWrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
     searchInputWrapper: {
       height: getPercent(5, height),
       backgroundColor: "#F6F7F8",
@@ -64,6 +69,9 @@ export const FindFriendsSheetStyles = ({ width, height }) =>
     },
     users_wrapper: {
       flex: 0.9,
+    },
+    newGroupBtn: {
+      width: getPercent(30, width),
     },
   });
 

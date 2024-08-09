@@ -8,18 +8,20 @@ import {
 } from "react-native";
 import { styles as _styles } from "../../styles/Messages/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import { getPercent } from "../../middleware";
+import { chatMenuOptions, getPercent } from "../../middleware";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import SearchBar from "../../globalComponents/SearchBar";
 import { RFValue } from "react-native-responsive-fontsize";
 import { font } from "../../styles/Global/main";
 import MessageCard from "./components/MessageCard";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { get_user_chats } from "../../state-management/apiCalls/chat";
 import { useSocket } from "../../state-management/apiCalls/SocketContext";
 import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
+import ContactsSheet from "../../globalComponents/ContactsSheet/ContactsSheet";
+import { useNavigation } from "@react-navigation/native";
 
 const Messages = (props) => {
   let {} = props;
@@ -28,10 +30,10 @@ const Messages = (props) => {
   const [chats, setChats] = useState([]);
   const currentUser = useSelector(selectAuthUser);
   const currentUserId = currentUser?._id;
-  const socket = useSocket();
+  const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const { receiveChat, listenreadMessages } = useChatSocketService();
-
+  const contactsbottomSheetRef = useRef();
   const fetchChats = async () => {
     const chats = await get_user_chats(currentUserId);
     setChats(chats);
@@ -39,8 +41,9 @@ const Messages = (props) => {
   };
 
   useEffect(() => {
-    if (chats?.length == 0) {
-      // fetchChats();
+    if (currentUser?.chats?.length == 0) {
+      fetchChats();
+    } else {
       setChats(currentUser?.chats);
     }
     listenForChange();
@@ -93,7 +96,8 @@ const Messages = (props) => {
 
   const PlusIconButton = () => {
     const onPlusPress = () => {
-      props?.navigation.navigate("Connections", { user: currentUser });
+      contactsbottomSheetRef.current.present();
+      // props?.navigation.navigate("Connections", { user: currentUser });
     };
 
     return (
@@ -101,6 +105,13 @@ const Messages = (props) => {
         <Entypo name="plus" size={20} color="#fff" />
       </TouchableOpacity>
     );
+  };
+
+  const onChatItemMenuSelect = (index, chat_id) => {
+    console.log(index, chat_id);
+    chatMenuOptions[index].onPress(chat_id, () => {
+      onRefresh();
+    });
   };
 
   const onRefresh = () => {
@@ -116,6 +127,17 @@ const Messages = (props) => {
     const unreadCount = chat?.unreadMessagesCount?.[currentUserId] || 0;
     return total + unreadCount;
   }, 0);
+
+  const onConnectUserChat = (user) => {
+    console.log(user)
+    navigation.navigate("ChatScreen", {
+      chat_data: {
+        participants: [currentUser, user],
+        messages: [],
+        _id: null,
+      },
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -149,11 +171,21 @@ const Messages = (props) => {
           </View>
           <View style={styles.messagesWrapper}>
             {memoizedChats?.map((item, index) => {
-              return <MessageCard data={item} key={index} />;
+              return (
+                <MessageCard
+                  onChatItemMenuSelect={onChatItemMenuSelect}
+                  data={item}
+                  key={index}
+                />
+              );
             })}
           </View>
         </View>
       </ScrollView>
+      <ContactsSheet
+        callBackUser={onConnectUserChat}
+        bottomSheetRef={contactsbottomSheetRef}
+      />
     </View>
   );
 };

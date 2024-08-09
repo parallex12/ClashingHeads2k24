@@ -46,7 +46,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <SocketProvider>
-        <StatusBar style="light"/>
+        <StatusBar style="light" />
         <AppNavigator />
       </SocketProvider>
     </Provider>

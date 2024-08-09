@@ -93,7 +93,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       justifyContent: "center",
     },
     actionBtnRow: {
-      flex:1,
+      flex: 1,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
@@ -112,7 +112,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-around",
-      borderRadius:100,
+      borderRadius: 100,
       margin: 5,
     },
     acceptBtn: {
@@ -122,7 +122,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-around",
       margin: 5,
-      borderRadius:100,
+      borderRadius: 100,
       backgroundColor: "#6FCF97",
     },
     requetBtnText: {
@@ -138,13 +138,13 @@ export const ChallengeCardStyles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal:getPercent(3,width),
+      paddingHorizontal: getPercent(3, width),
     },
     cardFooterItem: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal:5
+      paddingHorizontal: 5,
     },
     vsText: {
       fontSize: 30,
@@ -166,7 +166,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       justifyContent: "space-between",
       paddingHorizontal: getPercent(3, width),
       backgroundColor: "rgba(219,39,39,0.24)",
-      paddingVertical:5
+      paddingVertical: 5,
     },
     votingItemText: {
       fontSize: 15,
@@ -180,8 +180,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-between",
       paddingHorizontal: getPercent(3, width),
-      paddingVertical:5
-
+      paddingVertical: 5,
     },
     votingItemTextOpponent: {
       fontSize: 15,
@@ -226,16 +225,17 @@ export const ImageViewerStyles = ({ width, height }) =>
 //SenderMessagestylesstarts here
 export const SenderMessagestyles = ({ width, height }) =>
   StyleSheet.create({
+    mainCont: {
+      marginVertical: getPercent(0.5, height),
+    },
     container: {
-      backgroundColor: "#DB2727",
       maxWidth: "85%",
-      paddingHorizontal: getPercent(3, width),
+      paddingHorizontal: getPercent(2, width),
       paddingVertical: getPercent(1, height),
       minHeight: getPercent(5, height),
       borderRadius: 10,
       justifyContent: "center",
       alignSelf: "flex-end",
-      marginVertical: getPercent(0.5, height),
     },
     text: {
       fontSize: 15,
@@ -254,23 +254,32 @@ export const SenderMessagestyles = ({ width, height }) =>
       alignSelf: "flex-end",
       alignItems: "center",
       justifyContent: "center",
+      marginTop: getPercent(0.5, height),
+    },
+    mediaWrapper: {
+      width: "100%",
+    },
+    mediaImg: {
+      width: "100%",
+      height: "100%",
     },
   });
 
 //RecieverMessagestyles  starts here
 export const RecieverMessagestyles = ({ width, height }) =>
   StyleSheet.create({
+    mainCont: {
+      marginVertical: getPercent(0.5, height),
+    },
     container: {
       maxWidth: "85%",
-      paddingHorizontal: getPercent(4, width),
+      paddingHorizontal: getPercent(2, width),
       paddingVertical: getPercent(1, height),
       minHeight: getPercent(5, height),
       backgroundColor: "#9CA3AF",
       borderRadius: 10,
-      alignItems: "center",
       justifyContent: "center",
       alignSelf: "flex-start",
-      marginVertical: getPercent(0.2, height),
     },
     text: {
       fontSize: 15,
@@ -289,6 +298,12 @@ export const RecieverMessagestyles = ({ width, height }) =>
       alignSelf: "flex-start",
       alignItems: "center",
       justifyContent: "center",
+      marginTop: getPercent(0.5, height),
+    },
+    mediaWrapper: {},
+    mediaImg: {
+      width: "100%",
+      height: "100%",
     },
   });
 
@@ -311,10 +326,49 @@ export const EmptyBoxStyles = ({ width, height }) =>
     },
   });
 
+//TypingComponentExtraViewer Styles starts here
+export const TypingComponentExtraViewerStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      minHeight: getPercent(10, height),
+      borderColor: "#E5E7EB",
+      borderTopWidth: 1,
+      backgroundColor: "#F6F7F8",
+      position: "absolute",
+      paddingHorizontal: getPercent(3, width),
+      paddingVertical: getPercent(1, height),
+      zIndex: 99999,
+      justifyContent:'center',
+      alignItems:'center'
+    },
+    mediaWrapper: {
+      width: "100%",
+    },
+    mediaImg: {
+      width: "100%",
+      height: "100%",
+    },
+    timesBtn: {
+      width: getPercent(4, height),
+      height: getPercent(4, height),
+      backgroundColor: "#DB2727",
+      borderRadius: 200,
+      alignItems: "center",
+      justifyContent: "center",
+      position: "absolute",
+      top: 10,
+      right: 10,
+      zIndex: 99999,
+    },
+  });
 //TypingComponentstyles Styles starts here
 export const TypingComponentstyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
+      position: "relative",
+    },
+    innercontainer: {
       width: "100%",
       alignItems: "center",
       justifyContent: "space-between",
@@ -344,13 +398,24 @@ export const TypingComponentstyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "center",
       padding: 2,
+      flexDirection:'row'
     },
     input: {
+      flex:1,
       fontSize: 15,
       color: "#222",
       fontFamily: "Regular",
-      width: "100%",
       paddingVertical: 6,
+    },
+    recordBtn: {
+      width: getPercent(4, height),
+      height: getPercent(4, height),
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#F3F4F6",
+      padding: 2,
+      marginRight: 10,
     },
   });
 
@@ -900,7 +965,7 @@ export const UpdatedVoiceRecorderBottomSheetStyles = ({ width, height }) =>
       color: "#4B4EFC",
     },
     postBtnsWrapper: {
-      flex:1,
+      flex: 1,
       width: "100%",
       flexDirection: "row",
       alignItems: "center",
@@ -992,8 +1057,8 @@ export const ClashCardStyles = ({ width, height }) =>
       height: "95%",
       backgroundColor: "#E5E7EB",
       position: "absolute",
-      left:'4%',
-      top:'5%'
+      left: "4%",
+      top: "5%",
     },
   });
 
@@ -1039,7 +1104,7 @@ export const BottomMenuStyles = ({ width, height }) =>
       borderRadius: 20,
       flexDirection: "row",
       paddingHorizontal: getPercent(2, width),
-      paddingVertical:5,      
+      paddingVertical: 5,
       zIndex: 99999,
       backgroundColor: "#ffffff",
     },

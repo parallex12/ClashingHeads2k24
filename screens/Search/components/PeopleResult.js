@@ -40,6 +40,7 @@ const PeopleResult = (props) => {
       {users?.map((item, index) => {
         return (
           <UserCard
+            icon
             onCardPress={() => onCardPress(item)}
             author={item}
             key={index}

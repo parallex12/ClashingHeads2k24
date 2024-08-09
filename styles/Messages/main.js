@@ -13,7 +13,6 @@ export const styles = ({ width, height }) =>
       flex: 1,
       paddingTop: getPercent(1, height),
       paddingBottom: getPercent(10, height),
-      paddingHorizontal: getPercent(3.5, width),
     },
     plusIconButton: {
       width: getPercent(6, width),
@@ -27,6 +26,8 @@ export const styles = ({ width, height }) =>
     searchHeader: {
       flexDirection: "row",
       marginVertical: getPercent(1, height),
+      paddingHorizontal: getPercent(3.5, width),
+
     },
     sortIcon: {
       flex: 0.1,
@@ -40,6 +41,7 @@ export const styles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-between",
       marginVertical: getPercent(0.5, height),
+      paddingHorizontal: getPercent(3.5, width),
     },
     groupsBtn: {
       width: getPercent(30, width),

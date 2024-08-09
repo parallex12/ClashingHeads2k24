@@ -21,6 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { update_user_details } from "../../middleware/firebase";
 import { setUserDetails } from "../../state-management/features/auth/authSlice";
+import FindUserSheet from "../../screens/NewPost/components/FindUserSheet";
 
 const categories = [
   {
@@ -36,14 +37,14 @@ const categories = [
   },
   {
     key: "message",
-    label: "Send direct message",
+    label: "Send via message",
     icon: <FontAwesome name="send-o" size={RFValue(13)} color="#6B7280" />,
   },
-  {
-    key: "invite_to_room",
-    label: "Invite user to clash room",
-    icon: <AntDesign name="adduser" size={RFValue(16)} color="#6B7280" />,
-  },
+  // {
+  //   key: "invite_to_room",
+  //   label: "Invite user to clash room",
+  //   icon: <AntDesign name="adduser" size={RFValue(16)} color="#6B7280" />,
+  // },
   {
     key: "add_to_favorites",
     label: "Add to favorites",
@@ -82,8 +83,23 @@ const PostActionsBottomSheet = (props) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const user_details = useSelector(selectAuthUser);
-
   const editList = [
+    {
+      key: "clash",
+      label: "Clash",
+      icon: (
+        <MaterialIcons
+          name="local-fire-department"
+          size={RFValue(16)}
+          color="#DB2727"
+        />
+      ),
+    },
+    {
+      key: "message",
+      label: "Send via message",
+      icon: <FontAwesome name="send-o" size={RFValue(13)} color="#6B7280" />,
+    },
     {
       key: "edit",
       label: "Edit Post",
@@ -99,15 +115,22 @@ const PostActionsBottomSheet = (props) => {
 
   if (!data) return null;
 
-  let options = data?.author == user_details?.id ? editList : categories;
-
+  let options = data?.author?._id == user_details?._id ? editList : categories;
   const actionsBtnPress = (option) => {
     if (option?.key == "clash") {
       navigation?.navigate("ClashDetails", { ...data, openVoiceSheet: true });
     }
 
     if (option?.key == "message") {
-      navigation.navigate("ChatScreen", { userId: data?.author });
+    
+      navigation.navigate("ChatScreen", {
+        chat_data: {
+          participants: [user_details, data?.author],
+          messages: [],
+          _id: null,
+          sharedPost: data,
+        },
+      });
     }
 
     if (option?.key == "invite_to_room") {
@@ -150,14 +173,14 @@ const PostActionsBottomSheet = (props) => {
               <View style={styles.categoriesWrapper}>
                 {options?.map((item, index) => {
                   if (
-                    user_details?.my_favorites?.includes(data?.id) &&
+                    user_details?.my_favorites?.includes(data?._id) &&
                     item?.key == "add_to_favorites"
                   ) {
                     return null;
                   }
 
                   if (
-                    !user_details?.my_favorites?.includes(data?.id) &&
+                    !user_details?.my_favorites?.includes(data?._id) &&
                     item?.key == "remove_from_favorites"
                   ) {
                     return null;
@@ -171,7 +194,7 @@ const PostActionsBottomSheet = (props) => {
                     >
                       {item?.icon}
                       <Text
-                        style={font(14, "#6B7280", "Regular", 0, 0, {
+                        style={font(17, "#6B7280", "Regular", 0, 0, {
                           marginLeft: 8,
                         })}
                       >

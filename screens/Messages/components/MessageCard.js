@@ -6,7 +6,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { formatTime, getPercent } from "../../../middleware";
+import { chatMenuOptions, formatTime, getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { Facebook } from "react-content-loader/native";
 import CacheImage from "../../../globalComponents/CacheImage";
+import ContextMenu from "react-native-context-menu-view";
 
 const Profile = ({ source, user, isUserMe }) => {
   let { width, height } = useWindowDimensions();
@@ -46,7 +47,7 @@ const Profile = ({ source, user, isUserMe }) => {
 };
 
 const MessageCard = (props) => {
-  let { data, onPress } = props;
+  let { data, onChatItemMenuSelect } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
@@ -57,6 +58,7 @@ const MessageCard = (props) => {
   let otherUser = data?.participants?.filter((e) => e?._id != currentUserId)[0];
   let isUserMe = otherUser?._id == currentUser?._id;
   let unRead = unreadMessagesCount[currentUserId];
+  let hasMedia = lastMessage?.media;
 
   const onCardPress = () => {
     navigation.navigate("ChatScreen", { chat_data: data });
@@ -65,39 +67,55 @@ const MessageCard = (props) => {
   if (loading) {
     return <Facebook />;
   }
+  if (!lastMessage) return null;
+
+  const onMessageItemMenuSelect = (e) => {
+    const index = e.nativeEvent.index;
+    onChatItemMenuSelect(index, data?._id);
+  };
 
   return (
-    <TouchableOpacity
-      style={styles.container}
-      activeOpacity={0.6}
-      onPress={onCardPress}
+    <ContextMenu
+      actions={chatMenuOptions}
+      onPress={onMessageItemMenuSelect}
+      previewBackgroundColor="#fff"
     >
-      <Profile
-        source={{
-          uri:
-            otherUser?.profile_photo ||
-            "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
-        }}
-        user={otherUser}
-        isUserMe={isUserMe}
-      />
-      <View style={styles.infoWrapper}>
-        <Text style={styles.titleName}>{otherUser?.realName}</Text>
-        <Text style={styles.slugText} numberOfLines={1}>
-          {lastMessage?.message}
-        </Text>
-      </View>
-      <View style={styles.rightActions}>
-        <Text style={styles.timeText}>
-          {formatTime(lastMessage?.createdAt)}
-        </Text>
-        {unRead > 0 && (
-          <View style={styles.counterWrapper}>
-            <Text style={styles.counterText}>{unRead}</Text>
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.container}
+        activeOpacity={0.6}
+        onPress={onCardPress}
+      >
+        <Profile
+          source={{
+            uri:
+              otherUser?.profile_photo ||
+              "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
+          }}
+          user={otherUser}
+          isUserMe={isUserMe}
+        />
+        <View style={styles.infoWrapper}>
+          <Text style={styles.titleName}>{otherUser?.realName}</Text>
+          <Text style={styles.slugText} numberOfLines={1}>
+            {hasMedia?.image
+              ? "Sent an image."
+              : hasMedia?.audio
+              ? "Sent an audio"
+              : lastMessage?.message}
+          </Text>
+        </View>
+        <View style={styles.rightActions}>
+          <Text style={styles.timeText}>
+            {formatTime(lastMessage?.createdAt)}
+          </Text>
+          {unRead > 0 && (
+            <View style={styles.counterWrapper}>
+              <Text style={styles.counterText}>{unRead}</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    </ContextMenu>
   );
 };
 
@@ -109,6 +127,8 @@ const _styles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-between",
       marginVertical: getPercent(0.6, height),
+      paddingVertical: getPercent(0.6, height),
+      paddingHorizontal: getPercent(2, width),
     },
     profileWrapper: {
       width: getPercent(5.4, height),
@@ -133,7 +153,7 @@ const _styles = ({ width, height }) =>
     },
     infoWrapper: {
       flex: 1,
-      paddingHorizontal: getPercent(5, width),
+      paddingHorizontal: getPercent(2, width),
     },
     titleName: font(17, "#111827", "Medium", 2, null, { marginRight: 10 }),
     slugText: font(15, "#111827", "Regular", 3),

@@ -5,14 +5,16 @@ import shortHash from "shorthash2";
 import { Blurhash } from "react-native-blurhash";
 
 const CacheImage = (props) => {
-  let { source, style, hash } = props;
+  let { source, style, hash, isLocal } = props;
   let { uri } = source;
   const [imageUri, setImageUri] = useState(null);
   const [imageLoad, setImageLoad] = useState(false);
-
+  let imageHash = hash || "LCIM{AIAQ.M{}@E1E4E1-:ofAD-V";
+  
   useEffect(() => {
     const fetchImage = async () => {
       try {
+        if (isLocal) return setImageUri(source);
         setImageLoad(true);
         let hashImg = shortHash(uri);
         const cacheDir = FileSystem.cacheDirectory + "images/";
@@ -49,9 +51,9 @@ const CacheImage = (props) => {
 
   return (
     <>
-      {imageLoad && hash && (
+      {imageLoad && imageHash && (
         <Blurhash
-          blurhash={hash}
+          blurhash={imageHash}
           style={{
             width: "100%",
             height: "100%",

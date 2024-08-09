@@ -24,6 +24,9 @@ import {
 import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
 import { useSocket } from "../../state-management/apiCalls/SocketContext";
 import { Socket } from "socket.io-client";
+import { uploadMedia } from "../../middleware/firebase";
+import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
+import ContextMenu from "react-native-context-menu-view";
 
 const ChatScreen = (props) => {
   const {
@@ -38,7 +41,7 @@ const ChatScreen = (props) => {
   const currentUserId = currentUser?._id;
   const route = useRoute();
   const loaded_chat_data = route.params?.chat_data;
-  let { _id, participants } = loaded_chat_data;
+  let { _id, participants, sharedPost } = loaded_chat_data;
   const otherUserData = participants?.filter((e) => e?._id != currentUserId)[0];
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
@@ -49,9 +52,22 @@ const ChatScreen = (props) => {
   const [hasMore, setHasMore] = useState(true);
   const [scrollToEndOnUpdate, setScrollToEndOnUpdate] = useState(true);
   const roomIdRef = useRef(roomId);
+  const voicebottomSheetRef = useRef(null);
+  const [media, setMedia] = useState({});
+  let sharedPostData = { ...sharedPost };
 
   // Reference to FlatList for scrolling
   const flatListRef = useRef(null);
+
+  useEffect(() => {
+    if (sharedPostData?._id) {
+      let m_data = {
+        newMessage: "",
+        media: { post: sharedPostData?._id },
+      };
+      handleSend(m_data);
+    }
+  }, [sharedPost]);
 
   useEffect(() => {
     setMessages(loaded_chat_data?.messages);
@@ -59,6 +75,12 @@ const ChatScreen = (props) => {
       getMessages();
     }
     listenForMessage();
+    socket.on("deleteMsg", (msgData) => {
+      setMessages((prevMessages) => {
+        let filterMsg = prevMessages?.filter((e) => e?._id != msgData?.msgId);
+        return filterMsg;
+      });
+    });
     listenreadMessages((result) => {
       let { unreadMessages } = result;
       setMessages((prevMessages) => {
@@ -87,6 +109,12 @@ const ChatScreen = (props) => {
     };
   }, [participants]);
 
+  useEffect(() => {
+    if (messages?.filter((e) => e?.read == false)?.length > 0) {
+      socket.emit("readMessages", { chatId: _id, userId: currentUserId });
+    }
+  }, []);
+
   const listenForMessage = () => {
     receiveMessage((message) => {
       setMessages((prevMessages) => {
@@ -94,7 +122,6 @@ const ChatScreen = (props) => {
         return [message, ...filterMsgs];
       });
       socket.emit("readMessages", { chatId: _id, userId: currentUserId });
-
       // Scroll to end when new messages arrive if needed
       if (scrollToEndOnUpdate) {
         scrollToEnd();
@@ -121,21 +148,30 @@ const ChatScreen = (props) => {
     roomIdRef.current = _m?._id;
     setRoomId(_m?._id);
     joinRoom(_m?._id, currentUserId);
-    socket.emit("readMessages", { chatId: _id, userId: currentUserId });
+
     setMessages(_m?.messages);
     setLoading(false);
     scrollToEnd();
   };
 
-  const handleSend = async (message) => {
+  const handleSend = async (messageData) => {
+    let { newMessage, media } = messageData;
     try {
       let message_details = {
         chatId: roomId,
         sender: currentUserId,
-        message,
+        message: newMessage,
+        media,
       };
       let _p = participants?.map((i) => i?._id);
-      // await send_message(message_details);
+      if (media?.image) {
+        let { url } = await uploadMedia(media?.image, "messages/media");
+        message_details["media"]["image"] = url;
+      }
+      if (media?.audio) {
+        let { url } = await uploadMedia(media?.audio, "messages/media");
+        message_details["media"]["audio"] = url;
+      }
       sendMessage(roomId, message_details, _p); // Emit the message via socket
     } catch (e) {
       console.log(e);
@@ -149,15 +185,12 @@ const ChatScreen = (props) => {
       try {
         // Fetch new messages
         let fetchedMessages = await get_messages(roomId, page, 10);
-
         // Create a set of existing message IDs to avoid duplicates
         const existingMessageIds = new Set(messages.map((msg) => msg._id));
-
         // Filter out duplicate messages
         const uniqueFetchedMessages = fetchedMessages.filter(
           (msg) => !existingMessageIds.has(msg._id)
         );
-
         if (uniqueFetchedMessages.length === 0) {
           setHasMore(false);
         } else {
@@ -187,6 +220,17 @@ const ChatScreen = (props) => {
     return messages;
   }, [messages, listenreadMessages]);
 
+  const onMessageItemMenuSelect = (index, msg_id) => {
+    //index 2 means delete message
+    if (index == 2) {
+      console.log(index, msg_id);
+      socket.emit("deleteMsg", { id: msg_id });
+    }
+    // chatMenuOptions[index].onPress(chat_id, () => {
+    //   onRefresh();
+    // });
+  };
+
   return (
     <View style={styles.container}>
       <Header
@@ -195,7 +239,6 @@ const ChatScreen = (props) => {
         containerStyles={{ height: getPercent(15, height) }}
         rightIcon={null}
       />
-
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ImageBackground
           source={require("../../assets/chatbg.jpg")}
@@ -209,14 +252,18 @@ const ChatScreen = (props) => {
             renderItem={({ item }) => {
               let senderId = item?.sender?._id || item?.sender;
               return senderId === currentUserId ? (
-                <SenderMessage data={item} />
+                <SenderMessage
+                  onMessageItemMenuSelect={onMessageItemMenuSelect}
+                  data={item}
+                />
               ) : (
-                <RecieverMessage data={item} />
+                <RecieverMessage
+                  onMessageItemMenuSelect={onMessageItemMenuSelect}
+                  data={item}
+                />
               );
             }}
-            keyExtractor={(item) =>
-              item._id + generateChatId(item._id, Math.random())
-            }
+            keyExtractor={(item) => item._id}
             onEndReached={loadMoreMessages}
             onEndReachedThreshold={0.2}
             onScroll={handleScroll}
@@ -228,8 +275,23 @@ const ChatScreen = (props) => {
             }
           />
         </ImageBackground>
-        <TypingComponent onSend={handleSend} />
+
+        <TypingComponent
+          setMedia={setMedia}
+          media={media}
+          voicebottomSheetRef={voicebottomSheetRef}
+          onSend={handleSend}
+        />
       </KeyboardAvoidingView>
+      <UpdatedVoiceRecorderBottomSheet
+        postId={null}
+        clashTo={null}
+        onPostClash={(d) =>
+          setMedia((prev) => ({ ...prev, audio: d?.recording }))
+        }
+        bottomVoiceSheetRef={voicebottomSheetRef}
+        postBtnTitle="Confirm"
+      />
     </View>
   );
 };
