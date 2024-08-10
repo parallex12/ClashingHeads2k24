@@ -16,9 +16,17 @@ import ImageViewer from "../../../globalComponents/ImageViewer/ImageViewer";
 import { memo } from "react";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import ContextMenu from "react-native-context-menu-view";
+import ReplyCard from "./ReplyCard";
 
 const SenderMessage = (props) => {
-  let { data,onMessageItemMenuSelect } = props;
+  let {
+    data,
+    flatListRef,
+    replyMsgContent,
+    otherUserData,
+    onMessageItemMenuSelect,
+    replyIndex,
+  } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let time = formatTime(data?.createdAt);
@@ -27,13 +35,23 @@ const SenderMessage = (props) => {
   let expandWidth = { width: getPercent(65, width) };
 
   let msgBg = {
-    backgroundColor:
-      data?.message?.length > 0 || media?.image ? "#DB2727" : "rgba(0,0,0,0.3)",
+    backgroundColor: "rgba(0,0,0,0.31)",
   };
 
   const onContextMenuSelect = (e) => {
     const index = e.nativeEvent.index;
-    onMessageItemMenuSelect(index, data?._id);
+    onMessageItemMenuSelect(messageMenuOptions[index], data?._id);
+  };
+
+  const onReplyPress = () => {
+    try {
+      if (replyIndex !== -1) {
+        flatListRef.current.scrollToIndex({ index:replyIndex, animated: true });
+      }
+    } catch (e) {
+      console.log(replyIndex)
+      console.log(e.message);
+    }
   };
 
   return (
@@ -46,7 +64,8 @@ const SenderMessage = (props) => {
         <View
           style={[
             styles.container,
-            msgBg,
+            data?.message?.length > 0 || media?.image ? null : msgBg,
+
             media?.image || media?.audio ? expandWidth : null,
           ]}
         >
@@ -57,6 +76,13 @@ const SenderMessage = (props) => {
                 style={styles.mediaImg}
               />
             </View>
+          )}
+          {media?.reply && (
+            <ReplyCard
+              onPress={onReplyPress}
+              content={replyMsgContent}
+              otherUserData={otherUserData}
+            />
           )}
           {media?.audio && <WaveAudioPlayer source={media?.audio} />}
           {data?.message?.length > 0 && (

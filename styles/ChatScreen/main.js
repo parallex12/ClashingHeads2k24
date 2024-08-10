@@ -14,7 +14,6 @@ export const styles = ({ width, height }) =>
       flex: 1,
       height: getPercent(80, height),
       // paddingTop: getPercent(3, height),
-      paddingHorizontal: getPercent(3.5, width),
     },
   });
 

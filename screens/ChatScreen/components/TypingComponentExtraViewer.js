@@ -13,9 +13,12 @@ import ImageViewer from "../../../globalComponents/ImageViewer/ImageViewer";
 import StandardButton from "../../../globalComponents/StandardButton";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
+import { useSelector } from "react-redux";
+import { selectAuthUser } from "../../../state-management/features/auth";
+import ReplyCard from "./ReplyCard";
 
 const TypingComponentExtraViewer = (props) => {
-  let { data, viewHeight, onDeleteMedia } = props;
+  let { data, otherUserData, msg_content, onDeleteMedia } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const viewerAnime = useRef(new Animated.Value(0)).current;
@@ -51,23 +54,36 @@ const TypingComponentExtraViewer = (props) => {
       style={[styles.container, animationStyles]}
       onLayout={handleLayout}
     >
-      {data?.image && (
-        <View style={styles.mediaWrapper}>
-          <ImageViewer
-            source={{ uri: data?.image }}
-            style={styles.mediaImg}
-            isLocal
-          />
+      {data?.reply && (
+        <View style={styles.innerReplyContainer}>
+          <ReplyCard content={msg_content} otherUserData={otherUserData} />
           <StandardButton
             customStyles={styles.timesBtn}
-            rightIcon={<FontAwesome5 name="times" size={15} color="#fff" />}
-            onPress={()=>onDeleteMedia('image')}
+            rightIcon={<FontAwesome5 name="times" size={14} color="#fff" />}
+            onPress={() => onDeleteMedia("all")}
           />
         </View>
       )}
-      {data?.audio && (
-        <View style={styles.mediaWrapper}>
-          <WaveAudioPlayer source={data?.audio} audioResetBtn audioResetFunc={()=>onDeleteMedia('audio')} />
+      {(data?.image || data?.audio) && (
+        <View style={styles.mediaContainer}>
+          {data?.image && (
+            <View style={styles.mediaWrapper}>
+              <ImageViewer
+                source={{ uri: data?.image }}
+                style={styles.mediaImg}
+                isLocal
+              />
+            </View>
+          )}
+          {data?.audio && (
+            <View style={styles.mediaWrapper}>
+              <WaveAudioPlayer
+                source={data?.audio}
+                audioResetBtn
+                audioResetFunc={() => onDeleteMedia("audio")}
+              />
+            </View>
+          )}
         </View>
       )}
     </Animated.View>

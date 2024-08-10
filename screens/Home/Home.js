@@ -26,7 +26,8 @@ import {
 import { get_all_posts_test } from "../../state-management/apiCalls/post";
 import { startLoading } from "../../state-management/features/screen_loader/loaderSlice";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
-import { useSocket } from "../../state-management/apiCalls/SocketContext";
+import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
+import { add_notification } from "../../state-management/apiCalls/notifications";
 
 const Home = (props) => {
   let {} = props;
@@ -50,6 +51,7 @@ const Home = (props) => {
         let user_id = res?.user?._id || res?._id;
         let user_profile = await get_user_profile(user_id);
         dispatch(setUserDetails(user_profile));
+
         if (res?.goTo) {
           props.navigation.reset({
             index: 0,
@@ -177,6 +179,7 @@ const Home = (props) => {
       <PostActionsBottomSheet
         data={postInteraction}
         bottomSheetRef={postActionsbottomSheetRef}
+        onRefresh={onRefresh}
       />
     </View>
   );

@@ -22,6 +22,7 @@ import { useSocket } from "../../state-management/apiCalls/SocketContext";
 import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
 import ContactsSheet from "../../globalComponents/ContactsSheet/ContactsSheet";
 import { useNavigation } from "@react-navigation/native";
+import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 
 const Messages = (props) => {
   let {} = props;
@@ -34,6 +35,7 @@ const Messages = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const { receiveChat, listenreadMessages } = useChatSocketService();
   const contactsbottomSheetRef = useRef();
+  const bottomFlagSheetRef = useRef();
   const fetchChats = async () => {
     const chats = await get_user_chats(currentUserId);
     setChats(chats);
@@ -107,9 +109,27 @@ const Messages = (props) => {
     );
   };
 
-  const onChatItemMenuSelect = (index, chat_id) => {
-    console.log(index, chat_id);
-    chatMenuOptions[index].onPress(chat_id, () => {
+  const onChatItemMenuSelect = (index, chat_data) => {
+    let funcProps = {
+      _id: chat_data?._id,
+      ref: bottomFlagSheetRef,
+      blockedUsers: chat_data?.blockedUsers,
+    };
+    let b_users = [...chat_data?.blockedUsers];
+    // Check if the other user is already blocked or not
+    const otherUserId = chat_data.otherUser?._id;
+    if (b_users.includes(otherUserId)) {
+      // If the user is already blocked, remove them from the blockedUsers list
+      b_users = b_users.filter((userId) => userId !== otherUserId);
+    } else {
+      // If the user is not blocked, add them to the blockedUsers list
+      b_users.push(otherUserId);
+    }
+    
+    funcProps.blockedUsers = b_users;
+    console.log(funcProps,index)
+
+    chatMenuOptions[index].onPress(funcProps, () => {
       onRefresh();
     });
   };
@@ -117,6 +137,7 @@ const Messages = (props) => {
   const onRefresh = () => {
     setRefreshing(true);
     fetchChats();
+    console.log("refreshing..")
   };
 
   const memoizedChats = useMemo(() => {
@@ -129,7 +150,6 @@ const Messages = (props) => {
   }, 0);
 
   const onConnectUserChat = (user) => {
-    console.log(user)
     navigation.navigate("ChatScreen", {
       chat_data: {
         participants: [currentUser, user],
@@ -182,6 +202,7 @@ const Messages = (props) => {
           </View>
         </View>
       </ScrollView>
+      <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
       <ContactsSheet
         callBackUser={onConnectUserChat}
         bottomSheetRef={contactsbottomSheetRef}

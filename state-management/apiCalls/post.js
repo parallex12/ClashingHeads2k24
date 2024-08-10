@@ -38,6 +38,18 @@ export const update_post_by_id = async (id, post_details) => {
     }
   });
 };
+export const delete_post_by_id = async (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await axios.delete(`/posts/${id}`);
+      const postDoc = result?.data;
+      resolve(postDoc);
+    } catch (error) {
+      console.log("Error deleting post:", error);
+      reject(error);
+    }
+  });
+};
 
 export const create_post = async (post_details) => {
   return new Promise(async (resolve, reject) => {

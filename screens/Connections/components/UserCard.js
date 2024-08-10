@@ -16,6 +16,7 @@ import {
   unfollow_user,
 } from "../../../state-management/apiCalls/userRelation";
 import CacheImage from "../../../globalComponents/CacheImage";
+import ActivityStatus from "../../../globalComponents/ActivityStatus";
 
 const UserCard = (props) => {
   let { user, isDisplayedUserMe, onPress } = props;
@@ -69,6 +70,7 @@ const UserCard = (props) => {
           style={{ width: "100%", height: "100%" }}
           hash={user?.profile_hash}
         />
+        <ActivityStatus user={user} />
       </View>
       <View style={styles.userInfoWrapper}>
         <Text style={font(14, "#111827", "Medium")}>{user?.realName}</Text>

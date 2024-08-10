@@ -22,6 +22,7 @@ import { selectAuthUser } from "../../state-management/features/auth";
 import { update_user_details } from "../../middleware/firebase";
 import { setUserDetails } from "../../state-management/features/auth/authSlice";
 import FindUserSheet from "../../screens/NewPost/components/FindUserSheet";
+import { delete_post_by_id } from "../../state-management/apiCalls/post";
 
 const categories = [
   {
@@ -35,11 +36,11 @@ const categories = [
       />
     ),
   },
-  {
-    key: "message",
-    label: "Send via message",
-    icon: <FontAwesome name="send-o" size={RFValue(13)} color="#6B7280" />,
-  },
+  // {
+  //   key: "message",
+  //   label: "Send via message",
+  //   icon: <FontAwesome name="send-o" size={RFValue(13)} color="#6B7280" />,
+  // },
   // {
   //   key: "invite_to_room",
   //   label: "Invite user to clash room",
@@ -75,11 +76,11 @@ const categories = [
 ];
 
 const PostActionsBottomSheet = (props) => {
-  let { bottomSheetRef, data } = props;
+  let { bottomSheetRef, onRefresh, data } = props;
   let { width, height } = useWindowDimensions();
   let styles = PostActionsBottomSheetStyles({ width, height });
   // variables
-  const snapPoints = useMemo(() => ["25%", "40%"], []);
+  const snapPoints = useMemo(() => ["25%", "30%"], []);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const user_details = useSelector(selectAuthUser);
@@ -95,34 +96,39 @@ const PostActionsBottomSheet = (props) => {
         />
       ),
     },
-    {
-      key: "message",
-      label: "Send via message",
-      icon: <FontAwesome name="send-o" size={RFValue(13)} color="#6B7280" />,
-    },
+    // {
+    //   key: "message",
+    //   label: "Send via message",
+    //   icon: <FontAwesome name="send-o" size={RFValue(13)} color="#6B7280" />,
+    // },
     {
       key: "edit",
       label: "Edit Post",
       icon: <MaterialIcons name="edit" size={RFValue(13)} color="#6B7280" />,
-      onPress: () => navigation.navigate("NewPost"),
+      onPress: () =>
+        navigation.navigate("EditPostDetails", { edit_post: data }),
     },
     {
       key: "delete",
       label: "Remove Post",
       icon: <MaterialIcons name="delete" size={RFValue(13)} color="#6B7280" />,
+      onPress: async (_id, next) => {
+        await delete_post_by_id(_id);
+        next();
+      },
     },
   ];
 
   if (!data) return null;
 
   let options = data?.author?._id == user_details?._id ? editList : categories;
+
   const actionsBtnPress = (option) => {
     if (option?.key == "clash") {
       navigation?.navigate("ClashDetails", { ...data, openVoiceSheet: true });
     }
 
     if (option?.key == "message") {
-    
       navigation.navigate("ChatScreen", {
         chat_data: {
           participants: [user_details, data?.author],
@@ -137,21 +143,13 @@ const PostActionsBottomSheet = (props) => {
       alert("Coming Soon");
     }
 
-    if (option?.key == "add_to_favorites") {
-      let prev = user_details?.my_favorites || [];
-      let updatedAr = [...prev, data?.id];
-      update_user_details(user_details?.id, {
-        my_favorites: updatedAr,
-      });
-      dispatch(setUserDetails({ ...user_details, my_favorites: updatedAr }));
+    if (option?.key == "edit") {
+      option?.onPress();
     }
-
-    if (option?.key == "remove_from_favorites") {
-      let updatedAr = user_details?.my_favorites?.filter((e) => e != data?.id);
-      update_user_details(user_details?.id, {
-        my_favorites: updatedAr,
+    if (option?.key == "delete") {
+      option?.onPress(data?._id, () => {
+        onRefresh();
       });
-      dispatch(setUserDetails({ ...user_details, my_favorites: updatedAr }));
     }
 
     bottomSheetRef.current.close();

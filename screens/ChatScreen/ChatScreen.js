@@ -27,6 +27,7 @@ import { Socket } from "socket.io-client";
 import { uploadMedia } from "../../middleware/firebase";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 import ContextMenu from "react-native-context-menu-view";
+import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 
 const ChatScreen = (props) => {
   const {
@@ -53,20 +54,35 @@ const ChatScreen = (props) => {
   const [scrollToEndOnUpdate, setScrollToEndOnUpdate] = useState(true);
   const roomIdRef = useRef(roomId);
   const voicebottomSheetRef = useRef(null);
+  const bottomFlagSheetRef = useRef(null);
   const [media, setMedia] = useState({});
+  const [chatData, setChatData] = useState();
+  let isChatBlockedForMe = chatData?.blockedUsers?.includes(currentUserId);
+  let isChatBlockedForOtherUser = chatData?.blockedUsers?.includes(
+    otherUserData?._id
+  );
+  const [isChatBlocked, setisChatBlocked] = useState(
+    isChatBlockedForMe || isChatBlockedForOtherUser
+  );
+  let blockedTexts = ["You have blocked this user.", "You have been blocked."];
+  let showBlockedText = isChatBlockedForOtherUser
+    ? blockedTexts[0]
+    : isChatBlockedForMe
+    ? blockedTexts[1]
+    : null;
   let sharedPostData = { ...sharedPost };
 
   // Reference to FlatList for scrolling
   const flatListRef = useRef(null);
 
   useEffect(() => {
-    if (sharedPostData?._id) {
-      let m_data = {
-        newMessage: "",
-        media: { post: sharedPostData?._id },
-      };
-      handleSend(m_data);
-    }
+    // if (sharedPostData?._id) {
+    //   let m_data = {
+    //     newMessage: "",
+    //     media: { post: sharedPostData?._id },
+    //   };
+    //   handleSend(m_data);
+    // }
   }, [sharedPost]);
 
   useEffect(() => {
@@ -75,12 +91,7 @@ const ChatScreen = (props) => {
       getMessages();
     }
     listenForMessage();
-    socket.on("deleteMsg", (msgData) => {
-      setMessages((prevMessages) => {
-        let filterMsg = prevMessages?.filter((e) => e?._id != msgData?.msgId);
-        return filterMsg;
-      });
-    });
+
     listenreadMessages((result) => {
       let { unreadMessages } = result;
       setMessages((prevMessages) => {
@@ -89,6 +100,12 @@ const ChatScreen = (props) => {
         return prevMessages.map((msg) =>
           readMessagesSet.has(msg._id) ? { ...msg, read: true } : msg
         );
+      });
+    });
+    socket.on("deleteMsg", (msgData) => {
+      setMessages((prevMessages) => {
+        let filterMsg = prevMessages?.filter((e) => e?._id != msgData?.msgId);
+        return filterMsg;
       });
     });
     // Add keyboard event listeners
@@ -139,6 +156,7 @@ const ChatScreen = (props) => {
     if (scrollToEndOnUpdate) {
       scrollToEnd();
     }
+    setisChatBlocked(isChatBlockedForMe || isChatBlockedForOtherUser)
     setScrollToEndOnUpdate(false); // Reset after scrolling
   }, [messages]);
 
@@ -148,7 +166,7 @@ const ChatScreen = (props) => {
     roomIdRef.current = _m?._id;
     setRoomId(_m?._id);
     joinRoom(_m?._id, currentUserId);
-
+    setChatData(_m);
     setMessages(_m?.messages);
     setLoading(false);
     scrollToEnd();
@@ -218,17 +236,16 @@ const ChatScreen = (props) => {
 
   const memoizeMessages = useMemo(() => {
     return messages;
-  }, [messages, listenreadMessages]);
+  }, [messages]);
 
-  const onMessageItemMenuSelect = (index, msg_id) => {
-    //index 2 means delete message
-    if (index == 2) {
-      console.log(index, msg_id);
-      socket.emit("deleteMsg", { id: msg_id });
-    }
-    // chatMenuOptions[index].onPress(chat_id, () => {
-    //   onRefresh();
-    // });
+  const onMessageItemMenuSelect = (item, _id) => {
+    let funcProps = {
+      _id,
+      ref: bottomFlagSheetRef,
+      socket,
+      setMedia,
+    };
+    item?.onPress(funcProps, () => null);
   };
 
   return (
@@ -249,17 +266,32 @@ const ChatScreen = (props) => {
             ref={flatListRef}
             showsVerticalScrollIndicator={false}
             data={memoizeMessages}
-            renderItem={({ item }) => {
+            renderItem={({ item, index }) => {
               let senderId = item?.sender?._id || item?.sender;
-              return senderId === currentUserId ? (
+              const replyIndex = messages.findIndex(
+                (e) => e?._id == item?.media?.reply
+              );
+              return senderId == currentUserId ? (
                 <SenderMessage
+                  flatListRef={flatListRef}
+                  replyMsgContent={messages?.find(
+                    (e) => e?._id == item?.media?.reply
+                  )}
                   onMessageItemMenuSelect={onMessageItemMenuSelect}
                   data={item}
+                  otherUserData={otherUserData}
+                  replyIndex={replyIndex}
                 />
               ) : (
                 <RecieverMessage
+                  flatListRef={flatListRef}
                   onMessageItemMenuSelect={onMessageItemMenuSelect}
+                  replyMsgContent={messages?.find(
+                    (e) => e?._id == item?.media?.reply
+                  )}
                   data={item}
+                  otherUserData={otherUserData}
+                  replyIndex={replyIndex}
                 />
               );
             }}
@@ -278,9 +310,13 @@ const ChatScreen = (props) => {
 
         <TypingComponent
           setMedia={setMedia}
+          replyMsgContent={messages?.find((e) => e?._id == media?.reply)}
+          otherUserData={otherUserData}
           media={media}
           voicebottomSheetRef={voicebottomSheetRef}
           onSend={handleSend}
+          showBlockedText={showBlockedText}
+          isChatBlocked={isChatBlocked}
         />
       </KeyboardAvoidingView>
       <UpdatedVoiceRecorderBottomSheet
@@ -292,6 +328,7 @@ const ChatScreen = (props) => {
         bottomVoiceSheetRef={voicebottomSheetRef}
         postBtnTitle="Confirm"
       />
+      <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
     </View>
   );
 };

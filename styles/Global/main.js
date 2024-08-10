@@ -6,7 +6,7 @@ import { getPercent } from "../../middleware";
 export const standardButtonStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      minHeight: getPercent(4, height),
+      minHeight: getPercent(3, height),
       maxHeight: getPercent(9, height),
       backgroundColor: "#DB2727",
       borderRadius: 100,
@@ -226,9 +226,11 @@ export const ImageViewerStyles = ({ width, height }) =>
 export const SenderMessagestyles = ({ width, height }) =>
   StyleSheet.create({
     mainCont: {
-      marginVertical: getPercent(0.5, height),
+      paddingVertical: getPercent(0.5, height),
+      paddingHorizontal: getPercent(3.5, width),
     },
     container: {
+      backgroundColor: "#DB2727",
       maxWidth: "85%",
       paddingHorizontal: getPercent(2, width),
       paddingVertical: getPercent(1, height),
@@ -236,6 +238,9 @@ export const SenderMessagestyles = ({ width, height }) =>
       borderRadius: 10,
       justifyContent: "center",
       alignSelf: "flex-end",
+    },
+    innerReplyContainer: {
+      flex: 1,
     },
     text: {
       fontSize: 15,
@@ -269,7 +274,8 @@ export const SenderMessagestyles = ({ width, height }) =>
 export const RecieverMessagestyles = ({ width, height }) =>
   StyleSheet.create({
     mainCont: {
-      marginVertical: getPercent(0.5, height),
+      paddingVertical: getPercent(0.5, height),
+      paddingHorizontal: getPercent(3.5, width),
     },
     container: {
       maxWidth: "85%",
@@ -331,16 +337,29 @@ export const TypingComponentExtraViewerStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       width: "100%",
-      minHeight: getPercent(10, height),
       borderColor: "#E5E7EB",
       borderTopWidth: 1,
-      backgroundColor: "#F6F7F8",
+      backgroundColor: "#DBDEE3",
       position: "absolute",
-      paddingHorizontal: getPercent(3, width),
-      paddingVertical: getPercent(1, height),
       zIndex: 99999,
-      justifyContent:'center',
-      alignItems:'center'
+      justifyContent: "center",
+      overflow: "hidden",
+    },
+    innerReplyContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      backgroundColor: "#D4D6D9",
+      paddingHorizontal: getPercent(2, width),
+      borderTopLeftRadius: 5,
+      borderTopRightRadius: 5,
+      paddingVertical: 5,
+    },
+    mediaContainer: {
+      flex: 1,
+      width: "100%",
+      paddingVertical: 10,
+      paddingHorizontal: getPercent(2, width),
     },
     mediaWrapper: {
       width: "100%",
@@ -352,14 +371,31 @@ export const TypingComponentExtraViewerStyles = ({ width, height }) =>
     timesBtn: {
       width: getPercent(4, height),
       height: getPercent(4, height),
-      backgroundColor: "#DB2727",
-      borderRadius: 200,
+      backgroundColor: "#111827",
+      borderRadius: 100,
       alignItems: "center",
       justifyContent: "center",
-      position: "absolute",
-      top: 10,
-      right: 10,
       zIndex: 99999,
+    },
+    replyCardWrapper: {
+      borderLeftWidth: 2,
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      borderColor: "#111827",
+      marginBottom: getPercent(0.5, height),
+      paddingHorizontal: 5,
+      paddingVertical: getPercent(0.2, height),
+    },
+    username: {
+      fontSize: 15,
+      color: "#111827",
+      fontFamily: "Semibold",
+    },
+    msg: {
+      fontSize: 13,
+      color: "#111827",
+      fontFamily: "Medium",
+      marginTop: 5,
     },
   });
 //TypingComponentstyles Styles starts here
@@ -398,10 +434,10 @@ export const TypingComponentstyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "center",
       padding: 2,
-      flexDirection:'row'
+      flexDirection: "row",
     },
     input: {
-      flex:1,
+      flex: 1,
       fontSize: 15,
       color: "#222",
       fontFamily: "Regular",
@@ -416,6 +452,13 @@ export const TypingComponentstyles = ({ width, height }) =>
       backgroundColor: "#F3F4F6",
       padding: 2,
       marginRight: 10,
+    },
+    blockText: {
+      fontSize: 16,
+      fontFamily: "Medium",
+      textAlign: "center",
+      width:'100%',
+      color:"#DB2727"
     },
   });
 

@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import CacheImage from "../../CacheImage";
+import ActivityStatus from "../../ActivityStatus";
 
 const Profile = (props) => {
   let { data, source, menu, profile_hash, customStyles } = props;
@@ -47,6 +48,7 @@ const Profile = (props) => {
           <Entypo name="menu" size={getPercent(1.8, height)} color="#DB2727" />
         </View>
       )}
+      <ActivityStatus user={data}/>
     </TouchableOpacity>
   );
 };

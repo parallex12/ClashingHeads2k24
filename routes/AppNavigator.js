@@ -44,6 +44,12 @@ import CalendarScreen from "../screens/Calendar/CalendarScreen";
 import BottomMenu from "../globalComponents/BottomMenu/BottomMenu";
 import { onScreenChange } from "../state-management/features/bottom_menu/bottom_menuSlice";
 import ChatScreen from "../screens/ChatScreen/ChatScreen";
+import EditPostDetails from "../screens/EditPost/EditPostDetails";
+import Terms from "../screens/Authentication/Terms/Terms";
+import PrivacyPolicy from "../screens/Authentication/PrivacyPolicy/PrivacyPolicy";
+import Faqs from "../screens/Authentication/Faqs/Faqs";
+import AboutUs from "../screens/Authentication/AboutUs/AboutUs";
+import ContactUs from "../screens/Authentication/ContactUs/ContactUs";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
@@ -59,6 +65,7 @@ const HomeScreens = () => {
           <Screen name="Signin" component={Signin} />
           <Screen name="Signup" component={Signup} />
           <Screen name="OTPVerification" component={OTPVerification} />
+          <HomeStack.Screen name="Terms" component={Terms} />
         </HomeStack.Group>
       ) : (
         // Auth screens
@@ -79,9 +86,14 @@ const HomeScreens = () => {
           <HomeStack.Screen name="ChallengeClash" component={ChallengeClash} />
           <HomeStack.Screen name="MyProfile" component={MyProfile} />
           <HomeStack.Screen name="UserProfile" component={UserProfile} />
+          <HomeStack.Screen name="privacypolicy" component={PrivacyPolicy} />
+          <HomeStack.Screen name="ContactUs" component={ContactUs} />
+          <HomeStack.Screen name="AboutUs" component={AboutUs} />
+          <HomeStack.Screen name="faqs" component={Faqs} />
           <HomeStack.Screen name="NewPost" component={NewPost} />
           <HomeStack.Screen name="Connections" component={Connections} />
           <HomeStack.Screen name="CalendarScreen" component={CalendarScreen} />
+          <HomeStack.Screen name="Terms" component={Terms} />
           <HomeStack.Screen name="Shop" component={Shop} />
           <HomeStack.Screen name="Invite" component={Invite} />
           <HomeStack.Screen
@@ -90,6 +102,10 @@ const HomeScreens = () => {
           />
           <HomeStack.Screen name="News" component={News} />
           <HomeStack.Screen name="AddPostDetails" component={AddPostDetails} />
+          <HomeStack.Screen
+            name="EditPostDetails"
+            component={EditPostDetails}
+          />
           <HomeStack.Screen
             name="SecuritySettings"
             component={SecuritySettings}

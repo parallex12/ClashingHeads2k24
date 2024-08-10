@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -6,29 +7,23 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { chatMenuOptions, formatTime, getPercent } from "../../../middleware";
-import { font } from "../../../styles/Global/main";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
 import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import { Facebook } from "react-content-loader/native";
-import CacheImage from "../../../globalComponents/CacheImage";
 import ContextMenu from "react-native-context-menu-view";
 
+import { chatMenuOptions, formatTime, getPercent } from "../../../middleware";
+import { font } from "../../../styles/Global/main";
+import { selectAuthUser } from "../../../state-management/features/auth";
+import CacheImage from "../../../globalComponents/CacheImage";
+
 const Profile = ({ source, user, isUserMe }) => {
-  let { width, height } = useWindowDimensions();
-  let styles = _styles({ width, height });
+  const { width, height } = useWindowDimensions();
+  const styles = createProfileStyles({ width, height });
   const navigation = useNavigation();
 
   const onProfilePress = () => {
-    if (isUserMe) {
-      navigation?.navigate("MyProfile");
-    } else {
-      navigation?.navigate("UserProfile", {
-        user,
-      });
-    }
+    navigation.navigate(isUserMe ? "MyProfile" : "UserProfile", { user });
   };
 
   return (
@@ -37,46 +32,66 @@ const Profile = ({ source, user, isUserMe }) => {
         <CacheImage
           source={source}
           resizeMode="cover"
-          style={{ width: "100%", height: "100%" }}
+          style={styles.profileImage}
           hash={user?.profile_hash}
         />
       </TouchableOpacity>
-      {user?.status == "online" && <View style={styles.online}></View>}
+      {user?.status === "online" && <View style={styles.online} />}
     </View>
   );
 };
 
-const MessageCard = (props) => {
-  let { data, onChatItemMenuSelect } = props;
-  let { width, height } = useWindowDimensions();
-  let styles = _styles({ width, height });
+const MessageCard = ({ data, onChatItemMenuSelect }) => {
+  const { width, height } = useWindowDimensions();
+  const styles = createMessageCardStyles({ width, height });
   const navigation = useNavigation();
-  let { messages, unreadMessagesCount, lastMessage, _id } = data || {};
-  const [loading, setLoading] = useState(false);
   const currentUser = useSelector(selectAuthUser);
+  const [loading, setLoading] = useState(false);
+  const { messages, unreadMessagesCount, lastMessage, _id } = data || {};
   const currentUserId = currentUser?._id;
-  let otherUser = data?.participants?.filter((e) => e?._id != currentUserId)[0];
-  let isUserMe = otherUser?._id == currentUser?._id;
-  let unRead = unreadMessagesCount[currentUserId];
-  let hasMedia = lastMessage?.media;
+  const otherUser = data?.participants?.find((e) => e?._id !== currentUserId);
+  const isUserMe = otherUser?._id === currentUserId;
+  const unRead = unreadMessagesCount[currentUserId];
+  const hasMedia = lastMessage?.media;
+  const isChatBlockedForMe = data?.blockedUsers?.includes(currentUserId);
+  const isChatBlockedForOtherUser = data?.blockedUsers?.includes(otherUser?._id);
+  const blockedTexts = [
+    "You have blocked this user.",
+    "You have been blocked.",
+  ];
+  const showBlockedText = isChatBlockedForOtherUser
+    ? blockedTexts[0]
+    : isChatBlockedForMe
+    ? blockedTexts[1]
+    : null;
 
   const onCardPress = () => {
     navigation.navigate("ChatScreen", { chat_data: data });
   };
 
-  if (loading) {
-    return <Facebook />;
-  }
+  if (loading) return <Facebook />;
   if (!lastMessage) return null;
 
   const onMessageItemMenuSelect = (e) => {
     const index = e.nativeEvent.index;
-    onChatItemMenuSelect(index, data?._id);
+    const updatedData = { ...data, otherUser };
+    onChatItemMenuSelect(index, updatedData);
   };
+
+  const computeActions = () => {
+    return chatMenuOptions?.map((e) => {
+      if (e?.title === "Block" || e?.title === "Unblock") {
+        return { ...e, title: isChatBlockedForMe || isChatBlockedForOtherUser ? "Unblock" : "Block" };
+      }
+      return e;
+    });
+  };
+
+  const updatedActions = computeActions();
 
   return (
     <ContextMenu
-      actions={chatMenuOptions}
+      actions={updatedActions}
       onPress={onMessageItemMenuSelect}
       previewBackgroundColor="#fff"
     >
@@ -87,9 +102,7 @@ const MessageCard = (props) => {
       >
         <Profile
           source={{
-            uri:
-              otherUser?.profile_photo ||
-              "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
+            uri: otherUser?.profile_photo || "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
           }}
           user={otherUser}
           isUserMe={isUserMe}
@@ -97,17 +110,11 @@ const MessageCard = (props) => {
         <View style={styles.infoWrapper}>
           <Text style={styles.titleName}>{otherUser?.realName}</Text>
           <Text style={styles.slugText} numberOfLines={1}>
-            {hasMedia?.image
-              ? "Sent an image."
-              : hasMedia?.audio
-              ? "Sent an audio"
-              : lastMessage?.message}
+            {showBlockedText || (hasMedia?.image ? "Sent an image." : hasMedia?.audio ? "Sent an audio" : lastMessage?.message)}
           </Text>
         </View>
         <View style={styles.rightActions}>
-          <Text style={styles.timeText}>
-            {formatTime(lastMessage?.createdAt)}
-          </Text>
+          <Text style={styles.timeText}>{formatTime(lastMessage?.createdAt)}</Text>
           {unRead > 0 && (
             <View style={styles.counterWrapper}>
               <Text style={styles.counterText}>{unRead}</Text>
@@ -119,16 +126,11 @@ const MessageCard = (props) => {
   );
 };
 
-const _styles = ({ width, height }) =>
+const createProfileStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      minHeight: getPercent(6, height),
-      flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-between",
-      marginVertical: getPercent(0.6, height),
-      paddingVertical: getPercent(0.6, height),
-      paddingHorizontal: getPercent(2, width),
+      position: "relative",
     },
     profileWrapper: {
       width: getPercent(5.4, height),
@@ -136,6 +138,10 @@ const _styles = ({ width, height }) =>
       borderRadius: 100,
       overflow: "hidden",
       zIndex: 1,
+    },
+    profileImage: {
+      width: "100%",
+      height: "100%",
     },
     online: {
       width: getPercent(1.5, height),
@@ -150,6 +156,19 @@ const _styles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "center",
       zIndex: 2,
+    },
+  });
+
+const createMessageCardStyles = ({ width, height }) =>
+  StyleSheet.create({
+    container: {
+      minHeight: getPercent(6, height),
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginVertical: getPercent(0.6, height),
+      paddingVertical: getPercent(0.6, height),
+      paddingHorizontal: getPercent(2, width),
     },
     infoWrapper: {
       flex: 1,

@@ -11,6 +11,7 @@ import { getPercent } from "../middleware";
 import { font } from "../styles/Global/main";
 import CacheImage from "./CacheImage";
 import { memo, useState } from "react";
+import ActivityStatus from "./ActivityStatus";
 
 const Profile = ({ source, user }) => {
   let { width, height } = useWindowDimensions();
@@ -25,7 +26,8 @@ const Profile = ({ source, user }) => {
           hash={user?.profile_hash}
         />
       </TouchableOpacity>
-      {user?.status && <View style={styles.online}></View>}
+      <ActivityStatus user={user} />
+
     </View>
   );
 };

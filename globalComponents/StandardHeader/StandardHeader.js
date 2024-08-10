@@ -23,6 +23,7 @@ const StandardHeader = (props) => {
   let styles = StandardHeaderStyles({ width, height });
   const user_profile = useSelector(selectAuthUser);
 
+
   return (
     <ImageBackground
       style={[

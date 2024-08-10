@@ -32,7 +32,7 @@ const Header = (props) => {
         />
         <View style={styles.info}>
           <Text style={styles.title}>{data?.realName}</Text>
-          <Text style={styles.status}>{data?.status || "offline"}</Text>
+          <Text style={styles.status}>@{data?.username}</Text>
         </View>
       </View>
       <View style={styles.col3}>{rightIcon && rightIcon}</View>

@@ -4,7 +4,10 @@ import { RFValue as rf } from "react-native-responsive-fontsize";
 import axios from "axios";
 import auth from "@react-native-firebase/auth";
 import { FontAwesome6, FontAwesome5, Fontisto } from "@expo/vector-icons";
-import { delete_user_chat } from "../state-management/apiCalls/chat";
+import {
+  delete_user_chat,
+  update_user_chat,
+} from "../state-management/apiCalls/chat";
 
 export const FontsConfig = {
   Light: require("../assets/fonts/SF-Pro-Text-Light.otf"),
@@ -193,11 +196,11 @@ export const sideMenuOptions = [
     route: "MyProfile",
     icon: require("../assets/icons/sideMenu/1.png"),
   },
-  {
-    title: "Calendar",
-    route: "CalendarScreen",
-    icon: require("../assets/icons/sideMenu/2.png"),
-  },
+  // {
+  //   title: "Calendar",
+  //   route: "CalendarScreen",
+  //   icon: require("../assets/icons/sideMenu/2.png"),
+  // },
   {
     title: "Notifications",
     route: "Notifications",
@@ -230,27 +233,27 @@ export const sideMenuOptions = [
   },
   {
     title: "Terms & Conditions",
-    route: "",
+    route: "Terms",
     icon: require("../assets/icons/sideMenu/6.png"),
   },
   {
     title: "Privacy Policy",
-    route: "",
+    route: "privacypolicy",
     icon: require("../assets/icons/sideMenu/7.png"),
   },
   {
     title: "FAQs",
-    route: "",
+    route: "faqs",
     icon: require("../assets/icons/sideMenu/8.png"),
   },
   {
     title: "Contact Us",
-    route: "",
+    route: "ContactUs",
     icon: require("../assets/icons/sideMenu/9.png"),
   },
   {
     title: "About",
-    route: "",
+    route: "AboutUs",
     icon: require("../assets/icons/sideMenu/10.png"),
   },
   {
@@ -286,27 +289,52 @@ export const formatTime = (timestamp) => {
 export const messageMenuOptions = [
   {
     title: "Reply",
+    onPress: (props, next) =>
+      props?.setMedia((prev) => ({ ...prev, reply: props?._id })),
   },
   {
     title: "Report",
+    onPress: (props, next) => {
+      props?.ref?.current?.present();
+      next();
+    },
   },
   {
     title: "Delete",
+    onPress: (props, next) => {
+      props?.socket.emit("deleteMsg", { id: props?._id });
+      next();
+    },
   },
 ];
 
 export const chatMenuOptions = [
   {
     title: "Block",
+    onPress: async (props, next) => {
+      await update_user_chat(props?._id, { blockedUsers: props?.blockedUsers });
+      next()
+    },
   },
   {
     title: "Report",
+    onPress: (props) => props?.ref.current.present(),
   },
   {
     title: "Delete chat",
-    onPress: async (_id, cb) => {
-      await delete_user_chat(_id);
-      cb();
+    onPress: async (props, next) => {
+      await delete_user_chat(props?._id);
+      next();
     },
   },
 ];
+
+export const checkUserOnlineStatus = async (status_func) => {
+  try {
+    const isOnline = await status_func();
+    return isOnline;
+  } catch (error) {
+    console.error("Error checking user status:", error);
+    return false; // Return false in case of an error
+  }
+};

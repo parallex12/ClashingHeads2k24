@@ -1,41 +1,52 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
-import { FlatList, TextInput, View, useWindowDimensions } from "react-native";
-import { FindFriendsSheetStyles as _styles } from "../../styles/NewPost/main";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  FlatList,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
+import { FindFriendsSheetStyles as _styles } from "../../../styles/NewPost/main";
 import BottomSheet, {
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import BackDrop from "../../globalComponents/FlagReportBottomSheet/BackDrop";
-import { font } from "../../styles/Global/main";
+import BackDrop from "../../../globalComponents/FlagReportBottomSheet/BackDrop";
+import { font } from "../../../styles/Global/main";
 import { Text } from "react-native";
-import StandardButton from "../../globalComponents/StandardButton";
-import UserCard from "../../globalComponents/UserCard";
+import StandardButton from "../../../globalComponents/StandardButton";
+import UserCard from "../../../globalComponents/UserCard";
 import { AntDesign } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
-import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
-import { search_users } from "../../state-management/apiCalls/search";
+import { search_users } from "../../../state-management/apiCalls/search";
+import { getPercent } from "../../../middleware";
+import { useSelector } from "react-redux";
+import { selectAuthUser } from "../../../state-management/features/auth";
 
-const ContactsSheet = (props) => {
+const FindUserSheet = (props) => {
   let { bottomSheetRef, callBackUser } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const snapPoints = useMemo(() => ["25%", "80%"], []);
+  const snapPoints = useMemo(() => ["25%", "60%"], []);
   const [searched_users, setSearched_users] = useState([]);
-  const [user_friends, setUser_friends] = useState([]);
-  const [searchQuery, setSearchQuery] = useState();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("a");
   const current_user = useSelector(selectAuthUser);
   let { following, followers } = current_user;
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const mergedUsers = mergeAndRemoveDuplicates(following, followers);
-    setUser_friends(mergedUsers);
-    if (searchQuery?.length > 0) {
-      searchUsers(searchQuery);
-    }
+    setSearched_users(mergedUsers);
+    searchUsers(searchQuery);
   }, [searchQuery, following, followers]);
 
   const mergeAndRemoveDuplicates = (arr1, arr2) => {
@@ -46,20 +57,22 @@ const ContactsSheet = (props) => {
     return uniqueUsers;
   };
 
-  const onUserSelect = async (item) => {
-    callBackUser(item);
+  const searchUsers = async (searchQuery) => {
+    let searched_users = await search_users(searchQuery);
+    setSearched_users(searched_users);
+  };
+
+  const onUserSelect = async () => {
+    if (!selectedUser) return alert("Select a opponent");
+    callBackUser(selectedUser);
+    setSelectedUser(null);
+    setSearchQuery("a");
     bottomSheetRef.current.close();
   };
 
-  const searchUsers = async (searchQuery) => {
-    let searched_users = await search_users(searchQuery);
-    let filtered = searched_users?.filter((e) => e?._id != current_user?._id);
-    setUser_friends(filtered);
-  };
-
   const memoizedUsers = useMemo(() => {
-    return user_friends;
-  }, [user_friends]);
+    return searched_users;
+  }, [searched_users]);
 
   return (
     <BottomSheetModalProvider>
@@ -69,16 +82,11 @@ const ContactsSheet = (props) => {
         snapPoints={snapPoints}
         backdropComponent={BackDrop}
         enableContentPanningGesture={false}
-        onChange={(e) => dispatch(onUpdateBottomSheet(e))}
       >
         <BottomSheetView style={styles.content}>
-          <View style={styles.headerWrapper}>
-            <Text style={font(22, "#111827", "Semibold")}>New Chat</Text>
-            <StandardButton
-              title="New Group"
-              customStyles={styles.newGroupBtn}
-            />
-          </View>
+          <Text style={font(18, "#111827", "Regular")}>
+            Choose your opponent
+          </Text>
           <View style={styles.searchInputWrapper}>
             <AntDesign name="search1" size={RFValue(15)} color="#9CA3AF" />
             <TextInput
@@ -95,10 +103,14 @@ const ContactsSheet = (props) => {
             <FlatList
               data={memoizedUsers}
               renderItem={({ item, index }) => {
+                if (item?._id == current_user?._id) return null;
                 return (
                   <UserCard
+                    icon
+                    selectable
+                    isSelected={selectedUser?._id == item?._id}
                     author={item}
-                    onCardPress={() => onUserSelect(item)}
+                    onCardPress={() => setSelectedUser(item)}
                   />
                 );
               }}
@@ -109,10 +121,19 @@ const ContactsSheet = (props) => {
               windowSize={10}
             />
           </View>
+          <StandardButton
+            title="Confirm"
+            customStyles={{
+              width: "50%",
+              paddingVertical: 10,
+              alignSelf: "center",
+            }}
+            onPress={onUserSelect}
+          />
         </BottomSheetView>
       </BottomSheetModal>
     </BottomSheetModalProvider>
   );
 };
 
-export default memo(ContactsSheet);
+export default memo(FindUserSheet);

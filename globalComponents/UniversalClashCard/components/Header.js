@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
 import CacheImage from "../../CacheImage";
+import ActivityStatus from "../../ActivityStatus";
 
 const Profile = ({ source, profileStyles,author,onProfilePress}) => {
   let { width, height } = useWindowDimensions();
@@ -28,7 +29,7 @@ const Profile = ({ source, profileStyles,author,onProfilePress}) => {
           style={{ width: "100%", height: "100%" }}
         />
       </TouchableOpacity>
-      {author?.status && <View style={styles.online}></View>}
+      <ActivityStatus user={author}/>
     </View>
   );
 };

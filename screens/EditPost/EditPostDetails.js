@@ -30,8 +30,9 @@ import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoice
 import WaveAudioPlayer from "../../globalComponents/WaveAudioPlayer";
 import FindUserSheet from "./components/FindUserSheet";
 import ChallengeHeader from "./components/ChallengeHeader";
+import { update_post_by_id } from "../../state-management/apiCalls/post";
 
-const AddPostDetails = (props) => {
+const EditPostDetails = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
@@ -43,42 +44,14 @@ const AddPostDetails = (props) => {
   const friendsbottomSheetRef = useRef(null);
   const voicebottomSheetRef = useRef(null);
   const dispatch = useDispatch();
-  const news_post = useRoute().params?.news_post;
   const edit_post = useRoute().params?.edit_post;
-
-  const [postForm, setPostForm] = useState({
-    recording: null,
-    post_image: null,
-    createdAt: new Date().toISOString(),
-    author: user_profile?._id,
-    privacy: null,
-    post_image_hash: null,
-    postReference: "original",
-    clashType: "post",
-  });
+  const [postForm, setPostForm] = useState();
 
   useEffect(() => {
-    if (news_post) {
-      setPostForm((prev) => {
-        return {
-          ...prev,
-          title: news_post?.title,
-          description: news_post?.description,
-          post_image: news_post?.urlToImage,
-          createdAt: new Date().toISOString(),
-          author: user_profile?._id,
-          newsAuthor: news_post?.author,
-          postReference: "news",
-          newsUrl: news_post?.url,
-          clashType: "news",
-        };
-      });
-    }
-
     if (edit_post) {
       setPostForm(edit_post);
     }
-  }, [news_post]);
+  }, [edit_post]);
 
   useEffect(() => {
     if (postForm?.post_image && !postForm?.post_image_hash) {
@@ -131,7 +104,7 @@ const AddPostDetails = (props) => {
       .then(async (res) => {
         setLoading(true);
         if (res.code == 200) {
-          createPost(postForm)
+          update_post_by_id(edit_post?._id, postForm)
             .then((res) => {
               props?.navigation.navigate("Home");
               setLoading(false);
@@ -172,11 +145,11 @@ const AddPostDetails = (props) => {
       <StandardHeader2
         containerStyles={{ height: getPercent(12, height) }}
         backButton
-        title="Create Clash"
+        title="Edit Clash"
         searchIcon={false}
         rightIcon={
           <StandardButton
-            title="Post"
+            title="Update"
             loading={loading}
             customStyles={{
               width: getPercent(17, width),
@@ -354,4 +327,4 @@ const AddPostDetails = (props) => {
   );
 };
 
-export default AddPostDetails;
+export default EditPostDetails;

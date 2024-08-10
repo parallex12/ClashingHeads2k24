@@ -9,6 +9,7 @@ import {
 import { getPercent } from "../../../middleware";
 import { Entypo } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
+import ActivityStatus from "../../ActivityStatus";
 
 const Profile = (props) => {
   let { source } = props;

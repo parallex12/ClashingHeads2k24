@@ -9,6 +9,17 @@ export const useChatSocketService = () => {
     }
   };
 
+  const checkUserOnlineStatus = (callback) => {
+    try {
+      if (socket) {
+        socket.on("onlineUsers", callback);
+      }
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  };
+
   const leaveRoom = (room) => {
     if (socket) {
       socket.emit("leave", room);
@@ -52,5 +63,6 @@ export const useChatSocketService = () => {
     receiveMessage,
     listenreadMessages,
     receiveChat,
+    checkUserOnlineStatus,
   };
 };

@@ -6,7 +6,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { getPercent } from "../../../middleware";
+import { checkUserOnlineStatus, getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { getTimeElapsed } from "../../../utils";
@@ -14,10 +14,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import CacheImage from "../../CacheImage";
+import ActivityStatus from "../../ActivityStatus";
 
 const Profile = ({ source, profileStyles, user }) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+
   return (
     <View style={[styles.container, { ...profileStyles }]}>
       <View style={styles.profileWrapper}>
@@ -28,7 +30,7 @@ const Profile = ({ source, profileStyles, user }) => {
           hash={user?.profile_hash}
         />
       </View>
-      {user?.status == "online" && <View style={styles.online}></View>}
+      <ActivityStatus user={user} />
     </View>
   );
 };

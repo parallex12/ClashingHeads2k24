@@ -37,7 +37,14 @@ const ClashDetails = (props) => {
   const { _id } = useSelector(selectAuthUser);
 
   useEffect(() => {
-    get_post_by_id(postId)
+    get_post()
+    if (openVoiceSheet) {
+      bottomVoiceSheetRef.current.present();
+    }
+  }, [dispatch, postId, refreshing]);
+
+  const get_post = async () => {
+    await get_post_by_id(postId)
       .then((res) => {
         let views = [...res?.views];
         if (!views?.includes(_id)) {
@@ -51,14 +58,11 @@ const ClashDetails = (props) => {
         console.log(e);
         setRefreshing(false);
       });
-
-    if (openVoiceSheet) {
-      bottomVoiceSheetRef.current.present();
-    }
-  }, [dispatch, postId, refreshing]);
+  };
 
   const onPostClash = async (clashDetails) => {
     await create_clash(clashDetails);
+    get_post()
   };
 
   const onRefresh = () => {
