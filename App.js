@@ -19,10 +19,10 @@ import { SocketProvider } from "./state-management/apiCalls/SocketContext";
 import { StatusBar } from "expo-status-bar";
 
 export default function App() {
-  // axios.defaults.baseURL =
-  //   "https://clashing-heads-server.vercel.app/clashingheads_api";
+  axios.defaults.baseURL =
+    "https://clashing-heads-server.vercel.app/clashingheads_api";
 
-  axios.defaults.baseURL = "http://192.168.100.127:5000/clashingheads_api";
+  // axios.defaults.baseURL = "http://192.168.100.127:5000/clashingheads_api";
 
   const [fontsLoaded] = useFonts(FontsConfig);
   const config = {
