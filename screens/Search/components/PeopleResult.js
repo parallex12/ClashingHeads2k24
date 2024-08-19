@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { memo, useCallback, useEffect, useState } from "react";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
-import { search_users } from "../../../state-management/apiCalls/search";
+import UserApi from "../../../ApisManager/UserApi";
 
 const PeopleResult = (props) => {
   let { searchQuery, onPress } = props;
@@ -14,11 +14,14 @@ const PeopleResult = (props) => {
   const user_details = useSelector(selectAuthUser);
   const navigation = useNavigation();
   const [users, setUsers] = useState([]);
+  const userapi = new UserApi();
 
   useEffect(() => {
     (async () => {
-      let searched_users = await search_users(searchQuery);
-      setUsers(searched_users);
+      let searched_users = await userapi.searchUsers(searchQuery);
+      if (searched_users?.length > 0) {
+        setUsers(searched_users);
+      }
     })();
   }, [searchQuery]);
 

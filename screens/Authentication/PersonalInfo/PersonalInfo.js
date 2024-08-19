@@ -17,17 +17,18 @@ import { validate_user_details } from "../../../middleware/firebase";
 import { Entypo } from "@expo/vector-icons";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
-import { update_user } from "../../../state-management/apiCalls/auth";
+import UserApi from "../../../ApisManager/UserApi";
 
 const PersonalInfo = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const user_profile_details = useSelector(selectAuthUser);
-  const [form, setForm] = useState(user_profile_details || {});
+  const [form, setForm] = useState(user_profile_details);
   const [errorField, setErrorField] = useState({});
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   let userDbId = user_profile_details?._id;
+  const userapi = new UserApi();
 
   const onContinue = async () => {
     try {
@@ -35,7 +36,7 @@ const PersonalInfo = (props) => {
       // Check if the user is under 18
       const today = new Date();
       const birthDate = new Date(form?.dateOfBirth);
-      const age = today.getFullYear() - birthDate.getFullYear();
+      let age = today.getFullYear() - birthDate.getFullYear();
       const monthDifference = today.getMonth() - birthDate.getMonth();
 
       if (
@@ -50,46 +51,35 @@ const PersonalInfo = (props) => {
         setLoading(false);
         return;
       }
-      validate_user_details(form, user_profile_details)
-        .then((res) => {
-          setErrorField(null);
-          let user_details = {
-            ...form,
-            hasPersonalInfo: true,
-          };
-          delete user_details["_id"];
-          user_details["dateOfBirth"] = new Date(
-            user_details?.dateOfBirth
-          ).toISOString();
-
-          update_user(userDbId, user_details)
-            .then((res) => {
-              if (res) {
-                dispatch(setUserDetails(res));
-                if (!res?.hasVoiceAdded) {
-                  props?.navigation?.navigate("VoiceRecording");
-                } else {
-                  props?.navigation?.navigate("Home");
-                }
-              }
-              setLoading(false);
-            })
-            .catch((e) => {
-              setLoading(false);
-              console.log(e);
-              alert("Something went wrong try again!");
-            });
-        })
-        .catch((e) => {
-          console.log(e);
-          setLoading(false);
-          if (e?.field) {
-            setErrorField(e?.field);
-            alert(e?.msg);
-            return;
-          }
-          alert("Something went wrong try again!");
-        });
+      let isValidated = await validate_user_details(form, user_profile_details);
+      if (isValidated?.code != 200) {
+        setLoading(false);
+        if (isValidated.field) {
+          setErrorField(isValidated.field);
+          alert(isValidated.msg);
+          return;
+        }
+        alert("Something went wrong try again!");
+      }
+      let user_details = {
+        ...form,
+        hasPersonalInfo: true,
+      };
+      delete user_details["_id"];
+      user_details["dateOfBirth"] = new Date(
+        user_details?.dateOfBirth
+      ).toISOString();
+      const result = await userapi.updateUserProfile(userDbId, user_details);
+      let user = result?.user;
+      if (user) {
+        dispatch(setUserDetails(user));
+        if (!user?.hasVoiceAdded) {
+          props?.navigation?.navigate("VoiceRecording");
+          return;
+        }
+        props?.navigation?.navigate("Home");
+      }
+      setLoading(false);
     } catch (e) {
       setLoading(false);
       console.log(e);

@@ -6,34 +6,38 @@ import PostCard from "../../globalComponents/PostCard/PostCard";
 import { useEffect, useRef, useState } from "react";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { getPercent } from "../../middleware";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
+import { useDispatch } from "react-redux";
 import { setUserDetails } from "../../state-management/features/auth/authSlice";
 import ContentLoader, { Instagram } from "react-content-loader/native";
-import { get_user_profile } from "../../state-management/apiCalls/auth";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
+import UserApi from "../../ApisManager/UserApi";
+import { RefreshControl } from "react-native-gesture-handler";
+import PostApi from "../../ApisManager/PostApi";
 
 const MyProfile = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const { _id, posts } = useSelector(selectAuthUser);
-  let userID = _id;
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const bottomFlagSheetRef = useRef();
   const dispatch = useDispatch();
+  const userapi = new UserApi();
+  const postApi = new PostApi();
 
   useEffect(() => {
-    if (userID) {
-      get_user_profile(userID)
-        .then((res) => {
-          dispatch(setUserDetails(res));
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
-  }, [userID]);
+    (async () => {
+      const result = await userapi.getUserProfile();
+      const postsRes = await postApi.getUsersPosts(result?.user?._id);
+      dispatch(setUserDetails(result?.user || {}));
+      setPosts(postsRes?.posts);
+      setLoading(false);
+    })();
+  }, [loading]);
+
+  const onRefresh = () => {
+    setLoading(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -42,7 +46,12 @@ const MyProfile = (props) => {
         backButton
         containerStyles={{ height: getPercent(15, height) }}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.content}>
           {loading ? (
             <View style={styles.ContentLoader}>

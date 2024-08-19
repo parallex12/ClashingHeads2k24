@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Animated,
-  Easing,
   Image,
   KeyboardAvoidingView,
   ScrollView,
@@ -18,12 +16,11 @@ import CircleComponent from "./components/CircleComponent";
 import RecordingButton from "../../../globalComponents/RecordingButton";
 import RecordingPlayer from "../../../globalComponents/RecordingPlayer";
 import { uploadMedia } from "../../../middleware/firebase";
-
 import { selectAuthUser } from "../../../state-management/features/auth";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Audio } from "react-native-compressor";
-import { update_user } from "../../../state-management/apiCalls/auth";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
+import UserApi from "../../../ApisManager/UserApi";
 
 const VoiceRecording = (props) => {
   let { route } = props;
@@ -47,6 +44,7 @@ const VoiceRecording = (props) => {
   const user = useSelector(selectAuthUser);
   let recordingLimit = 15;
   const dispatch = useDispatch();
+  const userapi = new UserApi();
 
   const startRecording = async () => {
     try {
@@ -99,26 +97,20 @@ const VoiceRecording = (props) => {
         clearInterval(timerRef.current);
         const result = await Audio.compress(recording, { quality: "low" });
         await uploadMedia(result, "profileRecordings")
-          .then((res) => {
+          .then(async (res) => {
             if (res.url) {
               let data = { hasVoiceAdded: true, about_voice: res?.url };
-              update_user(user?._id, data)
-                .then((res) => {
-                  if (res) {
-                    dispatch(setUserDetails(res));
-                    if (!res?.hasProfilePhoto) {
-                      props?.navigation?.navigate("ProfilePhoto");
-                    } else {
-                      props?.navigation?.navigate("Home");
-                    }
-                  }
-                  setLoading(false);
-                })
-                .catch((e) => {
-                  console.log(e);
-                  setLoading(false);
-                  alert("Something went wrong. Try again.");
-                });
+              const result = await userapi.updateUserProfile(user?._id, data);
+              let user = result?.user;
+              if (user) {
+                dispatch(setUserDetails(user));
+                if (!user?.hasProfilePhoto) {
+                  props?.navigation?.navigate("ProfilePhoto");
+                  return;
+                }
+                props?.navigation?.navigate("Home");
+              }
+              setLoading(false);
             }
           })
           .catch((e) => {
@@ -142,10 +134,10 @@ const VoiceRecording = (props) => {
         <View style={styles.content}>
           <BackButton color="#ffffff" />
           <View style={styles.formWrapper}>
-            <Text style={font(20, "#ffffff", "Semibold", 3)}>
+            <Text style={font(25, "#ffffff", "Semibold", 3)}>
               Tell us about yourself
             </Text>
-            <Text style={font(12, "#ffffff", "Regular", 7)}>
+            <Text style={font(16, "#ffffff", "Regular", 7)}>
               Record in your real voice about yourself
             </Text>
             <View style={styles.recorderWrapper}>
@@ -180,12 +172,12 @@ const VoiceRecording = (props) => {
                 </CircleComponent>
               </CircleComponent>
               <View style={styles.textWrapper}>
-                <Text style={font(20, "#ffffff", "Bold", 20)}>
+                <Text style={font(25, "#ffffff", "Bold", 20)}>
                   {`${Math.floor(timer / 60)}:${timer % 60 < 10 ? "0" : ""}${
                     timer % 60
                   }`}
                 </Text>
-                <Text style={font(14, "#ffffff", "Regular", 0)}>
+                <Text style={font(17, "#ffffff", "Regular", 0)}>
                   {recording
                     ? "Confirm your opinion and Post"
                     : "Record your max 15-second opinion on this post"}
@@ -197,8 +189,11 @@ const VoiceRecording = (props) => {
             <StandardButton
               title="Reset"
               customStyles={{
-                width: getPercent(30, width),
-                backgroundColor: "#fff",
+                width: getPercent(50, width),
+                height: getPercent(6, height),
+                backgroundColor: isRecording
+                  ? "rgba(255,255,255,0.3)"
+                  : "rgba(255,255,255,1)",
                 alignSelf: "center",
               }}
               textStyles={{

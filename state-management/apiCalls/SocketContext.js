@@ -6,7 +6,7 @@ import { AppState } from "react-native";
 
 const SocketContext = createContext();
 
-const SOCKET_URL = "http://192.168.100.127:5000";
+const SOCKET_URL = "https://clashing-heads-server.vercel.app";
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
@@ -14,11 +14,17 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     const socketInstance = io(SOCKET_URL, {
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionAttempts:5,
+
     });
 
     socketInstance.on("connect", () => {
       console.log("Connected to socket server:", socketInstance.id);
+    });
+    socketInstance.on("connect-error", () => {
+      console.log("connect-error to socket server:", socketInstance.id);
     });
 
     socketInstance.on("disconnect", () => {

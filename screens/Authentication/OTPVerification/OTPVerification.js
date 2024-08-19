@@ -3,12 +3,19 @@ import { useDispatch } from "react-redux";
 import { styles as _styles } from "../../../styles/OTPVerification/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
-import { getPercent } from "../../../middleware";
+import {
+  getPercent,
+  saveTokenToStorage,
+  setAuthToken,
+} from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
 import PinCodeInput from "../../../globalComponents/PinCodeInput";
 import { loginSuccess } from "../../../state-management/features/auth/authSlice";
 import auth from "@react-native-firebase/auth";
+import AuthenticationApi from "../../../ApisManager/AuthenticationApi";
+import { StatusBar } from "expo-status-bar";
+import { useAuth } from "../../../ContextProviders/AuthProvider";
 
 const OTPVerification = (props) => {
   let {} = props;
@@ -17,55 +24,33 @@ const OTPVerification = (props) => {
   let { phone } = props?.route?.params;
   const [otpCode, setOtpCode] = useState(null);
   const dispatch = useDispatch();
-  const [confirm, setConfirm] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  async function signInWithPhoneNumber(phoneNumber) {
-    await auth()
-      .signInWithPhoneNumber(phoneNumber)
-      .then((res) => {
-        setConfirm(res);
-        setLoading(false);
-      })
-      .catch((e) => {
-        console.log(e);
-        setLoading(false);
-        alert("Something went wrong try again!");
-        props?.navigation.goBack();
-      });
-  }
-
-  useEffect(() => {
-    if (!phone) return;
-    signInWithPhoneNumber(phone);
-  }, []);
+  const AuthApi = new AuthenticationApi();
+  const { login } = useAuth();
 
   const onContinue = async () => {
-    if (!confirm) return;
     try {
       if (otpCode?.length != 6) return alert("Invalid OTP.");
       setLoading(true);
-      await confirm
-        .confirm(otpCode)
-        .then(async (res) => {
-          dispatch(loginSuccess());
-          setLoading(false);
-        })
-        .catch((e) => {
-          console.log("e", e);
-          setLoading(false);
-          alert("Something went wrong try again!");
-        });
+      await AuthApi.verifyOtp(phone, otpCode).then(async (res) => {
+        if (res.err) throw new Error(res.err);
+        if (!res.token) throw new Error("No token");
+        dispatch(loginSuccess());
+        setLoading(false);
+        setAuthToken(res.token);
+        await saveTokenToStorage(res.token);
+        login()
+      });
     } catch (error) {
       console.log(error);
       setLoading(false);
-      console.log("Invalid code.");
-      alert("Something went wrong try again!");
+      alert(error);
     }
   };
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" />
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"

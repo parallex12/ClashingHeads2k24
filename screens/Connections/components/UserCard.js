@@ -10,13 +10,10 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
-import { useEffect, useState } from "react";
-import {
-  follow_user,
-  unfollow_user,
-} from "../../../state-management/apiCalls/userRelation";
 import CacheImage from "../../../globalComponents/CacheImage";
 import ActivityStatus from "../../../globalComponents/ActivityStatus";
+import UserApi from "../../../ApisManager/UserApi";
+import { useEffect, useState } from "react";
 
 const UserCard = (props) => {
   let { user, isDisplayedUserMe, onPress } = props;
@@ -28,6 +25,7 @@ const UserCard = (props) => {
   const [isCurrentUserFollower, setIsCurrentUserFollower] = useState();
   const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState();
   let { followers, following, _id } = user;
+  const userapi = new UserApi();
 
   useEffect(() => {
     setIsCurrentUserFollower(followers?.includes(current_user?._id));
@@ -44,22 +42,23 @@ const UserCard = (props) => {
     );
   }, [isCurrentUserFollowing, isCurrentUserFollower]);
 
-  const onFollow = () => {
+  const onFollow = async () => {
     if (!current_user || !user) return;
     if (
       currentFollowButtonState == "Follow" ||
       currentFollowButtonState == "Follow back"
     ) {
       setIsCurrentUserFollower(current_user);
-      follow_user(current_user?._id, _id);
+      await userapi.followUser(current_user?._id, _id);
       return;
     }
 
     if (currentFollowButtonState == "Following") {
       setIsCurrentUserFollower(null);
-      unfollow_user(current_user?._id, _id);
+      await userapi.unfollowUser(current_user?._id, _id);
     }
   };
+  console.log(current_user?._id,user)
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>

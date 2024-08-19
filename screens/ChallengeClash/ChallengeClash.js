@@ -8,14 +8,11 @@ import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 import { font } from "../../styles/Global/main";
 import { Instagram } from "react-content-loader/native";
-import {
-  get_post_by_id,
-  update_post_by_id,
-} from "../../state-management/apiCalls/post";
 import { selectAuthUser } from "../../state-management/features/auth";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
-import { create_clash } from "../../state-management/apiCalls/clash";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
+import PostApi from "../../ApisManager/PostApi";
+import ClashApi from "../../ApisManager/ClashApi";
 
 const SubClashes = React.memo(
   ({
@@ -67,6 +64,8 @@ const ChallengeClash = (props) => {
   let { _id } = currentUser;
   let postId = prevData?._id;
   let openVoiceSheet = props?.route?.params?.openVoiceSheet;
+  const postApi = new PostApi();
+  const clashApi = new ClashApi();
 
   const createdAtDate = useMemo(
     () => new Date(prevData?.createdAt).toDateString(),
@@ -74,25 +73,34 @@ const ChallengeClash = (props) => {
   );
 
   useEffect(() => {
-    get_post_by_id(postId)
-      .then((res) => {
-        let views = [...res?.views];
-        if (!views?.includes(_id)) {
-          views.push(_id);
-          update_post_by_id(postId, { views });
-        }
-        setPostData(res);
-      })
-      .catch((e) => console.log(e));
-
+    get_post();
     if (openVoiceSheet) {
       bottomVoiceSheetRef.current.present();
     }
-  }, [dispatch, postId]);
+  }, [dispatch, postId, refreshing]);
+
+  const get_post = async () => {
+    try {
+      let result = await postApi.getPostById(postId);
+      let clashesResult = await clashApi.getClashesByPostId(postId);
+      let views = [...result?.post?.views];
+      setRefreshing(false);
+      if (!views?.includes(_id)) {
+        views?.push(_id);
+        result = await postApi.updatePostById(postId, { views });
+      }
+      setPostData({ ...result?.post, clashes: clashesResult?.clashes });
+    } catch (e) {
+      console.log(e);
+      setRefreshing(false);
+    }
+  };
 
   const onPostClash = async (clashDetails) => {
-    await create_clash(clashDetails);
+    await clashApi.createClash(clashDetails);
+    get_post();
   };
+
 
   return (
     <View style={styles.container}>

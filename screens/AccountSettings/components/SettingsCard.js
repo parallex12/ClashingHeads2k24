@@ -11,7 +11,7 @@ import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
 const SettingsCard = (props) => {
-  let { data } = props;
+  let { data, onPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
@@ -19,20 +19,22 @@ const SettingsCard = (props) => {
   const onItemPress = () => {
     if (data?.route) {
       navigation?.navigate(data?.route);
-      return
+      return;
     }
-    alert("Coming Soon!")
+    onPress();
   };
 
   return (
     <TouchableOpacity style={styles.container} onPress={onItemPress}>
-      <View style={styles.iconWrapper}>
-        <Image
-          source={data?.icon}
-          resizeMode="contain"
-          style={{ width: "80%", height: "80%" }}
-        />
-      </View>
+      {data?.icon && (
+        <View style={styles.iconWrapper}>
+          <Image
+            source={data?.icon}
+            resizeMode="contain"
+            style={{ width: "80%", height: "80%" }}
+          />
+        </View>
+      )}
       <Text style={styles.title}>{data?.label}</Text>
       <View style={styles.rightChevronBtn}>
         <Entypo name="chevron-right" size={20} color="#6B7280" />

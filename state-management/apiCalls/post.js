@@ -1,4 +1,5 @@
 import axios from "axios";
+import PostApi from "../../ApisManager/PostApi";
 
 export const get_post_by_id = async (id) => {
   return new Promise(async (resolve, reject) => {
@@ -16,8 +17,10 @@ export const get_post_by_id = async (id) => {
 export const get_all_posts_test = async () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await axios.get(`/posts/all`);
+      const api=new PostApi()
+      const result = await api.getAllPost()
       const postDoc = result?.data;
+      console.log(postDoc)
       resolve(postDoc);
     } catch (error) {
       console.log("Error getting post:", error);

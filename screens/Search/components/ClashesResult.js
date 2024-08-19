@@ -3,9 +3,9 @@ import { ClashesResultStyles as _styles } from "../../../styles/Search/main";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
 import { memo, useEffect, useState } from "react";
-import { search_clashes } from "../../../state-management/apiCalls/search";
 import { useNavigation } from "@react-navigation/native";
 import ChallengeCard from "../../../globalComponents/ChallengeCard/ChallengeCard";
+import PostApi from "../../../ApisManager/PostApi";
 
 const ClashesResult = (props) => {
   let { searchQuery } = props;
@@ -13,10 +13,11 @@ const ClashesResult = (props) => {
   let styles = _styles({ width, height });
   const [clashes, setClashes] = useState([]);
   const navigation = useNavigation();
+  const postapi = new PostApi();
 
   useEffect(() => {
     (async () => {
-      let searched_clashes = await search_clashes(searchQuery);
+      let searched_clashes = await postapi.searchChallenges(searchQuery);
       setClashes(searched_clashes);
     })();
   }, [searchQuery]);

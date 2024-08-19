@@ -8,7 +8,7 @@ import ActionMenu from "./components/ActionMenu";
 import { stickerArr } from "../../utils";
 import { Instagram } from "react-content-loader/native";
 import { selectAuthUser } from "../../state-management/features/auth";
-import { update_clash_by_id } from "../../state-management/apiCalls/clash";
+import ClashApi from "../../ApisManager/ClashApi";
 
 const ClashCard = (props) => {
   let { data, onPostClashesPress, challengeClash, hrLine, onReportPress } =
@@ -18,6 +18,7 @@ const ClashCard = (props) => {
   const { _id } = useSelector(selectAuthUser);
   const [singleUser, setAuthor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const clashApi = new ClashApi();
 
   let localmedia =
     data?.clashType == "sticker" ? stickerArr[data?.selectedSticker] : null;
@@ -40,7 +41,7 @@ const ClashCard = (props) => {
       dislikes.push(_id);
     }
 
-    await update_clash_by_id(data?._id, {
+    await clashApi.updateClashById(data?._id, {
       likes,
       dislikes,
     });
@@ -50,7 +51,7 @@ const ClashCard = (props) => {
     let audio_views = [...data?.listened];
     if (audio_views?.includes(_id)) return;
     audio_views.push(_id);
-    await update_clash_by_id(data?._id, { listened: audio_views });
+    await clashApi.updateClashById(data?._id, { listened: audio_views });
   };
 
   let userMention =

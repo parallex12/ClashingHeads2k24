@@ -14,7 +14,6 @@ import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import RoomCard from "./components/RoomCard";
-import { get_all_challenges } from "../../state-management/apiCalls/challengeClash";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 
 const Clashes = (props) => {
@@ -32,7 +31,7 @@ const Clashes = (props) => {
   }, [page]);
 
   const getChallenges = async () => {
-    let all_ch = await get_all_challenges(page);
+    let all_ch = []
     setClashes(all_ch?.challenges);
     setRefreshing(false);
   };

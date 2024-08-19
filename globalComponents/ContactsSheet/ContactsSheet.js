@@ -16,7 +16,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
-import { search_users } from "../../state-management/apiCalls/search";
+import UserApi from "../../ApisManager/UserApi";
 
 const ContactsSheet = (props) => {
   let { bottomSheetRef, callBackUser } = props;
@@ -29,6 +29,7 @@ const ContactsSheet = (props) => {
   const current_user = useSelector(selectAuthUser);
   let { following, followers } = current_user;
   const dispatch = useDispatch();
+  const userApi = new UserApi();
 
   useEffect(() => {
     const mergedUsers = mergeAndRemoveDuplicates(following, followers);
@@ -52,7 +53,7 @@ const ContactsSheet = (props) => {
   };
 
   const searchUsers = async (searchQuery) => {
-    let searched_users = await search_users(searchQuery);
+    let searched_users = await userApi.searchUsers(searchQuery);
     let filtered = searched_users?.filter((e) => e?._id != current_user?._id);
     setUser_friends(filtered);
   };

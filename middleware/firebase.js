@@ -175,11 +175,11 @@ export const isUserProfileConnected = async (userID) => {
 export const Logout = async (setUserAuth) => {
   // const resetList = useResetRecoilState(todoListState);
 };
+
 export const validate_user_details = async (details, user_profile_details) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Initialize Firestore
-      const db = getFirestore();
 
       // Define the required fields for validation
       const requiredFields = ["email", "username", "realName"];
@@ -192,56 +192,7 @@ export const validate_user_details = async (details, user_profile_details) => {
         reject({ msg: validation.msg, field: validation.field });
         return;
       }
-
-      // Determine if email and username checks are required
-      const emailCheckRequired =
-        !user_profile_details || user_profile_details.email !== details.email;
-      const usernameCheckRequired =
-        !user_profile_details ||
-        user_profile_details.username !== details.username;
-
-      // Create queries for email and username validation if required
-      const emailQuery = emailCheckRequired
-        ? query(
-            collectionGroup(db, "Users"),
-            where("email", "==", details.email)
-          )
-        : null;
-
-      const usernameQuery = usernameCheckRequired
-        ? query(
-            collectionGroup(db, "Users"),
-            where("username", "==", details.username)
-          )
-        : null;
-
-      // Execute the queries, defaulting to empty results if the query is not required
-      const emailSnapshotPromise = emailQuery
-        ? getDocs(emailQuery)
-        : Promise.resolve({ empty: true });
-      const usernameSnapshotPromise = usernameQuery
-        ? getDocs(usernameQuery)
-        : Promise.resolve({ empty: true });
-
-      // Await the results of both queries
-      const [emailSnapshot, usernameSnapshot] = await Promise.all([
-        emailSnapshotPromise,
-        usernameSnapshotPromise,
-      ]);
-
-      // Check the email query results
-      if (emailCheckRequired && !emailSnapshot.empty) {
-        reject({ msg: "Email already exists", field: "email" });
-        return;
-      }
-
-      // Check the username query results
-      if (usernameCheckRequired && !usernameSnapshot.empty) {
-        reject({ msg: "Username already exists", field: "username" });
-        return;
-      }
-
-      // If both checks pass, resolve with a success message
+        // If both checks pass, resolve with a success message
       resolve({ code: 200, msg: "User details are valid" });
     } catch (error) {
       // Log and reject with an error message in case of an exception
@@ -257,7 +208,7 @@ export const validate_post_details = async (details) => {
       const requiredFields = ["author", "title"];
       const validation = validateRequiredFields(details, requiredFields);
       if (!validation.isValid) {
-        reject({ msg: validation.msg, field: validation.field });
+        reject({ err: validation.msg, field: validation.field });
         return;
       }
 
@@ -399,7 +350,6 @@ export const uploadMedia = (media, path, mediaName) => {
 export const createPost = async (post_details) => {
   return new Promise(async (resolve, reject) => {
     try {
-      
       if (post_details?.recording) {
         let { url } = await uploadMedia(
           post_details?.recording,
@@ -414,7 +364,7 @@ export const createPost = async (post_details) => {
         );
         post_details["post_image"] = url;
       }
-      
+
       await create_post(post_details)
         .then((res) => {
           resolve({

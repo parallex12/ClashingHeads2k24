@@ -23,10 +23,8 @@ import {
 } from "../../state-management/apiCalls/chat";
 import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
 import { useSocket } from "../../state-management/apiCalls/SocketContext";
-import { Socket } from "socket.io-client";
 import { uploadMedia } from "../../middleware/firebase";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
-import ContextMenu from "react-native-context-menu-view";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 
 const ChatScreen = (props) => {

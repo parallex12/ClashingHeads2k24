@@ -22,7 +22,6 @@ const Connections = (props) => {
   const [active, setActive] = useState(0);
   const current_user = useSelector(selectAuthUser);
   const loading = false;
-  const dispatch = useDispatch();
   let following = [...user?.following];
   let followers = [...user?.followers];
   let usersToShow = [followers, following, [], []];

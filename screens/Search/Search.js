@@ -9,6 +9,7 @@ import NewsResult from "./components/NewsResult";
 import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import { Instagram } from "react-content-loader/native";
+import { StatusBar } from "expo-status-bar";
 
 const Search = (props) => {
   let {} = props;
@@ -42,6 +43,7 @@ const Search = (props) => {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark"/>
       <Header
         onChangeText={onSearch}
         activeFilter={activeFilter}

@@ -15,8 +15,7 @@ import { useEffect, useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
 import { Entypo } from "@expo/vector-icons";
 import { selectAuthUser } from "../../../state-management/features/auth";
-import { setUserDetails } from "../../../state-management/features/auth/authSlice";
-import { update_user } from "../../../state-management/apiCalls/auth";
+import UserApi from "../../../ApisManager/UserApi";
 
 const AddBio = (props) => {
   let { width, height } = useWindowDimensions();
@@ -26,6 +25,7 @@ const AddBio = (props) => {
   const [errorField, setErrorField] = useState({});
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const userApi = new UserApi();
 
   const onContinue = async () => {
     try {
@@ -34,23 +34,17 @@ const AddBio = (props) => {
         school: form?.school || null,
         employment: form?.employment || null,
       };
-
       setLoading(true);
-      update_user(user?._id, updateDetails)
-        .then((res) => {
-          dispatch(setUserDetails(res));
-          if (res) {
-            props?.navigation?.navigate("MyProfile");
-          }
-          setLoading(false);
-        })
-        .catch((e) => {
-          setLoading(false);
-          console.log(e.message);
-          alert("Something went wrong try again!");
-        });
+      let result = await userApi.updateUserProfile(user?._id, updateDetails);
+      if (result?.user?._id) {
+        alert("Updated");
+      }
+      props?.navigation?.navigate("MyProfile");
+      setLoading(false);
     } catch (e) {
       console.log(e);
+      setLoading(false);
+      alert("Something went wrong try again!");
     }
   };
 

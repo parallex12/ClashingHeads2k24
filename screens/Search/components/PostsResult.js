@@ -4,19 +4,21 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
 import PostCard from "../../../globalComponents/PostCard/PostCard";
 import { memo, useEffect, useState } from "react";
-import { search_posts } from "../../../state-management/apiCalls/search";
-import { useNavigation } from "@react-navigation/native";
+import PostApi from "../../../ApisManager/PostApi";
 
 const PostsResult = (props) => {
   let { searchQuery } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [posts, setPosts] = useState([]);
+  const postapi = new PostApi();
 
   useEffect(() => {
     (async () => {
-      let searched_posts = await search_posts(searchQuery);
-      setPosts(searched_posts);
+      let searched_posts = await postapi.searchPosts(searchQuery);
+      if (searched_posts?.length > 0) {
+        setPosts(searched_posts);
+      }
     })();
   }, [searchQuery]);
 

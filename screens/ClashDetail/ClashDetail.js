@@ -14,12 +14,9 @@ import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/
 import { useDispatch, useSelector } from "react-redux";
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
-import {
-  get_post_by_id,
-  update_post_by_id,
-} from "../../state-management/apiCalls/post";
 import { selectAuthUser } from "../../state-management/features/auth";
-import { create_clash } from "../../state-management/apiCalls/clash";
+import PostApi from "../../ApisManager/PostApi";
+import ClashApi from "../../ApisManager/ClashApi";
 
 const ClashDetails = (props) => {
   let {} = props;
@@ -29,40 +26,42 @@ const ClashDetails = (props) => {
   const [clashTo, setClashTo] = useState("post");
   const [postData, setPostData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  let prevPostData = props?.route?.params;
-  let openVoiceSheet = props?.route?.params?.openVoiceSheet;
   const bottomVoiceSheetRef = useRef(null);
   const bottomFlagSheetRef = useRef(null);
-  let postId = prevPostData?._id;
   const { _id } = useSelector(selectAuthUser);
+  const postApi = new PostApi();
+  const clashApi = new ClashApi();
+  let prevPostData = props?.route?.params;
+  let openVoiceSheet = props?.route?.params?.openVoiceSheet;
+  let postId = prevPostData?._id;
 
   useEffect(() => {
-    get_post()
+    get_post();
     if (openVoiceSheet) {
       bottomVoiceSheetRef.current.present();
     }
   }, [dispatch, postId, refreshing]);
 
   const get_post = async () => {
-    await get_post_by_id(postId)
-      .then((res) => {
-        let views = [...res?.views];
-        if (!views?.includes(_id)) {
-          views.push(_id);
-          update_post_by_id(postId, { views });
-        }
-        setPostData(res);
-        setRefreshing(false);
-      })
-      .catch((e) => {
-        console.log(e);
-        setRefreshing(false);
-      });
+    try {
+      let result = await postApi.getPostById(postId);
+      let clashesResult = await clashApi.getClashesByPostId(postId);
+      let views = [...result?.post?.views];
+      setRefreshing(false);
+      if (!views?.includes(_id)) {
+        views?.push(_id);
+        result = await postApi.updatePostById(postId, { views });
+      }
+      setPostData({ ...result?.post, clashes: clashesResult?.clashes });
+    } catch (e) {
+      console.log(e);
+      setRefreshing(false);
+    }
   };
 
   const onPostClash = async (clashDetails) => {
-    await create_clash(clashDetails);
-    get_post()
+    await clashApi.createClash(clashDetails);
+    get_post();
   };
 
   const onRefresh = () => {

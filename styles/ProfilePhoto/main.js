@@ -42,7 +42,6 @@ export const styles = ({ width, height }) =>
     },
     imageActionsItem: {
       width: "100%",
-      height: "100%",
       borderRadius: 100,
       backgroundColor: "rgba(0,0,0,0.5)",
       alignItems: "center",

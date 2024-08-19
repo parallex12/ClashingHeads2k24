@@ -31,6 +31,7 @@ export const ProfileCardstyles = ({ width, height }) =>
     container: {
       width: "100%",
       borderColor: "#F7F8F8",
+      borderBottomWidth:5
     },
     cardHeaderContainer: {
       width: "100%",
@@ -77,6 +78,7 @@ export const ProfileCardstyles = ({ width, height }) =>
     },
     userInfoWrapper: {
       paddingHorizontal: getPercent(3, width),
+      marginVertical:10
     },
     usernameWrapper: {
       flexDirection: "row",

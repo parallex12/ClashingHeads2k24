@@ -200,7 +200,7 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
               <StandardButton
                 title={postBtnTitle || "Post"}
                 loading={loading}
-                customStyles={{ width: "45%", marginVertical: 20 }}
+                customStyles={styles.postBtn}
                 onPress={onPost}
               />
             )}
@@ -209,7 +209,7 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
                 <StandardButton
                   title={postBtnTitle || "Post"}
                   loading={loading}
-                  customStyles={{ width: "45%", paddingVertical: 10 }}
+                  customStyles={styles.postBtn}
                   onPress={onPost}
                 />
                 <StandardButton

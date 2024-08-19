@@ -11,14 +11,12 @@ import { Entypo } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import StandardButton from "../../../globalComponents/StandardButton";
-import { RFValue } from "react-native-responsive-fontsize";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { download } from "react-native-compressor";
 import CacheImage from "../../../globalComponents/CacheImage";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
-import { update_post_by_id } from "../../../state-management/apiCalls/post";
+import PostApi from "../../../ApisManager/PostApi";
 
 const ClashUserCard = memo((data) => {
   let {
@@ -41,6 +39,7 @@ const ClashUserCard = memo((data) => {
   const currentUser = useSelector(selectAuthUser);
   const navigation = useNavigation();
   const [hasCurrentUserVoted, setHasCurrentUserVoted] = useState(null);
+  const postApi = new PostApi();
 
   useEffect(() => {
     if (!votes) return;
@@ -53,12 +52,12 @@ const ClashUserCard = memo((data) => {
       if (hasCurrentUserVoted === selectedUserId) {
         delete updatedVotes[currentUser?._id];
 
-        await update_post_by_id(_id, {
+        await postApi.updatePostById(_id, {
           votes: updatedVotes,
         });
       } else {
         updatedVotes[currentUser?._id] = selectedUserId;
-        await update_post_by_id(_id, { votes: updatedVotes });
+        await postApi.updatePostById(_id, { votes: updatedVotes });
       }
       setHasCurrentUserVoted(updatedVotes[currentUser?._id]);
       setVoteData(updatedVotes);

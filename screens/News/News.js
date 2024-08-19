@@ -15,13 +15,9 @@ import { sortPostsByCreatedAt } from "../../utils";
 import { font } from "../../styles/Global/main";
 import SearchBar from "../../globalComponents/SearchBar";
 import { getPercent } from "../../middleware";
-import * as WebBrowser from "expo-web-browser";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
-import ContentLoader, {
-  Facebook,
-  Instagram,
-} from "react-content-loader/native";
+import ContentLoader, { Facebook } from "react-content-loader/native";
 
 const News = () => {
   const [newsArr, setNewsArr] = useState([]);
@@ -51,9 +47,9 @@ const News = () => {
 
   const searchNews = async (text) => {
     try {
-      if(text?.length==0){
-        loadDefaultNews()
-        return
+      if (text?.length == 0) {
+        loadDefaultNews();
+        return;
       }
       const response = await axios.get(
         `https://newsapi.org/v2/everything?q=${text}&apiKey=30026c906e3044828175b52bbe0736bd`

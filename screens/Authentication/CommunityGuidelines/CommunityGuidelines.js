@@ -8,8 +8,8 @@ import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 import auth from "@react-native-firebase/auth";
 import { selectAuthUser } from "../../../state-management/features/auth";
-import { update_user } from "../../../state-management/apiCalls/auth";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
+import UserApi from "../../../ApisManager/UserApi";
 
 const CommunityGuidelines = (props) => {
   let { width, height } = useWindowDimensions();
@@ -18,19 +18,22 @@ const CommunityGuidelines = (props) => {
   const [loading, setLoading] = useState(false);
   const user_profile_details = useSelector(selectAuthUser);
   const dispatch = useDispatch();
+  const userApi = new UserApi();
 
   const onContinue = async () => {
     setLoading(true);
     try {
-      await update_user(user_profile_details?._id, {
-        tos: true,
-        phone: user?.phoneNumber,
-        username: "",
-        email: "",
-      })
+      await userApi
+        .updateUserProfile(user_profile_details?._id, {
+          tos: true,
+          phone: user?.phoneNumber,
+          username: "",
+          email: "",
+        })
         .then((res) => {
-          dispatch(setUserDetails(res));
-          if (!res?.hasPersonalInfo) {
+          let user = res?.user;
+          dispatch(setUserDetails(user));
+          if (!user?.hasPersonalInfo) {
             props?.navigation?.navigate("PersonalInfo");
           } else {
             props?.navigation?.navigate("Home");
@@ -60,37 +63,37 @@ const CommunityGuidelines = (props) => {
             <Text style={font(20, "#120D26", "Semibold", 3)}>
               Community Guidelines
             </Text>
-            <Text style={font(12, "#4B5563", "Regular", 7)}>
+            <Text style={font(15, "#4B5563", "Regular", 7)}>
               Last updated 26 Dec 2023
             </Text>
 
             <View style={{ paddingTop: getPercent(3, height) }}>
-              <Text style={font(13, "#404040", "Regular", 10)}>
+              <Text style={font(16, "#404040", "Regular", 10)}>
                 Clashing Heads is a “First Amendment,” Free Speech platform. We
                 encourage discussion and debate from all sides.
               </Text>
 
-              <Text style={font(13, "#404040", "Semibold", 15)}>
+              <Text style={font(16, "#404040", "Semibold", 15)}>
                 Disagree, but don’t be disagreeable!{"\n"}
-                <Text style={font(13, "#404040", "Regular", 5)}>
+                <Text style={font(16, "#404040", "Regular", 5)}>
                   Personal attacks (such as hateful language or discrimination)
                   will not be tolerated. If you disagree with somebody, do it
                   with humor! Use our CH stickers to vent!
                 </Text>
               </Text>
 
-              <Text style={font(13, "#404040", "Semibold", 15)}>
+              <Text style={font(16, "#404040", "Semibold", 15)}>
                 No harmful activity{"\n"}
-                <Text style={font(13, "#404040", "Regular")}>
+                <Text style={font(16, "#404040", "Regular")}>
                   We prohibit any activity that could hurt someone from scams to
                   threats to intimidation to libel / slander to trolling to
                   physical harm. DON’T DO IT!
                 </Text>
               </Text>
 
-              <Text style={font(13, "#404040", "Semibold", 15)}>
+              <Text style={font(16, "#404040", "Semibold", 15)}>
                 Be respectful{"\n"}
-                <Text style={font(13, "#404040", "Regular")}>
+                <Text style={font(16, "#404040", "Regular")}>
                   We’re all in this together – So, no yelling, no profanity, no
                   insults. Try to be Honest! No fake news! – Provide cites!
                 </Text>

@@ -19,10 +19,7 @@ import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import { selectAuthUser } from "../../state-management/features/auth";
-import { update_user_details } from "../../middleware/firebase";
-import { setUserDetails } from "../../state-management/features/auth/authSlice";
-import FindUserSheet from "../../screens/NewPost/components/FindUserSheet";
-import { delete_post_by_id } from "../../state-management/apiCalls/post";
+import PostApi from "../../ApisManager/PostApi";
 
 const categories = [
   {
@@ -84,6 +81,7 @@ const PostActionsBottomSheet = (props) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const user_details = useSelector(selectAuthUser);
+  const postApi = new PostApi();
   const editList = [
     {
       key: "clash",
@@ -113,7 +111,7 @@ const PostActionsBottomSheet = (props) => {
       label: "Remove Post",
       icon: <MaterialIcons name="delete" size={RFValue(13)} color="#6B7280" />,
       onPress: async (_id, next) => {
-        await delete_post_by_id(_id);
+        await postApi.deletePostById(_id);
         next();
       },
     },

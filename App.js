@@ -4,40 +4,28 @@ import { Provider } from "react-redux";
 import { AppNavigator } from "./routes/AppNavigator";
 import { useFonts } from "expo-font";
 import "react-native-gesture-handler";
-import { FontsConfig, setAuthToken } from "./middleware";
+import { FontsConfig } from "./middleware";
 import { LogBox } from "react-native";
-import { AuthNavigator } from "./routes/AuthNavigator";
-import { firebaseConfig } from "./utils";
-import firebase from "@react-native-firebase/app";
-import auth from "@react-native-firebase/auth";
 import store from "./state-management/store/store";
 import axios from "axios";
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
-import "./utils/firebaseInitialize";
 import { SocketProvider } from "./state-management/apiCalls/SocketContext";
-import { StatusBar } from "expo-status-bar";
+import { AuthProvider, useAuth } from "./ContextProviders/AuthProvider";
+import { AuthNavigator } from "./routes/AuthNavigator";
+import { app } from "./utils/firebaseInitialize";
+
+function MainNavigator() {
+  const { isLoggedIn } = useAuth();
+
+  return <>{isLoggedIn ? <AppNavigator /> : <AuthNavigator />}</>;
+}
 
 export default function App() {
-  axios.defaults.baseURL =
-    "https://clashing-heads-server.vercel.app/clashingheads_api";
-
-  // axios.defaults.baseURL = "http://192.168.100.127:5000/clashingheads_api";
-
   const [fontsLoaded] = useFonts(FontsConfig);
-  const config = {
-    name: "SECONDARY_APP",
-  };
-
-  useEffect(() => {
-    (async () => {
-      if (firebase.apps.length === 0) {
-        await firebase.initializeApp(firebaseConfig, config);
-      }
-      const idTokenResult = await auth().currentUser.getIdTokenResult();
-      setAuthToken(idTokenResult.token);
-    })();
-  }, []);
+  // axios.defaults.baseURL =
+  //   "https://clashing-heads-server.vercel.app/clashingheads_api";
+  axios.defaults.baseURL = "http://192.168.100.127:3000/clashingheads_api";
 
   if (!fontsLoaded) {
     return null;
@@ -46,8 +34,9 @@ export default function App() {
   return (
     <Provider store={store}>
       <SocketProvider>
-        <StatusBar style="light" />
-        <AppNavigator />
+        <AuthProvider>
+          <MainNavigator />
+        </AuthProvider>
       </SocketProvider>
     </Provider>
   );

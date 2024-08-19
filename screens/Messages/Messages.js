@@ -18,7 +18,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { get_user_chats } from "../../state-management/apiCalls/chat";
-import { useSocket } from "../../state-management/apiCalls/SocketContext";
 import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
 import ContactsSheet from "../../globalComponents/ContactsSheet/ContactsSheet";
 import { useNavigation } from "@react-navigation/native";

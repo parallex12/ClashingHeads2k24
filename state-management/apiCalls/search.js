@@ -26,7 +26,6 @@ export const search_posts = async (query) => {
   });
 };
 
-
 export const search_clashes = async (query) => {
   return new Promise(async (resolve, reject) => {
     try {

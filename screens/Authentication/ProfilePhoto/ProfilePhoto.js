@@ -17,39 +17,39 @@ import * as ImagePicker from "expo-image-picker";
 import { uploadMedia } from "../../../middleware/firebase";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { Image as ImageCompress } from "react-native-compressor";
-import { Blurhash } from "react-native-blurhash";
-import { update_user } from "../../../state-management/apiCalls/auth";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
+import UserApi from "../../../ApisManager/UserApi";
 
 const ProfilePhoto = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [profile, setProfile] = useState(null);
-  const [profileHash, setProfileHash] = useState(null);
   const user = useSelector(selectAuthUser);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const userapi = new UserApi();
 
   const onContinue = async () => {
     try {
       if (profile) {
         setLoading(true);
         await uploadMedia(profile, "userProfiles")
-          .then((res) => {
+          .then(async (res) => {
             if (res.url) {
               let data = {
                 hasProfilePhoto: true,
                 profile_photo: res?.url,
-                profile_hash: profileHash,
               };
-              update_user(user?._id, data).then((res) => {
-                dispatch(setUserDetails(res));
+              const result = await userapi.updateUserProfile(user?._id, data);
+              let user = result?.user;
+              if (user) {
+                dispatch(setUserDetails(user));
                 props.navigation.reset({
                   index: 0,
                   routes: [{ name: "Home" }],
                 });
                 setLoading(false);
-              });
+              }
             }
           })
           .catch((e) => {
@@ -74,17 +74,6 @@ const ProfilePhoto = (props) => {
       }
     })();
   }, []);
-
-  useEffect(() => {
-    if (profile) {
-      setProfileHash("loading");
-      const convertToblurhash = async () => {
-        let _hash = await Blurhash.encode(profile, 4, 3);
-        setProfileHash(_hash);
-      };
-      convertToblurhash();
-    }
-  }, [profile]);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -145,20 +134,14 @@ const ProfilePhoto = (props) => {
             </TouchableOpacity> */}
           </View>
           <View style={styles.formWrapper}>
-            <Text style={font(20, "#120D26", "Semibold", 3)}>
+            <Text style={font(25, "#120D26", "Semibold", 3)}>
               Profile photo
             </Text>
-            <Text style={font(12, "#4B5563", "Regular", 7)}>
+            <Text style={font(16, "#4B5563", "Regular", 4)}>
               Upload or capture your real profile photo
             </Text>
             <View style={styles.profileCont}>
               <View style={styles.profileWrapper}>
-                {profileHash == "loading" && (
-                  <StandardButton
-                    loading={true}
-                    customStyles={styles.imageActionsItem}
-                  />
-                )}
                 <Image
                   source={
                     profile
@@ -171,7 +154,7 @@ const ProfilePhoto = (props) => {
               </View>
             </View>
             <View style={styles.continueBtnWrapper}>
-              {profile && profileHash != "loading" && (
+              {profile && (
                 <StandardButton
                   loading={loading}
                   title="Continue"

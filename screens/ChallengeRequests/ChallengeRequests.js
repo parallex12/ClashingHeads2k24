@@ -7,11 +7,10 @@ import { selectAuthUser } from "../../state-management/features/auth";
 import { TouchableOpacity } from "react-native";
 import { font } from "../../styles/Global/main";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
-import { get_challenge_by_user } from "../../state-management/apiCalls/challengeClash";
 import { Instagram } from "react-content-loader/native";
-import { update_post_by_id } from "../../state-management/apiCalls/post";
 import { uploadMedia } from "../../middleware/firebase";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
+import PostApi from "../../ApisManager/PostApi";
 
 const ChallengeRequests = (props) => {
   let {} = props;
@@ -24,9 +23,10 @@ const ChallengeRequests = (props) => {
   const [loading, setLoading] = useState(true);
   const [currentChallenge, setCurrentChallenge] = useState(null);
   const [challenges, setChallenges] = useState([]);
+  const postApi = new PostApi();
 
   const getUserChallenges = async () => {
-    let challenges = await get_challenge_by_user(user?._id);
+    let { challenges } = await postApi.getPostChallengesByUserId(user?._id);
     setChallenges(challenges);
     setLoading(false);
   };
@@ -48,7 +48,6 @@ const ChallengeRequests = (props) => {
       return isSent && e;
     });
   }, [activeFilter, user?._id, challenges]);
-
 
   const FilterItem = ({ data, index, count }) => {
     let conditional_style = {
@@ -96,8 +95,13 @@ const ChallengeRequests = (props) => {
       });
     });
 
-    await update_post_by_id(currentChallenge, updatedData);
+    await postApi.updatePostById(currentChallenge, updatedData);
     alert("Congrats! Challenge is live now.");
+  };
+
+  const onCancelRequest = async (id) => {
+    await postApi.deletePostById(id);
+    getUserChallenges();
   };
 
   return (
@@ -140,7 +144,7 @@ const ChallengeRequests = (props) => {
                   onClashesPress={() =>
                     props?.navigation?.navigate("ChallengeClash", { ...item })
                   }
-                  onCancelRequest={() => null}
+                  onCancelRequest={() => onCancelRequest(item?._id)}
                   request_type={activeFilter}
                   key={index}
                   data={item}

@@ -13,6 +13,8 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import AuthenticationApi from "../../../ApisManager/AuthenticationApi";
+import { StatusBar } from "expo-status-bar";
 
 const Signin = (props) => {
   let {} = props;
@@ -23,26 +25,32 @@ const Signin = (props) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  const AuthApi = new AuthenticationApi();
 
   const onSignup = () => {
     navigation?.navigate("Signup");
   };
 
-  const onContinue = () => {
+  const onContinue = async () => {
     let phone_number_raw = country?.dial_code + phoneNumber;
     if (!phoneNumber) {
       alert("Phone number required.");
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      navigation?.navigate("OTPVerification", { phone: phone_number_raw });
-      setLoading(false);
-    }, 1000);
+    await AuthApi.loginWithPhone(phone_number_raw)
+      .then((res) => {
+        navigation?.navigate("OTPVerification", { phone: phone_number_raw });
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" />
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"

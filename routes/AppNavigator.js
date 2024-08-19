@@ -50,25 +50,26 @@ import PrivacyPolicy from "../screens/Authentication/PrivacyPolicy/PrivacyPolicy
 import Faqs from "../screens/Authentication/Faqs/Faqs";
 import AboutUs from "../screens/Authentication/AboutUs/AboutUs";
 import ContactUs from "../screens/Authentication/ContactUs/ContactUs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
 
 const HomeScreens = () => {
-  const userAuth = useSelector(selectIsAuth);
-
+  // const userAuth = useSelector(selectIsAuth);
   return (
     <HomeStack.Navigator>
-      {!userAuth ? (
+      {/* //{!userAuth ? (
         // Screens for logged in users
-        <HomeStack.Group screenOptions={{ headerShown: false }}>
-          <Screen name="Signin" component={Signin} />
-          <Screen name="Signup" component={Signup} />
-          <Screen name="OTPVerification" component={OTPVerification} />
-          <HomeStack.Screen name="Terms" component={Terms} />
-        </HomeStack.Group>
-      ) : (
+        // <HomeStack.Group screenOptions={{ headerShown: false }}>
+        //   <Screen name="Signin" component={Signin} />
+        //   <Screen name="Signup" component={Signup} />
+        //   <Screen name="OTPVerification" component={OTPVerification} />
+        //   <HomeStack.Screen name="Terms" component={Terms} />
+        // </HomeStack.Group>
+      // ) : (
         // Auth screens
+        )} */}
         <HomeStack.Group screenOptions={{ headerShown: false }}>
           <HomeStack.Screen name="Home" component={Home} />
           <Screen name="PersonalInfo" component={PersonalInfo} />
@@ -137,7 +138,6 @@ const HomeScreens = () => {
             component={CommunityGuidelines}
           />
         </HomeStack.Group>
-      )}
     </HomeStack.Navigator>
   );
 };

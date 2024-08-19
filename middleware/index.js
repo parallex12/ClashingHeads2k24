@@ -8,6 +8,7 @@ import {
   delete_user_chat,
   update_user_chat,
 } from "../state-management/apiCalls/chat";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const FontsConfig = {
   Light: require("../assets/fonts/SF-Pro-Text-Light.otf"),
@@ -264,13 +265,20 @@ export const sideMenuOptions = [
   },
 ];
 
-export const setAuthToken = (token) => {
+export const setAuthToken = async (token) => {
   if (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {
     delete axios.defaults.headers.common["Authorization"];
   }
 };
+
+export const saveTokenToStorage = async (token) => {
+  if (token) {
+    await AsyncStorage.setItem("apptoken", token);
+  }
+};
+
 export const generateChatId = (userId1, userId2) => {
   return [userId1, userId2].sort().join("_");
 };
@@ -313,7 +321,7 @@ export const chatMenuOptions = [
     title: "Block",
     onPress: async (props, next) => {
       await update_user_chat(props?._id, { blockedUsers: props?.blockedUsers });
-      next()
+      next();
     },
   },
   {

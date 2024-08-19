@@ -18,18 +18,18 @@ import { getPercent, postprivacyoptions } from "../../middleware";
 import StandardHeader2 from "../../globalComponents/StandardHeader2/StandardHeader2";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { createPost, validate_post_details } from "../../middleware/firebase";
+import { validate_post_details } from "../../middleware/firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuthUser } from "../../state-management/features/auth";
 import { Image as ImageCompress } from "react-native-compressor";
 import PrivacyBottomSheet from "./components/PrivacyBottomSheet";
-import { Blurhash } from "react-native-blurhash";
 import { Entypo } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 import WaveAudioPlayer from "../../globalComponents/WaveAudioPlayer";
 import FindUserSheet from "./components/FindUserSheet";
 import ChallengeHeader from "./components/ChallengeHeader";
+import PostApi from "../../ApisManager/PostApi";
 
 const AddPostDetails = (props) => {
   let {} = props;
@@ -45,6 +45,7 @@ const AddPostDetails = (props) => {
   const dispatch = useDispatch();
   const news_post = useRoute().params?.news_post;
   const edit_post = useRoute().params?.edit_post;
+  const postApi = new PostApi();
 
   const [postForm, setPostForm] = useState({
     recording: null,
@@ -79,25 +80,6 @@ const AddPostDetails = (props) => {
       setPostForm(edit_post);
     }
   }, [news_post]);
-
-  useEffect(() => {
-    if (postForm?.post_image && !postForm?.post_image_hash) {
-      const convertToblurhash = async () => {
-        setimageHashingLoad(true);
-        let _hash = await Blurhash.encode(postForm?.post_image, 4, 3);
-        setPostForm((prev) => {
-          return {
-            ...prev,
-            post_image_hash: _hash,
-          };
-        });
-        console.log("hash Added");
-        setimageHashingLoad(false);
-      };
-      convertToblurhash();
-    }
-  }, [postForm?.post_image]);
-
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -124,29 +106,19 @@ const AddPostDetails = (props) => {
   };
 
   const onPost = async () => {
-    if (postForm?.post_image && !postForm?.post_image_hash) {
-      return alert("Processing media.");
+    try {
+      setLoading(true);
+      let validationRes = await validate_post_details(postForm);
+      if (validationRes?.err) {
+        throw new Error(validationRes?.err);
+      }
+      await postApi.createPost(postForm);
+      props?.navigation.navigate("Home");
+      setLoading(false);
+    } catch (e) {
+      setLoading(false);
+      alert(e?.err);
     }
-    validate_post_details(postForm)
-      .then(async (res) => {
-        setLoading(true);
-        if (res.code == 200) {
-          createPost(postForm)
-            .then((res) => {
-              props?.navigation.navigate("Home");
-              setLoading(false);
-            })
-            .catch((e) => {
-              setLoading(false);
-              console.log(e);
-              alert("Something Went wrong!.");
-            });
-        }
-      })
-      .catch((e) => {
-        setLoading(false);
-        alert(e?.msg);
-      });
   };
 
   const onRecordingReset = () => {

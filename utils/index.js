@@ -139,6 +139,11 @@ export const settingOptions = [
     label: "Help & Support",
     icon: require("../assets/icons/settings/help.png"),
   },
+  {
+    route: null,
+    label: "Delete Account",
+    icon: null,
+  },
 ];
 
 export const notificationSettingsOptions = [
@@ -377,10 +382,9 @@ export const handleReaction = async ({
   }
 };
 
-
-
 // src/utils/timestamp.js
 import { Timestamp } from "@firebase/firestore";
+import UserApi from "../ApisManager/UserApi";
 
 // Utility function to serialize a Timestamp object
 export const serializeTimestamp = (timestamp) => ({

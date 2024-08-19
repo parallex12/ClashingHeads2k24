@@ -15,8 +15,7 @@ import _ from "lodash"; // Import lodash
 import UserCard from "../../globalComponents/UserCard";
 import PeopleResult from "../Search/components/PeopleResult";
 import { validate_clash_details } from "../../middleware/firebase";
-import { search_users } from "../../state-management/apiCalls/search";
-import { create_challenge_clash } from "../../state-management/apiCalls/challengeClash";
+import PostApi from "../../ApisManager/PostApi";
 
 const CreateClash = (props) => {
   let {} = props;
@@ -30,6 +29,7 @@ const CreateClash = (props) => {
   const [showUsers, setShowUsers] = useState(false);
   const [foundUsers, setFoundUsers] = useState(null);
   const dispatch = useDispatch();
+  const postApi = new PostApi();
 
   const [clashForm, setClashForm] = useState({
     title: null,
@@ -45,9 +45,9 @@ const CreateClash = (props) => {
     clashForm["opponent"] = clashForm?.opponent?._id;
     setLoading(true);
     await validate_clash_details(clashForm)
-      .then((res) => {
+      .then(async(res) => {
         if (res?.code == 200) {
-          create_challenge_clash(clashForm)
+          await postApi.createPost(clashForm)
             .then((res) => {
               console.log(res);
               props?.navigation.navigate("Home");
@@ -82,8 +82,6 @@ const CreateClash = (props) => {
 
   const onSearchOpponent = async (query) => {
     setSearchQuery(query);
-    let foundUsers = await search_users(query);
-    setFoundUsers(foundUsers);
   };
 
   return (

@@ -7,7 +7,7 @@ import Header from "./components/Header";
 import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
 import { selectAuthUser } from "../../state-management/features/auth";
-import { update_post_by_id } from "../../state-management/apiCalls/post";
+import PostApi from "../../ApisManager/PostApi";
 
 const PostCard = memo((props) => {
   let {
@@ -28,6 +28,7 @@ const PostCard = memo((props) => {
   const { _id } = useSelector(selectAuthUser);
   const { clashes } = data;
   const memoizedData = useMemo(() => data, [data]);
+  const postApi = new PostApi();
 
   const onReaction = async (type) => {
     let likes = data?.likes?.filter((e) => e != _id);
@@ -38,7 +39,7 @@ const PostCard = memo((props) => {
       dislikes.push(_id);
     }
 
-    await update_post_by_id(data?._id, {
+    await postApi.updatePostById(data?._id, {
       likes,
       dislikes,
     });

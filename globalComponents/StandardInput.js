@@ -12,7 +12,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { politicsCategory } from "../middleware";
 
-const DropDown = ({ options, onDropDownChange }) => {
+const DropDown = ({ options, onDropDownChange,value }) => {
   let { width, height } = useWindowDimensions();
   let styles = StandardInputStyles({ width, height });
 

@@ -30,7 +30,7 @@ import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoice
 import WaveAudioPlayer from "../../globalComponents/WaveAudioPlayer";
 import FindUserSheet from "./components/FindUserSheet";
 import ChallengeHeader from "./components/ChallengeHeader";
-import { update_post_by_id } from "../../state-management/apiCalls/post";
+import PostApi from "../../ApisManager/PostApi";
 
 const EditPostDetails = (props) => {
   let {} = props;
@@ -46,6 +46,7 @@ const EditPostDetails = (props) => {
   const dispatch = useDispatch();
   const edit_post = useRoute().params?.edit_post;
   const [postForm, setPostForm] = useState();
+  const postApi = new PostApi();
 
   useEffect(() => {
     if (edit_post) {
@@ -100,11 +101,11 @@ const EditPostDetails = (props) => {
     if (postForm?.post_image && !postForm?.post_image_hash) {
       return alert("Processing media.");
     }
-    validate_post_details(postForm)
+    await validate_post_details(postForm)
       .then(async (res) => {
         setLoading(true);
         if (res.code == 200) {
-          update_post_by_id(edit_post?._id, postForm)
+          await postApi.updatePostById(edit_post?._id, postForm)
             .then((res) => {
               props?.navigation.navigate("Home");
               setLoading(false);

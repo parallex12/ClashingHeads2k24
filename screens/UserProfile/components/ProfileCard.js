@@ -15,11 +15,8 @@ import { useNavigation } from "@react-navigation/native";
 import { selectAuthUser } from "../../../state-management/features/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { download } from "react-native-compressor";
-import {
-  follow_user,
-  unfollow_user,
-} from "../../../state-management/apiCalls/userRelation";
 import CardHeader from "./CardHeader";
+import UserApi from "../../../ApisManager/UserApi";
 
 const ProfileCard = (props) => {
   let { user } = props;
@@ -49,6 +46,7 @@ const ProfileCard = (props) => {
   const [isCurrentUserFollower, setIsCurrentUserFollower] = useState();
   const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState();
   const [downloadedAudio, setDownloadedAudio] = useState(null);
+  const userApi = new UserApi();
 
   useEffect(() => {
     setIsCurrentUserFollower(
@@ -107,20 +105,20 @@ const ProfileCard = (props) => {
     }
   };
 
-  const onFollow = () => {
+  const onFollow = async() => {
     if (!current_user || !user) return;
     if (
       currentFollowButtonState == "Follow" ||
       currentFollowButtonState == "Follow back"
     ) {
       setIsCurrentUserFollower(current_user);
-      follow_user(current_user?._id, _id);
+      await userApi.followUser(current_user?._id, _id);
       return;
     }
 
     if (currentFollowButtonState == "Following") {
       setIsCurrentUserFollower(null);
-      unfollow_user(current_user?._id, _id);
+      await userApi.unfollowUser(current_user?._id, _id);
     }
   };
 

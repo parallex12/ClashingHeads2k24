@@ -24,11 +24,10 @@ import { updateChallengeClash } from "../../../state-management/features/challen
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Blurhash } from "react-native-blurhash";
 import { download } from "react-native-compressor";
 import Content from "../../../globalComponents/PostCard/components/Content";
-import { update_post_by_id } from "../../../state-management/apiCalls/post";
 import CacheImage from "../../../globalComponents/CacheImage";
+import PostApi from "../../../ApisManager/PostApi";
 
 const DualClashCard = (props) => {
   const {
@@ -39,12 +38,8 @@ const DualClashCard = (props) => {
     onPress,
     onClashesPress,
     onReportPress,
-    views,
-    onProfilePress,
     showVoting,
-    postDateAndViews,
     showAudioDuration,
-    divider,
   } = props;
 
   const { width, height } = useWindowDimensions();
@@ -55,7 +50,7 @@ const DualClashCard = (props) => {
   const [voteData, setVoteData] = useState(null);
   const [hasCurrentUserVoted, setHasCurrentUserVoted] = useState(null);
   let { opponent } = data;
-
+  const postApi = new PostApi();
   let challenger = data?.author;
 
   const {
@@ -77,12 +72,12 @@ const DualClashCard = (props) => {
       if (hasCurrentUserVoted === selectedUserId) {
         delete updatedVotes[currentUser?._id];
 
-        await update_post_by_id(data?._id, {
+        await postApi.updatePostById(data?._id, {
           votes: updatedVotes,
         });
       } else {
         updatedVotes[currentUser?._id] = selectedUserId;
-        await update_post_by_id(data?._id, { votes: updatedVotes });
+        await postApi.updatePostById(data?._id, { votes: updatedVotes });
       }
       setHasCurrentUserVoted(updatedVotes[currentUser?._id]);
       setVoteData(updatedVotes);
@@ -135,7 +130,7 @@ const DualClashCard = (props) => {
               />
             )} */}
             <CacheImage
-              source={{uri:user?.profile_photo}}
+              source={{ uri: user?.profile_photo }}
               resizeMode="contain"
               style={{ width: "100%", height: "100%" }}
               cachePolicy="memory-disk"

@@ -27,10 +27,9 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import UserCard from "../../../globalComponents/UserCard";
 import { AntDesign } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
-import { search_users } from "../../../state-management/apiCalls/search";
-import { getPercent } from "../../../middleware";
 import { useSelector } from "react-redux";
 import { selectAuthUser } from "../../../state-management/features/auth";
+import UserApi from "../../../ApisManager/UserApi";
 
 const FindUserSheet = (props) => {
   let { bottomSheetRef, callBackUser } = props;
@@ -42,6 +41,7 @@ const FindUserSheet = (props) => {
   const [searchQuery, setSearchQuery] = useState("a");
   const current_user = useSelector(selectAuthUser);
   let { following, followers } = current_user;
+  const userApi = new UserApi();
 
   useEffect(() => {
     const mergedUsers = mergeAndRemoveDuplicates(following, followers);
@@ -58,7 +58,7 @@ const FindUserSheet = (props) => {
   };
 
   const searchUsers = async (searchQuery) => {
-    let searched_users = await search_users(searchQuery);
+    let searched_users = await userApi.searchUsers(searchQuery);
     setSearched_users(searched_users);
   };
 

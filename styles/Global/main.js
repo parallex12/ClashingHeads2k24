@@ -105,6 +105,8 @@ export const ChallengeCardStyles = ({ width, height }) =>
       paddingHorizontal: 10,
       alignItems: "center",
       justifyContent: "space-around",
+      top:5
+
     },
     requetBtn: {
       width: getPercent(4, height),
@@ -1004,6 +1006,10 @@ export const UpdatedVoiceRecorderBottomSheetStyles = ({ width, height }) =>
       borderWidth: 1,
       borderColor: "#4B4EFC",
     },
+    postBtn:{
+      width: getPercent(45, width),
+      height: getPercent(4, height),
+    },
     actionBtnText: {
       color: "#4B4EFC",
     },
@@ -1272,6 +1278,7 @@ export const StandardInputStyles = ({ width, height }) =>
       color: "#111827",
       justifyContent: "center",
       alignItems: "flex-start",
+      height:'60%',
     },
     inputText: {
       fontSize: 15,

@@ -1,4 +1,9 @@
-import { ScrollView, View, useWindowDimensions } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { styles as _styles } from "../../styles/UserProfile/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import ProfileCard from "./components/ProfileCard";
@@ -8,8 +13,9 @@ import { useEffect, useRef, useState } from "react";
 import { getPercent } from "../../middleware";
 import { useDispatch } from "react-redux";
 import ContentLoader, { Instagram } from "react-content-loader/native";
-import { get_user_profile } from "../../state-management/apiCalls/auth";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
+import UserApi from "../../ApisManager/UserApi";
+import PostApi from "../../ApisManager/PostApi";
 
 const UserProfile = (props) => {
   let {} = props;
@@ -20,20 +26,23 @@ const UserProfile = (props) => {
   const dispatch = useDispatch();
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
-  let { posts } = profile;
+  const [posts, setPosts] = useState([]);
+  const userApi = new UserApi();
+  const postApi = new PostApi();
 
   useEffect(() => {
-    if (user?._id) {
-      get_user_profile(user?._id)
-        .then((res) => {
-          setProfile(res);
-          setLoading(false);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
-  }, [user?._id]);
+    (async () => {
+      const result = await userApi.getUserProfileById(user?._id);
+      const postsRes = await postApi.getUsersPosts(result?.user?._id);
+      setProfile(result?.user);
+      setPosts(postsRes?.posts);
+      setLoading(false);
+    })();
+  }, [loading]);
+
+  const onRefresh = () => {
+    setLoading(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -42,7 +51,11 @@ const UserProfile = (props) => {
         backButton
         containerStyles={{ height: getPercent(15, height) }}
       />
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.content}>
           {loading ? (
             <View style={styles.ContentLoader}>
