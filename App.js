@@ -10,10 +10,11 @@ import store from "./state-management/store/store";
 import axios from "axios";
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
-import { SocketProvider } from "./state-management/apiCalls/SocketContext";
 import { AuthProvider, useAuth } from "./ContextProviders/AuthProvider";
 import { AuthNavigator } from "./routes/AuthNavigator";
 import { app } from "./utils/firebaseInitialize";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { SocketProvider } from "./ContextProviders/SocketContext";
 
 function MainNavigator() {
   const { isLoggedIn } = useAuth();
@@ -23,8 +24,10 @@ function MainNavigator() {
 
 export default function App() {
   const [fontsLoaded] = useFonts(FontsConfig);
+  const queryClient = new QueryClient();
+
   // axios.defaults.baseURL =
-  //   "https://clashing-heads-server.vercel.app/clashingheads_api";
+  //   "https://clashingheads2024v3-57b569714f9e.herokuapp.com/clashingheads_api";
   axios.defaults.baseURL = "http://192.168.100.127:3000/clashingheads_api";
 
   if (!fontsLoaded) {
@@ -33,11 +36,13 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <SocketProvider>
-        <AuthProvider>
-          <MainNavigator />
-        </AuthProvider>
-      </SocketProvider>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <SocketProvider>
+            <MainNavigator />
+          </SocketProvider>
+        </QueryClientProvider>
+      </AuthProvider>
     </Provider>
   );
 }

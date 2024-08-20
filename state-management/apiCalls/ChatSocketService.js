@@ -1,4 +1,4 @@
-import { useSocket } from "./SocketContext";
+import { useSocket } from "../../ContextProviders/SocketContext";
 
 export const useChatSocketService = () => {
   const socket = useSocket();

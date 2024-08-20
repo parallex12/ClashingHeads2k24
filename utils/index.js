@@ -448,3 +448,5 @@ export const calculateVotes = (votes, challengerId, opponentId) => {
     voteCounts,
   };
 };
+
+export const baseURlDev = "https://clashingheads2024v3-57b569714f9e.herokuapp.com";

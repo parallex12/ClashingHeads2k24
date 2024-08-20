@@ -1,5 +1,4 @@
 import { View, useWindowDimensions } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { ClashCardStyles } from "../../styles/Global/main";
 import Header from "./components/Header";
@@ -7,15 +6,18 @@ import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
 import { stickerArr } from "../../utils";
 import { Instagram } from "react-content-loader/native";
-import { selectAuthUser } from "../../state-management/features/auth";
 import ClashApi from "../../ApisManager/ClashApi";
+import { useQueryClient } from "react-query";
 
 const ClashCard = (props) => {
   let { data, onPostClashesPress, challengeClash, hrLine, onReportPress } =
     props;
   let { width, height } = useWindowDimensions();
   let styles = ClashCardStyles({ width, height });
-  const { _id } = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const { _id } = userDataCached?.user;
+
   const [singleUser, setAuthor] = useState(null);
   const [loading, setLoading] = useState(true);
   const clashApi = new ClashApi();

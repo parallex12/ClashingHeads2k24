@@ -2,8 +2,6 @@ import { ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { styles as _styles } from "../../styles/ChallengeRequests/main";
 import { useEffect, useMemo, useRef, useState } from "react";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
 import { TouchableOpacity } from "react-native";
 import { font } from "../../styles/Global/main";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
@@ -11,6 +9,7 @@ import { Instagram } from "react-content-loader/native";
 import { uploadMedia } from "../../middleware/firebase";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 import PostApi from "../../ApisManager/PostApi";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 const ChallengeRequests = (props) => {
   let {} = props;
@@ -19,35 +18,51 @@ const ChallengeRequests = (props) => {
   const [activeFilter, setActiveFilter] = useState("Sent");
   let filtersOption = ["Sent", "Recieved"];
   const bottomVoiceSheetRef = useRef();
-  const user = useSelector(selectAuthUser);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user = userDataCached?.user;
   const [currentChallenge, setCurrentChallenge] = useState(null);
-  const [challenges, setChallenges] = useState([]);
-  const postApi = new PostApi();
+  const { getPostChallengesByUserId, deletePostById, updatePostById } =
+    new PostApi();
 
-  const getUserChallenges = async () => {
-    let { challenges } = await postApi.getPostChallengesByUserId(user?._id);
-    setChallenges(challenges);
-    setLoading(false);
-  };
+  const {
+    data = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery(
+    ["currentUserChallenges", user?._id],
+    () => getPostChallengesByUserId(user?._id),
+    {
+      enabled: !!user?._id,
+    }
+  );
 
-  useEffect(() => {
-    getUserChallenges();
-  }, []);
+  const challengeMutation = useMutation({
+    mutationFn: async (data) => await updatePostById(currentChallenge, data),
+    onSettled: (data) => {
+      queryClient.invalidateQueries(["userfeed"]); //  invalidating user feed
+      queryClient.resetQueries(["userfeed"]); // Reset query state including cursor
+      queryClient.invalidateQueries(["currentUserChallenges"]); //  invalidating ucurrentUserposts
+    },
+    onError: (error) => {
+      console.error("Creation failed:", error);
+    },
+  });
 
   const memoizedRequestsRecieved = useMemo(() => {
-    return challenges?.filter((e) => {
+    return data?.challenges?.filter((e) => {
       const isReceived = e?.opponent?._id === user?._id;
       return isReceived && e;
     });
-  }, [activeFilter, user?._id, challenges]);
+  }, [activeFilter, user?._id, data]);
 
   const memoizedRequestsSent = useMemo(() => {
-    return challenges?.filter((e) => {
+    return data?.challenges?.filter((e) => {
       const isSent = e?.author?._id === user?._id;
       return isSent && e;
     });
-  }, [activeFilter, user?._id, challenges]);
+  }, [activeFilter, user?._id, data]);
 
   const FilterItem = ({ data, index, count }) => {
     let conditional_style = {
@@ -73,7 +88,7 @@ const ChallengeRequests = (props) => {
     return activeFilter == "Sent"
       ? memoizedRequestsSent
       : memoizedRequestsRecieved;
-  }, [activeFilter, user?._id, challenges]);
+  }, [activeFilter, user?._id, data]);
 
   const onPostChallenge = async (argData) => {
     if (!argData?.recording) return;
@@ -82,26 +97,14 @@ const ChallengeRequests = (props) => {
       status: "live",
       opponent_audio: url,
     };
-    setChallenges((prev) => {
-      return prev.map((e) => {
-        if (e._id === currentChallenge) {
-          return {
-            ...e,
-            status: "live",
-            opponent_audio: argData?.recording,
-          };
-        }
-        return e;
-      });
-    });
 
-    await postApi.updatePostById(currentChallenge, updatedData);
+    challengeMutation.mutate(updatedData);
     alert("Congrats! Challenge is live now.");
   };
 
   const onCancelRequest = async (id) => {
-    await postApi.deletePostById(id);
-    getUserChallenges();
+    await deletePostById(id);
+    refetch();
   };
 
   return (
@@ -127,7 +130,7 @@ const ChallengeRequests = (props) => {
       </View>
       <ScrollView>
         <View style={styles.content}>
-          {loading ? (
+          {isLoading ? (
             <Instagram />
           ) : (
             memoizedRequests?.map((item, index) => {

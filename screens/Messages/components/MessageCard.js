@@ -8,14 +8,12 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
 import { Facebook } from "react-content-loader/native";
 import ContextMenu from "react-native-context-menu-view";
-
 import { chatMenuOptions, formatTime, getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import CacheImage from "../../../globalComponents/CacheImage";
+import { useQueryClient } from "react-query";
 
 const Profile = ({ source, user, isUserMe }) => {
   const { width, height } = useWindowDimensions();
@@ -45,7 +43,9 @@ const MessageCard = ({ data, onChatItemMenuSelect }) => {
   const { width, height } = useWindowDimensions();
   const styles = createMessageCardStyles({ width, height });
   const navigation = useNavigation();
-  const currentUser = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const currentUser = userDataCached?.user;
   const [loading, setLoading] = useState(false);
   const { messages, unreadMessagesCount, lastMessage, _id } = data || {};
   const currentUserId = currentUser?._id;

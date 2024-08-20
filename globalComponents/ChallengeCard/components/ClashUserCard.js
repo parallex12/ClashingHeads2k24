@@ -13,10 +13,9 @@ import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CacheImage from "../../../globalComponents/CacheImage";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
 import PostApi from "../../../ApisManager/PostApi";
+import { useQueryClient } from "react-query";
 
 const ClashUserCard = memo((data) => {
   let {
@@ -36,7 +35,9 @@ const ClashUserCard = memo((data) => {
 
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
-  const currentUser = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const currentUser = userDataCached?.user;
   const navigation = useNavigation();
   const [hasCurrentUserVoted, setHasCurrentUserVoted] = useState(null);
   const postApi = new PostApi();

@@ -9,21 +9,21 @@ import {
 } from "react-native";
 import { styles as _styles } from "../../styles/News/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import BottomMenu from "../../globalComponents/BottomMenu/BottomMenu";
 import NewsCard from "../../globalComponents/NewsCard";
 import { sortPostsByCreatedAt } from "../../utils";
 import { font } from "../../styles/Global/main";
 import SearchBar from "../../globalComponents/SearchBar";
 import { getPercent } from "../../middleware";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
-import ContentLoader, { Facebook } from "react-content-loader/native";
+import{ Facebook } from "react-content-loader/native";
+import { useQueryClient } from "react-query";
 
 const News = () => {
   const [newsArr, setNewsArr] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const currentUser = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const currentUser = userDataCached?.user;
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
 

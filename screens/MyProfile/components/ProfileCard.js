@@ -11,8 +11,6 @@ import { font } from "../../../styles/Global/main";
 import { getPercent } from "../../../middleware";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Entypo, AntDesign } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
@@ -78,10 +76,9 @@ const CardHeader = (props) => {
 };
 
 const ProfileCard = (props) => {
-  let {} = props;
+  let { user_details } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user_details = useSelector(selectAuthUser);
   const navigation = useNavigation();
   let {
     realName,
@@ -97,7 +94,6 @@ const ProfileCard = (props) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [downloadedAudio, setDownloadedAudio] = useState(null);
   const sound = useRef(new Audio.Sound());
-
   const downloadCompressedAudio = async () => {
     const downloadFileUrl = await download(about_voice, (progress) => {});
     setDownloadedAudio(downloadFileUrl);

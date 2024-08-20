@@ -15,7 +15,6 @@ import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { uploadMedia } from "../../../middleware/firebase";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import { Image as ImageCompress } from "react-native-compressor";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 import UserApi from "../../../ApisManager/UserApi";
@@ -24,7 +23,6 @@ const ProfilePhoto = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [profile, setProfile] = useState(null);
-  const user = useSelector(selectAuthUser);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const userapi = new UserApi();

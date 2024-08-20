@@ -16,10 +16,10 @@ import { Entypo } from "@expo/vector-icons";
 import { sideMenuOptions } from "../../middleware";
 import { useNavigation } from "@react-navigation/native";
 import LogoutPress from "../LogoutPress";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
+import { useDispatch } from "react-redux";
 import { onUpdateMenu } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 import CacheImage from "../CacheImage";
+import { useQueryClient } from "react-query";
 
 const ListItem = ({ data }) => {
   let { width, height } = useWindowDimensions();
@@ -70,7 +70,9 @@ const SideMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = SideMenuStyles({ width, height });
   const dispatch = useDispatch();
-  const user_details = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_details = userDataCached?.user;
   let profile = user_details?.profile_photo;
   const navigation = useNavigation();
   const isDrawerOpen = useDrawerStatus();

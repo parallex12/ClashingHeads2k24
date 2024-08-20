@@ -10,10 +10,11 @@ const CacheImage = (props) => {
   const [imageUri, setImageUri] = useState(null);
   const [imageLoad, setImageLoad] = useState(false);
   let imageHash = hash || "LCIM{AIAQ.M{}@E1E4E1-:ofAD-V";
-  
+
   useEffect(() => {
     const fetchImage = async () => {
       try {
+        if (!uri && !isLocal) return;
         if (isLocal) return setImageUri(source);
         setImageLoad(true);
         let hashImg = shortHash(uri);
@@ -41,6 +42,7 @@ const CacheImage = (props) => {
           setImageUri(localUri);
         }
       } catch (error) {
+        console.log(props);
         console.log("Error fetching image:", error, source);
         setImageUri(uri); // Fallback to original URI if caching fails
       }

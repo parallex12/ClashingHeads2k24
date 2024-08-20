@@ -8,7 +8,6 @@ import {
 import { ChallengeCardStyles as _styles } from "../../styles/Global/main";
 import { onShareApp } from "../../utils";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
 import Content from "../../globalComponents/PostCard/components/Content";
 import ClashUserCard from "./components/ClashUserCard";
 import CardFooter from "./components/CardFooter";

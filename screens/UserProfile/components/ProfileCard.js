@@ -12,11 +12,11 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
-import { selectAuthUser } from "../../../state-management/features/auth";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { download } from "react-native-compressor";
 import CardHeader from "./CardHeader";
 import UserApi from "../../../ApisManager/UserApi";
+import { useMutation, useQueryClient } from "react-query";
 
 const ProfileCard = (props) => {
   let { user } = props;
@@ -40,13 +40,39 @@ const ProfileCard = (props) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const sound = useRef(new Audio.Sound());
   const dispatch = useDispatch();
-  const current_user = useSelector(selectAuthUser);
+  // Access cached data directly
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const current_user = userDataCached?.user;
   const followButtonTypes = ["Following", "Follow", "Follow back"];
   const [currentFollowButtonState, setCurrentFollowButtonState] = useState();
   const [isCurrentUserFollower, setIsCurrentUserFollower] = useState();
   const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState();
   const [downloadedAudio, setDownloadedAudio] = useState(null);
-  const userApi = new UserApi();
+  const { followUser, unfollowUser } = new UserApi();
+  const followMutation = useMutation({
+    mutationFn: async () => await followUser(current_user?._id, _id),
+    onSettled: (data) => {
+      queryClient.invalidateQueries(["userfeed"]); //  invalidating user feed
+      queryClient.resetQueries(["userfeed"]); // Reset query state including cursor
+      queryClient.invalidateQueries(["currentUserProfile"]); //  invalidating user feed
+    },
+    onError: (error) => {
+      console.error("Creation failed:", error);
+    },
+  });
+
+  const unfollowMutation = useMutation({
+    mutationFn: async() => await unfollowUser(current_user?._id, _id),
+    onSettled: (data) => {
+      queryClient.invalidateQueries(["userfeed"]); //  invalidating user feed
+      queryClient.resetQueries(["userfeed"]); // Reset query state including cursor
+      queryClient.invalidateQueries(["currentUserProfile"]); //  invalidating user feed
+    },
+    onError: (error) => {
+      console.error("Creation failed:", error);
+    },
+  });
 
   useEffect(() => {
     setIsCurrentUserFollower(
@@ -105,20 +131,19 @@ const ProfileCard = (props) => {
     }
   };
 
-  const onFollow = async() => {
+  const onFollow = async () => {
     if (!current_user || !user) return;
     if (
       currentFollowButtonState == "Follow" ||
       currentFollowButtonState == "Follow back"
     ) {
       setIsCurrentUserFollower(current_user);
-      await userApi.followUser(current_user?._id, _id);
-      return;
+      followMutation.mutate();
     }
 
     if (currentFollowButtonState == "Following") {
       setIsCurrentUserFollower(null);
-      await userApi.unfollowUser(current_user?._id, _id);
+      unfollowMutation.mutate();
     }
   };
 
@@ -138,7 +163,9 @@ const ProfileCard = (props) => {
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
           <Text style={font(19, "#111827", "Medium", 2)}>
-            <Text style={font(19, "#", "Semibold", 2)}>#{clashHash} </Text>
+            <Text style={font(19, "#DB2727", "Semibold", 2)}>
+              #{clashHash}{" "}
+            </Text>
             {realName || ""}
           </Text>
           <Image

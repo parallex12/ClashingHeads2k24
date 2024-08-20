@@ -4,15 +4,15 @@ import { styles as _styles } from "../../styles/ChallengeClash/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import { getPercent } from "../../middleware";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { useDispatch } from "react-redux";
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 import { font } from "../../styles/Global/main";
 import { Instagram } from "react-content-loader/native";
-import { selectAuthUser } from "../../state-management/features/auth";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 import PostApi from "../../ApisManager/PostApi";
 import ClashApi from "../../ApisManager/ClashApi";
+import { useQuery, useQueryClient } from "react-query";
 
 const SubClashes = React.memo(
   ({
@@ -56,16 +56,33 @@ const ChallengeClash = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let prevData = props?.route?.params;
+  const { getPostById, updatePostById } = new PostApi();
+  const { getClashesByPostId, createClash } = new ClashApi();
   const bottomVoiceSheetRef = useRef(null);
   const bottomFlagSheetRef = useRef(null);
   const [clashTo, setClashTo] = useState("post");
-  const [postData, setPostData] = useState("post");
-  const currentUser = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const currentUser = userDataCached?.user;
   let { _id } = currentUser;
   let postId = prevData?._id;
   let openVoiceSheet = props?.route?.params?.openVoiceSheet;
-  const postApi = new PostApi();
-  const clashApi = new ClashApi();
+
+  const challengeQuery = useQuery(
+    ["challengeDetail", postId],
+    () => getPostById(postId),
+    {
+      enabled: !!postId,
+    }
+  );
+  const clashesQuery = useQuery(
+    ["challengeClashes", postId],
+    () => getClashesByPostId(postId),
+    {
+      enabled: !!postId,
+      staleTime: 60000,
+    }
+  );
 
   const createdAtDate = useMemo(
     () => new Date(prevData?.createdAt).toDateString(),
@@ -77,30 +94,27 @@ const ChallengeClash = (props) => {
     if (openVoiceSheet) {
       bottomVoiceSheetRef.current.present();
     }
-  }, [dispatch, postId, refreshing]);
+  }, []);
 
   const get_post = async () => {
     try {
-      let result = await postApi.getPostById(postId);
-      let clashesResult = await clashApi.getClashesByPostId(postId);
+      let result = challengeQuery?.data.post;
       let views = [...result?.post?.views];
-      setRefreshing(false);
       if (!views?.includes(_id)) {
         views?.push(_id);
-        result = await postApi.updatePostById(postId, { views });
+        result = await updatePostById(postId, { views });
       }
-      setPostData({ ...result?.post, clashes: clashesResult?.clashes });
+      challengeQuery?.refetch();
     } catch (e) {
       console.log(e);
-      setRefreshing(false);
     }
   };
 
   const onPostClash = async (clashDetails) => {
-    await clashApi.createClash(clashDetails);
-    get_post();
+    await createClash(clashDetails);
+    clashesQuery?.refetch();
+    challengeQuery?.refetch();
   };
-
 
   return (
     <View style={styles.container}>
@@ -110,14 +124,14 @@ const ChallengeClash = (props) => {
         title="Clash"
         searchIcon={false}
       />
-      {!prevData ? (
+      {challengeQuery?.isLoading ? (
         <Instagram style={{ alignSelf: "center" }} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             <ChallengeCard
               showVoting
-              data={postData || prevData}
+              data={challengeQuery?.data?.post || prevData}
               onClashesPress={() => bottomVoiceSheetRef.current.present()}
               onReportPress={() => bottomFlagSheetRef.current.present()}
             />
@@ -130,13 +144,17 @@ const ChallengeClash = (props) => {
                 <Text style={font(13, "#9CA3AF", "Regular")}>Views</Text>
               </Text>
             </View>
-            <SubClashes
-              subClashes={postData?.clashes}
-              user_id={_id}
-              bottomVoiceSheetRef={bottomVoiceSheetRef}
-              bottomFlagSheetRef={bottomFlagSheetRef}
-              setClashTo={setClashTo}
-            />
+            {clashesQuery?.isLoading ? (
+              <Instagram style={{ alignSelf: "center" }} />
+            ) : (
+              <SubClashes
+                subClashes={clashesQuery?.data.clashes}
+                user_id={_id}
+                bottomVoiceSheetRef={bottomVoiceSheetRef}
+                bottomFlagSheetRef={bottomFlagSheetRef}
+                setClashTo={setClashTo}
+              />
+            )}
           </View>
         </ScrollView>
       )}

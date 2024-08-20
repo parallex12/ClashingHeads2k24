@@ -7,7 +7,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { styles as _styles } from "../../../styles/VoiceRecording/main";
 import { font } from "../../../styles/Global/main";
 import { getPercent } from "../../../middleware";
@@ -16,7 +16,6 @@ import CircleComponent from "./components/CircleComponent";
 import RecordingButton from "../../../globalComponents/RecordingButton";
 import RecordingPlayer from "../../../globalComponents/RecordingPlayer";
 import { uploadMedia } from "../../../middleware/firebase";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Audio } from "react-native-compressor";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
@@ -41,7 +40,6 @@ const VoiceRecording = (props) => {
   const [progress, setProgress] = useState(0);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
   const timerRef = useRef(null);
-  const user = useSelector(selectAuthUser);
   let recordingLimit = 15;
   const dispatch = useDispatch();
   const userapi = new UserApi();

@@ -10,8 +10,7 @@ import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
 import { onShareApp } from "../../../utils";
 import { useEffect, useState } from "react";
-import { selectAuthUser } from "../../../state-management/features/auth";
-import { useSelector } from "react-redux";
+import { useQueryClient } from "react-query";
 
 const FooterItem = ({ item, index }) => {
   let { width, height } = useWindowDimensions();
@@ -47,7 +46,9 @@ const ActionMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [reactions, setReactions] = useState({});
-  const { _id } = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const { _id } = userDataCached?.user;
   useEffect(() => {
     setReactions({ likes, dislikes });
   }, [likes, dislikes]);

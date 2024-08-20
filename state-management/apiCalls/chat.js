@@ -3,7 +3,7 @@ import axios from "axios";
 export const get_user_chats = async (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await axios.get(`/chat/${id}`);
+      const result = await axios.get(`/chats/${id}`);
       const chatDocs = result?.data;
       resolve(chatDocs);
     } catch (error) {
@@ -16,7 +16,7 @@ export const get_user_chats = async (id) => {
 export const delete_user_chat = async (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await axios.delete(`/chat/${id}`);
+      const result = await axios.delete(`/chats/${id}`);
       const chatDocs = result?.data;
       resolve(chatDocs);
     } catch (error) {
@@ -29,7 +29,7 @@ export const delete_user_chat = async (id) => {
 export const update_user_chat = async (id, chat_details) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await axios.patch(`/chat/${id}`, chat_details);
+      const result = await axios.patch(`/chats/${id}`, chat_details);
       const chatDocs = result?.data;
       resolve(chatDocs);
     } catch (error) {
@@ -42,7 +42,7 @@ export const update_user_chat = async (id, chat_details) => {
 export const create_get_user_chat = async (participants) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await axios.post(`/chat/connect`, participants);
+      const result = await axios.post(`/chats/create`, participants);
       const chatDocs = result?.data;
       resolve(chatDocs);
     } catch (error) {

@@ -14,8 +14,6 @@ import TypingComponent from "./components/TypingComponent";
 import SenderMessage from "./components/SenderMessage";
 import RecieverMessage from "./components/RecieverMessage";
 import { useRoute } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
 import Header from "./components/Header";
 import {
   create_get_user_chat,
@@ -26,8 +24,10 @@ import { useSocket } from "../../state-management/apiCalls/SocketContext";
 import { uploadMedia } from "../../middleware/firebase";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
+import { useQueryClient } from "react-query";
 
 const ChatScreen = (props) => {
+  const socket = useSocket();
   const {
     joinRoom,
     leaveRoom,
@@ -35,8 +35,9 @@ const ChatScreen = (props) => {
     receiveMessage,
     sendMessage,
   } = useChatSocketService();
-  const socket = useSocket();
-  const currentUser = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const currentUser = userDataCached?.user;
   const currentUserId = currentUser?._id;
   const route = useRoute();
   const loaded_chat_data = route.params?.chat_data;
@@ -100,12 +101,12 @@ const ChatScreen = (props) => {
         );
       });
     });
-    socket.on("deleteMsg", (msgData) => {
-      setMessages((prevMessages) => {
-        let filterMsg = prevMessages?.filter((e) => e?._id != msgData?.msgId);
-        return filterMsg;
-      });
-    });
+    // socket.on("deleteMsg", (msgData) => {
+    //   setMessages((prevMessages) => {
+    //     let filterMsg = prevMessages?.filter((e) => e?._id != msgData?.msgId);
+    //     return filterMsg;
+    //   });
+    // });
     // Add keyboard event listeners
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",

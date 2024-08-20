@@ -47,6 +47,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       justifyContent: "center",
       overflow: "hidden",
       alignSelf: "center",
+
     },
     body: {
       width: "100%",
@@ -59,8 +60,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       width: "90%",
     }),
     clashesCardUsersCont: {
-      flex: 1,
-      marginVertical: getPercent(2, height),
+      paddingVertical: getPercent(2, height),
       width: "100%",
       flexDirection: "row",
       alignItems: "center",

@@ -13,8 +13,6 @@ import ImageViewer from "../../../globalComponents/ImageViewer/ImageViewer";
 import StandardButton from "../../../globalComponents/StandardButton";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import ReplyCard from "./ReplyCard";
 
 const TypingComponentExtraViewer = (props) => {

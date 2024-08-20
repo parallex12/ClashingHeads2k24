@@ -11,10 +11,9 @@ import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { getTimeElapsed } from "../../../utils";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import CacheImage from "../../CacheImage";
 import ActivityStatus from "../../ActivityStatus";
+import { useQueryClient } from "react-query";
 
 const Profile = ({ source, profileStyles, user }) => {
   let { width, height } = useWindowDimensions();
@@ -40,8 +39,10 @@ const Header = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let post_past_time = getTimeElapsed(createdAt);
-  const navigation = useNavigation();
-  const user_details = useSelector(selectAuthUser);
+  const navigation = useNavigation()
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_details = userDataCached?.user;
 
   return (
     <View style={styles.container}>

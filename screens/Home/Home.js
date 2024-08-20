@@ -21,6 +21,8 @@ import PostActionsBottomSheet from "../../globalComponents/PostActionsBottomShee
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 import UserApi from "../../ApisManager/UserApi";
 import FeedApi from "../../ApisManager/FeedApi";
+import { useInfiniteQuery, useQuery } from "react-query";
+import { Instagram } from "react-content-loader/native";
 
 const Home = (props) => {
   let {} = props;
@@ -29,22 +31,28 @@ const Home = (props) => {
   const bottomFlagSheetRef = useRef(null);
   const postActionsbottomSheetRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [postInteraction, setPostInteraction] = useState(null);
-  const [lastVisiblePost, setLastVisiblePost] = useState(null);
-  const [currentPosts, setCurrentPosts] = useState([]);
-  const [page, setPage] = useState(1);
-  const [reachedEnd, setReachedEnd] = useState(false);
   const dispatch = useDispatch();
-  const userapi = new UserApi();
-  const feedApi = new FeedApi();
+  const { getUserProfile } = new UserApi();
+  const usersQuery = useQuery(["currentUserProfile"], getUserProfile, {
+    staleTime: 100000,
+  });
+  const { getUserFeed } = new FeedApi();
+  const userfeedQuery = useInfiniteQuery({
+    queryKey: ["userfeed"],
+    queryFn: ({ pageParam = 0 }) => getUserFeed({ pageParam }),
+    retry: 5,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      return lastPage.nextCursor;
+    },
+    staleTime: 60000,
+  });
 
   useEffect(() => {
     (async () => {
-      const result = await userapi.getUserProfile();
-      dispatch(setUserDetails(result?.user || {}));
-      loadPosts();
-      if (result?.goTo) {
+      dispatch(setUserDetails(usersQuery?.data?.user || {}));
+      if (userfeedQuery?.data?.goTo) {
         props.navigation.reset({
           index: 0,
           routes: [{ name: result?.goTo }],
@@ -53,29 +61,25 @@ const Home = (props) => {
     })();
   }, []);
 
-  const loadPosts = async () => {
-    try {
-      const feedResult = await feedApi.getUserFeed(page);
-      setCurrentPosts(feedResult?.feed);
-      setRefreshing(false);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const feedPages = useMemo(() => {
+    let pages = userfeedQuery?.data?.pages;
+    return pages?.flatMap((page) => page.data);
+  }, [userfeedQuery?.data?.pages]);
 
-  const memoizedPosts = useMemo(() => currentPosts, [currentPosts]);
-
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    loadPosts(lastVisiblePost, "refresh");
+    (await userfeedQuery.refetch()).isFetched && setRefreshing(false);
   };
 
   const onLoadMore = () => {
-    loadPosts(lastVisiblePost, "loadMore");
+    let { hasNextPage, isFetchingNextPage } = userfeedQuery;
+    if (hasNextPage && !isFetchingNextPage) {
+      userfeedQuery.fetchNextPage();
+    }
   };
 
   const renderFooter = () => {
-    if (loadingMore && !reachedEnd) {
+    if (userfeedQuery.isFetchingNextPage) {
       return (
         <View style={styles.loadingIndicatorContainer}>
           <ActivityIndicator size="small" color="#222" />
@@ -106,59 +110,65 @@ const Home = (props) => {
           }
         />
       </View>
-      <View style={styles.content}>
-        <FlatList
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          data={memoizedPosts}
-          renderItem={({ item, index }) => {
-            if (item?.clashType == "challenge") {
+      {userfeedQuery?.isFetching ? (
+        new Array(2).fill().map((item, index) => {
+          return <Instagram style={{ alignSelf: "center" }} key={index} />;
+        })
+      ) : (
+        <View style={styles.content}>
+          <FlatList
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            data={feedPages}
+            renderItem={({ item, index }) => {
+              if (item?.clashType == "challenge") {
+                return (
+                  <ChallengeCard
+                    divider
+                    onPress={() =>
+                      props?.navigation?.navigate("ChallengeClash", { ...item })
+                    }
+                    onClashesPress={() =>
+                      props?.navigation?.navigate("ChallengeClash", { ...item })
+                    }
+                    onReportPress={() => bottomFlagSheetRef.current.present()}
+                    key={index}
+                    data={item}
+                  />
+                );
+              }
               return (
-                <ChallengeCard
-                  divider
-                  onPress={() =>
-                    props?.navigation?.navigate("ChallengeClash", { ...item })
-                  }
-                  onClashesPress={() =>
-                    props?.navigation?.navigate("ChallengeClash", { ...item })
-                  }
-                  onReportPress={() => bottomFlagSheetRef.current.present()}
-                  key={index}
+                <PostCard
+                  divider={index != 0}
+                  desc_limit={1}
                   data={item}
+                  key={index}
+                  onPostClashesPress={() =>
+                    props?.navigation?.navigate("ClashDetails", { ...item })
+                  }
+                  onReportPress={() => bottomFlagSheetRef?.current?.present()}
+                  onActionsPress={() => {
+                    setPostInteraction(item);
+                    postActionsbottomSheetRef?.current?.present();
+                  }}
                 />
               );
-            }
-            return (
-              <PostCard
-                divider={index != 0}
-                desc_limit={1}
-                data={item}
-                key={index}
-                onPostClashesPress={() =>
-                  props?.navigation?.navigate("ClashDetails", { ...item })
-                }
-                onReportPress={() => bottomFlagSheetRef?.current?.present()}
-                onActionsPress={() => {
-                  setPostInteraction(item);
-                  postActionsbottomSheetRef?.current?.present();
-                }}
-              />
-            );
-          }}
-          keyExtractor={(item) => item?._id?.toString()}
-          ListFooterComponent={renderFooter}
-          onEndReached={onLoadMore}
-          onEndReachedThreshold={0.6}
-          removeClippedSubviews
-          windowSize={10}
-          getItemLayout={(data, index) => ({
-            length: getPercent(15, height), // Replace ITEM_HEIGHT with the actual height of your items
-            offset: getPercent(15, height) * index,
-            index,
-          })}
-        />
-      </View>
+            }}
+            keyExtractor={(item) => item?._id + item?.updatedAt}
+            ListFooterComponent={renderFooter}
+            onEndReached={onLoadMore}
+            onEndReachedThreshold={0.6}
+            removeClippedSubviews
+            windowSize={10}
+            getItemLayout={(data, index) => ({
+              length: getPercent(15, height), // Replace ITEM_HEIGHT with the actual height of your items
+              offset: getPercent(15, height) * index,
+              index,
+            })}
+          />
+        </View>
+      )}
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
       <PostActionsBottomSheet
         data={postInteraction}

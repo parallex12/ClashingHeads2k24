@@ -10,22 +10,16 @@ import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
 import { useEffect, useState } from "react";
 import { onShareApp } from "../../../utils";
-import {  useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
+import { useQueryClient } from "react-query";
 
 const ActionMenu = (props) => {
-  let {
-    onReaction,
-    onPostClashesPress,
-    onReportPress,
-    dislikes,
-    likes,
-    clashes,
-    postDateAndViews,
-  } = props;
+  let { onReaction, onPostClashesPress, onReportPress, dislikes, likes } =
+    props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const { _id } = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const { _id } = userDataCached?.user;
 
   const [reactions, setReactions] = useState({});
 

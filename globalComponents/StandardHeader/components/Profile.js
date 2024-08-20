@@ -7,17 +7,19 @@ import {
 import { getPercent } from "../../../middleware";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import CacheImage from "../../CacheImage";
 import ActivityStatus from "../../ActivityStatus";
+import { useQueryClient } from "react-query";
 
 const Profile = (props) => {
   let { data, source, menu, profile_hash, customStyles } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
-  const currentUser = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const currentUser = userDataCached?.user;
+
   let userId = data?._id;
   let profileImg = {
     uri: source,

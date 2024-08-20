@@ -18,9 +18,7 @@ import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import { getPercent } from "../../../middleware";
 import { calculateVotes, onShareApp } from "../../../utils";
 import StandardButton from "../../../globalComponents/StandardButton";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
-import { updateChallengeClash } from "../../../state-management/features/challengeClash/challengeClashSlice";
+import { useDispatch } from "react-redux";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -28,6 +26,7 @@ import { download } from "react-native-compressor";
 import Content from "../../../globalComponents/PostCard/components/Content";
 import CacheImage from "../../../globalComponents/CacheImage";
 import PostApi from "../../../ApisManager/PostApi";
+import { useQueryClient } from "react-query";
 
 const DualClashCard = (props) => {
   const {
@@ -44,8 +43,9 @@ const DualClashCard = (props) => {
 
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
-  const currentUser = useSelector(selectAuthUser);
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const currentUser = userDataCached?.user;  const dispatch = useDispatch();
   const navigation = useNavigation();
   const [voteData, setVoteData] = useState(null);
   const [hasCurrentUserVoted, setHasCurrentUserVoted] = useState(null);

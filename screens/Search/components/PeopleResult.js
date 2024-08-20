@@ -1,17 +1,18 @@
 import { View, useWindowDimensions } from "react-native";
 import { PeopleResultStyles as _styles } from "../../../styles/Search/main";
 import UserCard from "../../../globalComponents/UserCard";
-import { useDispatch, useSelector } from "react-redux";
 import { memo, useCallback, useEffect, useState } from "react";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
 import UserApi from "../../../ApisManager/UserApi";
+import { useQueryClient } from "react-query";
 
 const PeopleResult = (props) => {
   let { searchQuery, onPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user_details = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_details = userDataCached?.user;
   const navigation = useNavigation();
   const [users, setUsers] = useState([]);
   const userapi = new UserApi();

@@ -14,13 +14,15 @@ import BackButton from "../../../globalComponents/BackButton";
 import { useEffect, useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
 import { Entypo } from "@expo/vector-icons";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import UserApi from "../../../ApisManager/UserApi";
+import { useQueryClient } from "react-query";
 
 const AddBio = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user = userDataCached?.user;
   const [form, setForm] = useState(user);
   const [errorField, setErrorField] = useState({});
   const [loading, setLoading] = useState(false);

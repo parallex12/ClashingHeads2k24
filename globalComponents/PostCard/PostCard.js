@@ -6,8 +6,8 @@ import { memo, useMemo } from "react";
 import Header from "./components/Header";
 import Content from "./components/Content";
 import ActionMenu from "./components/ActionMenu";
-import { selectAuthUser } from "../../state-management/features/auth";
 import PostApi from "../../ApisManager/PostApi";
+import { useQueryClient } from "react-query";
 
 const PostCard = memo((props) => {
   let {
@@ -23,10 +23,10 @@ const PostCard = memo((props) => {
   let { width, height } = useWindowDimensions();
   let styles = PostCardStyles({ width, height });
   let navigation = useNavigation();
-  const { author } = data;
   const createdAtDate = new Date(data?.createdAt).toDateString();
-  const { _id } = useSelector(selectAuthUser);
-  const { clashes } = data;
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const { _id } = userDataCached?.user;
   const memoizedData = useMemo(() => data, [data]);
   const postApi = new PostApi();
 
@@ -58,7 +58,7 @@ const PostCard = memo((props) => {
       >
         <View style={styles.content}>
           <Header
-            author={author || {}}
+            author={data?.author || {}}
             createdAt={memoizedData?.createdAt}
             onPostActions={onActionsPress}
           />

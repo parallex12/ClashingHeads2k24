@@ -8,14 +8,11 @@ import {
 } from "react-native";
 import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
 import { getTimeElapsed } from "../../../utils";
-import { memo } from "react";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
 import CacheImage from "../../CacheImage";
 import ActivityStatus from "../../ActivityStatus";
+import { useQueryClient } from "react-query";
 
 const Profile = ({ source, profileStyles,author,onProfilePress}) => {
   let { width, height } = useWindowDimensions();
@@ -40,7 +37,9 @@ const Header = (props) => {
   let styles = _styles({ width, height });
   let user_author = author;
   let post_past_time = getTimeElapsed(createdAt);
-  const user_details = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_details = userDataCached?.user;
   const navigation = useNavigation();
 
   return (

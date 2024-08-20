@@ -11,11 +11,11 @@ import PostCard from "../../globalComponents/PostCard/PostCard";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { getPercent } from "../../middleware";
-import { useDispatch } from "react-redux";
 import ContentLoader, { Instagram } from "react-content-loader/native";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 import UserApi from "../../ApisManager/UserApi";
 import PostApi from "../../ApisManager/PostApi";
+import { useQuery } from "react-query";
 
 const UserProfile = (props) => {
   let {} = props;
@@ -23,25 +23,26 @@ const UserProfile = (props) => {
   let styles = _styles({ width, height });
   let user = props?.route?.params?.user;
   const bottomFlagSheetRef = useRef();
-  const dispatch = useDispatch();
-  const [profile, setProfile] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [posts, setPosts] = useState([]);
-  const userApi = new UserApi();
-  const postApi = new PostApi();
+  const { getUserProfileById } = new UserApi();
+  const { getUsersPosts } = new PostApi();
+  const usersQuery = useQuery(
+    ["userProfile", user?._id],
+    () => getUserProfileById(user?._id),
+    {
+      enabled: !!user?._id,
+    }
+  );
+  const postsQuery = useQuery(
+    ["userPosts", user?._id],
+    () => getUsersPosts(user?._id),
+    {
+      enabled: !!user?._id,
+    }
+  );
 
-  useEffect(() => {
-    (async () => {
-      const result = await userApi.getUserProfileById(user?._id);
-      const postsRes = await postApi.getUsersPosts(result?.user?._id);
-      setProfile(result?.user);
-      setPosts(postsRes?.posts);
-      setLoading(false);
-    })();
-  }, [loading]);
-
-  const onRefresh = () => {
-    setLoading(true);
+  const onRefresh = async () => {
+    await usersQuery.refetch();
+    await postsQuery.refetch();
   };
 
   return (
@@ -53,11 +54,14 @@ const UserProfile = (props) => {
       />
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={usersQuery?.isRefetching || postsQuery?.isRefetching}
+            onRefresh={onRefresh}
+          />
         }
       >
         <View style={styles.content}>
-          {loading ? (
+          {usersQuery?.isLoading || postsQuery?.isLoading ? (
             <View style={styles.ContentLoader}>
               <ContentLoader style={{ flex: 1 }} />
               {new Array(2).fill().map((item, index) => {
@@ -68,9 +72,12 @@ const UserProfile = (props) => {
             </View>
           ) : (
             <>
-              <ProfileCard postsCount={posts?.length} user={profile || user} />
+              <ProfileCard
+                postsCount={postsQuery?.data?.posts?.length}
+                user={usersQuery?.data?.user || user}
+              />
               <View style={styles.innercontent}>
-                {posts?.map((item, index) => {
+                {postsQuery?.data?.posts?.map((item, index) => {
                   if (item?.clashType == "challenge") {
                     return (
                       <ChallengeCard

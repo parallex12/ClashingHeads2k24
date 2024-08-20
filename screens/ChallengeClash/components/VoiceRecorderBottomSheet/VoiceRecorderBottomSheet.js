@@ -11,7 +11,7 @@ import {
   BottomSheetView,
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo,useState } from "react";
 import BackDrop from "./BackDrop";
 import { Image } from "react-native";
 import Emojis from "./Emojis";
@@ -19,7 +19,6 @@ import { formatDuration, stickerArr } from "../../../../utils";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Stickers from "./Stickers";
 import { getPercent } from "../../../../middleware";
-import { selectAuthUser } from "../../../../state-management/features/auth";
 import {
   generateUniqueId,
 } from "../../../../state-management/features/singlePost/singlePostSlice";
@@ -27,6 +26,7 @@ import WaveAudioPlayer from "../../../../globalComponents/WaveAudioPlayer";
 import WaveAudioRecorder from "../../../../globalComponents/WaveAudioRecorder";
 import StandardButton from "../../../../globalComponents/StandardButton";
 import { addSubClashToChallenge, updateChallengeClash, updateSubClashDetails } from "../../../../state-management/features/challengeClash/challengeClashSlice";
+import { useQueryClient } from "react-query";
 
 const VoiceRecorderBottomSheet = (props) => {
   let { bottomVoiceSheetRef, clashId, clashTo,currentChallenge } = props;
@@ -41,7 +41,10 @@ const VoiceRecorderBottomSheet = (props) => {
   // variables
   const snapPoints = useMemo(() => ["25%", "60%"], []);
   let duration = formatDuration(recordingDuration);
-  let user_profile = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_profile = userDataCached?.user;
+
   const onChangeMode = () => {
     setCurrentVoiceMode((prev) => (prev == "mic" ? "sticker" : "mic"));
   };

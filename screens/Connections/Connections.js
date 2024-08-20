@@ -7,12 +7,11 @@ import {
 import { styles as _styles } from "../../styles/Connections/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import { getPercent } from "../../middleware";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
 import TabSelector from "./components/TabSelector";
 import UserCard from "./components/UserCard";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { useQueryClient } from "react-query";
 
 const Connections = (props) => {
   let { onPress } = props;
@@ -20,7 +19,9 @@ const Connections = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [active, setActive] = useState(0);
-  const current_user = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const current_user = userDataCached?.user;
   const loading = false;
   let following = [...user?.following];
   let followers = [...user?.followers];

@@ -1,21 +1,7 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import {
-  FlatList,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import React, { memo, useEffect, useMemo, useState } from "react";
+import { FlatList, TextInput, View, useWindowDimensions } from "react-native";
 import { FindFriendsSheetStyles as _styles } from "../../../styles/NewPost/main";
-import BottomSheet, {
+import {
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetView,
@@ -27,9 +13,8 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import UserCard from "../../../globalComponents/UserCard";
 import { AntDesign } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import UserApi from "../../../ApisManager/UserApi";
+import { useQueryClient } from "react-query";
 
 const FindUserSheet = (props) => {
   let { bottomSheetRef, callBackUser } = props;
@@ -39,7 +24,9 @@ const FindUserSheet = (props) => {
   const [searched_users, setSearched_users] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("a");
-  const current_user = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const current_user = userDataCached?.user;
   let { following, followers } = current_user;
   const userApi = new UserApi();
 

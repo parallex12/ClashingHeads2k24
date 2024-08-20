@@ -18,9 +18,8 @@ import { getPercent, postprivacyoptions } from "../../middleware";
 import StandardHeader2 from "../../globalComponents/StandardHeader2/StandardHeader2";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { createPost, validate_post_details } from "../../middleware/firebase";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
+import { validate_post_details } from "../../middleware/firebase";
+import { useDispatch } from "react-redux";
 import { Image as ImageCompress } from "react-native-compressor";
 import PrivacyBottomSheet from "./components/PrivacyBottomSheet";
 import { Blurhash } from "react-native-blurhash";
@@ -31,6 +30,7 @@ import WaveAudioPlayer from "../../globalComponents/WaveAudioPlayer";
 import FindUserSheet from "./components/FindUserSheet";
 import ChallengeHeader from "./components/ChallengeHeader";
 import PostApi from "../../ApisManager/PostApi";
+import { useQueryClient } from "react-query";
 
 const EditPostDetails = (props) => {
   let {} = props;
@@ -38,7 +38,9 @@ const EditPostDetails = (props) => {
   let styles = _styles({ width, height });
   const [imageHashingLoad, setimageHashingLoad] = useState(false);
   const [loading, setLoading] = useState(false);
-  const user_profile = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_profile = userDataCached?.user;
   const [tempOpponent, setTempOpponent] = useState(null);
   const privacybottomSheetRef = useRef(null);
   const friendsbottomSheetRef = useRef(null);
@@ -105,7 +107,8 @@ const EditPostDetails = (props) => {
       .then(async (res) => {
         setLoading(true);
         if (res.code == 200) {
-          await postApi.updatePostById(edit_post?._id, postForm)
+          await postApi
+            .updatePostById(edit_post?._id, postForm)
             .then((res) => {
               props?.navigation.navigate("Home");
               setLoading(false);

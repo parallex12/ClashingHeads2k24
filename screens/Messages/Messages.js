@@ -11,30 +11,31 @@ import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader
 import { chatMenuOptions, getPercent } from "../../middleware";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import SearchBar from "../../globalComponents/SearchBar";
-import { RFValue } from "react-native-responsive-fontsize";
 import { font } from "../../styles/Global/main";
 import MessageCard from "./components/MessageCard";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
 import { get_user_chats } from "../../state-management/apiCalls/chat";
 import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
 import ContactsSheet from "../../globalComponents/ContactsSheet/ContactsSheet";
 import { useNavigation } from "@react-navigation/native";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
+import { useQueryClient } from "react-query";
 
 const Messages = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [chats, setChats] = useState([]);
-  const currentUser = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const currentUser = userDataCached?.user;
   const currentUserId = currentUser?._id;
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const { receiveChat, listenreadMessages } = useChatSocketService();
   const contactsbottomSheetRef = useRef();
   const bottomFlagSheetRef = useRef();
+  
   const fetchChats = async () => {
     const chats = await get_user_chats(currentUserId);
     setChats(chats);

@@ -8,16 +8,17 @@ import {
 } from "react-native";
 import { ClashesResultStyles as _styles } from "../../../styles/Search/main";
 import { font } from "../../../styles/Global/main";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import { useNavigation } from "@react-navigation/native";
 import { Blurhash } from "react-native-blurhash";
-import { useSelector } from "react-redux";
+import { useQueryClient } from "react-query";
 
 const ChallengeHeader = (props) => {
   const { data, onPress } = props;
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
-  const currentUser = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const currentUser = userDataCached?.user;
   const navigation = useNavigation();
   let { challenger, opponent } = data;
 

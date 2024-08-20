@@ -19,8 +19,7 @@ import StandardHeader2 from "../../globalComponents/StandardHeader2/StandardHead
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { validate_post_details } from "../../middleware/firebase";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
+import { useDispatch } from "react-redux";
 import { Image as ImageCompress } from "react-native-compressor";
 import PrivacyBottomSheet from "./components/PrivacyBottomSheet";
 import { Entypo } from "@expo/vector-icons";
@@ -30,22 +29,36 @@ import WaveAudioPlayer from "../../globalComponents/WaveAudioPlayer";
 import FindUserSheet from "./components/FindUserSheet";
 import ChallengeHeader from "./components/ChallengeHeader";
 import PostApi from "../../ApisManager/PostApi";
+import { useMutation, useQueryClient } from "react-query";
 
 const AddPostDetails = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [imageHashingLoad, setimageHashingLoad] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const user_profile = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_profile = userDataCached?.user;
   const [tempOpponent, setTempOpponent] = useState(null);
   const privacybottomSheetRef = useRef(null);
   const friendsbottomSheetRef = useRef(null);
   const voicebottomSheetRef = useRef(null);
-  const dispatch = useDispatch();
   const news_post = useRoute().params?.news_post;
   const edit_post = useRoute().params?.edit_post;
-  const postApi = new PostApi();
+  const { createPost } = new PostApi();
+  const { mutate, isLoading ,isError} = useMutation({
+    mutationFn: async (data) => await createPost(data),
+    onSettled: (data) => {
+      queryClient.invalidateQueries(["userfeed"]); //  invalidating user feed
+      queryClient.resetQueries(["userfeed"]); // Reset query state including cursor
+      queryClient.invalidateQueries(["currentUserProfile"]); //  invalidating currentUserProfile
+      queryClient.invalidateQueries(["currentUserposts"]); //  invalidating ucurrentUserposts
+      props?.navigation.navigate("Home");
+    },
+    onError: (error) => {
+      console.error("Creation failed:", error);
+    },
+  });
 
   const [postForm, setPostForm] = useState({
     recording: null,
@@ -80,6 +93,7 @@ const AddPostDetails = (props) => {
       setPostForm(edit_post);
     }
   }, [news_post]);
+
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -107,16 +121,12 @@ const AddPostDetails = (props) => {
 
   const onPost = async () => {
     try {
-      setLoading(true);
       let validationRes = await validate_post_details(postForm);
       if (validationRes?.err) {
         throw new Error(validationRes?.err);
       }
-      await postApi.createPost(postForm);
-      props?.navigation.navigate("Home");
-      setLoading(false);
+      mutate(postForm);
     } catch (e) {
-      setLoading(false);
       alert(e?.err);
     }
   };
@@ -149,7 +159,7 @@ const AddPostDetails = (props) => {
         rightIcon={
           <StandardButton
             title="Post"
-            loading={loading}
+            loading={isLoading}
             customStyles={{
               width: getPercent(17, width),
               height: getPercent(4, height),

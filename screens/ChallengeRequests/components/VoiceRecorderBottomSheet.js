@@ -4,21 +4,20 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { VoiceRecorderBottomSheetStyles } from "../../../styles/Global/main";
 import {
   BottomSheetModal,
   BottomSheetView,
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import BackDrop from "./BackDrop";
 import { Image } from "react-native";
 import Emojis from "./Emojis";
 import { formatDuration, stickerArr } from "../../../utils";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { getPercent } from "../../../middleware";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import WaveAudioRecorder from "../../../globalComponents/WaveAudioRecorder";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import Stickers from "./Stickers";
@@ -40,7 +39,6 @@ const VoiceRecorderBottomSheet = (props) => {
   // variables
   const snapPoints = useMemo(() => ["25%", "60%"], []);
   let duration = formatDuration(recordingDuration);
-  let user_profile = useSelector(selectAuthUser);
   const navigation = useNavigation();
   const onChangeMode = () => {
     setCurrentVoiceMode((prev) => (prev == "mic" ? "sticker" : "mic"));

@@ -4,8 +4,7 @@ import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader
 import { getPercent } from "../../middleware";
 import { useCallback, useEffect, useState } from "react";
 import StandardInput from "../../globalComponents/StandardInput";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
+import { useDispatch } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import WaveAudioPlayer from "../../globalComponents/WaveAudioPlayer";
@@ -16,12 +15,16 @@ import UserCard from "../../globalComponents/UserCard";
 import PeopleResult from "../Search/components/PeopleResult";
 import { validate_clash_details } from "../../middleware/firebase";
 import PostApi from "../../ApisManager/PostApi";
+import { useQueryClient } from "react-query";
 
 const CreateClash = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user_details = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_details = userDataCached?.user;
+
   const [recordedVoice, setRecordedVoice] = useState(null);
   const [loading, setLoading] = useState(null);
   const [recordingDuration, setRecordingDuration] = useState(0);

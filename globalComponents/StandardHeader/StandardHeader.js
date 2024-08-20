@@ -1,12 +1,11 @@
 import { ImageBackground, Text, View, useWindowDimensions } from "react-native";
-import { useSelector } from "react-redux";
 import { StandardHeaderStyles } from "../../styles/Global/main";
 import Profile from "./components/Profile";
 import SearchIcon from "./components/SearchIcon";
 import Logo from "./components/Logo";
 import BackButton from "../BackButton";
-import { selectAuthUser } from "../../state-management/features/auth";
 import { StatusBar } from "expo-status-bar";
+import { useQueryClient } from "react-query";
 
 const StandardHeader = (props) => {
   let {
@@ -21,8 +20,9 @@ const StandardHeader = (props) => {
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = StandardHeaderStyles({ width, height });
-  const user_profile = useSelector(selectAuthUser);
-
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_profile = userDataCached?.user;
 
   return (
     <ImageBackground

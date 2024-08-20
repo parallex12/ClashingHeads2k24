@@ -4,7 +4,7 @@ class UserApi {
   //Api method to getUserProfile
   async getUserProfile() {
     try {
-      let result = await axios.get("/users/profile");
+      let result = await axios.get(`/users/profile`);
       let { tos, hasPersonalInfo, hasVoiceAdded, hasProfilePhoto } =
         result?.data;
       if (!tos) {
@@ -39,7 +39,7 @@ class UserApi {
   //Api method to followUser
   async followUser(uId, fuId) {
     try {
-      let result = await axios.post(`/follow/${uId}/${fuId}`);
+      let result = await axios.post(`users/follow/${uId}/${fuId}`);
       return result?.data;
     } catch (e) {
       console.log("UserApi followUser Error", e);
@@ -49,7 +49,7 @@ class UserApi {
   //Api method to unfollowUser
   async unfollowUser(uId, fuId) {
     try {
-      let result = await axios.post(`/unfollow/${uId}/${fuId}`);
+      let result = await axios.post(`users/unfollow/${uId}/${fuId}`);
       return result?.data;
     } catch (e) {
       console.log("UserApi unfollowUser Error", e);

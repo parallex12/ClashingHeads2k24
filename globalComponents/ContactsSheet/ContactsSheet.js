@@ -14,9 +14,9 @@ import UserCard from "../../globalComponents/UserCard";
 import { AntDesign } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAuthUser } from "../../state-management/features/auth";
 import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 import UserApi from "../../ApisManager/UserApi";
+import { useQueryClient } from "react-query";
 
 const ContactsSheet = (props) => {
   let { bottomSheetRef, callBackUser } = props;
@@ -26,7 +26,9 @@ const ContactsSheet = (props) => {
   const [searched_users, setSearched_users] = useState([]);
   const [user_friends, setUser_friends] = useState([]);
   const [searchQuery, setSearchQuery] = useState();
-  const current_user = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const current_user = userDataCached?.user;
   let { following, followers } = current_user;
   const dispatch = useDispatch();
   const userApi = new UserApi();

@@ -7,12 +7,12 @@ import { useEffect, useRef, useState } from "react";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { getPercent } from "../../middleware";
 import { useDispatch } from "react-redux";
-import { setUserDetails } from "../../state-management/features/auth/authSlice";
 import ContentLoader, { Instagram } from "react-content-loader/native";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 import UserApi from "../../ApisManager/UserApi";
 import { RefreshControl } from "react-native-gesture-handler";
 import PostApi from "../../ApisManager/PostApi";
+import { useQuery } from "react-query";
 
 const MyProfile = (props) => {
   let {} = props;
@@ -22,21 +22,21 @@ const MyProfile = (props) => {
   const [loading, setLoading] = useState(false);
   const bottomFlagSheetRef = useRef();
   const dispatch = useDispatch();
-  const userapi = new UserApi();
-  const postApi = new PostApi();
-
-  useEffect(() => {
-    (async () => {
-      const result = await userapi.getUserProfile();
-      const postsRes = await postApi.getUsersPosts(result?.user?._id);
-      dispatch(setUserDetails(result?.user || {}));
-      setPosts(postsRes?.posts);
-      setLoading(false);
-    })();
-  }, [loading]);
+  const { getUserProfile } = new UserApi();
+  const { getUsersPosts } = new PostApi();
+  const usersQuery = useQuery(["currentUserProfile"], getUserProfile);
+  const userId = usersQuery?.data?.user?._id;
+  const postsQuery = useQuery(
+    ["currentUserposts", userId],
+    () => getUsersPosts(userId),
+    {
+      enabled: !!userId,
+    }
+  );
 
   const onRefresh = () => {
-    setLoading(true);
+    usersQuery?.refetch()
+    postsQuery?.refetch();
   };
 
   return (
@@ -53,18 +53,18 @@ const MyProfile = (props) => {
         }
       >
         <View style={styles.content}>
-          {loading ? (
+          {postsQuery?.isLoading || usersQuery?.isLoading ? (
             <View style={styles.ContentLoader}>
               <ContentLoader style={{ flex: 1 }} />
               {new Array(2).fill().map((item, index) => {
-                return <Instagram style={{ alignSelf: "center" }} />;
+                return <Instagram style={{ alignSelf: "center" }}  key={index} />;
               })}
             </View>
           ) : (
             <>
-              <ProfileCard />
+              <ProfileCard user_details={usersQuery?.data?.user} />
               <View style={styles.innercontent}>
-                {posts?.map((item, index) => {
+                {postsQuery?.data?.posts?.map((item, index) => {
                   if (item?.clashType == "challenge") {
                     return (
                       <ChallengeCard

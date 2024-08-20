@@ -1,45 +1,49 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { AppState } from "react-native";
-import { useQueryClient } from "react-query";
+import { useQuery } from "react-query";
+import UserApi from "../ApisManager/UserApi";
 
 const SocketContext = createContext();
 
-const SOCKET_URL = "https://clashing-heads-server.vercel.app";
+const SOCKET_URL = "http://192.168.100.127:3000";
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
+  const { getUserProfile } = new UserApi();
+  const usersQuery = useQuery(["currentUserProfile"], getUserProfile);
+  const currentUser = usersQuery.data?.user;
 
   useEffect(() => {
-    const socketInstance = io(SOCKET_URL, {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionAttempts: 5,
-    });
+    try {
+      const socketInstance = io(SOCKET_URL, {
+        transports: ["websocket", "polling"],
+        reconnection: true,
+        reconnectionAttempts: 5,
+      });
 
-    socketInstance.on("connect", () => {
-      console.log("Connected to socket server:", socketInstance.id);
-    });
-    socketInstance.on("connect-error", () => {
-      console.log("connect-error to socket server:", socketInstance.id);
-    });
+      socketInstance.on("connect", () => {
+        console.log("Connected to socket server:", socketInstance.id);
+      });
+      socketInstance.on("connect-error", () => {
+        console.log("connect-error to socket server:", socketInstance.id);
+      });
 
-    socketInstance.on("disconnect", () => {
-      console.log("Disconnected from socket server");
-    });
+      socketInstance.on("disconnect", () => {
+        console.log("Disconnected from socket server");
+      });
 
-    setSocket(socketInstance);
-    return () => {
-      socketInstance.disconnect();
-    };
+      setSocket(socketInstance);
+    } catch (e) {
+      console.log(e.message);
+    }
   }, []);
 
   useEffect(() => {
+
     if (currentUser?._id && socket) {
       socket.emit("appjoin", { userId: currentUser?._id });
+
       const handleAppStateChange = (nextAppState) => {
         if (nextAppState === "active") {
           console.log(`User ${currentUser._id} is online`);
@@ -70,7 +74,7 @@ export const SocketProvider = ({ children }) => {
         socket.emit("appLeave", { userId: currentUser._id });
       };
     }
-  }, [currentUser, socket,userDataCached]);
+  }, [currentUser, socket]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

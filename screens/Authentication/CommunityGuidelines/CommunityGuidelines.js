@@ -1,22 +1,22 @@
 import { ScrollView, Text, View, useWindowDimensions } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { styles as _styles } from "../../../styles/CommunityGuidelines/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
-import auth from "@react-native-firebase/auth";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 import UserApi from "../../../ApisManager/UserApi";
+import { useQueryClient } from "react-query";
 
 const CommunityGuidelines = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user = auth().currentUser;
   const [loading, setLoading] = useState(false);
-  const user_profile_details = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_profile_details = userDataCached?.user;
   const dispatch = useDispatch();
   const userApi = new UserApi();
 

@@ -11,12 +11,12 @@ import PostCard from "../../globalComponents/PostCard/PostCard";
 import { getPercent } from "../../middleware";
 import { useEffect, useRef, useState } from "react";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
-import { selectAuthUser } from "../../state-management/features/auth";
 import PostApi from "../../ApisManager/PostApi";
 import ClashApi from "../../ApisManager/ClashApi";
+import { useQueryClient } from "react-query";
 
 const ClashDetails = (props) => {
   let {} = props;
@@ -28,7 +28,9 @@ const ClashDetails = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const bottomVoiceSheetRef = useRef(null);
   const bottomFlagSheetRef = useRef(null);
-  const { _id } = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const { _id } = userDataCached?.user;
   const postApi = new PostApi();
   const clashApi = new ClashApi();
   let prevPostData = props?.route?.params;

@@ -5,7 +5,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { styles as _styles } from "../../../styles/PersonalInfo/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
@@ -15,24 +15,43 @@ import { useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
 import { validate_user_details } from "../../../middleware/firebase";
 import { Entypo } from "@expo/vector-icons";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 import UserApi from "../../../ApisManager/UserApi";
+import { useMutation, useQueryClient } from "react-query";
 
 const PersonalInfo = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const user_profile_details = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_profile_details = userDataCached?.user;
   const [form, setForm] = useState(user_profile_details);
   const [errorField, setErrorField] = useState({});
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
   let userDbId = user_profile_details?._id;
-  const userapi = new UserApi();
+  const { updateUserProfile } = new UserApi();
+
+  const { mutate, data, isLoading, isError } = useMutation({
+    mutationFn: async (data) => await updateUserProfile(userDbId, data),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries(["currentUserProfile"]); //  invalidating currentUserProfile
+      let user = result?.user;
+      if (user) {
+        dispatch(setUserDetails(user));
+        if (!user?.hasVoiceAdded) {
+          props?.navigation?.navigate("VoiceRecording");
+          return;
+        }
+        props?.navigation?.navigate("Home");
+      }
+    },
+    onError: (error) => {
+      console.error("Creation failed:", error);
+    },
+  });
 
   const onContinue = async () => {
     try {
-      setLoading(true);
       // Check if the user is under 18
       const today = new Date();
       const birthDate = new Date(form?.dateOfBirth);
@@ -48,12 +67,10 @@ const PersonalInfo = (props) => {
 
       if (age < 18) {
         alert("You must be at least 18 years old to sign up.");
-        setLoading(false);
         return;
       }
       let isValidated = await validate_user_details(form, user_profile_details);
       if (isValidated?.code != 200) {
-        setLoading(false);
         if (isValidated.field) {
           setErrorField(isValidated.field);
           alert(isValidated.msg);
@@ -69,19 +86,8 @@ const PersonalInfo = (props) => {
       user_details["dateOfBirth"] = new Date(
         user_details?.dateOfBirth
       ).toISOString();
-      const result = await userapi.updateUserProfile(userDbId, user_details);
-      let user = result?.user;
-      if (user) {
-        dispatch(setUserDetails(user));
-        if (!user?.hasVoiceAdded) {
-          props?.navigation?.navigate("VoiceRecording");
-          return;
-        }
-        props?.navigation?.navigate("Home");
-      }
-      setLoading(false);
+      mutate(user_details);
     } catch (e) {
-      setLoading(false);
       console.log(e);
     }
   };
@@ -136,7 +142,7 @@ const PersonalInfo = (props) => {
           </View>
           <StandardButton
             title="Continue"
-            loading={loading}
+            loading={isLoading}
             customStyles={{
               height: getPercent(7, height),
               marginVertical: getPercent(3, height),

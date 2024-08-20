@@ -1,18 +1,12 @@
 import { ScrollView, Text, View, useWindowDimensions } from "react-native";
-import { useSelector } from "react-redux";
 import { styles as _styles } from "../../../styles/CommunityGuidelines/main";
 import { font } from "../../../styles/Global/main";
 import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
-import { useState } from "react";
-import { selectAuthUser } from "../../../state-management/features/auth";
 
 const ContactUs = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const [loading, setLoading] = useState(false);
-  const user_profile_details = useSelector(selectAuthUser);
-
   return (
     <View style={styles.container}>
       <ScrollView

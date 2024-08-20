@@ -18,8 +18,8 @@ import { MaterialIcons, FontAwesome, AntDesign } from "@expo/vector-icons";
 import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
-import { selectAuthUser } from "../../state-management/features/auth";
 import PostApi from "../../ApisManager/PostApi";
+import { useQueryClient } from "react-query";
 
 const categories = [
   {
@@ -80,7 +80,9 @@ const PostActionsBottomSheet = (props) => {
   const snapPoints = useMemo(() => ["25%", "30%"], []);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const user_details = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_details = userDataCached?.user;
   const postApi = new PostApi();
   const editList = [
     {

@@ -8,18 +8,19 @@ import { UserCardStyles as _styles } from "../../../styles/Connections/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { getPercent } from "../../../middleware";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
 import CacheImage from "../../../globalComponents/CacheImage";
 import ActivityStatus from "../../../globalComponents/ActivityStatus";
 import UserApi from "../../../ApisManager/UserApi";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "react-query";
 
 const UserCard = (props) => {
   let { user, isDisplayedUserMe, onPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const current_user = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const current_user = userDataCached?.user;
   const followButtonTypes = ["Following", "Follow", "Follow back"];
   const [currentFollowButtonState, setCurrentFollowButtonState] = useState();
   const [isCurrentUserFollower, setIsCurrentUserFollower] = useState();
@@ -58,7 +59,6 @@ const UserCard = (props) => {
       await userapi.unfollowUser(current_user?._id, _id);
     }
   };
-  console.log(current_user?._id,user)
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>

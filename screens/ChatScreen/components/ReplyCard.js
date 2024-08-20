@@ -6,14 +6,15 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { TypingComponentExtraViewerStyles as _styles } from "../../../styles/Global/main";
-import { useSelector } from "react-redux";
-import { selectAuthUser } from "../../../state-management/features/auth";
+import { useQueryClient } from "react-query";
 
 const ReplyCard = (props) => {
   let { content, onPress, otherUserData } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const current_user = useSelector(selectAuthUser);
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const current_user = userDataCached?.user;
   let username =
     content?.sender == current_user?._id ? "You" : otherUserData?.realName;
   if (!content) return null;

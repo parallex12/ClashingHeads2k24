@@ -15,10 +15,10 @@ import { formatDuration, stickerArr } from "../../utils";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Stickers from "./Stickers";
 import { getPercent } from "../../middleware";
-import { selectAuthUser } from "../../state-management/features/auth";
 import RoundRecordingComponent from "./RoundRecordingComponent";
 import RecordingButton from "../RecordingButton";
 import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
+import { useQueryClient } from "react-query";
 
 const UpdatedVoiceRecorderBottomSheet = (props) => {
   let {
@@ -42,13 +42,14 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
   const [isRecording, setIsRecording] = useState(false);
   const timerRef = useRef(null);
   const [recordingLimitReached, setrecordingLimitReached] = useState(false);
-
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const user_profile = userDataCached?.user;
   const dispatch = useDispatch();
   // variables
   const snapPoints = useMemo(() => ["25%", "60%"], []);
   // let duration = formatDuration(timer);
   let recordingLimit = 20;
-  let user_profile = useSelector(selectAuthUser);
 
   const onChangeMode = () => {
     setCurrentVoiceMode((prev) => (prev == "mic" ? "sticker" : "mic"));
