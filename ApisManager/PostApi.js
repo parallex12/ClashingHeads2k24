@@ -12,8 +12,8 @@ class PostApi {
     }
   }
 
-   //Api method to getPostChallengesByUserId
-   async getPostChallengesByUserId(id) {
+  //Api method to getPostChallengesByUserId
+  async getPostChallengesByUserId(id) {
     try {
       let result = await axios.get(`/posts/challenge/${id}`);
       return { code: 200, challenges: result?.data };
@@ -43,10 +43,11 @@ class PostApi {
   }
 
   //Api method to getAllPost by user
-  async getUsersPosts(id) {
+  async getUsersPosts(id, pageParam) {
     try {
-      let result = await axios.get(`/posts/user/${id}`);
-      return { code: 200, posts: result?.data };
+      console.log(id,pageParam)
+      let result = await axios.get(`/posts/user/${id}?cursor=${pageParam}`);
+      return result?.data ;
     } catch (e) {
       console.log("PostApi getAllPost Error", e);
     }

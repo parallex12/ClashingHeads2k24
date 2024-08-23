@@ -15,16 +15,15 @@ import SenderMessage from "./components/SenderMessage";
 import RecieverMessage from "./components/RecieverMessage";
 import { useRoute } from "@react-navigation/native";
 import Header from "./components/Header";
-import {
-  create_get_user_chat,
-  get_messages,
-} from "../../state-management/apiCalls/chat";
+import { get_messages } from "../../state-management/apiCalls/chat";
 import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
-import { useSocket } from "../../state-management/apiCalls/SocketContext";
 import { uploadMedia } from "../../middleware/firebase";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
+import MessageApi from "../../ApisManager/MessageApi";
+import ChatApi from "../../ApisManager/ChatApi";
+import { useSocket } from "../../ContextProviders/SocketContext";
 
 const ChatScreen = (props) => {
   const socket = useSocket();
@@ -56,6 +55,9 @@ const ChatScreen = (props) => {
   const bottomFlagSheetRef = useRef(null);
   const [media, setMedia] = useState({});
   const [chatData, setChatData] = useState();
+  const messageApi = new MessageApi();
+  const chatapi = new ChatApi();
+
   let isChatBlockedForMe = chatData?.blockedUsers?.includes(currentUserId);
   let isChatBlockedForOtherUser = chatData?.blockedUsers?.includes(
     otherUserData?._id
@@ -73,16 +75,6 @@ const ChatScreen = (props) => {
 
   // Reference to FlatList for scrolling
   const flatListRef = useRef(null);
-
-  useEffect(() => {
-    // if (sharedPostData?._id) {
-    //   let m_data = {
-    //     newMessage: "",
-    //     media: { post: sharedPostData?._id },
-    //   };
-    //   handleSend(m_data);
-    // }
-  }, [sharedPost]);
 
   useEffect(() => {
     setMessages(loaded_chat_data?.messages);
@@ -134,10 +126,12 @@ const ChatScreen = (props) => {
   const listenForMessage = () => {
     receiveMessage((message) => {
       setMessages((prevMessages) => {
-        let filterMsgs = prevMessages?.filter((e) => e?._id != message?._id);
-        return [message, ...filterMsgs];
+        // let filterMsgs = prevMessages?.filter((e) => e?._id != message?._id);
+        // filterMsgs.push(message);
+        console.log({ message, ...prevMessages });
+        return [message];
       });
-      socket.emit("readMessages", { chatId: _id, userId: currentUserId });
+      // socket.emit("readMessages", { chatId: _id, userId: currentUserId });
       // Scroll to end when new messages arrive if needed
       if (scrollToEndOnUpdate) {
         scrollToEnd();
@@ -155,13 +149,14 @@ const ChatScreen = (props) => {
     if (scrollToEndOnUpdate) {
       scrollToEnd();
     }
-    setisChatBlocked(isChatBlockedForMe || isChatBlockedForOtherUser)
+    setisChatBlocked(isChatBlockedForMe || isChatBlockedForOtherUser);
     setScrollToEndOnUpdate(false); // Reset after scrolling
   }, [messages]);
 
   const getMessages = async () => {
     let _p = participants?.map((i) => i?._id);
-    let _m = await create_get_user_chat({ participants: _p });
+    let _m = await chatapi.createChat({ participants: _p });
+    console.log(_m);
     roomIdRef.current = _m?._id;
     setRoomId(_m?._id);
     joinRoom(_m?._id, currentUserId);

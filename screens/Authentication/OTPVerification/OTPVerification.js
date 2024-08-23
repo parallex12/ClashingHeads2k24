@@ -9,13 +9,12 @@ import {
   setAuthToken,
 } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PinCodeInput from "../../../globalComponents/PinCodeInput";
-import { loginSuccess } from "../../../state-management/features/auth/authSlice";
-import auth from "@react-native-firebase/auth";
 import AuthenticationApi from "../../../ApisManager/AuthenticationApi";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../../ContextProviders/AuthProvider";
+import { useNavigation } from "@react-navigation/native";
 
 const OTPVerification = (props) => {
   let {} = props;
@@ -23,7 +22,6 @@ const OTPVerification = (props) => {
   let styles = _styles({ width, height });
   let { phone } = props?.route?.params;
   const [otpCode, setOtpCode] = useState(null);
-  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const AuthApi = new AuthenticationApi();
   const { login } = useAuth();
@@ -34,12 +32,14 @@ const OTPVerification = (props) => {
       setLoading(true);
       await AuthApi.verifyOtp(phone, otpCode).then(async (res) => {
         if (res.err) throw new Error(res.err);
-        if (!res.token) throw new Error("No token");
-        dispatch(loginSuccess());
+        if (!res.token) {
+          useNavigation().goBack();
+          return;
+        }
         setLoading(false);
         setAuthToken(res.token);
         await saveTokenToStorage(res.token);
-        login()
+        login(); //Context Provider for AUTH
       });
     } catch (error) {
       console.log(error);

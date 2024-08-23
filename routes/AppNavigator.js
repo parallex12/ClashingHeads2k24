@@ -9,9 +9,6 @@ import Search from "../screens/Search/Search";
 import Messages from "../screens/Messages/Messages";
 import Clashes from "../screens/Clashes/Clashes";
 import ClashRoom from "../screens/ClashRoom/ClashRoom";
-import Signin from "../screens/Authentication/Signin/Signin";
-import Signup from "../screens/Authentication/Signup/Signup";
-import OTPVerification from "../screens/Authentication/OTPVerification/OTPVerification";
 import CommunityGuidelines from "../screens/Authentication/CommunityGuidelines/CommunityGuidelines";
 import PersonalInfo from "../screens/Authentication/PersonalInfo/PersonalInfo";
 import VoiceRecording from "../screens/Authentication/VoiceRecording/VoiceRecording";
@@ -31,8 +28,7 @@ import SecuritySettings from "../screens/SecuritySettings/SecuritySettings";
 import NotificationSettings from "../screens/NotificationSettings/NotificationSettings";
 import PrivacySettings from "../screens/PrivacySettings/PrivacySettings";
 import FullScreenLoader from "../globalComponents/FullScreenLoader/FullScreenLoader";
-import { useDispatch, useSelector } from "react-redux";
-import { selectIsAuth } from "../state-management/features/auth";
+import { useDispatch } from "react-redux";
 import ChallengeRequests from "../screens/ChallengeRequests/ChallengeRequests";
 import ChallengeClash from "../screens/ChallengeClash/ChallengeClash";
 import AddBio from "../screens/Authentication/AddBio/AddBio";
@@ -50,26 +46,13 @@ import PrivacyPolicy from "../screens/Authentication/PrivacyPolicy/PrivacyPolicy
 import Faqs from "../screens/Authentication/Faqs/Faqs";
 import AboutUs from "../screens/Authentication/AboutUs/AboutUs";
 import ContactUs from "../screens/Authentication/ContactUs/ContactUs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { Navigator, Screen } = createDrawerNavigator();
 const HomeStack = createStackNavigator();
 
 const HomeScreens = () => {
-  // const userAuth = useSelector(selectIsAuth);
   return (
     <HomeStack.Navigator>
-      {/* //{!userAuth ? (
-        // Screens for logged in users
-        // <HomeStack.Group screenOptions={{ headerShown: false }}>
-        //   <Screen name="Signin" component={Signin} />
-        //   <Screen name="Signup" component={Signup} />
-        //   <Screen name="OTPVerification" component={OTPVerification} />
-        //   <HomeStack.Screen name="Terms" component={Terms} />
-        // </HomeStack.Group>
-      // ) : (
-        // Auth screens
-        )} */}
         <HomeStack.Group screenOptions={{ headerShown: false }}>
           <HomeStack.Screen name="Home" component={Home} />
           <Screen name="PersonalInfo" component={PersonalInfo} />

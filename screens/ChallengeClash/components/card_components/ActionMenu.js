@@ -8,11 +8,9 @@ import {
 } from "react-native";
 import { getPercent } from "../../../../middleware";
 import { font } from "../../../../styles/Global/main";
-import { Entypo } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import { onShareApp } from "../../../../utils";
 import { useEffect, useState } from "react";
-import auth from "@react-native-firebase/auth";
+import { useQueryClient } from "react-query";
 
 const ActionMenu = (props) => {
   let {
@@ -27,12 +25,14 @@ const ActionMenu = (props) => {
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const navigation = useNavigation();
   const [activeReaction, setActiveReaction] = useState({});
+  const queryClient = useQueryClient();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const currentUser = userDataCached?.user;
 
   useEffect(() => {
     if (!reactions) return;
-    setActiveReaction({ old: reactions[auth().currentUser?.uid] });
+    setActiveReaction({ old: reactions[currentUser?._id] });
   }, [reactions]);
 
   const FooterItem = ({ item, index }) => {

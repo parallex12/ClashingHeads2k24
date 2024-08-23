@@ -16,8 +16,10 @@ import { useEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { uploadMedia } from "../../../middleware/firebase";
 import { Image as ImageCompress } from "react-native-compressor";
-import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 import UserApi from "../../../ApisManager/UserApi";
+import useUserProfile from "../../../Hooks/useUserProfile";
+import { useQueryClient } from "react-query";
+import { useAuth } from "../../../ContextProviders/AuthProvider";
 
 const ProfilePhoto = (props) => {
   let { width, height } = useWindowDimensions();
@@ -25,7 +27,12 @@ const ProfilePhoto = (props) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const userapi = new UserApi();
+  const queryClient = useQueryClient();
+  const userProfile = useUserProfile();
+  const userApi = new UserApi();
+  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
+  const current_user = userDataCached?.user;
+  const { logout } = useAuth();
 
   const onContinue = async () => {
     try {
@@ -38,10 +45,23 @@ const ProfilePhoto = (props) => {
                 hasProfilePhoto: true,
                 profile_photo: res?.url,
               };
-              const result = await userapi.updateUserProfile(user?._id, data);
+              const result = await userApi.updateUserProfile(
+                current_user?._id,
+                data
+              );
               let user = result?.user;
+              await queryClient.invalidateQueries({
+                queryKey: ["currentUserProfile"],
+                stale: true,
+                refetchPage: true,
+                exact: true,
+              });
+              queryClient.setQueryData("currentUserProfile", {
+                user: result?.user,
+              });
+              await userProfile.refetch();
+
               if (user) {
-                dispatch(setUserDetails(user));
                 props.navigation.reset({
                   index: 0,
                   routes: [{ name: "Home" }],
@@ -53,11 +73,13 @@ const ProfilePhoto = (props) => {
           .catch((e) => {
             console.log(e);
             setLoading(false);
+            logout();
           });
       }
     } catch (error) {
       setLoading(false);
       console.log("Error stopping recording:", error);
+      logout();
     }
   };
 
@@ -141,11 +163,10 @@ const ProfilePhoto = (props) => {
             <View style={styles.profileCont}>
               <View style={styles.profileWrapper}>
                 <Image
-                  source={
-                    profile
-                      ? { uri: profile }
-                      : require("../../../assets/icons/profile_photo_icon.png")
-                  }
+                  defaultSource={require("../../../assets/icons/profile_photo_icon.png")}
+                  source={{
+                    uri: profile || userProfile?.data?.user?.profile_photo,
+                  }}
                   resizeMode="stretch"
                   style={styles.profile}
                 />

@@ -1,20 +1,10 @@
-import {
-  Animated,
-  Image,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Animated, Image, Text, View, useWindowDimensions } from "react-native";
 import { FullScreenLoaderStyles } from "../../styles/Global/main";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { isAppLoading } from "../../state-management/features/screen_loader";
 import { getPercent } from "../../middleware";
 import * as Animatable from "react-native-animatable";
-import auth from "@react-native-firebase/auth";
-import { logout } from "../../state-management/features/auth/authSlice";
-import { selectIsAuth } from "../../state-management/features/auth";
-import { stopLoading } from "../../state-management/features/screen_loader/loaderSlice";
 
 const FullScreenLoader = (props) => {
   const loading = useSelector(isAppLoading);
@@ -23,26 +13,12 @@ const FullScreenLoader = (props) => {
   let styles = FullScreenLoaderStyles({ width, height });
   const [paths, setPaths] = useState([-width, 0, width]);
   const slideAnim = useRef(new Animated.Value(paths[0])).current;
-  const userAuth = useSelector(selectIsAuth);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (loading == "default") {
       return;
     }
-    if (!userAuth) {
-      auth()
-        .signOut()
-        .then((res) => {
-          dispatch(logout());
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-      dispatch(stopLoading());
-    } else {
-      dispatch(stopLoading());
-    }
+
     if (loading) {
       Animated.timing(slideAnim, {
         toValue: paths[1], // Slide in to cover the screen
@@ -56,7 +32,7 @@ const FullScreenLoader = (props) => {
         useNativeDriver: true,
       }).start(() => setPaths(paths.reverse()));
     }
-  }, [loading, slideAnim, userAuth]);
+  }, [loading, slideAnim]);
 
   if (!loading || loading == "default") return null;
 

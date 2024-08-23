@@ -1,18 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { AppState } from "react-native";
-import { useQuery } from "react-query";
-import UserApi from "../ApisManager/UserApi";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "./AuthProvider";
 
 const SocketContext = createContext();
 
-const SOCKET_URL = "http://192.168.100.127:3000";
+const SOCKET_URL = process.env.SOCKET_PROD_URL;
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const { getUserProfile } = new UserApi();
-  const usersQuery = useQuery(["currentUserProfile"], getUserProfile);
-  const currentUser = usersQuery.data?.user;
+  const { getToken } = useAuth();
 
   useEffect(() => {
     try {
@@ -40,41 +38,44 @@ export const SocketProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    (async () => {
+      let token = await getToken();
+      if (token && socket) {
+        console.log(token);
+        socket.emit("appjoin", { token });
 
-    if (currentUser?._id && socket) {
-      socket.emit("appjoin", { userId: currentUser?._id });
+        const handleAppStateChange = (nextAppState) => {
+          if (nextAppState === "active") {
+            console.log(`User is online`);
+            socket.emit("appjoin", { token });
+          } else if (nextAppState.match(/inactive|background/)) {
+            console.log(`User is offline`);
+            socket.emit("appLeave", { token });
+          }
+        };
 
-      const handleAppStateChange = (nextAppState) => {
-        if (nextAppState === "active") {
-          console.log(`User ${currentUser._id} is online`);
-          socket.emit("appjoin", { userId: currentUser._id });
-        } else if (nextAppState.match(/inactive|background/)) {
-          console.log(`User ${currentUser._id} is offline`);
-          socket.emit("appLeave", { userId: currentUser._id });
+        // Subscribe to app state changes
+        const subscription = AppState.addEventListener(
+          "change",
+          handleAppStateChange
+        );
+
+        // Set initial status based on current app state
+        const initialState = AppState.currentState;
+        if (initialState === "active") {
+          socket.emit("appjoin", { token });
+        } else {
+          socket.emit("appLeave", { token });
         }
-      };
 
-      // Subscribe to app state changes
-      const subscription = AppState.addEventListener(
-        "change",
-        handleAppStateChange
-      );
-
-      // Set initial status based on current app state
-      const initialState = AppState.currentState;
-      if (initialState === "active") {
-        socket.emit("appjoin", { userId: currentUser._id });
-      } else {
-        socket.emit("appLeave", { userId: currentUser._id });
+        // Cleanup on unmount
+        return () => {
+          subscription.remove();
+          socket.emit("appLeave", { token });
+        };
       }
-
-      // Cleanup on unmount
-      return () => {
-        subscription.remove();
-        socket.emit("appLeave", { userId: currentUser._id });
-      };
-    }
-  }, [currentUser, socket]);
+    })();
+  }, [socket,useAuth]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

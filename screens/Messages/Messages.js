@@ -13,13 +13,14 @@ import { Entypo, Ionicons } from "@expo/vector-icons";
 import SearchBar from "../../globalComponents/SearchBar";
 import { font } from "../../styles/Global/main";
 import MessageCard from "./components/MessageCard";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { get_user_chats } from "../../state-management/apiCalls/chat";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useChatSocketService } from "../../state-management/apiCalls/ChatSocketService";
 import ContactsSheet from "../../globalComponents/ContactsSheet/ContactsSheet";
 import { useNavigation } from "@react-navigation/native";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import ChatApi from "../../ApisManager/ChatApi";
+import { Instagram } from "react-content-loader/native";
 
 const Messages = (props) => {
   let {} = props;
@@ -35,64 +36,43 @@ const Messages = (props) => {
   const { receiveChat, listenreadMessages } = useChatSocketService();
   const contactsbottomSheetRef = useRef();
   const bottomFlagSheetRef = useRef();
-  
-  const fetchChats = async () => {
-    const chats = await get_user_chats(currentUserId);
-    setChats(chats);
-    setRefreshing(false);
-  };
+  const { getCurrentUserChats, updateChatById } = new ChatApi();
+  const { data, isLoading, isFetching, isError } = useQuery(
+    ["user-chats"],
+    getCurrentUserChats,
+    { staleTime: 60000 }
+  );
+
+  const mutation = useMutation((data) => updateChatById(data?._id, data), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user-chats"]);
+    },
+  });
 
   useEffect(() => {
-    if (currentUser?.chats?.length == 0) {
-      fetchChats();
-    } else {
-      setChats(currentUser?.chats);
-    }
     listenForChange();
     listenreadMessages((result) => {
       const { updatedChat } = result;
-      setChats((prevChats) => {
-        // Filter out the old version of the chat if it exists
-        const updatedChats = prevChats.filter(
-          (chat) => chat._id !== updatedChat._id
-        );
-        // Add the updated chat
-        updatedChats.push(updatedChat);
-        // Return the updated chat list
-        return updatedChats;
-      });
+      console.log("result", updatedChat);
+      // mutation.mutate(updatedChat);
     });
-    // return () => {
-    //   console.log("disconnected");
-    //   socket.off("screenchats"); // Cleanup listener on unmount
-    // };
   }, [currentUserId]);
 
   const listenForChange = () => {
     receiveChat((message) => {
-      console.log("recieved Screen", message);
-      setChats((prevChats) => {
-        const updatedChats = prevChats.map((chat) => {
-          if (chat?._id === message?.chatId) {
-            let isUserSender = currentUserId == message?.sender;
-            // Increment unread messages count
-            const updatedUnreadMessagesCount = {
-              ...chat.unreadMessagesCount,
-              [currentUserId]: !isUserSender
-                ? chat.unreadMessagesCount[currentUserId] + 1
-                : chat.unreadMessagesCount[currentUserId],
-            };
-            return {
-              ...chat,
-              lastMessage: message,
-              unreadMessagesCount: updatedUnreadMessagesCount,
-            };
-          }
-          return chat;
-        });
-
-        return updatedChats;
-      });
+      const updatedChat = chats?.find((chat) => chat?._id === message?.chatId);
+      if (updatedChat) {
+        let isUserSender = currentUserId == message?.sender;
+        updatedChat.lastMessage = message;
+        updatedChat.unreadMessagesCount = {
+          ...updatedChat.unreadMessagesCount,
+          [currentUserId]: !isUserSender
+            ? updatedChat.unreadMessagesCount[currentUserId] + 1
+            : updatedChat.unreadMessagesCount[currentUserId],
+        };
+        console.log("updatedChat", updatedChat);
+        // mutation.mutate(updatedChat);
+      }
     });
   };
 
@@ -125,9 +105,9 @@ const Messages = (props) => {
       // If the user is not blocked, add them to the blockedUsers list
       b_users.push(otherUserId);
     }
-    
+
     funcProps.blockedUsers = b_users;
-    console.log(funcProps,index)
+    console.log(funcProps, index);
 
     chatMenuOptions[index].onPress(funcProps, () => {
       onRefresh();
@@ -136,13 +116,12 @@ const Messages = (props) => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchChats();
-    console.log("refreshing..")
+    console.log("refreshing..");
   };
 
   const memoizedChats = useMemo(() => {
-    return chats;
-  }, [chats]);
+    return data;
+  }, [data]);
 
   const unReadMsgs = chats?.reduce((total, chat) => {
     const unreadCount = chat?.unreadMessagesCount?.[currentUserId] || 0;
@@ -190,15 +169,21 @@ const Messages = (props) => {
             </TouchableOpacity>
           </View>
           <View style={styles.messagesWrapper}>
-            {memoizedChats?.map((item, index) => {
-              return (
-                <MessageCard
-                  onChatItemMenuSelect={onChatItemMenuSelect}
-                  data={item}
-                  key={index}
-                />
-              );
-            })}
+            {isLoading
+              ? new Array(2).fill().map((item, index) => {
+                  return (
+                    <Instagram style={{ alignSelf: "center" }} key={index} />
+                  );
+                })
+              : memoizedChats?.map((item, index) => {
+                  return (
+                    <MessageCard
+                      onChatItemMenuSelect={onChatItemMenuSelect}
+                      data={item}
+                      key={index}
+                    />
+                  );
+                })}
           </View>
         </View>
       </ScrollView>

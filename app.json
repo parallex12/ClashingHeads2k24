@@ -2,7 +2,7 @@
   "expo": {
     "name": "ClashingHeads",
     "slug": "clashingheads",
-    "version": "1.6.0",
+    "version": "1.8.0",
     "orientation": "portrait",
     "scheme": "com.clubs.clashingheads",
     "icon": "./assets/icon.png",
@@ -12,12 +12,9 @@
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "googleServicesFile": "./GoogleService-Info.plist",
-      "buildNumber": "1.6.0",
+      "buildNumber": "1.8.0",
       "supportsTablet": false,
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to take selfies for profile.",
@@ -26,9 +23,7 @@
         "NSLocationAlwaysUsageDescription": "This app uses the location to show user near by matches for better experience.",
         "NSLocationUsageDescription": "This app uses the location to show user near by matches for better experience.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses the location to show user near by matches for better experience.",
-        "UIBackgroundModes": [
-          "audio"
-        ]
+        "UIBackgroundModes": ["audio"]
       },
       "bundleIdentifier": "com.clubs.clashingheads"
     },
@@ -52,8 +47,6 @@
     "plugins": [
       "expo-font",
       "react-native-compressor",
-      "@react-native-firebase/app",
-      "@react-native-firebase/auth",
       "@config-plugins/react-native-webrtc",
       [
         "expo-build-properties",

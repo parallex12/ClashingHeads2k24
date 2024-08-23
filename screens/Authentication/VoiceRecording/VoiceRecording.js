@@ -18,7 +18,6 @@ import RecordingPlayer from "../../../globalComponents/RecordingPlayer";
 import { uploadMedia } from "../../../middleware/firebase";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Audio } from "react-native-compressor";
-import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 import UserApi from "../../../ApisManager/UserApi";
 
 const VoiceRecording = (props) => {
@@ -100,14 +99,11 @@ const VoiceRecording = (props) => {
               let data = { hasVoiceAdded: true, about_voice: res?.url };
               const result = await userapi.updateUserProfile(user?._id, data);
               let user = result?.user;
-              if (user) {
-                dispatch(setUserDetails(user));
-                if (!user?.hasProfilePhoto) {
-                  props?.navigation?.navigate("ProfilePhoto");
-                  return;
-                }
-                props?.navigation?.navigate("Home");
+              if (!user?.hasProfilePhoto) {
+                props?.navigation?.navigate("ProfilePhoto");
+                return;
               }
+              props?.navigation?.navigate("Home");
               setLoading(false);
             }
           })

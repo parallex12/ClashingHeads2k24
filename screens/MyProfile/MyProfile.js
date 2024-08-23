@@ -3,16 +3,18 @@ import { styles as _styles } from "../../styles/MyProfile/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import ProfileCard from "./components/ProfileCard";
 import PostCard from "../../globalComponents/PostCard/PostCard";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { getPercent } from "../../middleware";
 import { useDispatch } from "react-redux";
 import ContentLoader, { Instagram } from "react-content-loader/native";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
-import UserApi from "../../ApisManager/UserApi";
 import { RefreshControl } from "react-native-gesture-handler";
 import PostApi from "../../ApisManager/PostApi";
 import { useQuery } from "react-query";
+import useUserProfile from "../../Hooks/useUserProfile";
+import useUsersPosts from "../../Hooks/useUsersPosts";
+import FeedFlatlist from "../Home/components/FeedFlatlist";
 
 const MyProfile = (props) => {
   let {} = props;
@@ -22,22 +24,29 @@ const MyProfile = (props) => {
   const [loading, setLoading] = useState(false);
   const bottomFlagSheetRef = useRef();
   const dispatch = useDispatch();
-  const { getUserProfile } = new UserApi();
   const { getUsersPosts } = new PostApi();
-  const usersQuery = useQuery(["currentUserProfile"], getUserProfile);
-  const userId = usersQuery?.data?.user?._id;
-  const postsQuery = useQuery(
-    ["currentUserposts", userId],
-    () => getUsersPosts(userId),
-    {
-      enabled: !!userId,
-    }
-  );
-
+  const userProfile = useUserProfile();
+  const userId = userProfile?.data?.user?._id;
+  const postsQuery = useUsersPosts(userId);
   const onRefresh = () => {
-    usersQuery?.refetch()
+    userProfile?.refetch();
     postsQuery?.refetch();
   };
+
+  const feedPages = useMemo(() => {
+    return userFeed?.data;
+  }, [userFeed]);
+
+  const onPostActionsPress = () => {
+    setPostInteraction(item);
+    postActionsbottomSheetRef?.current?.present();
+  };
+
+  const onPostReport = () => {
+    bottomFlagSheetRef?.current?.present();
+  };
+
+  console.log(postsQuery?.data);
 
   return (
     <View style={styles.container}>
@@ -53,18 +62,26 @@ const MyProfile = (props) => {
         }
       >
         <View style={styles.content}>
-          {postsQuery?.isLoading || usersQuery?.isLoading ? (
+          {postsQuery?.isLoading || userProfile?.isLoading ? (
             <View style={styles.ContentLoader}>
               <ContentLoader style={{ flex: 1 }} />
               {new Array(2).fill().map((item, index) => {
-                return <Instagram style={{ alignSelf: "center" }}  key={index} />;
+                return (
+                  <Instagram style={{ alignSelf: "center" }} key={index} />
+                );
               })}
             </View>
           ) : (
             <>
-              <ProfileCard user_details={usersQuery?.data?.user} />
-              <View style={styles.innercontent}>
-                {postsQuery?.data?.posts?.map((item, index) => {
+              <ProfileCard user_details={userProfile?.data?.user} />
+              <FeedFlatlist
+                feedPages={feedPages}
+                userFeed={userFeed}
+                onItemActionsPress={onPostActionsPress}
+                onItemReportPress={onPostReport}
+              />
+              {/* <View style={styles.innercontent}>
+                {postsQuery?.data?.map((item, index) => {
                   if (item?.clashType == "challenge") {
                     return (
                       <ChallengeCard
@@ -98,7 +115,7 @@ const MyProfile = (props) => {
                     />
                   );
                 })}
-              </View>
+              </View> */}
             </>
           )}
         </View>

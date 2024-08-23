@@ -12,7 +12,7 @@ LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 import { AuthProvider, useAuth } from "./ContextProviders/AuthProvider";
 import { AuthNavigator } from "./routes/AuthNavigator";
-import { app } from "./utils/firebaseInitialize";
+import { firebaseapp } from "./utils/firebaseInitialize";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { SocketProvider } from "./ContextProviders/SocketContext";
 
@@ -26,23 +26,20 @@ export default function App() {
   const [fontsLoaded] = useFonts(FontsConfig);
   const queryClient = new QueryClient();
 
-  // axios.defaults.baseURL =
-  //   "https://clashingheads2024v3-57b569714f9e.herokuapp.com/clashingheads_api";
-  axios.defaults.baseURL = "http://192.168.100.127:3000/clashingheads_api";
-
+  axios.defaults.baseURL = process.env.DEV_URL;
   if (!fontsLoaded) {
     return null;
   }
 
   return (
     <Provider store={store}>
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
           <SocketProvider>
             <MainNavigator />
           </SocketProvider>
-        </QueryClientProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     </Provider>
   );
 }

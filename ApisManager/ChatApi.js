@@ -5,7 +5,17 @@ class ChatApi {
   async getChatById(id) {
     try {
       let result = await axios.get(`/chats/${id}`);
-      return { code: 200, user: result?.data };
+      return result?.data;
+    } catch (e) {
+      console.log("ChatApi getChatById Error", e);
+    }
+  }
+
+  //Api method to get current users chats
+  async getCurrentUserChats() {
+    try {
+      let result = await axios.get(`/chats/user-chats`);
+      return result?.data;
     } catch (e) {
       console.log("ChatApi getChatById Error", e);
     }
@@ -15,7 +25,7 @@ class ChatApi {
   async updateChatById(id, details) {
     try {
       let result = await axios.patch(`/chats/${id}`, { ...details });
-      return { code: 200, user: result?.data };
+      return result?.data;
     } catch (e) {
       console.log("ChatApi updateChatById Error", e);
     }
@@ -24,7 +34,7 @@ class ChatApi {
   async deleteChatById(id) {
     try {
       let result = await axios.delete(`/chats/${id}`);
-      return { code: 200, user: result?.data };
+      return result?.data;
     } catch (e) {
       console.log("ChatApi deleteChatById Error", e);
     }
@@ -33,8 +43,8 @@ class ChatApi {
   //Api method to createChat
   async createChat(details) {
     try {
-      let result = await axios.post(`/chats`, details);
-      return { code: 200, user: result?.data };
+      let result = await axios.post(`/chats/connect`, details);
+      return result?.data;
     } catch (e) {
       console.log("ChatApi createChat Error", e);
     }

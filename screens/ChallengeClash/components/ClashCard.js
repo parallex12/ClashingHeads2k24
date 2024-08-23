@@ -1,25 +1,12 @@
-import {
-  Image,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
-import { connect, useDispatch } from "react-redux";
+import { View, useWindowDimensions } from "react-native";
+import { useDispatch } from "react-redux";
 import { ClashCardStyles, font } from "../../../styles/Global/main";
-import { getPathFromState, useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import Header from "../../../globalComponents/PostCard/components/Header";
 import Content from "../../../globalComponents/PostCard/components/Content";
 import ActionMenu from "./card_components/ActionMenu";
 import { stickerArr } from "../../../utils";
-import {
-  updateClashDetails,
-  updateClashReaction,
-} from "../../../state-management/features/singlePost/singlePostSlice";
-import auth from "@react-native-firebase/auth";
-import { getPercent } from "../../../middleware";
+import { updateClashReaction } from "../../../state-management/features/singlePost/singlePostSlice";
 
 const ClashCard = (props) => {
   let { data, onPostClashesPress, hrLine, onReportPress } = props;
@@ -27,7 +14,7 @@ const ClashCard = (props) => {
   let styles = ClashCardStyles({ width, height });
   let navigation = useNavigation();
   let dispatch = useDispatch();
-  const userId = auth().currentUser?.uid; // replace with actual user ID from your auth state
+  const userId = 1; // replace with actual user ID from your auth state
 
   let localmedia =
     data?.clashType == "sticker" ? stickerArr[data?.selectedSticker] : null;
@@ -50,8 +37,7 @@ const ClashCard = (props) => {
     <View style={styles.container}>
       {hrLine && <View style={styles.hrLine}></View>}
       <View style={styles.content}>
-        <Header
-          author={data?.author} createdAt={data?.createdAt} />
+        <Header author={data?.author} createdAt={data?.createdAt} />
         <View style={styles.contentCardWrapper}>
           <Content
             showDuration

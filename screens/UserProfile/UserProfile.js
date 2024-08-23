@@ -30,6 +30,7 @@ const UserProfile = (props) => {
     () => getUserProfileById(user?._id),
     {
       enabled: !!user?._id,
+      staleTime: 60000,
     }
   );
   const postsQuery = useQuery(
@@ -37,6 +38,7 @@ const UserProfile = (props) => {
     () => getUsersPosts(user?._id),
     {
       enabled: !!user?._id,
+      staleTime: 60000,
     }
   );
 

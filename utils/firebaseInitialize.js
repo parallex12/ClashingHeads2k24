@@ -22,9 +22,9 @@ export const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-console.log("Firebase Storage Initialized")
+const firebaseapp = initializeApp(firebaseConfig);
 // Initialize services
-const storage = getStorage(app);
+const storage = getStorage(firebaseapp);
+console.log("Firebase Storage Initialized")
 
-export { app, storage };
+export { firebaseapp, storage };

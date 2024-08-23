@@ -56,7 +56,7 @@ const ChallengeClash = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let prevData = props?.route?.params;
-  const { getPostById, updatePostById } = new PostApi();
+  const { updatePostById } = new PostApi();
   const { getClashesByPostId, createClash } = new ClashApi();
   const bottomVoiceSheetRef = useRef(null);
   const bottomFlagSheetRef = useRef(null);
@@ -64,25 +64,25 @@ const ChallengeClash = (props) => {
   const queryClient = useQueryClient();
   const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
   const currentUser = userDataCached?.user;
-  let { _id } = currentUser;
+  let { _id } = currentUser || {};
   let postId = prevData?._id;
   let openVoiceSheet = props?.route?.params?.openVoiceSheet;
-
-  const challengeQuery = useQuery(
-    ["challengeDetail", postId],
-    () => getPostById(postId),
-    {
-      enabled: !!postId,
-    }
-  );
   const clashesQuery = useQuery(
     ["challengeClashes", postId],
     () => getClashesByPostId(postId),
     {
       enabled: !!postId,
       staleTime: 60000,
+      onSuccess: async () => {
+        let views = [...prevData?.views];
+        if (!views?.includes(_id)) {
+          views?.push(_id);
+          result = await updatePostById(postId, { views });
+        }
+      },
     }
   );
+
 
   const createdAtDate = useMemo(
     () => new Date(prevData?.createdAt).toDateString(),
@@ -90,30 +90,14 @@ const ChallengeClash = (props) => {
   );
 
   useEffect(() => {
-    get_post();
     if (openVoiceSheet) {
       bottomVoiceSheetRef.current.present();
     }
   }, []);
 
-  const get_post = async () => {
-    try {
-      let result = challengeQuery?.data.post;
-      let views = [...result?.post?.views];
-      if (!views?.includes(_id)) {
-        views?.push(_id);
-        result = await updatePostById(postId, { views });
-      }
-      challengeQuery?.refetch();
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const onPostClash = async (clashDetails) => {
     await createClash(clashDetails);
     clashesQuery?.refetch();
-    challengeQuery?.refetch();
   };
 
   return (
@@ -124,40 +108,37 @@ const ChallengeClash = (props) => {
         title="Clash"
         searchIcon={false}
       />
-      {challengeQuery?.isLoading ? (
-        <Instagram style={{ alignSelf: "center" }} />
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.content}>
-            <ChallengeCard
-              showVoting
-              data={challengeQuery?.data?.post || prevData}
-              onClashesPress={() => bottomVoiceSheetRef.current.present()}
-              onReportPress={() => bottomFlagSheetRef.current.present()}
-            />
-            <View style={styles.postDateAndViews}>
-              <Text style={font(13, "#9CA3AF", "Regular")}>
-                Posted on {createdAtDate}
-              </Text>
-              <Text style={font(13, "#111827", "Bold")}>
-                {prevData?.views?.length || 0}{" "}
-                <Text style={font(13, "#9CA3AF", "Regular")}>Views</Text>
-              </Text>
-            </View>
-            {clashesQuery?.isLoading ? (
-              <Instagram style={{ alignSelf: "center" }} />
-            ) : (
-              <SubClashes
-                subClashes={clashesQuery?.data.clashes}
-                user_id={_id}
-                bottomVoiceSheetRef={bottomVoiceSheetRef}
-                bottomFlagSheetRef={bottomFlagSheetRef}
-                setClashTo={setClashTo}
-              />
-            )}
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.content}>
+          <ChallengeCard
+            showVoting
+            data={prevData}
+            onClashesPress={() => bottomVoiceSheetRef.current.present()}
+            onReportPress={() => bottomFlagSheetRef.current.present()}
+          />
+          <View style={styles.postDateAndViews}>
+            <Text style={font(13, "#9CA3AF", "Regular")}>
+              Posted on {createdAtDate}
+            </Text>
+            <Text style={font(13, "#111827", "Bold")}>
+              {prevData?.views?.length || 0}{" "}
+              <Text style={font(13, "#9CA3AF", "Regular")}>Views</Text>
+            </Text>
           </View>
-        </ScrollView>
-      )}
+          {clashesQuery?.isLoading ? (
+            <Instagram style={{ alignSelf: "center" }} />
+          ) : (
+            <SubClashes
+              subClashes={clashesQuery?.data.clashes}
+              user_id={_id}
+              bottomVoiceSheetRef={bottomVoiceSheetRef}
+              bottomFlagSheetRef={bottomFlagSheetRef}
+              setClashTo={setClashTo}
+            />
+          )}
+        </View>
+      </ScrollView>
       <UpdatedVoiceRecorderBottomSheet
         clashTo={clashTo}
         postId={postId}

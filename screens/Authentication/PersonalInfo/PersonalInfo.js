@@ -5,7 +5,6 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { useDispatch } from "react-redux";
 import { styles as _styles } from "../../../styles/PersonalInfo/main";
 import { font } from "../../../styles/Global/main";
 import StandardButton from "../../../globalComponents/StandardButton";
@@ -15,40 +14,21 @@ import { useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
 import { validate_user_details } from "../../../middleware/firebase";
 import { Entypo } from "@expo/vector-icons";
-import { setUserDetails } from "../../../state-management/features/auth/authSlice";
 import UserApi from "../../../ApisManager/UserApi";
-import { useMutation, useQueryClient } from "react-query";
+import useUserProfile from "../../../Hooks/useUserProfile";
+import { useQueryClient } from "react-query";
 
 const PersonalInfo = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_profile_details = userDataCached?.user;
+  const [loading, setLoading] = useState(false);
+  const userProfile = useUserProfile();
+  const user_profile_details = userProfile?.data?.user;
   const [form, setForm] = useState(user_profile_details);
   const [errorField, setErrorField] = useState({});
-  const dispatch = useDispatch();
-  let userDbId = user_profile_details?._id;
   const { updateUserProfile } = new UserApi();
-
-  const { mutate, data, isLoading, isError } = useMutation({
-    mutationFn: async (data) => await updateUserProfile(userDbId, data),
-    onSuccess: (result) => {
-      queryClient.invalidateQueries(["currentUserProfile"]); //  invalidating currentUserProfile
-      let user = result?.user;
-      if (user) {
-        dispatch(setUserDetails(user));
-        if (!user?.hasVoiceAdded) {
-          props?.navigation?.navigate("VoiceRecording");
-          return;
-        }
-        props?.navigation?.navigate("Home");
-      }
-    },
-    onError: (error) => {
-      console.error("Creation failed:", error);
-    },
-  });
+  let userDbId = user_profile_details?._id;
+  const queryClient = useQueryClient();
 
   const onContinue = async () => {
     try {
@@ -57,7 +37,6 @@ const PersonalInfo = (props) => {
       const birthDate = new Date(form?.dateOfBirth);
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDifference = today.getMonth() - birthDate.getMonth();
-
       if (
         monthDifference < 0 ||
         (monthDifference === 0 && today.getDate() < birthDate.getDate())
@@ -86,9 +65,28 @@ const PersonalInfo = (props) => {
       user_details["dateOfBirth"] = new Date(
         user_details?.dateOfBirth
       ).toISOString();
-      mutate(user_details);
+      setLoading(true);
+      let result = await updateUserProfile(userDbId, user_details);
+      await queryClient.invalidateQueries({
+        queryKey: ["currentUserProfile"],
+        stale: true,
+        refetchPage: true,
+        exact: true,
+      });
+      queryClient.setQueryData("currentUserProfile", { user: result?.user });
+      if (!result?.user?.hasVoiceAdded) {
+        props?.navigation?.navigate("VoiceRecording");
+        return;
+      }
+      props?.navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
+
+      (await userProfile.refetch()).isFetched && setLoading(false);
     } catch (e) {
       console.log(e);
+      setLoading(false);
     }
   };
 
@@ -142,7 +140,7 @@ const PersonalInfo = (props) => {
           </View>
           <StandardButton
             title="Continue"
-            loading={isLoading}
+            loading={loading}
             customStyles={{
               height: getPercent(7, height),
               marginVertical: getPercent(3, height),

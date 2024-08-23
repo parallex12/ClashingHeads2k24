@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useQueryClient } from "react-query";
 
 class UserApi {
   //Api method to getUserProfile

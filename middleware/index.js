@@ -2,7 +2,6 @@ import { useWindowDimensions } from "react-native";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { RFValue as rf } from "react-native-responsive-fontsize";
 import axios from "axios";
-import auth from "@react-native-firebase/auth";
 import { FontAwesome6, FontAwesome5, Fontisto } from "@expo/vector-icons";
 import {
   delete_user_chat,

@@ -11,59 +11,60 @@ import PostCard from "../../globalComponents/PostCard/PostCard";
 import { getPercent } from "../../middleware";
 import { useEffect, useRef, useState } from "react";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 import ClashCard from "../../globalComponents/UniversalClashCard/ClashCard";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
 import PostApi from "../../ApisManager/PostApi";
 import ClashApi from "../../ApisManager/ClashApi";
-import { useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
+import { Instagram } from "react-content-loader/native";
 
 const ClashDetails = (props) => {
   let {} = props;
-  const dispatch = useDispatch();
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [clashTo, setClashTo] = useState("post");
-  const [postData, setPostData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const bottomVoiceSheetRef = useRef(null);
   const bottomFlagSheetRef = useRef(null);
   const queryClient = useQueryClient();
   const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
   const { _id } = userDataCached?.user;
-  const postApi = new PostApi();
-  const clashApi = new ClashApi();
+  const { updatePostById } = new PostApi();
+  const { getClashesByPostId, createClash } = new ClashApi();
   let prevPostData = props?.route?.params;
   let openVoiceSheet = props?.route?.params?.openVoiceSheet;
   let postId = prevPostData?._id;
 
+  const clashesQuery = useQuery(
+    ["challengeClashes", postId],
+    () => getClashesByPostId(postId),
+    {
+      enabled: !!postId,
+      staleTime: 60000,
+      onSuccess: async (data) => {
+        try {
+          let views = [...prevPostData?.views];
+          if (!views?.includes(_id)) {
+            views?.push(_id);
+            result = await updatePostById(postId, { views });
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      },
+    }
+  );
+
   useEffect(() => {
-    get_post();
     if (openVoiceSheet) {
       bottomVoiceSheetRef.current.present();
     }
-  }, [dispatch, postId, refreshing]);
-
-  const get_post = async () => {
-    try {
-      let result = await postApi.getPostById(postId);
-      let clashesResult = await clashApi.getClashesByPostId(postId);
-      let views = [...result?.post?.views];
-      setRefreshing(false);
-      if (!views?.includes(_id)) {
-        views?.push(_id);
-        result = await postApi.updatePostById(postId, { views });
-      }
-      setPostData({ ...result?.post, clashes: clashesResult?.clashes });
-    } catch (e) {
-      console.log(e);
-      setRefreshing(false);
-    }
-  };
+  }, []);
 
   const onPostClash = async (clashDetails) => {
-    await clashApi.createClash(clashDetails);
-    get_post();
+    await createClash(clashDetails);
+    clashesQuery.refetch();
   };
 
   const onRefresh = () => {
@@ -87,27 +88,31 @@ const ClashDetails = (props) => {
         <View style={styles.content}>
           <PostCard
             postDateAndViews
-            data={postData || prevPostData} // Render post data from Redux state
+            data={prevPostData} // Render post data from Redux state
             onPostClashesPress={() => bottomVoiceSheetRef.current?.present()}
             onReportPress={() => bottomFlagSheetRef?.current?.present()}
-            views={postData?.views?.length}
+            views={prevPostData?.views?.length}
             onProfilePress={() => props?.navigation?.navigate("UserProfile")}
           />
           <View style={styles.clashes_wrapper}>
-            {postData?.clashes?.map((clash, index) => (
-              <ClashCard
-                user_id={_id}
-                hrLine={index !== postData?.clashes.length - 1} // Show hrLine for all but the last clash
-                postDateAndViews
-                data={clash} // Render individual clash data
-                key={clash?._id} // Use a unique key for each ClashCard
-                onPostClashesPress={() => {
-                  setClashTo(clash);
-                  bottomVoiceSheetRef.current?.present();
-                }}
-                onReportPress={() => bottomFlagSheetRef?.current?.present()}
-              />
-            ))}
+            {clashesQuery?.isLoading ? (
+              <Instagram style={{ alignSelf: "center" }} />
+            ) : (
+              clashesQuery?.data.clashes?.map((clash, index) => (
+                <ClashCard
+                  user_id={_id}
+                  hrLine={index !== clashesQuery?.data.clashes?.length - 1} // Show hrLine for all but the last clash
+                  postDateAndViews
+                  data={clash} // Render individual clash data
+                  key={clash?._id} // Use a unique key for each ClashCard
+                  onPostClashesPress={() => {
+                    setClashTo(clash);
+                    bottomVoiceSheetRef.current?.present();
+                  }}
+                  onReportPress={() => bottomFlagSheetRef?.current?.present()}
+                />
+              ))
+            )}
           </View>
         </View>
       </ScrollView>

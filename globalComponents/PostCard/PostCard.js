@@ -1,5 +1,4 @@
 import { Pressable, Text, View, useWindowDimensions } from "react-native";
-import { useSelector } from "react-redux";
 import { PostCardStyles, font } from "../../styles/Global/main";
 import { useNavigation } from "@react-navigation/native";
 import { memo, useMemo } from "react";
