@@ -28,7 +28,7 @@ class UserApi {
   }
 
   //Api method to searchUsers
-  async searchUsers(query) {
+  async searchUsers(query,cursor) {
     try {
       let result = await axios.get(`/users/search?q=${query}`);
       return result?.data;
@@ -73,7 +73,7 @@ class UserApi {
       let result = await axios.patch(`/users/${id}`, { ...details });
       return { code: 200, user: result?.data };
     } catch (e) {
-      console.log("UserApi getUserProfileById Error", e);
+      console.log("UserApi updateUserProfile Error", e);
     }
   }
 

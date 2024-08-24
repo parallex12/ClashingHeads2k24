@@ -4,7 +4,6 @@ class FeedApi {
   //Api method to getUserFeed by token
   async getUserFeed(pageParam) {
     try {
-      console.log(pageParam)
       let result = await axios.get(`/feed?cursor=${pageParam}`);
       return result?.data;
     } catch (e) {

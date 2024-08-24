@@ -2,7 +2,7 @@ import { useQuery } from "react-query";
 import UserApi from "../ApisManager/UserApi";
 
 const useUserProfile = () => {
-  const { getUserProfile, updateUserProfile } = new UserApi();
+  const { getUserProfile } = new UserApi();
   const query = useQuery(["currentUserProfile"], getUserProfile, {
     staleTime: 60000,
     onSuccess: (data) => {
@@ -10,7 +10,7 @@ const useUserProfile = () => {
     },
   });
 
-  return { ...query, updateUserProfile };
+  return { ...query };
 };
 
 export default useUserProfile;

@@ -6,20 +6,22 @@ import {
   View,
 } from "react-native";
 import { FlatList } from "react-native";
-import PostCard from "../../../globalComponents/PostCard/PostCard";
-import ChallengeCard from "../../../globalComponents/ChallengeCard/ChallengeCard";
 import { useNavigation } from "@react-navigation/native";
-import { styles as _styles } from "../../../styles/Home/main";
+import { feedFlatlistStyles as _styles } from "../../styles/Global/main";
+import { Instagram } from "react-content-loader/native";
+import PostCard from "../PostCard/PostCard";
+import ChallengeCard from "../ChallengeCard/ChallengeCard";
+import { useQueryClient } from "react-query";
 
-const FeedPostCardRender = (item, onReportPress, onActionsPress) => {
+const FeedPostCardRender = ({ data }, onReportPress, onActionsPress) => {
   const navigation = useNavigation();
   return (
     <PostCard
       divider
       desc_limit={1}
-      data={item?.data}
+      data={data}
       onPostClashesPress={() =>
-        navigation?.navigate("ClashDetails", { ...item })
+        navigation?.navigate("ClashDetails", { ...data, openVoiceSheet: true })
       }
       onReportPress={onReportPress}
       onActionsPress={onActionsPress}
@@ -27,51 +29,47 @@ const FeedPostCardRender = (item, onReportPress, onActionsPress) => {
   );
 };
 
-const FeedChallengeCardRender = (item, onReportPress) => {
+const FeedChallengeCardRender = ({ data }, onReportPress) => {
   const navigation = useNavigation();
   return (
     <ChallengeCard
       divider
-      onPress={() => navigation?.navigate("ChallengeClash", { ...item })}
-      onClashesPress={() => navigation?.navigate("ChallengeClash", { ...item })}
+      onPress={() => navigation?.navigate("ChallengeClash", { ...data })}
+      onClashesPress={() => navigation?.navigate("ChallengeClash", { ...data })}
       onReportPress={onReportPress}
-      data={item?.data}
+      data={data}
     />
   );
 };
 
 const RenderFooter = (props) => {
-  let { hasNextPage, isFetchingNextPage } = props;
-  if (hasNextPage && isFetchingNextPage) {
+  let { hasNextPage, isFetchingNextPage, isLoading, isFetching } = props;
+  if (hasNextPage || isFetchingNextPage || isLoading || isFetching) {
     let { width, height } = useWindowDimensions();
     let styles = _styles({ width, height });
-
-    return (
-      <View style={styles.loadingIndicatorContainer}>
-        <ActivityIndicator size="small" color="#222" />
-      </View>
-    );
+    return <Instagram />;
   }
 };
 
 const FeedFlatlist = (props) => {
-  let { userFeed, onItemActionsPress, onItemReportPress } = props;
+  let { query, onItemActionsPress, onItemReportPress } = props;
   const [refreshing, setRefreshing] = useState(false);
+  const queryClient = useQueryClient();
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await userFeed
-      .refetch()
+    await query
+      .refetch({ refetchPage: 0 })
       .then(() => setRefreshing(false))
       .catch(() => setRefreshing(false));
   };
 
   const onLoadMore = () => {
-    let { hasNextPage, isFetchingNextPage } = userFeed;
+    let { hasNextPage, isFetchingNextPage } = query;
     if (hasNextPage && !isFetchingNextPage) {
-      userFeed.fetchNextPage();
+      query.fetchNextPage();
     }
   };
 
@@ -81,7 +79,8 @@ const FeedFlatlist = (props) => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        data={userFeed?.data}
+        {...props}
+        data={query?.data?.filter((e) => e != undefined)}
         renderItem={({ item, index }) => {
           if (item?.clashType == "challenge") {
             return (
@@ -102,15 +101,16 @@ const FeedFlatlist = (props) => {
             );
           }
         }}
-        keyExtractor={(item) => item?._id + item?.updatedAt}
-        ListFooterComponent={
-          <RenderFooter
-            hasNextPage={userFeed?.hasNextPage}
-            isFetchingNextPage={userFeed?.isFetchingNextPage}
-          />
+        keyExtractor={(item, index) =>
+          item?._id + item?.updatedAt || index.toString()
         }
+        ListFooterComponent={<RenderFooter {...query} />}
         onEndReached={onLoadMore}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.8}
+        initialNumToRender={3} // Render only a few items initially for performance
+        maxToRenderPerBatch={5} // Batch rendering to avoid performance hit
+        windowSize={5} // Adjust window size to keep fewer items in memory
+        contentContainerStyle={styles.listCont}
       />
     </View>
   );

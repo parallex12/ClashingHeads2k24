@@ -19,12 +19,18 @@ import { uploadMedia } from "../../../middleware/firebase";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { Audio } from "react-native-compressor";
 import UserApi from "../../../ApisManager/UserApi";
+import { useQueryClient } from "react-query";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const VoiceRecording = (props) => {
   let { route } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [loading, setLoading] = useState(false);
+  const userProfile = useUserProfile();
+  const user_profile_details = userProfile?.data?.user;
+  let userDbId = user_profile_details?._id;
+
   let iconImages = [
     require("../../../assets/icons/recorderVector.png"),
     require("../../../assets/icons/bgPlay.png"),
@@ -40,8 +46,8 @@ const VoiceRecording = (props) => {
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
   const timerRef = useRef(null);
   let recordingLimit = 15;
-  const dispatch = useDispatch();
   const userapi = new UserApi();
+  const queryClient = useQueryClient();
 
   const startRecording = async () => {
     try {
@@ -97,13 +103,26 @@ const VoiceRecording = (props) => {
           .then(async (res) => {
             if (res.url) {
               let data = { hasVoiceAdded: true, about_voice: res?.url };
-              const result = await userapi.updateUserProfile(user?._id, data);
-              let user = result?.user;
-              if (!user?.hasProfilePhoto) {
+              const result = await userapi.updateUserProfile(userDbId, data);
+              let userData = result?.user;
+              await queryClient.invalidateQueries({
+                queryKey: ["currentUserProfile"],
+                stale: true,
+                refetchPage: true,
+                exact: true,
+              });
+              queryClient.setQueryData("currentUserProfile", {
+                user: userData,
+              });
+              await userProfile.refetch();
+              if (!userData?.hasProfilePhoto) {
                 props?.navigation?.navigate("ProfilePhoto");
                 return;
               }
-              props?.navigation?.navigate("Home");
+              props?.navigation.reset({
+                index: 0,
+                routes: [{ name: "Home" }],
+              });
               setLoading(false);
             }
           })

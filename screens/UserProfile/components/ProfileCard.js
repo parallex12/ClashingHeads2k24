@@ -17,29 +17,16 @@ import { download } from "react-native-compressor";
 import CardHeader from "./CardHeader";
 import UserApi from "../../../ApisManager/UserApi";
 import { useMutation, useQueryClient } from "react-query";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const ProfileCard = (props) => {
-  let { user } = props;
+  let { user, query } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
-  let {
-    realName,
-    about_voice,
-    clashHash,
-    politics,
-    bio,
-    school,
-    employment,
-    username,
-    _id,
-    following,
-    followers,
-  } = user;
 
   const [isPlaying, setIsPlaying] = useState(false);
   const sound = useRef(new Audio.Sound());
-  const dispatch = useDispatch();
   // Access cached data directly
   const queryClient = useQueryClient();
   const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
@@ -50,38 +37,16 @@ const ProfileCard = (props) => {
   const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState();
   const [downloadedAudio, setDownloadedAudio] = useState(null);
   const { followUser, unfollowUser } = new UserApi();
-  const followMutation = useMutation({
-    mutationFn: async () => await followUser(current_user?._id, _id),
-    onSettled: (data) => {
-      queryClient.invalidateQueries(["userfeed"]); //  invalidating user feed
-      queryClient.resetQueries(["userfeed"]); // Reset query state including cursor
-      queryClient.invalidateQueries(["currentUserProfile"]); //  invalidating user feed
-    },
-    onError: (error) => {
-      console.error("Creation failed:", error);
-    },
-  });
-
-  const unfollowMutation = useMutation({
-    mutationFn: async() => await unfollowUser(current_user?._id, _id),
-    onSettled: (data) => {
-      queryClient.invalidateQueries(["userfeed"]); //  invalidating user feed
-      queryClient.resetQueries(["userfeed"]); // Reset query state including cursor
-      queryClient.invalidateQueries(["currentUserProfile"]); //  invalidating user feed
-    },
-    onError: (error) => {
-      console.error("Creation failed:", error);
-    },
-  });
+  const userProfile = useUserProfile();
 
   useEffect(() => {
     setIsCurrentUserFollower(
-      followers?.find((e) => e?._id == current_user?._id)
+      user?.followers?.find((e) => e?._id == current_user?._id)
     );
     setIsCurrentUserFollowing(
-      following?.find((e) => e?._id == current_user?._id)
+      user?.following?.find((e) => e?._id == current_user?._id)
     );
-  }, [following, followers]);
+  }, [user?.following, user?.followers]);
 
   useEffect(() => {
     setCurrentFollowButtonState(
@@ -96,16 +61,16 @@ const ProfileCard = (props) => {
     };
   }, [isCurrentUserFollowing, isCurrentUserFollower]);
 
-  const downloadCompressedAudio = async () => {
-    const downloadFileUrl = await download(about_voice, (progress) => {});
+  const downloadCompressedAudio = async (url) => {
+    const downloadFileUrl = await download(url, (progress) => {});
     setDownloadedAudio(downloadFileUrl);
   };
 
   useEffect(() => {
-    if (about_voice) {
-      downloadCompressedAudio();
+    if (user?.about_voice) {
+      downloadCompressedAudio(user?.about_voice);
     }
-  }, [about_voice]);
+  }, [user?.about_voice]);
 
   const playAudio = async () => {
     try {
@@ -138,12 +103,26 @@ const ProfileCard = (props) => {
       currentFollowButtonState == "Follow back"
     ) {
       setIsCurrentUserFollower(current_user);
-      followMutation.mutate();
+      await followUser(current_user?._id, user?._id);
+      await queryClient.invalidateQueries({
+        queryKey: ["currentUserProfile"],
+        stale: true,
+        refetchPage: true,
+        exact: true,
+      });
+      await userProfile.refetch();
     }
 
     if (currentFollowButtonState == "Following") {
       setIsCurrentUserFollower(null);
-      unfollowMutation.mutate();
+      await unfollowUser(current_user?._id, user?._id);
+      await queryClient.invalidateQueries({
+        queryKey: ["currentUserProfile"],
+        stale: true,
+        refetchPage: true,
+        exact: true,
+      });
+      await userProfile.refetch();
     }
   };
 
@@ -164,9 +143,9 @@ const ProfileCard = (props) => {
         <View style={styles.usernameWrapper}>
           <Text style={font(19, "#111827", "Medium", 2)}>
             <Text style={font(19, "#DB2727", "Semibold", 2)}>
-              #{clashHash}{" "}
+              #{user?.clashHash}{" "}
             </Text>
-            {realName || ""}
+            {user?.realName || ""}
           </Text>
           <Image
             source={require("../../../assets/icons/mStarIcon.png")}
@@ -178,22 +157,24 @@ const ProfileCard = (props) => {
             }}
           />
         </View>
-        <Text style={font(15, "#6B7280", "Regular", 2)}>{politics}</Text>
-        <Text style={font(13, "#DB2727", "Semibold", 2)}>@{username} </Text>
+        <Text style={font(15, "#6B7280", "Regular", 2)}>{user?.politics}</Text>
+        <Text style={font(13, "#DB2727", "Semibold", 2)}>
+          @{user?.username}{" "}
+        </Text>
       </View>
-      {bio && (
+      {user?.bio && (
         <View style={styles.bioEditwrapper}>
-          <Text style={font(14, "#6B7280", "Regular")}>{bio}</Text>
+          <Text style={font(14, "#6B7280", "Regular")}>{user?.bio}</Text>
         </View>
       )}
-      {school && (
+      {user?.school && (
         <View style={styles.bioEditwrapper}>
-          <Text style={font(14, "#6B7280", "Regular")}>{school}</Text>
+          <Text style={font(14, "#6B7280", "Regular")}>{user?.school}</Text>
         </View>
       )}
-      {employment && (
+      {user?.employment && (
         <View style={styles.bioEditwrapper}>
-          <Text style={font(14, "#6B7280", "Regular")}>{employment}</Text>
+          <Text style={font(14, "#6B7280", "Regular")}>{user?.employment}</Text>
         </View>
       )}
       <View style={styles.action_buttons_wrapper}>

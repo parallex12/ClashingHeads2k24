@@ -7,22 +7,9 @@ export const styles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: "#ffffff",
+      backgroundColor:'#ffffff'
     },
-    content: {
-      flex: 1,
-      paddingTop: getPercent(1, height),
-      zIndex: 9,
-      paddingBottom: getPercent(12, height),
-    },
-    innercontent: {
-      paddingHorizontal: getPercent(3, width),
-    },
-    ContentLoader: {
-      width: "100%",
-      paddingHorizontal: getPercent(3, width),
-      paddingVertical: getPercent(2, height),
-    },
+    
   });
 
 //ProfileCardstyles starts here

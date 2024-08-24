@@ -28,10 +28,10 @@ const ProfilePhoto = (props) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-  const userProfile = useUserProfile();
   const userApi = new UserApi();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const current_user = userDataCached?.user;
+  const userProfile = useUserProfile();
+  const user_profile_details = userProfile?.data?.user;
+  let userDbId = user_profile_details?._id;
   const { logout } = useAuth();
 
   const onContinue = async () => {
@@ -45,10 +45,7 @@ const ProfilePhoto = (props) => {
                 hasProfilePhoto: true,
                 profile_photo: res?.url,
               };
-              const result = await userApi.updateUserProfile(
-                current_user?._id,
-                data
-              );
+              const result = await userApi.updateUserProfile(userDbId, data);
               let user = result?.user;
               await queryClient.invalidateQueries({
                 queryKey: ["currentUserProfile"],
@@ -165,7 +162,7 @@ const ProfilePhoto = (props) => {
                 <Image
                   defaultSource={require("../../../assets/icons/profile_photo_icon.png")}
                   source={{
-                    uri: profile || userProfile?.data?.user?.profile_photo,
+                    uri: profile || user_profile_details?.profile_photo,
                   }}
                   resizeMode="stretch"
                   style={styles.profile}

@@ -26,7 +26,7 @@ export default function App() {
   const [fontsLoaded] = useFonts(FontsConfig);
   const queryClient = new QueryClient();
 
-  axios.defaults.baseURL = process.env.DEV_URL;
+  axios.defaults.baseURL = process.env.PROD_URL;
   if (!fontsLoaded) {
     return null;
   }

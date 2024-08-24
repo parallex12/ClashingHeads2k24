@@ -14,7 +14,6 @@ const CardHeader = (props) => {
   let { user } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  let { profile_hash, following, followers, posts } = user;
   const navigation = useNavigation();
 
   const onFollowView = () => {
@@ -29,7 +28,7 @@ const CardHeader = (props) => {
             source={{ uri: user?.profile_photo }}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
-            post_image_hash={profile_hash}
+            post_image_hash={user?.profile_hash}
           />
         </View>
         <View style={styles.cardHeaderProfileOnlineDot}></View>
@@ -37,7 +36,7 @@ const CardHeader = (props) => {
       <View style={styles.post_following_followers_cont}>
         <View style={styles.post_following_followers_Item}>
           <Text style={font(19, "#121212", "Bold", 3)}>
-            {posts?.length || 0}
+            {user?.posts?.length || 0}
           </Text>
           <Text style={font(17, "#121212", "Regular", 3)}>Posts</Text>
         </View>
@@ -46,7 +45,7 @@ const CardHeader = (props) => {
           onPress={onFollowView}
         >
           <Text style={font(19, "#121212", "Bold", 3)}>
-            {followers?.length}
+            {user?.followers?.length}
           </Text>
           <Text style={font(17, "#121212", "Regular", 3)}>Followers</Text>
         </TouchableOpacity>
@@ -55,7 +54,7 @@ const CardHeader = (props) => {
           onPress={onFollowView}
         >
           <Text style={font(19, "#121212", "Bold", 3)}>
-            {following?.length}
+            {user?.following?.length}
           </Text>
           <Text style={font(17, "#121212", "Regular", 3)}>Following</Text>
         </TouchableOpacity>

@@ -3,10 +3,9 @@ import { styles as _styles } from "../../styles/Search/main";
 import Header from "./components/Header";
 import ClashesResult from "./components/ClashesResult";
 import PeopleResult from "./components/PeopleResult";
-import { useCallback,  useState } from "react";
+import { useCallback, useState } from "react";
 import PostsResult from "./components/PostsResult";
 import NewsResult from "./components/NewsResult";
-import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import { Instagram } from "react-content-loader/native";
 import { StatusBar } from "expo-status-bar";
@@ -18,7 +17,6 @@ const Search = (props) => {
   const [searchQuery, setSearchQuery] = useState("a");
   const [loading, setLoading] = useState(false);
   let styles = _styles({ width, height });
-  const dispatch = useDispatch();
 
   let resultOptions = [
     <PeopleResult searchQuery={searchQuery} />,
@@ -43,7 +41,7 @@ const Search = (props) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark"/>
+      <StatusBar style="dark" />
       <Header
         onChangeText={onSearch}
         activeFilter={activeFilter}

@@ -25,7 +25,7 @@ const PostCard = memo((props) => {
   const createdAtDate = new Date(data?.createdAt).toDateString();
   const queryClient = useQueryClient();
   const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const { _id } = userDataCached?.user;
+  const _id = userDataCached?.user?._id
   const memoizedData = useMemo(() => data, [data]);
   const postApi = new PostApi();
 

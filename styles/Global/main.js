@@ -20,6 +20,30 @@ export const standardButtonStyles = ({ width, height }) =>
     },
   });
 
+//feedFlatlistStyles starts here
+export const feedFlatlistStyles = ({ width, height }) =>
+  StyleSheet.create({
+    content: {
+      flex: 1,
+      paddingTop: getPercent(1, height),
+      paddingBottom: getPercent(10, height),
+      paddingHorizontal: getPercent(3, width),
+    },
+    listCont: {},
+  });
+
+//ClashFlatlistStyles starts here
+export const ClashFlatlistStyles = ({ width, height }) =>
+  StyleSheet.create({
+    content: {
+      flex: 1,
+      paddingTop: getPercent(1, height),
+      paddingBottom: getPercent(10, height),
+      paddingHorizontal: getPercent(3, width),
+    },
+    listCont: {},
+  });
+
 //ChallengeCardStyles starts here
 export const ChallengeCardStyles = ({ width, height }) =>
   StyleSheet.create({
@@ -47,7 +71,6 @@ export const ChallengeCardStyles = ({ width, height }) =>
       justifyContent: "center",
       overflow: "hidden",
       alignSelf: "center",
-
     },
     body: {
       width: "100%",
@@ -105,8 +128,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       paddingHorizontal: 10,
       alignItems: "center",
       justifyContent: "space-around",
-      top:5
-
+      top: 5,
     },
     requetBtn: {
       width: getPercent(4, height),
@@ -459,8 +481,8 @@ export const TypingComponentstyles = ({ width, height }) =>
       fontSize: 16,
       fontFamily: "Medium",
       textAlign: "center",
-      width:'100%',
-      color:"#DB2727"
+      width: "100%",
+      color: "#DB2727",
     },
   });
 
@@ -1006,7 +1028,7 @@ export const UpdatedVoiceRecorderBottomSheetStyles = ({ width, height }) =>
       borderWidth: 1,
       borderColor: "#4B4EFC",
     },
-    postBtn:{
+    postBtn: {
       width: getPercent(45, width),
       height: getPercent(4, height),
     },
@@ -1278,7 +1300,7 @@ export const StandardInputStyles = ({ width, height }) =>
       color: "#111827",
       justifyContent: "center",
       alignItems: "flex-start",
-      height:'60%',
+      height: "60%",
     },
     inputText: {
       fontSize: 15,

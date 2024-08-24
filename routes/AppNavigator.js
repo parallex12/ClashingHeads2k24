@@ -1,5 +1,9 @@
 import * as React from "react";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useIsFocused,
+  useNavigation,
+} from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Home from "../screens/Home/Home";
 import ClashDetails from "../screens/ClashDetail/ClashDetail";
@@ -53,87 +57,80 @@ const HomeStack = createStackNavigator();
 const HomeScreens = () => {
   return (
     <HomeStack.Navigator>
-        <HomeStack.Group screenOptions={{ headerShown: false }}>
-          <HomeStack.Screen name="Home" component={Home} />
-          <Screen name="PersonalInfo" component={PersonalInfo} />
-          <Screen name="ChatScreen" component={ChatScreen} />
-          <Screen name="AddBio" component={AddBio} />
-          <Screen name="VoiceRecording" component={VoiceRecording} />
-          <HomeStack.Screen name="ClashDetails" component={ClashDetails} />
-          <HomeStack.Screen name="Search" component={Search} />
-          <HomeStack.Screen name="Messages" component={Messages} />
-          <HomeStack.Screen name="Clashes" component={Clashes} />
-          <HomeStack.Screen name="AddClashers" component={AddClashers} />
-          <HomeStack.Screen name="ClashRoom" component={ClashRoom} />
-          <HomeStack.Screen name="CreateRoom" component={CreateRoom} />
-          <HomeStack.Screen name="CreateClash" component={CreateClash} />
-          <HomeStack.Screen name="ChallengeClash" component={ChallengeClash} />
-          <HomeStack.Screen name="MyProfile" component={MyProfile} />
-          <HomeStack.Screen name="UserProfile" component={UserProfile} />
-          <HomeStack.Screen name="privacypolicy" component={PrivacyPolicy} />
-          <HomeStack.Screen name="ContactUs" component={ContactUs} />
-          <HomeStack.Screen name="AboutUs" component={AboutUs} />
-          <HomeStack.Screen name="faqs" component={Faqs} />
-          <HomeStack.Screen name="NewPost" component={NewPost} />
-          <HomeStack.Screen name="Connections" component={Connections} />
-          <HomeStack.Screen name="CalendarScreen" component={CalendarScreen} />
-          <HomeStack.Screen name="Terms" component={Terms} />
-          <HomeStack.Screen name="Shop" component={Shop} />
-          <HomeStack.Screen name="Invite" component={Invite} />
-          <HomeStack.Screen
-            name="ClashRoomMonetize"
-            component={ClashRoomMonetize}
-          />
-          <HomeStack.Screen name="News" component={News} />
-          <HomeStack.Screen name="AddPostDetails" component={AddPostDetails} />
-          <HomeStack.Screen
-            name="EditPostDetails"
-            component={EditPostDetails}
-          />
-          <HomeStack.Screen
-            name="SecuritySettings"
-            component={SecuritySettings}
-          />
-          <HomeStack.Screen
-            name="AccountSettings"
-            component={AccountSettings}
-          />
-          <HomeStack.Screen
-            name="NotificationSettings"
-            component={NotificationSettings}
-          />
-          <HomeStack.Screen
-            name="PrivacySettings"
-            component={PrivacySettings}
-          />
-          <HomeStack.Screen
-            name="ChallengeRequests"
-            component={ChallengeRequests}
-          />
-          <HomeStack.Screen
-            name="EditPersonalInformation"
-            component={EditPersonalInformation}
-          />
-          <HomeStack.Screen name="Notifications" component={Notifications} />
-          <HomeStack.Screen name="ProfilePhoto" component={ProfilePhoto} />
-          <HomeStack.Screen
-            name="CommunityGuidelines"
-            component={CommunityGuidelines}
-          />
-        </HomeStack.Group>
+      <HomeStack.Group screenOptions={{ headerShown: false }}>
+        <HomeStack.Screen name="Home" component={Home} />
+        <Screen name="PersonalInfo" component={PersonalInfo} />
+        <HomeStack.Screen name="Messages" component={Messages} />
+        <Screen name="ChatScreen" component={ChatScreen} />
+        <Screen name="AddBio" component={AddBio} />
+        <Screen name="VoiceRecording" component={VoiceRecording} />
+        <HomeStack.Screen name="ClashDetails" component={ClashDetails} />
+        <HomeStack.Screen name="Search" component={Search} />
+        <HomeStack.Screen name="Clashes" component={Clashes} />
+        <HomeStack.Screen name="AddClashers" component={AddClashers} />
+        <HomeStack.Screen name="ClashRoom" component={ClashRoom} />
+        <HomeStack.Screen name="CreateRoom" component={CreateRoom} />
+        <HomeStack.Screen name="CreateClash" component={CreateClash} />
+        <HomeStack.Screen name="ChallengeClash" component={ChallengeClash} />
+        <HomeStack.Screen name="MyProfile" component={MyProfile} />
+        <HomeStack.Screen name="UserProfile" component={UserProfile} />
+        <HomeStack.Screen name="privacypolicy" component={PrivacyPolicy} />
+        <HomeStack.Screen name="ContactUs" component={ContactUs} />
+        <HomeStack.Screen name="AboutUs" component={AboutUs} />
+        <HomeStack.Screen name="faqs" component={Faqs} />
+        <HomeStack.Screen name="NewPost" component={NewPost} />
+        <HomeStack.Screen name="Connections" component={Connections} />
+        <HomeStack.Screen name="CalendarScreen" component={CalendarScreen} />
+        <HomeStack.Screen name="Terms" component={Terms} />
+        <HomeStack.Screen name="Shop" component={Shop} />
+        <HomeStack.Screen name="Invite" component={Invite} />
+        <HomeStack.Screen
+          name="ClashRoomMonetize"
+          component={ClashRoomMonetize}
+        />
+        <HomeStack.Screen name="News" component={News} />
+        <HomeStack.Screen name="AddPostDetails" component={AddPostDetails} />
+        <HomeStack.Screen name="EditPostDetails" component={EditPostDetails} />
+        <HomeStack.Screen
+          name="SecuritySettings"
+          component={SecuritySettings}
+        />
+        <HomeStack.Screen name="AccountSettings" component={AccountSettings} />
+        <HomeStack.Screen
+          name="NotificationSettings"
+          component={NotificationSettings}
+        />
+        <HomeStack.Screen name="PrivacySettings" component={PrivacySettings} />
+        <HomeStack.Screen
+          name="ChallengeRequests"
+          component={ChallengeRequests}
+        />
+        <HomeStack.Screen
+          name="EditPersonalInformation"
+          component={EditPersonalInformation}
+        />
+        <HomeStack.Screen name="Notifications" component={Notifications} />
+        <HomeStack.Screen name="ProfilePhoto" component={ProfilePhoto} />
+        <HomeStack.Screen
+          name="CommunityGuidelines"
+          component={CommunityGuidelines}
+        />
+      </HomeStack.Group>
     </HomeStack.Navigator>
   );
 };
 
 function AppNavigation() {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
+
   React.useEffect(() => {
     navigation.addListener("state", () => {
       dispatch(onScreenChange(navigation.getCurrentRoute()?.name));
     });
   }, [navigation.getCurrentRoute()]);
-
+  
   return (
     <Navigator
       drawerContent={(props) => <SideMenu {...props} />}

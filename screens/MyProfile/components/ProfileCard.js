@@ -98,6 +98,7 @@ const ProfileCard = (props) => {
     const downloadFileUrl = await download(about_voice, (progress) => {});
     setDownloadedAudio(downloadFileUrl);
   };
+  
   useEffect(() => {
     if (about_voice) {
       downloadCompressedAudio();

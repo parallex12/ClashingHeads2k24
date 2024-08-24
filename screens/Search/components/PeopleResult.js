@@ -1,10 +1,10 @@
 import { View, useWindowDimensions } from "react-native";
 import { PeopleResultStyles as _styles } from "../../../styles/Search/main";
 import UserCard from "../../../globalComponents/UserCard";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo} from "react";
 import { useNavigation } from "@react-navigation/native";
-import UserApi from "../../../ApisManager/UserApi";
 import { useQueryClient } from "react-query";
+import { useUserSearch } from "../../../Hooks/useSearch";
 
 const PeopleResult = (props) => {
   let { searchQuery, onPress } = props;
@@ -14,17 +14,7 @@ const PeopleResult = (props) => {
   const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
   const user_details = userDataCached?.user;
   const navigation = useNavigation();
-  const [users, setUsers] = useState([]);
-  const userapi = new UserApi();
-
-  useEffect(() => {
-    (async () => {
-      let searched_users = await userapi.searchUsers(searchQuery);
-      if (searched_users?.length > 0) {
-        setUsers(searched_users);
-      }
-    })();
-  }, [searchQuery]);
+  const userQuery = useUserSearch(searchQuery);
 
   const onCardPress = (item) => {
     if (onPress) {
@@ -41,7 +31,7 @@ const PeopleResult = (props) => {
 
   return (
     <View style={styles.container}>
-      {users?.map((item, index) => {
+      {userQuery?.data?.map((item, index) => {
         return (
           <UserCard
             icon

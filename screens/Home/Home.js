@@ -4,15 +4,13 @@ import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader
 import { font } from "../../styles/Global/main";
 import StandardButton from "../../globalComponents/StandardButton";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getPercent } from "../../middleware";
 import PostActionsBottomSheet from "../../globalComponents/PostActionsBottomSheet/PostActionsBottomSheet";
-import { Instagram } from "react-content-loader/native";
 import useUserProfile from "../../Hooks/useUserProfile";
-import useUserFeed from "../../Hooks/useUserFeed";
-import FeedFlatlist from "./components/FeedFlatlist";
 import { useNavigation } from "@react-navigation/native";
-import { useQueryClient } from "react-query";
+import FeedFlatlist from "../../globalComponents/FeedFlatlist/FeedFlatlist";
+import { useUserFeed } from "../../Hooks/useUserFeed";
 
 const Home = (props) => {
   let {} = props;
@@ -20,19 +18,17 @@ const Home = (props) => {
   let styles = _styles({ width, height });
   const bottomFlagSheetRef = useRef(null);
   const postActionsbottomSheetRef = useRef(null);
-  const [postInteraction, setPostInteraction] = useState(null);
   const userProfile = useUserProfile();
   const userFeed = useUserFeed();
   const navigation = useNavigation();
 
   useEffect(() => {
     if (userProfile.isFetched && userProfile.data?.goTo) {
-      navigation.navigate(userProfile.data.goTo)
+      navigation.navigate(userProfile.data.goTo);
     }
   }, [userProfile.isFetched, userProfile.data?.goTo]);
-  
+
   const onPostActionsPress = () => {
-    setPostInteraction(item);
     postActionsbottomSheetRef?.current?.present();
   };
 
@@ -60,23 +56,18 @@ const Home = (props) => {
           }
         />
       </View>
-      {userFeed?.isLoading ? (
-        new Array(2).fill().map((item, index) => {
-          return <Instagram style={{ alignSelf: "center" }} key={index} />;
-        })
-      ) : (
-        <FeedFlatlist
-          userFeed={userFeed}
-          onItemActionsPress={onPostActionsPress}
-          onItemReportPress={onPostReport}
-        />
-      )}
+
+      <FeedFlatlist
+        query={userFeed}
+        onItemActionsPress={onPostActionsPress}
+        onItemReportPress={onPostReport}
+      />
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
-      <PostActionsBottomSheet
+      {/* <PostActionsBottomSheet
         data={postInteraction}
         bottomSheetRef={postActionsbottomSheetRef}
         onRefresh={() => null}
-      />
+      /> */}
     </View>
   );
 };

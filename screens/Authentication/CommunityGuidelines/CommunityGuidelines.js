@@ -20,27 +20,26 @@ const CommunityGuidelines = (props) => {
   const onContinue = async () => {
     setLoading(true);
     try {
-      await userApi
-        .updateUserProfile(user_profile_details?._id, {
-          tos: true,
-          phone: user?.phoneNumber,
-          username: "",
-          email: "",
-        })
-        .then((res) => {
-          let user = res?.user;
-          if (!user?.hasPersonalInfo) {
-            props?.navigation?.navigate("PersonalInfo");
-          } else {
-            props?.navigation?.navigate("Home");
-          }
-          setLoading(false);
-        })
-        .catch((e) => {
-          console.log(e);
-          props?.navigation?.navigate("Home");
-          setLoading(false);
-        });
+      let result = await userApi.updateUserProfile(user_profile_details?._id, {
+        tos: true,
+        phone: user?.phoneNumber,
+        username: "",
+        email: "",
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["currentUserProfile"],
+        stale: true,
+        refetchPage: true,
+        exact: true,
+      });
+      queryClient.setQueryData("currentUserProfile", { user: result?.user });
+      let user = result?.user;
+      if (!user?.hasPersonalInfo) {
+        props?.navigation?.navigate("PersonalInfo");
+        return;
+      }
+      setLoading(false);
+      props?.navigation?.navigate("Home");
     } catch (error) {
       console.log(error);
       setLoading(false);

@@ -3,10 +3,10 @@ import { uploadMedia } from "../middleware/firebase";
 
 class ClashApi {
   //Api method to getClashesByPostId byId
-  async getClashesByPostId(postId) {
+  async getClashesByPostId(postId, pageParam) {
     try {
-      let result = await axios.get(`/clashes/${postId}`);
-      return { code: 200, clashes: result?.data };
+      let result = await axios.get(`/clashes/${postId}?cursor=${pageParam}`);
+      return result?.data;
     } catch (e) {
       console.log("ClashApi getClashesByPostId Error", e);
     }
@@ -16,7 +16,7 @@ class ClashApi {
   async updateClashById(id, details) {
     try {
       let result = await axios.patch(`/clashes/${id}`, { ...details });
-      return { code: 200, clashes: result?.data };
+      return result?.data;
     } catch (e) {
       console.log("ClashApi updateClashById Error", e);
     }
@@ -25,7 +25,7 @@ class ClashApi {
   async deleteClashById(id) {
     try {
       let result = await axios.delete(`/clashes/${id}`);
-      return { code: 200, clashes: result?.data };
+      return result?.data;
     } catch (e) {
       console.log("ClashApi deleteClashById Error", e);
     }
@@ -37,10 +37,10 @@ class ClashApi {
       let { recording, clashType } = details;
       if (recording && clashType == "mic") {
         let { url } = await uploadMedia(recording, "clashesAudios");
-        details["recording"]=url
+        details["recording"] = url;
       }
       let result = await axios.post(`/clashes/create`, details);
-      return { code: 200, clashes: result?.data };
+      return result?.data;
     } catch (e) {
       console.log("ClashApi createClash Error", e);
     }

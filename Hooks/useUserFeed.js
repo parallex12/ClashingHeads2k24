@@ -1,6 +1,7 @@
-import { useInfiniteQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import FeedApi from "../ApisManager/FeedApi";
 import { useMemo, useState } from "react";
+import PostApi from "../ApisManager/PostApi";
 
 const useUserFeed = () => {
   const { getUserFeed } = new FeedApi();
@@ -24,8 +25,24 @@ const useUserFeed = () => {
     return pages;
   }, [pages]);
 
-
   return { ...query, data: feedPages };
 };
 
-export default useUserFeed;
+const useFeedPost = (id, prevData) => {
+  const { getPostById, updatePostById } = new PostApi();
+  const query = useQuery(["feedpost", id], () => getPostById(id), {
+    enabled: !!id,
+    onSuccess: async () => {
+      let views = [...prevData?.views];
+      console.log("Fetched feedpost successfully");
+      if (!views?.includes(_id)) {
+        views?.push(_id);
+        result = await updatePostById(postId, { views });
+      }
+    },
+  });
+
+  return { ...query };
+};
+
+export { useUserFeed, useFeedPost };
