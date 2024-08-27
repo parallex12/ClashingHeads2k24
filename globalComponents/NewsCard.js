@@ -38,14 +38,12 @@ const NewsCard = (props) => {
   let styles = NewsCardStyles({ width, height });
   let navigation = useNavigation();
 
-  let { description, url, urlToImage, title } = data;
-
   const handlePress = async () => {
-    if (data.url) {
-      await WebBrowser.openBrowserAsync(url, {
+    if (data?.url) {
+      await WebBrowser.openBrowserAsync(data?.url, {
         presentationStyle: "currentContext", // Use PAGE_SHEET presentation style
-        enableBarCollapsing:true,
-        readerMode:true
+        enableBarCollapsing: true,
+        readerMode: true,
       });
       navigation.dispatch(DrawerActions.closeDrawer());
     }
@@ -61,7 +59,7 @@ const NewsCard = (props) => {
         <View style={styles.newsCardThumbnailCont}>
           <Image
             source={
-              urlToImage ? { uri: urlToImage } : require("../assets/icon.png")
+              data?.urlToImage ? { uri: data?.urlToImage } : require("../assets/icon.png")
             }
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
@@ -69,9 +67,9 @@ const NewsCard = (props) => {
         </View>
         <View style={styles.newsContentWrapper}>
           <Text style={font(15, "#000000", "Semibold", 3, 0, { width: "88%" })}>
-            {title}
+            {data?.title}
           </Text>
-          <Text style={font(12.5, "#000000", "Regular", 3)}>{description}</Text>
+          <Text style={font(12.5, "#000000", "Regular", 3)}>{data?.description}</Text>
           <TouchableOpacity style={styles.micWrapper} onPress={onMicPress}>
             <Image
               source={require("../assets/images/mic_rec.png")}

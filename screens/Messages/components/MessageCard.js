@@ -70,7 +70,7 @@ const MessageCard = ({ data, onChatItemMenuSelect }) => {
   };
 
   if (loading) return <Facebook />;
-  if (!lastMessage) return null;
+  // if (!lastMessage) return null;
 
   const onMessageItemMenuSelect = (e) => {
     const index = e.nativeEvent.index;
@@ -168,7 +168,6 @@ const createMessageCardStyles = ({ width, height }) =>
       justifyContent: "space-between",
       marginVertical: getPercent(0.6, height),
       paddingVertical: getPercent(0.6, height),
-      paddingHorizontal: getPercent(2, width),
     },
     infoWrapper: {
       flex: 1,

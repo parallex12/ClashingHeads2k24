@@ -38,7 +38,6 @@ export const ProfileCardstyles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal: getPercent(3, width),
       paddingVertical: 10,
     },
     cardHeaderProfileWrapper: {
@@ -78,7 +77,6 @@ export const ProfileCardstyles = ({ width, height }) =>
       paddingHorizontal: 5,
     },
     userInfoWrapper: {
-      paddingHorizontal: getPercent(3, width),
     },
     usernameWrapper: {
       flexDirection: "row",
@@ -88,7 +86,6 @@ export const ProfileCardstyles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal: getPercent(2, width),
       paddingVertical: getPercent(2, height),
     },
     listenButton: {

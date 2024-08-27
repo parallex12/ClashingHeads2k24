@@ -25,7 +25,6 @@ export const ProfileCardstyles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal: getPercent(3, width),
       paddingTop: 10,
     },
     cardHeaderProfileWrapper: {},
@@ -64,7 +63,6 @@ export const ProfileCardstyles = ({ width, height }) =>
       paddingHorizontal: 5,
     },
     userInfoWrapper: {
-      paddingHorizontal: getPercent(3, width),
       marginVertical:10
     },
     usernameWrapper: {
@@ -75,7 +73,6 @@ export const ProfileCardstyles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "flex-start",
-      paddingHorizontal: getPercent(2, width),
       paddingVertical: getPercent(2, height),
     },
     listenButton: {
@@ -88,7 +85,6 @@ export const ProfileCardstyles = ({ width, height }) =>
     bioEditwrapper: {
       width: "100%",
       paddingVertical: getPercent(0.2, height),
-      paddingHorizontal: getPercent(3, width),
       alignItems: "center",
       flexDirection: "row",
     },

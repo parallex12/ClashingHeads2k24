@@ -12,9 +12,9 @@ class ChatApi {
   }
 
   //Api method to get current users chats
-  async getCurrentUserChats() {
+  async getCurrentUserChats(pageparam) {
     try {
-      let result = await axios.get(`/chats/user-chats`);
+      let result = await axios.get(`/chats/user-chats?cursor${pageparam}`);
       return result?.data;
     } catch (e) {
       console.log("ChatApi getChatById Error", e);

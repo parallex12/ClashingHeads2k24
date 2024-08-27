@@ -10,16 +10,23 @@ const useUserFeed = () => {
     queryKey: ["userfeed"],
     queryFn: ({ pageParam = 0 }) => getUserFeed(pageParam),
     retry: 5,
+    cacheTime:60,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
+     // Ensure lastPage is defined and has the nextCursor property
+     if (lastPage && lastPage.nextCursor !== undefined) {
       return lastPage.nextCursor;
+    }
+    return null; // Return null if there's no nextCursor, indicating no more pages
     },
-    staleTime: 60000,
     onSuccess: (data) => {
       console.log("Fetched user feed successfully");
     },
+    onError: (err) => {
+      console.log("UserFeed Error",err);
+    },
   });
-  let pages = query?.data?.pages?.flatMap((page) => page.data);
+  let pages = query?.data?.pages?.flatMap((page) => page?.data);
 
   const feedPages = useMemo(() => {
     return pages;

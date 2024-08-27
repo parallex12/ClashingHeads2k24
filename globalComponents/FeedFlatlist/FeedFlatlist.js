@@ -13,8 +13,10 @@ import PostCard from "../PostCard/PostCard";
 import ChallengeCard from "../ChallengeCard/ChallengeCard";
 import { useQueryClient } from "react-query";
 
-const FeedPostCardRender = ({ data }, onReportPress, onActionsPress) => {
+const FeedPostCardRender = (props) => {
   const navigation = useNavigation();
+  let { data, actions } = props;
+  let { onReportPress, onActionsPress } = actions;
   return (
     <PostCard
       divider
@@ -52,9 +54,8 @@ const RenderFooter = (props) => {
 };
 
 const FeedFlatlist = (props) => {
-  let { query, onItemActionsPress, onItemReportPress } = props;
+  let { query, itemActions } = props;
   const [refreshing, setRefreshing] = useState(false);
-  const queryClient = useQueryClient();
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
@@ -87,7 +88,7 @@ const FeedFlatlist = (props) => {
               <FeedChallengeCardRender
                 data={item}
                 key={index}
-                onReportPress={onItemReportPress}
+                actions={itemActions}
               />
             );
           } else {
@@ -95,15 +96,12 @@ const FeedFlatlist = (props) => {
               <FeedPostCardRender
                 data={item}
                 key={index}
-                onActionsPress={onItemActionsPress}
-                onReportPress={onItemReportPress}
+                actions={itemActions}
               />
             );
           }
         }}
-        keyExtractor={(item, index) =>
-          item?._id + item?.updatedAt || index.toString()
-        }
+        keyExtractor={(item, index) => item?._id + item?.updatedAt}
         ListFooterComponent={<RenderFooter {...query} />}
         onEndReached={onLoadMore}
         onEndReachedThreshold={0.8}

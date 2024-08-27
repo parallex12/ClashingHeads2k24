@@ -10,7 +10,11 @@ const useUsersPosts = (userId) => {
     retry: 5,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
+     // Ensure lastPage is defined and has the nextCursor property
+     if (lastPage && lastPage.nextCursor !== undefined) {
       return lastPage.nextCursor;
+    }
+    return null; // Return null if there's no nextCursor, indicating no more pages
     },
     enabled: !!userId,
     staleTime: 10000,

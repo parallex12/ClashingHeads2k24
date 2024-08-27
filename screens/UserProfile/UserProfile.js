@@ -49,8 +49,7 @@ const UserProfile = (props) => {
           )
         }
         query={usersPosts}
-        onItemActionsPress={onPostActionsPress}
-        onItemReportPress={onPostReport}
+        itemActions={{ onPostActionsPress, onPostReport }}
       />
 
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />

@@ -5,7 +5,7 @@ import { AppNavigator } from "./routes/AppNavigator";
 import { useFonts } from "expo-font";
 import "react-native-gesture-handler";
 import { FontsConfig } from "./middleware";
-import { LogBox } from "react-native";
+import { Alert, LogBox } from "react-native";
 import store from "./state-management/store/store";
 import axios from "axios";
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
@@ -17,16 +17,37 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { SocketProvider } from "./ContextProviders/SocketContext";
 
 function MainNavigator() {
-  const { isLoggedIn } = useAuth();
-
+  const { isLoggedIn, logout } = useAuth();
+  axios.interceptors.response.use(
+    (response) => response, // If the response is successful, just return the response
+    (error) => {
+      const { status } = error.response || {};
+      if (status === 401) {
+        // Handle 401 Unauthorized error
+        Alert.alert(
+          "Session Expired",
+          "Your session has expired. Please log in again.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // Sign out the user and redirect to the login screen
+                logout();
+              },
+            },
+          ]
+        );
+      }
+    }
+  );
   return <>{isLoggedIn ? <AppNavigator /> : <AuthNavigator />}</>;
 }
 
 export default function App() {
   const [fontsLoaded] = useFonts(FontsConfig);
   const queryClient = new QueryClient();
-
   axios.defaults.baseURL = process.env.PROD_URL;
+
   if (!fontsLoaded) {
     return null;
   }

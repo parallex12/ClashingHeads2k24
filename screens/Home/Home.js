@@ -59,8 +59,7 @@ const Home = (props) => {
 
       <FeedFlatlist
         query={userFeed}
-        onItemActionsPress={onPostActionsPress}
-        onItemReportPress={onPostReport}
+        itemActions={{ onPostActionsPress, onPostReport }}
       />
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
       {/* <PostActionsBottomSheet

@@ -44,6 +44,18 @@ export const ClashFlatlistStyles = ({ width, height }) =>
     listCont: {},
   });
 
+//InfiniteFlatlistStyles starts here
+export const InfiniteFlatlistStyles = ({ width, height }) =>
+  StyleSheet.create({
+    content: {
+      flex: 1,
+      paddingTop: getPercent(1, height),
+      paddingBottom: getPercent(10, height),
+      paddingHorizontal: getPercent(3, width),
+    },
+    listCont: {},
+  });
+
 //ChallengeCardStyles starts here
 export const ChallengeCardStyles = ({ width, height }) =>
   StyleSheet.create({

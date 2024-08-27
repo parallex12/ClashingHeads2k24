@@ -24,6 +24,9 @@ import { useQuery, useQueryClient } from "react-query";
 import MessageApi from "../../ApisManager/MessageApi";
 import ChatApi from "../../ApisManager/ChatApi";
 import { useSocket } from "../../ContextProviders/SocketContext";
+import useUserProfile from "../../Hooks/useUserProfile";
+import useChatMessages from "../../Hooks/useChatMessages";
+import useChat from "../../Hooks/useChat";
 
 const ChatScreen = (props) => {
   const socket = useSocket();
@@ -34,14 +37,17 @@ const ChatScreen = (props) => {
     receiveMessage,
     sendMessage,
   } = useChatSocketService();
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
-  const currentUserId = currentUser?._id;
+  const userProfile = useUserProfile();
+  const currentUser = userProfile?.data?.user;
+  const currentUserId = currentUser._id;
+
   const route = useRoute();
   const loaded_chat_data = route.params?.chat_data;
   let { _id, participants, sharedPost } = loaded_chat_data;
+  const { createChat } = new ChatApi();
+  const chatMessagesQuery = useChatMessages(_id || roomId);
   const otherUserData = participants?.filter((e) => e?._id != currentUserId)[0];
+
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
   const [messages, setMessages] = useState([]);
@@ -55,8 +61,6 @@ const ChatScreen = (props) => {
   const bottomFlagSheetRef = useRef(null);
   const [media, setMedia] = useState({});
   const [chatData, setChatData] = useState();
-  const messageApi = new MessageApi();
-  const chatapi = new ChatApi();
 
   let isChatBlockedForMe = chatData?.blockedUsers?.includes(currentUserId);
   let isChatBlockedForOtherUser = chatData?.blockedUsers?.includes(
@@ -75,53 +79,6 @@ const ChatScreen = (props) => {
 
   // Reference to FlatList for scrolling
   const flatListRef = useRef(null);
-
-  useEffect(() => {
-    setMessages(loaded_chat_data?.messages);
-    if (participants?.length > 0) {
-      getMessages();
-    }
-    listenForMessage();
-
-    listenreadMessages((result) => {
-      let { unreadMessages } = result;
-      setMessages((prevMessages) => {
-        let readMessagesSet = new Set(unreadMessages?.map((i) => i?._id));
-
-        return prevMessages.map((msg) =>
-          readMessagesSet.has(msg._id) ? { ...msg, read: true } : msg
-        );
-      });
-    });
-    // socket.on("deleteMsg", (msgData) => {
-    //   setMessages((prevMessages) => {
-    //     let filterMsg = prevMessages?.filter((e) => e?._id != msgData?.msgId);
-    //     return filterMsg;
-    //   });
-    // });
-    // Add keyboard event listeners
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      scrollToEnd
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      scrollToEnd
-    );
-
-    return () => {
-      // Clean up keyboard event listeners
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-      leaveRoom(roomIdRef?.current);
-    };
-  }, [participants]);
-
-  useEffect(() => {
-    if (messages?.filter((e) => e?.read == false)?.length > 0) {
-      socket.emit("readMessages", { chatId: _id, userId: currentUserId });
-    }
-  }, []);
 
   const listenForMessage = () => {
     receiveMessage((message) => {
@@ -146,6 +103,7 @@ const ChatScreen = (props) => {
   };
 
   useEffect(() => {
+    initializeChat();
     if (scrollToEndOnUpdate) {
       scrollToEnd();
     }
@@ -153,15 +111,14 @@ const ChatScreen = (props) => {
     setScrollToEndOnUpdate(false); // Reset after scrolling
   }, [messages]);
 
-  const getMessages = async () => {
+  const initializeChat = async () => {
     let _p = participants?.map((i) => i?._id);
-    let _m = await chatapi.createChat({ participants: _p });
-    console.log(_m);
+    let _m = await createChat({ participants: _p });
+    console.log("initializeChat", _m);
     roomIdRef.current = _m?._id;
     setRoomId(_m?._id);
     joinRoom(_m?._id, currentUserId);
     setChatData(_m);
-    setMessages(_m?.messages);
     setLoading(false);
     scrollToEnd();
   };
@@ -229,8 +186,8 @@ const ChatScreen = (props) => {
   };
 
   const memoizeMessages = useMemo(() => {
-    return messages;
-  }, [messages]);
+    return chatMessagesQuery?.data;
+  }, [chatMessagesQuery?.data]);
 
   const onMessageItemMenuSelect = (item, _id) => {
     let funcProps = {
@@ -290,7 +247,7 @@ const ChatScreen = (props) => {
               );
             }}
             keyExtractor={(item) => item._id}
-            onEndReached={loadMoreMessages}
+            // onEndReached={loadMoreMessages}
             onEndReachedThreshold={0.2}
             onScroll={handleScroll}
             inverted

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Alert, View } from "react-native";
 import { setAuthToken } from "../middleware";
 import { useQueryClient } from "react-query";
 const AuthContext = createContext();
@@ -10,25 +10,41 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
   const login = () => setIsLoggedIn(true);
+
   const logout = async () => {
-    setIsLoggedIn(false);
-    await AsyncStorage.removeItem("apptoken");
-    await queryClient.invalidateQueries();
+    try {
+      setIsLoggedIn(false);
+      await AsyncStorage.removeItem("apptoken");
+      await queryClient.invalidateQueries();
+    } catch (error) {
+      Alert.alert("Error", "Failed to log out. Please try again.");
+    }
   };
+
   const getToken = async () => {
-    return await AsyncStorage.getItem("apptoken");
+    try {
+      return await AsyncStorage.getItem("apptoken");
+    } catch (error) {
+      Alert.alert("Error", "Failed to retrieve the token.");
+      return null;
+    }
   };
 
   useEffect(() => {
     (async () => {
-      const token = await AsyncStorage.getItem("apptoken");
-      if (token) {
-        setAuthToken(token);
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
+      try {
+        const token = await AsyncStorage.getItem("apptoken");
+        if (token) {
+          setAuthToken(token);
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        Alert.alert("Error", "Failed to load authentication token.");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     })();
   }, []);
 

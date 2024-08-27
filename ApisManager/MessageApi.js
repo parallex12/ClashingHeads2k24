@@ -5,7 +5,7 @@ class MessageApi {
   async updateMessageById(id, details) {
     try {
       let result = await axios.patch(`/messages/${id}`, { ...details });
-      return { code: 200, user: result?.data };
+      return result?.data;
     } catch (e) {
       console.log("MessageApi updateMessageById Error", e);
     }
@@ -14,7 +14,7 @@ class MessageApi {
   async deleteMessageById(id) {
     try {
       let result = await axios.delete(`/messages/${id}`);
-      return { code: 200, user: result?.data };
+      return result?.data;
     } catch (e) {
       console.log("MessageApi deleteMessageById Error", e);
     }
@@ -24,9 +24,19 @@ class MessageApi {
   async createMessage(details) {
     try {
       let result = await axios.post(`/messages`, details);
-      return { code: 200, user: result?.data };
+      return result?.data;
     } catch (e) {
       console.log("MessageApi createMessage Error", e);
+    }
+  }
+
+  //Api method to getMessages by chatId
+  async getChatMessages(chatId, pageParam) {
+    try {
+      let result = await axios.get(`/messages/${chatId}?cursor=${pageParam}`);
+      return result?.data;
+    } catch (e) {
+      console.log("MessageApi getMessages Error", e);
     }
   }
 }
