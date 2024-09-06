@@ -24,28 +24,24 @@ const AccountSettings = (props) => {
   const { logout } = useAuth();
 
   const onDeleteAccount = () => {
-    let result = Alert.alert(
-      "Delete Account",
-      "Are you sure you want to delete account?",
-      [
-        {
-          text: "Ask me later",
-          onPress: () => null,
+    Alert.alert("Delete Account", "Are you sure you want to delete account?", [
+      {
+        text: "Ask me later",
+        onPress: () => null,
+      },
+      {
+        text: "Cancel",
+        onPress: () => null,
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: async () => {
+          await userApi.deleteUserProfile();
+          logout();
         },
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          onPress: async () => {
-            await userApi.deleteUserProfile();
-            logout();
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
@@ -69,7 +65,7 @@ const AccountSettings = (props) => {
             {settingOptions?.map((item, index) => {
               return (
                 <SettingsCard
-                  onPress={onDeleteAccount}
+                  onDeleteAccount={onDeleteAccount}
                   key={index}
                   data={item}
                 />

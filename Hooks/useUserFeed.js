@@ -10,7 +10,7 @@ const useUserFeed = () => {
     queryKey: ["userfeed"],
     queryFn: ({ pageParam = 0 }) => getUserFeed(pageParam),
     retry: 5,
-    cacheTime:60,
+    staleTime:50,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
      // Ensure lastPage is defined and has the nextCursor property

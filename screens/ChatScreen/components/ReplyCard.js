@@ -9,14 +9,14 @@ import { TypingComponentExtraViewerStyles as _styles } from "../../../styles/Glo
 import { useQueryClient } from "react-query";
 
 const ReplyCard = (props) => {
-  let { content, onPress, otherUserData } = props;
+  let { content, onPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const queryClient = useQueryClient();
   const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
   const current_user = userDataCached?.user;
   let username =
-    content?.sender == current_user?._id ? "You" : otherUserData?.realName;
+    content?.sender == current_user?._id ? "You" : content?.sender?.username;
   if (!content) return null;
 
   let isImage = content?.media?.image;
@@ -43,7 +43,7 @@ const ReplyCard = (props) => {
       style={styles.replyCardWrapper}
       onPress={() => onPress(content)}
     >
-      <Text style={styles.username}>{username}</Text>
+      <Text style={styles.username}>@{username}</Text>
       <Text style={styles.msg}>{textToShow}</Text>
     </TouchableOpacity>
   );

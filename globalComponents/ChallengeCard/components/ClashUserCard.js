@@ -16,6 +16,7 @@ import CacheImage from "../../../globalComponents/CacheImage";
 import { useNavigation } from "@react-navigation/native";
 import PostApi from "../../../ApisManager/PostApi";
 import { useQueryClient } from "react-query";
+import FastImage from "react-native-fast-image";
 
 const ClashUserCard = memo((data) => {
   let {
@@ -81,12 +82,13 @@ const ClashUserCard = memo((data) => {
         }}
       >
         <View style={styles.clashUserProfile}>
-          <CacheImage
-            source={{ uri: user?.profile_photo }}
+          <FastImage
+            source={{
+              uri: user?.profile_photo,
+              priority: FastImage.priority.normal,
+            }}
             resizeMode="contain"
             style={{ width: "100%", height: "100%" }}
-            cachePolicy="memory-disk"
-            hash={user?.profile_hash}
           />
         </View>
         <Text style={font(17, "#000000", "Semibold", 3)}>{user?.realName}</Text>

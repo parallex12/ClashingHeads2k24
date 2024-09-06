@@ -9,9 +9,9 @@ import {
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import { getPercent } from "../middleware";
 import { font } from "../styles/Global/main";
-import CacheImage from "./CacheImage";
 import { memo, useState } from "react";
 import ActivityStatus from "./ActivityStatus";
+import FastImage from "react-native-fast-image";
 
 const Profile = ({ source, user }) => {
   let { width, height } = useWindowDimensions();
@@ -19,15 +19,13 @@ const Profile = ({ source, user }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.profileWrapper}>
-        <CacheImage
-          source={source}
+        <FastImage
+          source={{ ...source, priority: FastImage.priority.normal }}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
-          hash={user?.profile_hash}
         />
       </TouchableOpacity>
       <ActivityStatus user={user} />
-
     </View>
   );
 };

@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { styles as _styles } from "../../styles/ChatScreen/main";
-import { generateChatId, getPercent } from "../../middleware";
+import {  getPercent } from "../../middleware";
 import TypingComponent from "./components/TypingComponent";
 import SenderMessage from "./components/SenderMessage";
 import RecieverMessage from "./components/RecieverMessage";

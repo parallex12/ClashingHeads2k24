@@ -6,18 +6,19 @@ import {
 } from "react-native";
 import { styles as _styles } from "../../styles/Messages/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
-import { chatMenuOptions, getPercent } from "../../middleware";
+import { chatMenuOptions, generateChatId, getPercent } from "../../middleware";
 import { Entypo } from "@expo/vector-icons";
 import SearchBar from "../../globalComponents/SearchBar";
 import { font } from "../../styles/Global/main";
 import MessageCard from "./components/MessageCard";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import ContactsSheet from "../../globalComponents/ContactsSheet/ContactsSheet";
 import { useNavigation } from "@react-navigation/native";
 import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useQueryClient } from "react-query";
 import useChat from "../../Hooks/useChat";
 import InfiniteFlatlist from "../../globalComponents/InfiniteFlatlist/InfiniteFlatlist";
+import { useSocket } from "../../ContextProviders/SocketContext";
 
 const Messages = (props) => {
   let {} = props;
@@ -31,6 +32,11 @@ const Messages = (props) => {
   const contactsbottomSheetRef = useRef();
   const bottomFlagSheetRef = useRef();
   const chatQuery = useChat(currentUserId);
+  const socket = useSocket();
+
+  useEffect(() => {
+    socket.on("screenchats", (chat) => chatQuery.refetch());
+  }, []);
 
   const PlusIconButton = () => {
     const onPlusPress = () => {
@@ -65,7 +71,7 @@ const Messages = (props) => {
     funcProps.blockedUsers = b_users;
 
     chatMenuOptions[index].onPress(funcProps, () => {
-      // onRefresh();
+      chatQuery.refetch();
     });
   };
 
@@ -75,11 +81,12 @@ const Messages = (props) => {
   }, 0);
 
   const onConnectUserChat = (user) => {
+    let chatId = generateChatId([currentUserId, user?._id]);
     navigation.navigate("ChatScreen", {
       chat_data: {
-        participants: [currentUser, user],
-        messages: [],
-        _id: null,
+        _id: chatId,
+        user,
+        participants: [currentUserId, user?._id],
       },
     });
   };
@@ -117,9 +124,10 @@ const Messages = (props) => {
         query={chatQuery}
         renderItem={({ item, index }) => (
           <MessageCard
-            itemActions={{ onChatItemMenuSelect }}
+            onChatItemMenuSelect={onChatItemMenuSelect}
             data={item}
             key={index}
+            onCardPress={onConnectUserChat}
           />
         )}
       />

@@ -16,7 +16,7 @@ import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import ReplyCard from "./ReplyCard";
 
 const TypingComponentExtraViewer = (props) => {
-  let { data, otherUserData, msg_content, onDeleteMedia } = props;
+  let { data,  msg_content, onDeleteMedia } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const viewerAnime = useRef(new Animated.Value(0)).current;
@@ -54,7 +54,7 @@ const TypingComponentExtraViewer = (props) => {
     >
       {data?.reply && (
         <View style={styles.innerReplyContainer}>
-          <ReplyCard content={msg_content} otherUserData={otherUserData} />
+          <ReplyCard content={msg_content} />
           <StandardButton
             customStyles={styles.timesBtn}
             rightIcon={<FontAwesome5 name="times" size={14} color="#fff" />}

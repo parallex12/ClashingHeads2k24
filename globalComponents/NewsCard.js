@@ -9,6 +9,7 @@ import {
 import { NewsCardStyles, font } from "../styles/Global/main";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import * as WebBrowser from "expo-web-browser";
+import FastImage from "react-native-fast-image";
 
 const CardFooter = ({ publishedAt, urlToImage, source }) => {
   let { width, height } = useWindowDimensions();
@@ -16,12 +17,13 @@ const CardFooter = ({ publishedAt, urlToImage, source }) => {
   return (
     <View style={styles.cardFooterWrapper}>
       <View style={styles.cardFootercompanyLogo}>
-        <Image
-          source={
-            urlToImage ? { uri: urlToImage } : require("../assets/icon.png")
-          }
+        <FastImage
+          source={{
+            uri: urlToImage,
+            priority: FastImage.priority.normal,
+          }}
           resizeMode="cover"
-          style={styles.companyLogo}
+          style={{ width: "100%", height: "100%" }}
         />
         <Text style={font(13, "#6B7287", "Regular")}>{source?.name}</Text>
       </View>
@@ -57,10 +59,11 @@ const NewsCard = (props) => {
     <Pressable style={styles.newsCardCont} onPress={handlePress}>
       <View style={styles.cardRow}>
         <View style={styles.newsCardThumbnailCont}>
-          <Image
-            source={
-              data?.urlToImage ? { uri: data?.urlToImage } : require("../assets/icon.png")
-            }
+          <FastImage
+            source={{
+              uri: data?.urlToImage,
+              priority: FastImage.priority.normal,
+            }}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
           />
@@ -69,7 +72,9 @@ const NewsCard = (props) => {
           <Text style={font(15, "#000000", "Semibold", 3, 0, { width: "88%" })}>
             {data?.title}
           </Text>
-          <Text style={font(12.5, "#000000", "Regular", 3)}>{data?.description}</Text>
+          <Text style={font(12.5, "#000000", "Regular", 3)}>
+            {data?.description}
+          </Text>
           <TouchableOpacity style={styles.micWrapper} onPress={onMicPress}>
             <Image
               source={require("../assets/images/mic_rec.png")}

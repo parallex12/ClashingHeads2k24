@@ -13,6 +13,7 @@ import { memo, useEffect, useState } from "react";
 import { download } from "react-native-compressor";
 import CacheImage from "../../CacheImage";
 import ImageViewer from "../../ImageViewer/ImageViewer";
+import FastImage from "react-native-fast-image";
 
 const Content = memo((props) => {
   let {
@@ -43,34 +44,29 @@ const Content = memo((props) => {
   const PostImage = ({ source, onPress }) => {
     return (
       <TouchableOpacity style={styles.postImageWrapper} activeOpacity={0.9}>
-        {source?.uri ? (
-          <CacheImage
-            source={source}
-            resizeMode="cover"
-            style={{ width: "100%", height: "100%" }}
-            hash={post_image_hash}
-          />
-        ) : (
-          <Image
-            source={source}
-            resizeMode="cover"
-            style={{ width: "100%", height: "100%" }}
-          />
-        )}
+        <FastImage
+          source={{ ...source, priority: FastImage.priority.normal }}
+          resizeMode="cover"
+          style={{ width: "100%", height: "100%" }}
+        />
       </TouchableOpacity>
     );
   };
-  
+
   return (
     <View style={styles.container} activeOpacity={1}>
       {title && <Text style={styles.title}>{title}</Text>}
+      {description && (
+        <Text numberOfLines={desc_limit} style={styles.smallText}>
+          {description}
+        </Text>
+      )}
       {post_image && (
         <ImageViewer
           source={{ uri: post_image }}
           post_image_hash={post_image_hash}
         />
       )}
-      {/* {post_image && <PostImage source={{ uri: post_image }} />} */}
       {sticker && <PostImage source={sticker?.img} />}
       {recording && (
         <WaveAudioPlayer
@@ -84,11 +80,6 @@ const Content = memo((props) => {
           localSource={sticker?.audio}
         />
       )}
-      {description && (
-        <Text numberOfLines={desc_limit} style={styles.smallText}>
-          {description}
-        </Text>
-      )}
     </View>
   );
 });
@@ -99,8 +90,9 @@ const _styles = ({ width, height }) =>
       width: "100%",
       minHeight: getPercent(5, height),
       justifyContent: "space-around",
+      paddingVertical: getPercent(1, height),
     },
-    title: font(17, "#1C1C1C", "Medium", 15),
+    title: font(17, "#1C1C1C", "Medium", 5),
     postImageWrapper: {
       width: "100%",
       minHeight: getPercent(15, height),
@@ -111,7 +103,7 @@ const _styles = ({ width, height }) =>
       zIndex: 2,
       marginBottom: getPercent(1, height),
     },
-    smallText: font(15, "#111827", "Regular", 10),
+    smallText: font(15, "#111827", "Regular", 5),
     bgTouchable: {
       width: "100%",
       height: "100%",

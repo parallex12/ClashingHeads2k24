@@ -1,6 +1,5 @@
 import {
   Text,
-  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
@@ -8,21 +7,19 @@ import { RecieverMessagestyles as _styles } from "../../../styles/Global/main";
 import {
   formatTime,
   getPercent,
-  messageMenuOptions,
+  messageRecieverMenuOptions,
 } from "../../../middleware";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { RFValue } from "react-native-responsive-fontsize";
 import ImageViewer from "../../../globalComponents/ImageViewer/ImageViewer";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import ContextMenu from "react-native-context-menu-view";
 import ReplyCard from "./ReplyCard";
 
 const RecieverMessage = (props) => {
-  let { data, replyMsgContent, otherUserData, onMessageItemMenuSelect } = props;
+  let { data, replyMsgContent, onMessageItemMenuSelect } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let time = formatTime(data?.createdAt);
-  let { media } = data;
+  let media = data?.media;
   let expandWidth = { width: getPercent(65, width) };
   let msgBg = {
     backgroundColor: "rgba(0,0,0,0.31)",
@@ -30,12 +27,12 @@ const RecieverMessage = (props) => {
 
   const onContextMenuSelect = (e) => {
     const index = e.nativeEvent.index;
-    onMessageItemMenuSelect(messageMenuOptions[index], data?._id);
+    onMessageItemMenuSelect(messageRecieverMenuOptions[index], data?._id);
   };
 
   return (
     <ContextMenu
-      actions={messageMenuOptions}
+      actions={messageRecieverMenuOptions}
       onPress={onContextMenuSelect}
       previewBackgroundColor="rgba(0,0,0,0)"
     >
@@ -55,12 +52,7 @@ const RecieverMessage = (props) => {
               />
             </View>
           )}
-          {media?.reply && (
-            <ReplyCard
-              content={replyMsgContent}
-              otherUserData={otherUserData}
-            />
-          )}
+          {media?.reply && <ReplyCard content={replyMsgContent} />}
           {media?.audio && <WaveAudioPlayer source={media?.audio} />}
           {data?.message?.length > 0 && (
             <Text style={styles.text}>{data?.message}</Text>

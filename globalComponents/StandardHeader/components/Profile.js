@@ -7,9 +7,9 @@ import {
 import { getPercent } from "../../../middleware";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import CacheImage from "../../CacheImage";
 import ActivityStatus from "../../ActivityStatus";
 import { useQueryClient } from "react-query";
+import FastImage from "react-native-fast-image";
 
 const Profile = (props) => {
   let { data, source, menu, profile_hash, customStyles } = props;
@@ -38,11 +38,10 @@ const Profile = (props) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onMenu}>
       <View style={[styles.profileWrapper, customStyles]}>
-        <CacheImage
-          source={profileImg}
+        <FastImage
+          source={{ ...profileImg, priority: FastImage.priority.normal }}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
-          hash={profile_hash}
         />
       </View>
       {menu && (
@@ -50,7 +49,7 @@ const Profile = (props) => {
           <Entypo name="menu" size={getPercent(1.8, height)} color="#DB2727" />
         </View>
       )}
-      <ActivityStatus user={data}/>
+      <ActivityStatus user={data} />
     </TouchableOpacity>
   );
 };

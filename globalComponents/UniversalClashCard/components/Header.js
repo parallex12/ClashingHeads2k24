@@ -13,20 +13,21 @@ import { useNavigation } from "@react-navigation/native";
 import CacheImage from "../../CacheImage";
 import ActivityStatus from "../../ActivityStatus";
 import { useQueryClient } from "react-query";
+import FastImage from "react-native-fast-image";
 
-const Profile = ({ source, profileStyles,author,onProfilePress}) => {
+const Profile = ({ source, profileStyles, author, onProfilePress }) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   return (
     <View style={[styles.container, { ...profileStyles }]}>
       <TouchableOpacity style={styles.profileWrapper} onPress={onProfilePress}>
-        <CacheImage
-          source={source}
+        <FastImage
+          source={{ ...source, priority: FastImage.priority.normal }}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
         />
       </TouchableOpacity>
-      <ActivityStatus user={author}/>
+      <ActivityStatus user={author} />
     </View>
   );
 };
@@ -118,7 +119,7 @@ const _styles = ({ width, height }) =>
       justifyContent: "center",
       zIndex: 2,
     },
-    
+
     infoWrapper: {
       flex: 1,
       paddingHorizontal: getPercent(3, width),

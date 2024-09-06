@@ -2,9 +2,19 @@ import { useSocket } from "../../ContextProviders/SocketContext";
 
 export const useChatSocketService = () => {
   const socket = useSocket();
-  const joinRoom = (room, userId) => {
+
+  const getRoom = (participants) => {
+    let _p = participants?.map((i) => i?._id);
     if (socket) {
-      socket.emit("join", { room, userId });
+      socket.emit("getroom", {members: _p });
+      console.log("Getting Room Data:", room);
+    }
+  };
+
+  const joinRoom = (room, userId) => {
+    let _p = participants?.map((i) => i?._id);
+    if (socket) {
+      socket.emit("join", { room, userId, members: _p });
       console.log("Room Joined:", room);
     }
   };

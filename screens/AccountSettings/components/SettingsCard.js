@@ -11,7 +11,7 @@ import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
 const SettingsCard = (props) => {
-  let { data, onPress } = props;
+  let { data, onDeleteAccount } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
@@ -21,7 +21,9 @@ const SettingsCard = (props) => {
       navigation?.navigate(data?.route);
       return;
     }
-    onPress();
+    if (data?.label == "Delete Account") {
+      onDeleteAccount();
+    }
   };
 
   return (

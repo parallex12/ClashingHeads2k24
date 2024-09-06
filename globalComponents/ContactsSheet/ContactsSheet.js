@@ -23,9 +23,8 @@ const ContactsSheet = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const snapPoints = useMemo(() => ["25%", "80%"], []);
-  const [searched_users, setSearched_users] = useState([]);
   const [user_friends, setUser_friends] = useState([]);
-  const [searchQuery, setSearchQuery] = useState();
+  const [searchQuery, setSearchQuery] = useState("a");
   const queryClient = useQueryClient();
   const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
   const current_user = userDataCached?.user;
@@ -34,15 +33,12 @@ const ContactsSheet = (props) => {
   const userApi = new UserApi();
 
   useEffect(() => {
-    const mergedUsers = mergeAndRemoveDuplicates(following, followers);
-    setUser_friends(mergedUsers);
-    if (searchQuery?.length > 0) {
       searchUsers(searchQuery);
-    }
   }, [searchQuery, following, followers]);
 
   const mergeAndRemoveDuplicates = (arr1, arr2) => {
     const merged = [...arr1, ...arr2];
+
     const uniqueUsers = Array.from(new Set(merged.map((user) => user._id))).map(
       (id) => merged.find((user) => user._id === id)
     );
@@ -55,9 +51,10 @@ const ContactsSheet = (props) => {
   };
 
   const searchUsers = async (searchQuery) => {
+    const mergedUsers = mergeAndRemoveDuplicates(following, followers);
     let searched_users = await userApi.searchUsers(searchQuery);
     let filtered = searched_users?.filter((e) => e?._id != current_user?._id);
-    setUser_friends(filtered);
+    setUser_friends([...mergedUsers, ...filtered]);
   };
 
   const memoizedUsers = useMemo(() => {

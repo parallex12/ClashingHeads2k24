@@ -12,8 +12,8 @@ import { Facebook } from "react-content-loader/native";
 import ContextMenu from "react-native-context-menu-view";
 import { chatMenuOptions, formatTime, getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
-import CacheImage from "../../../globalComponents/CacheImage";
 import { useQueryClient } from "react-query";
+import FastImage from "react-native-fast-image";
 
 const Profile = ({ source, user, isUserMe }) => {
   const { width, height } = useWindowDimensions();
@@ -27,11 +27,10 @@ const Profile = ({ source, user, isUserMe }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.profileWrapper} onPress={onProfilePress}>
-        <CacheImage
-          source={source}
+        <FastImage
+          source={{ ...source, priority: FastImage.priority.normal }}
           resizeMode="cover"
-          style={styles.profileImage}
-          hash={user?.profile_hash}
+          style={{ width: "100%", height: "100%" }}
         />
       </TouchableOpacity>
       {user?.status === "online" && <View style={styles.online} />}
@@ -39,7 +38,7 @@ const Profile = ({ source, user, isUserMe }) => {
   );
 };
 
-const MessageCard = ({ data, onChatItemMenuSelect }) => {
+const MessageCard = ({ data, onChatItemMenuSelect, onCardPress }) => {
   const { width, height } = useWindowDimensions();
   const styles = createMessageCardStyles({ width, height });
   const navigation = useNavigation();
@@ -54,7 +53,9 @@ const MessageCard = ({ data, onChatItemMenuSelect }) => {
   const unRead = unreadMessagesCount[currentUserId];
   const hasMedia = lastMessage?.media;
   const isChatBlockedForMe = data?.blockedUsers?.includes(currentUserId);
-  const isChatBlockedForOtherUser = data?.blockedUsers?.includes(otherUser?._id);
+  const isChatBlockedForOtherUser = data?.blockedUsers?.includes(
+    otherUser?._id
+  );
   const blockedTexts = [
     "You have blocked this user.",
     "You have been blocked.",
@@ -65,12 +66,8 @@ const MessageCard = ({ data, onChatItemMenuSelect }) => {
     ? blockedTexts[1]
     : null;
 
-  const onCardPress = () => {
-    navigation.navigate("ChatScreen", { chat_data: data });
-  };
-
   if (loading) return <Facebook />;
-  // if (!lastMessage) return null;
+  if (!lastMessage) return null;
 
   const onMessageItemMenuSelect = (e) => {
     const index = e.nativeEvent.index;
@@ -81,7 +78,13 @@ const MessageCard = ({ data, onChatItemMenuSelect }) => {
   const computeActions = () => {
     return chatMenuOptions?.map((e) => {
       if (e?.title === "Block" || e?.title === "Unblock") {
-        return { ...e, title: isChatBlockedForMe || isChatBlockedForOtherUser ? "Unblock" : "Block" };
+        return {
+          ...e,
+          title:
+            isChatBlockedForMe || isChatBlockedForOtherUser
+              ? "Unblock"
+              : "Block",
+        };
       }
       return e;
     });
@@ -98,11 +101,13 @@ const MessageCard = ({ data, onChatItemMenuSelect }) => {
       <TouchableOpacity
         style={styles.container}
         activeOpacity={0.6}
-        onPress={onCardPress}
+        onPress={() => onCardPress(otherUser)}
       >
         <Profile
           source={{
-            uri: otherUser?.profile_photo || "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
+            uri:
+              otherUser?.profile_photo ||
+              "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
           }}
           user={otherUser}
           isUserMe={isUserMe}
@@ -110,11 +115,18 @@ const MessageCard = ({ data, onChatItemMenuSelect }) => {
         <View style={styles.infoWrapper}>
           <Text style={styles.titleName}>{otherUser?.realName}</Text>
           <Text style={styles.slugText} numberOfLines={1}>
-            {showBlockedText || (hasMedia?.image ? "Sent an image." : hasMedia?.audio ? "Sent an audio" : lastMessage?.message)}
+            {showBlockedText ||
+              (hasMedia?.image
+                ? "Sent an image."
+                : hasMedia?.audio
+                ? "Sent an audio"
+                : lastMessage?.message)}
           </Text>
         </View>
         <View style={styles.rightActions}>
-          <Text style={styles.timeText}>{formatTime(lastMessage?.createdAt)}</Text>
+          <Text style={styles.timeText}>
+            {formatTime(lastMessage?.createdAt)}
+          </Text>
           {unRead > 0 && (
             <View style={styles.counterWrapper}>
               <Text style={styles.counterText}>{unRead}</Text>

@@ -1,7 +1,7 @@
 import { View, useWindowDimensions } from "react-native";
 import { PeopleResultStyles as _styles } from "../../../styles/Search/main";
 import UserCard from "../../../globalComponents/UserCard";
-import { memo} from "react";
+import { memo } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useQueryClient } from "react-query";
 import { useUserSearch } from "../../../Hooks/useSearch";

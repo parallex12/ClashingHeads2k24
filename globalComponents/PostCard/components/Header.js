@@ -11,9 +11,9 @@ import { font } from "../../../styles/Global/main";
 import { Entypo } from "@expo/vector-icons";
 import { getTimeElapsed } from "../../../utils";
 import { useNavigation } from "@react-navigation/native";
-import CacheImage from "../../CacheImage";
 import ActivityStatus from "../../ActivityStatus";
 import { useQueryClient } from "react-query";
+import FastImage from "react-native-fast-image";
 
 const Profile = ({ source, profileStyles, user }) => {
   let { width, height } = useWindowDimensions();
@@ -22,11 +22,10 @@ const Profile = ({ source, profileStyles, user }) => {
   return (
     <View style={[styles.container, { ...profileStyles }]}>
       <View style={styles.profileWrapper}>
-        <CacheImage
-          source={source}
+        <FastImage
+          source={{ ...source, priority: FastImage.priority.normal }}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
-          hash={user?.profile_hash}
         />
       </View>
       <ActivityStatus user={user} />
@@ -39,7 +38,7 @@ const Header = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let post_past_time = getTimeElapsed(createdAt);
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const queryClient = useQueryClient();
   const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
   const user_details = userDataCached?.user;
@@ -136,7 +135,7 @@ const _styles = ({ width, height }) =>
       alignItems: "center",
     },
     titleName: font(17, "#111827", "Medium", 2, null, { marginRight: 10 }),
-    slugText: font(15, "#6B7280", "Regular"),
+    slugText: font(13, "#6B7280", "Regular"),
     settingsIconWrapper: {
       flex: 0.8,
       alignItems: "flex-end",

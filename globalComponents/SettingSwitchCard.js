@@ -9,7 +9,7 @@ const SettingSwitchCard = (props) => {
 
   return (
     <View style={styles.container}>
-      <Text style={font(13, "#000000", "Regular", 0, null, styles.text)}>
+      <Text style={font(15, "#000000", "Regular", 0, null, styles.text)}>
         {data?.label}
       </Text>
       <StandardSwitch

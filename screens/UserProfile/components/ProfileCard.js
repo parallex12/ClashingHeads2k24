@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { ProfileCardstyles as _styles } from "../../../styles/UserProfile/main";
 import { font } from "../../../styles/Global/main";
-import { getPercent } from "../../../middleware";
+import { generateChatId, getPercent } from "../../../middleware";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
@@ -127,11 +127,12 @@ const ProfileCard = (props) => {
   };
 
   const onMessage = () => {
+    let chatId = generateChatId([user?._id, current_user?._id]);
     navigation.navigate("ChatScreen", {
       chat_data: {
         participants: [current_user, user],
-        messages: [],
-        _id: null,
+        _id: chatId,
+        user,
       },
     });
   };

@@ -41,12 +41,11 @@ const FindUserSheet = (props) => {
   const [searchQuery, setSearchQuery] = useState("a");
   const queryClient = useQueryClient();
   const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const current_user = userDataCached?.user;  let { following, followers } = current_user;
+  const current_user = userDataCached?.user;
+  let { following, followers } = current_user;
   const userApi = new UserApi();
 
   useEffect(() => {
-    const mergedUsers = mergeAndRemoveDuplicates(following, followers);
-    setSearched_users(mergedUsers);
     searchUsers(searchQuery);
   }, [searchQuery, following, followers]);
 
@@ -59,8 +58,9 @@ const FindUserSheet = (props) => {
   };
 
   const searchUsers = async (searchQuery) => {
+    const mergedUsers = mergeAndRemoveDuplicates(following, followers);
     let searched_users = await userApi.searchUsers(searchQuery);
-    setSearched_users(searched_users);
+    setSearched_users([...mergedUsers,...searched_users]);
   };
 
   const onUserSelect = async () => {
@@ -75,6 +75,7 @@ const FindUserSheet = (props) => {
     return searched_users;
   }, [searched_users]);
 
+  console.log(memoizedUsers);
   return (
     <BottomSheetModalProvider>
       <BottomSheetModal

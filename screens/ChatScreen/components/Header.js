@@ -9,14 +9,12 @@ import { HeaderStyles as _styles } from "../../../styles/ChatScreen/main";
 import Profile from "../../../globalComponents/StandardHeader/components/Profile";
 import BackButton from "../../../globalComponents/BackButton";
 import { getPercent } from "../../../middleware";
-import { Facebook, Instagram } from "react-content-loader/native";
-import ContentLoader from "react-content-loader";
 
 const Header = (props) => {
   let { data, rightIcon, containerStyles, loading } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-
+  
   return (
     <View style={[styles.container, containerStyles]}>
       <View style={styles.col1}>

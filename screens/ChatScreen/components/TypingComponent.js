@@ -20,7 +20,6 @@ const TypingComponent = (props) => {
     onSend,
     showBlockedText,
     replyMsgContent,
-    otherUserData,
     media,
     setMedia,
     voicebottomSheetRef,
@@ -76,7 +75,6 @@ const TypingComponent = (props) => {
           data={media}
           onDeleteMedia={removeImage}
           viewHeight={viewHeight}
-          otherUserData={otherUserData}
         />
       )}
 
@@ -112,13 +110,15 @@ const TypingComponent = (props) => {
               />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.actionWrapper} onPress={onSendMsg}>
-            <FontAwesome
-              name="send"
-              size={getPercent(2.5, height)}
-              color="#6B7280"
-            />
-          </TouchableOpacity>
+          {(newMessage || Object.values(media)?.length > 0) && (
+            <TouchableOpacity style={styles.actionWrapper} onPress={onSendMsg}>
+              <FontAwesome
+                name="send"
+                size={getPercent(2.5, height)}
+                color="#6B7280"
+              />
+            </TouchableOpacity>
+          )}
         </View>
       ) : (
         <View style={styles.innercontainer}>

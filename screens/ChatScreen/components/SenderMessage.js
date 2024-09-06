@@ -23,14 +23,13 @@ const SenderMessage = (props) => {
     data,
     flatListRef,
     replyMsgContent,
-    otherUserData,
     onMessageItemMenuSelect,
     replyIndex,
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let time = formatTime(data?.createdAt);
-  let { media } = data;
+  let media = data?.media;
 
   let expandWidth = { width: getPercent(65, width) };
 
@@ -46,10 +45,13 @@ const SenderMessage = (props) => {
   const onReplyPress = () => {
     try {
       if (replyIndex !== -1) {
-        flatListRef.current.scrollToIndex({ index:replyIndex, animated: true });
+        flatListRef.current.scrollToIndex({
+          index: replyIndex,
+          animated: true,
+        });
       }
     } catch (e) {
-      console.log(replyIndex)
+      console.log(replyIndex);
       console.log(e.message);
     }
   };
@@ -78,11 +80,7 @@ const SenderMessage = (props) => {
             </View>
           )}
           {media?.reply && (
-            <ReplyCard
-              onPress={onReplyPress}
-              content={replyMsgContent}
-              otherUserData={otherUserData}
-            />
+            <ReplyCard onPress={onReplyPress} content={replyMsgContent} />
           )}
           {media?.audio && <WaveAudioPlayer source={media?.audio} />}
           {data?.message?.length > 0 && (

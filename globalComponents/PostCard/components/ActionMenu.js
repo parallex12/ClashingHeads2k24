@@ -11,6 +11,30 @@ import { font } from "../../../styles/Global/main";
 import { useEffect, useState } from "react";
 import { onShareApp } from "../../../utils";
 import { useQueryClient } from "react-query";
+import { useAssets } from "expo-asset";
+import FastImage from "react-native-fast-image";
+
+const FooterItem = ({ item }) => {
+  let { width, height } = useWindowDimensions();
+  let styles = _styles({ width, height });
+  return (
+    <TouchableOpacity
+      style={styles.FooterItem}
+      onPress={() => item?.onPress(item)}
+    >
+      <View style={styles.iconImage}>
+        <FastImage
+          source={item?.iconImg}
+          resizeMode="contain"
+          style={{ width: "100%", height: "100%" }}
+        />
+      </View>
+      <Text style={styles.actionText}>
+        {item?.title == "Clashes" ? "Reply Clash" : item?.title}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
 const ActionMenu = (props) => {
   let { onReaction, onPostClashesPress, onReportPress, dislikes, likes } =
@@ -19,33 +43,22 @@ const ActionMenu = (props) => {
   let styles = _styles({ width, height });
   const queryClient = useQueryClient();
   const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const { _id } = userDataCached?.user;
+  const _id = userDataCached?.user?._id;
+  let assets = [
+    require("../../../assets/icons/post_cards/like_active.png"),
+    require("../../../assets/icons/post_cards/like.png"),
+    require("../../../assets/icons/post_cards/dislike_active.png"),
+    require("../../../assets/icons/post_cards/dislike.png"),
+    require("../../../assets/icons/post_cards/sound.png"),
+    require("../../../assets/icons/post_cards/flag.png"),
+    require("../../../assets/icons/post_cards/share.png"),
+  ];
 
   const [reactions, setReactions] = useState({});
 
   useEffect(() => {
     setReactions({ likes, dislikes });
   }, [likes, dislikes]);
-
-  const FooterItem = ({ item }) => {
-    return (
-      <TouchableOpacity
-        style={styles.FooterItem}
-        onPress={() => item?.onPress(item)}
-      >
-        <View style={styles.iconImage}>
-          <Image
-            source={item?.iconImg}
-            resizeMode="contain"
-            style={{ width: "100%", height: "100%" }}
-          />
-        </View>
-        <Text style={styles.actionText}>
-          {item?.title == "Clashes" ? "Reply Clash" : item?.title}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
 
   const onReact = (type) => {
     let _likes = reactions?.likes?.filter((e) => e != _id);
@@ -61,31 +74,27 @@ const ActionMenu = (props) => {
   let actions = [
     {
       title: reactions?.likes?.length,
-      iconImg: isLiked
-        ? require("../../../assets/icons/post_cards/like_active.png")
-        : require("../../../assets/icons/post_cards/like.png"),
+      iconImg: isLiked ? assets && assets[0] : assets && assets[1],
       onPress: () => onReact("like"),
     },
     {
       title: reactions?.dislikes?.length,
-      iconImg: isDisLiked
-        ? require("../../../assets/icons/post_cards/dislike_active.png")
-        : require("../../../assets/icons/post_cards/dislike.png"),
+      iconImg: isDisLiked ? assets && assets[2] : assets && assets[3],
       onPress: () => onReact("dislike"),
     },
     {
       title: "Clashes",
-      iconImg: require("../../../assets/icons/post_cards/sound.png"),
+      iconImg: assets && assets[4],
       onPress: onPostClashesPress,
     },
     {
       title: "Report",
-      iconImg: require("../../../assets/icons/post_cards/flag.png"),
+      iconImg: assets && assets[5],
       onPress: () => onReportPress(),
     },
     {
       title: "Share",
-      iconImg: require("../../../assets/icons/post_cards/share.png"),
+      iconImg: assets && assets[6],
       onPress: () => onShareApp(),
     },
   ];

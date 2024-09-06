@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Blurhash } from "react-native-blurhash";
 import { useSelector } from "react-redux";
 import { useQueryClient } from "react-query";
+import FastImage from "react-native-fast-image";
 
 const ClashUserCard = memo(({ user, type, audio }) => {
   const [imageLoad, setImageLoad] = useState(true);
@@ -37,23 +38,13 @@ const ClashUserCard = memo(({ user, type, audio }) => {
         }}
       >
         <View style={styles.clashUserProfile}>
-          {imageLoad && user?.profile_hash && (
-            <Blurhash
-              blurhash={user?.profile_hash}
-              style={{
-                width: "100%",
-                height: "100%",
-                position: "absolute",
-                zIndex: 999,
-              }}
-            />
-          )}
-          <Image
-            source={{ uri: user?.profile_photo }}
-            resizeMode="contain"
+          <FastImage
+            source={{
+              uri: user?.profile_photo,
+              priority: FastImage.priority.normal,
+            }}
+            resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
-            cachePolicy="memory-disk"
-            onLoad={() => setImageLoad(false)}
           />
         </View>
         <Text style={font(14, "#000000", "Semibold", 3)}>{user?.realName}</Text>

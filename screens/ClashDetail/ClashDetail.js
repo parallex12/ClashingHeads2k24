@@ -24,7 +24,7 @@ const ClashDetails = (props) => {
   let postId = prevPostData?._id;
   let openVoiceSheet = props?.route?.params?.openVoiceSheet;
   const postClashes = usePostClashes(postId);
-  const feedPost = useFeedPost(postId,prevPostData);
+  const feedPost = useFeedPost(postId, prevPostData);
 
   useEffect(() => {
     if (openVoiceSheet) {
@@ -54,36 +54,40 @@ const ClashDetails = (props) => {
         title="Post"
         searchIcon={false}
       />
-      <ClashFlatlist
-        ListHeaderComponent={
-          !feedPost?.isLoading ? (
-            <PostCard
-              postDateAndViews
-              data={feedPost?.data?.post} // Render post data from Redux state
-              onPostClashesPress={() => bottomVoiceSheetRef.current?.present()}
-              onReportPress={onReportPress}
-              views={feedPost?.data?.post?.views?.length}
-              onProfilePress={() => props?.navigation?.navigate("UserProfile")}
-            />
-          ) : (
-            <Instagram />
-          )
-        }
-        query={postClashes}
-        itemActions={{ onPostClashesPress, onReportPress }}
-      />
+        <ClashFlatlist
+          ListHeaderComponent={
+            !feedPost?.isLoading ? (
+              <PostCard
+                postDateAndViews
+                data={feedPost?.data?.post} // Render post data from Redux state
+                onPostClashesPress={() =>
+                  bottomVoiceSheetRef.current?.present()
+                }
+                onReportPress={onReportPress}
+                views={feedPost?.data?.post?.views?.length}
+                onProfilePress={() =>
+                  props?.navigation?.navigate("UserProfile")
+                }
+              />
+            ) : (
+              <Instagram />
+            )
+          }
+          query={postClashes}
+          itemActions={{ onPostClashesPress, onReportPress }}
+        />
 
-      <UpdatedVoiceRecorderBottomSheet
-        clashTo={clashTo}
-        postId={postId}
-        bottomVoiceSheetRef={bottomVoiceSheetRef}
-        onPostClash={onPostClash}
-        stickers
-      />
-      <FlagReportBottomSheet
-        postId={postId}
-        bottomSheetRef={bottomFlagSheetRef}
-      />
+        <UpdatedVoiceRecorderBottomSheet
+          clashTo={clashTo}
+          postId={postId}
+          bottomVoiceSheetRef={bottomVoiceSheetRef}
+          onPostClash={onPostClash}
+          stickers
+        />
+        <FlagReportBottomSheet
+          postId={postId}
+          bottomSheetRef={bottomFlagSheetRef}
+        />
     </View>
   );
 };

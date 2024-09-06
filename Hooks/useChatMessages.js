@@ -23,7 +23,7 @@ const useChatMessages = (chatId) => {
   });
 
   let pages = query?.data?.pages?.flatMap((page) => page.data);
-
+  
   const msgs = useMemo(() => {
     return pages;
   }, [pages]);

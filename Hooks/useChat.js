@@ -27,7 +27,6 @@ const useChat = (userId) => {
   const chats = useMemo(() => {
     return pages;
   }, [pages]);
-  console.log(query?.data)
 
   return { ...query, data: chats };
 };

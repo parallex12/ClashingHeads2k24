@@ -2,7 +2,7 @@
   "expo": {
     "name": "ClashingHeads",
     "slug": "clashingheads",
-    "version": "1.11.0",
+    "version": "1.12.1",
     "orientation": "portrait",
     "scheme": "com.clubs.clashingheads",
     "icon": "./assets/icon.png",
@@ -14,7 +14,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "buildNumber": "1.11.0",
+      "buildNumber": "1.12.1",
       "supportsTablet": false,
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to take selfies for profile.",
@@ -54,6 +54,12 @@
           "ios": {
             "useFrameworks": "static"
           }
+        }
+      ],
+      [
+        "expo-asset",
+        {
+          "assets": ["./assets/chatbg.jpg", "./assets/logo.png"]
         }
       ]
     ],

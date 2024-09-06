@@ -9,16 +9,15 @@ import {
   StyleSheet,
 } from "react-native";
 import { ImageViewerStyles } from "../../styles/Global/main";
-import CacheImage from "../CacheImage";
 import { useState } from "react";
+import FastImage from "react-native-fast-image";
 
 const ImageViewer = (props) => {
-  let { source, post_image_hash, isLocal } = props;
+  let { source } = props;
   let { width, height } = useWindowDimensions();
   let styles = ImageViewerStyles({ width, height });
   const [imageLoad, setImageLoad] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
-
   return (
     <>
       <TouchableOpacity
@@ -27,12 +26,10 @@ const ImageViewer = (props) => {
         onPress={() => setModalVisible(true)}
       >
         {source?.uri ? (
-          <CacheImage
-            source={source}
+          <FastImage
+            source={{ ...source, priority: FastImage.priority.normal }}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
-            hash={post_image_hash}
-            isLocal={isLocal}
           />
         ) : (
           <Image
@@ -55,18 +52,16 @@ const ImageViewer = (props) => {
             onPress={() => setModalVisible(false)}
           >
             {source?.uri ? (
-              <CacheImage
-                source={source}
+              <FastImage
+                source={{ ...source, priority: FastImage.priority.normal }}
                 resizeMode="contain"
-                style={styles.fullScreenImage}
-                hash={post_image_hash}
+                style={{ width: "100%", height: "100%" }}
               />
             ) : (
               <Image
                 source={source}
                 resizeMode="contain"
-                style={styles.fullScreenImage}
-                onLoad={() => setImageLoad(false)}
+                style={{ width: "100%", height: "100%" }}
               />
             )}
           </TouchableOpacity>

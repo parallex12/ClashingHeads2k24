@@ -278,8 +278,8 @@ export const saveTokenToStorage = async (token) => {
   }
 };
 
-export const generateChatId = (userId1, userId2) => {
-  return [userId1, userId2].sort().join("_");
+export const generateChatId = (participants) => {
+  return participants.sort().join("_");
 };
 
 export const formatTime = (timestamp) => {
@@ -315,6 +315,22 @@ export const messageMenuOptions = [
   },
 ];
 
+
+export const messageRecieverMenuOptions = [
+  {
+    title: "Reply",
+    onPress: (props, next) =>
+      props?.setMedia((prev) => ({ ...prev, reply: props?._id })),
+  },
+  {
+    title: "Report",
+    onPress: (props, next) => {
+      props?.ref?.current?.present();
+      next();
+    },
+  },
+];
+
 export const chatMenuOptions = [
   {
     title: "Block",
@@ -345,3 +361,4 @@ export const checkUserOnlineStatus = async (status_func) => {
     return false; // Return false in case of an error
   }
 };
+

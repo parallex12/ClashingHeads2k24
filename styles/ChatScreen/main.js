@@ -12,7 +12,7 @@ export const styles = ({ width, height }) =>
     },
     content: {
       flex: 1,
-      height: getPercent(80, height),
+      justifyContent:'flex-end'
       // paddingTop: getPercent(3, height),
     },
   });

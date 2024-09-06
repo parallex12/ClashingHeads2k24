@@ -17,6 +17,7 @@ import ImageViewer from "../../ImageViewer/ImageViewer";
 const PostImage = ({ source, onPress }) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
+
   return (
     <TouchableOpacity
       style={styles.postImageWrapper}

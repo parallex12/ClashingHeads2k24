@@ -7,7 +7,6 @@ import { useAuth } from "./AuthProvider";
 const SocketContext = createContext();
 
 const SOCKET_URL = process.env.SOCKET_PROD_URL;
-
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const { getToken } = useAuth();
@@ -41,7 +40,6 @@ export const SocketProvider = ({ children }) => {
     (async () => {
       let token = await getToken();
       if (token && socket) {
-        console.log(token);
         socket.emit("appjoin", { token });
 
         const handleAppStateChange = (nextAppState) => {
@@ -75,7 +73,7 @@ export const SocketProvider = ({ children }) => {
         };
       }
     })();
-  }, [socket,useAuth]);
+  }, [socket, useAuth]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

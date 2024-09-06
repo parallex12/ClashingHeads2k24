@@ -38,10 +38,10 @@ export const ClashFlatlistStyles = ({ width, height }) =>
     content: {
       flex: 1,
       paddingTop: getPercent(1, height),
-      paddingBottom: getPercent(10, height),
-      paddingHorizontal: getPercent(3, width),
     },
-    listCont: {},
+    listCont: {
+      justifyContent: "flex-end",
+    },
   });
 
 //InfiniteFlatlistStyles starts here
@@ -239,6 +239,8 @@ export const ImageViewerStyles = ({ width, height }) =>
       position: "relative",
       zIndex: 2,
       marginBottom: getPercent(1, height),
+      borderWidth: 1,
+      borderColor: "#e5e5e5",
     },
     fullScreenContainer: {
       flex: 1,
@@ -423,7 +425,7 @@ export const TypingComponentExtraViewerStyles = ({ width, height }) =>
       paddingVertical: getPercent(0.2, height),
     },
     username: {
-      fontSize: 15,
+      fontSize: 11,
       color: "#111827",
       fontFamily: "Semibold",
     },
@@ -1154,6 +1156,7 @@ export const PostCardStyles = ({ width, height }) =>
       backgroundColor: "#ffffff",
       paddingTop: 10,
       borderColor: "#F7F8F8",
+      paddingHorizontal: getPercent(3, width),
     },
     content: {
       alignItems: "center",
