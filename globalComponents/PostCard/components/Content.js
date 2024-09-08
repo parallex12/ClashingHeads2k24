@@ -11,9 +11,10 @@ import { font } from "../../../styles/Global/main";
 import WaveAudioPlayer from "../../WaveAudioPlayer";
 import { memo, useEffect, useState } from "react";
 import { download } from "react-native-compressor";
-import CacheImage from "../../CacheImage";
 import ImageViewer from "../../ImageViewer/ImageViewer";
 import FastImage from "react-native-fast-image";
+import { rms, rs } from "../../../utils/responsiveSizing";
+import { ScaledSheet } from "react-native-size-matters";
 
 const Content = memo((props) => {
   let {
@@ -85,14 +86,18 @@ const Content = memo((props) => {
 });
 
 const _styles = ({ width, height }) =>
-  StyleSheet.create({
+  ScaledSheet.create({
     container: {
       width: "100%",
       minHeight: getPercent(5, height),
       justifyContent: "space-around",
-      paddingVertical: getPercent(1, height),
+      marginVertical: rs(10),
     },
-    title: font(17, "#1C1C1C", "Medium", 5),
+    title: {
+      fontSize: rms(16),
+      color: "#1C1C1C",
+      fontFamily: "Medium",
+    },
     postImageWrapper: {
       width: "100%",
       minHeight: getPercent(15, height),
@@ -101,9 +106,14 @@ const _styles = ({ width, height }) =>
       overflow: "hidden",
       position: "relative",
       zIndex: 2,
-      marginBottom: getPercent(1, height),
     },
-    smallText: font(15, "#111827", "Regular", 5),
+    smallText: {
+      fontSize: rms(12),
+      color: "#111827",
+      fontFamily: "Regular",
+      marginVertical: rs(10),
+
+    },
     bgTouchable: {
       width: "100%",
       height: "100%",

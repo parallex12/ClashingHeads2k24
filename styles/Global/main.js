@@ -1,6 +1,8 @@
 import { Platform, StatusBar, StyleSheet } from "react-native";
 import { RFValue, RFValue as rf } from "react-native-responsive-fontsize";
 import { getPercent } from "../../middleware";
+import { ScaledSheet } from "react-native-size-matters";
+import { rms, rs } from "../../utils/responsiveSizing";
 
 //standardButton Styles starts here
 export const standardButtonStyles = ({ width, height }) =>
@@ -38,6 +40,7 @@ export const ClashFlatlistStyles = ({ width, height }) =>
     content: {
       flex: 1,
       paddingTop: getPercent(1, height),
+      paddingHorizontal: getPercent(3, width),
     },
     listCont: {
       justifyContent: "flex-end",
@@ -1156,7 +1159,6 @@ export const PostCardStyles = ({ width, height }) =>
       backgroundColor: "#ffffff",
       paddingTop: 10,
       borderColor: "#F7F8F8",
-      paddingHorizontal: getPercent(3, width),
     },
     content: {
       alignItems: "center",
@@ -1262,7 +1264,7 @@ export const StandardHeaderStyles = ({ width, height }) =>
       alignItems: "flex-end",
       justifyContent: "center",
     },
-    title: font(21, "#FFFFFF", "Semibold"),
+    title: font(16, "#FFFFFF", "Semibold"),
   });
 
 //RecordingButton Stylesstarts here
@@ -1465,8 +1467,8 @@ export const loaderStyles = ({ width, height }) =>
 
 //global fonts Styles starts here
 export const font = (s, c, fm, mv, lh, extras) =>
-  StyleSheet.create({
-    fontSize: s,
+  ScaledSheet.create({
+    fontSize: rms(s),
     color: c,
     fontFamily: fm,
     marginVertical: mv,

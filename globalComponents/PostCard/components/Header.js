@@ -14,13 +14,14 @@ import { useNavigation } from "@react-navigation/native";
 import ActivityStatus from "../../ActivityStatus";
 import { useQueryClient } from "react-query";
 import FastImage from "react-native-fast-image";
+import { rms, rs } from "../../../utils/responsiveSizing";
 
 const Profile = ({ source, profileStyles, user }) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
 
   return (
-    <View style={[styles.container, { ...profileStyles }]}>
+    <View style={styles.profileCont}>
       <View style={styles.profileWrapper}>
         <FastImage
           source={{ ...source, priority: FastImage.priority.normal }}
@@ -81,7 +82,7 @@ const Header = (props) => {
               />
             )}
           </View>
-          <Text style={styles.slugText}>
+          <Text style={styles.slugText} numberOfLines={1}>
             {author?.politics} - {post_past_time}
           </Text>
         </View>
@@ -98,46 +99,40 @@ const Header = (props) => {
 const _styles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      height: getPercent(5, height),
       flexDirection: "row",
-      alignItems: "center",
+      alignItems: "flex-start",
       justifyContent: "space-between",
     },
     profileWrapper: {
-      width: getPercent(5, height),
-      height: getPercent(5, height),
+      width: rs(32),
+      height: rs(32),
       borderRadius: 100,
-      overflow: "hidden",
       zIndex: 1,
-      borderWidth: 0.2,
+      borderWidth: 2,
+      overflow:'hidden',
       backgroundColor: "#fff",
     },
-    online: {
-      width: getPercent(1.5, height),
-      height: getPercent(1.5, height),
-      borderRadius: 100,
-      borderWidth: 1,
-      position: "absolute",
-      bottom: 0,
-      right: 0,
-      backgroundColor: "#6FCF97",
-      borderColor: "#ffffff",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 2,
+    profileCont:{
     },
     infoWrapper: {
       flex: 1,
-      paddingHorizontal: getPercent(3, width),
+      paddingHorizontal: rs(10),
     },
     infoTitleRow: {
       flexDirection: "row",
       alignItems: "center",
     },
-    titleName: font(17, "#111827", "Medium", 2, null, { marginRight: 10 }),
-    slugText: font(13, "#6B7280", "Regular"),
+    titleName: {
+      fontSize: rms(14),
+      color: "#111827",
+      fontFamily: "Medium",
+    },
+    slugText: {
+      fontSize: rms(12),
+      color: "#6B7280",
+      fontFamily: "Regular",
+    },
     settingsIconWrapper: {
-      flex: 0.8,
       alignItems: "flex-end",
     },
     settingsIcon: {

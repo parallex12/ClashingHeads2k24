@@ -11,13 +11,13 @@ import useUserProfile from "../../Hooks/useUserProfile";
 import { useNavigation } from "@react-navigation/native";
 import FeedFlatlist from "../../globalComponents/FeedFlatlist/FeedFlatlist";
 import { useUserFeed } from "../../Hooks/useUserFeed";
-
 const Home = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const bottomFlagSheetRef = useRef(null);
   const postActionsbottomSheetRef = useRef(null);
+  const [interactedPost,setInteractedPost]=useState(null)
   const userProfile = useUserProfile();
   const userFeed = useUserFeed();
   const navigation = useNavigation();
@@ -28,19 +28,19 @@ const Home = (props) => {
     }
   }, [userProfile.isFetched, userProfile.data?.goTo]);
 
-  const onPostActionsPress = () => {
-    postActionsbottomSheetRef?.current?.present();
-  };
-
-  const onPostReport = () => {
+  const onReportPress = (data) => {
     bottomFlagSheetRef?.current?.present();
+  };
+  
+  const onActionsPress = (data) => {
+    postActionsbottomSheetRef?.current?.present();
   };
 
   return (
     <View style={styles.container}>
       <StandardHeader searchIcon profile logo />
       <View style={styles.header2Wrapper}>
-        <Text style={font(21, "#111827", "Semibold")}>Clashing Heads</Text>
+        <Text style={font(16, "#111827", "Semibold")}>Clashing Heads</Text>
         <StandardButton
           customStyles={styles.header2WrapperBtn}
           onPress={() => props?.navigation.navigate("Notifications")}
@@ -59,14 +59,14 @@ const Home = (props) => {
 
       <FeedFlatlist
         query={userFeed}
-        itemActions={{ onPostActionsPress, onPostReport }}
+        itemActions={{ onActionsPress, onReportPress }}
       />
       <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
-      {/* <PostActionsBottomSheet
-        data={postInteraction}
+      <PostActionsBottomSheet
+        data={interactedPost}
         bottomSheetRef={postActionsbottomSheetRef}
         onRefresh={() => null}
-      /> */}
+      />
     </View>
   );
 };

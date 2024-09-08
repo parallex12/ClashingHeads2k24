@@ -13,6 +13,7 @@ import { onShareApp } from "../../../utils";
 import { useQueryClient } from "react-query";
 import { useAssets } from "expo-asset";
 import FastImage from "react-native-fast-image";
+import { rms, rs } from "../../../utils/responsiveSizing";
 
 const FooterItem = ({ item }) => {
   let { width, height } = useWindowDimensions();
@@ -30,7 +31,8 @@ const FooterItem = ({ item }) => {
         />
       </View>
       <Text style={styles.actionText}>
-        {item?.title == "Clashes" ? "Reply Clash" : item?.title}
+        {/* {item?.title == "Clashes" ? "Reply Clash" : item?.title} */}
+        {item?.title}
       </Text>
     </TouchableOpacity>
   );
@@ -126,10 +128,15 @@ const _styles = ({ width, height }) =>
       justifyContent: "center",
     },
     iconImage: {
-      width: getPercent(5, width),
-      height: getPercent(5, height),
+      width: rms(20),
+      height: rms(20),
     },
-    actionText: font(15, "#6B7280", "Medium", 0, null, { marginLeft: 5 }),
+    actionText: {
+      fontSize: rms(12),
+      fontFamily: "Medium",
+      color: "#6B7280",
+      marginHorizontal: rs(5),
+    },
   });
 
 export default ActionMenu;

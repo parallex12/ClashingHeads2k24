@@ -25,8 +25,8 @@ const FeedPostCardRender = (props) => {
       onPostClashesPress={() =>
         navigation?.navigate("ClashDetails", { ...data, openVoiceSheet: true })
       }
-      onReportPress={onReportPress}
-      onActionsPress={onActionsPress}
+      onReportPress={() => onReportPress(data)}
+      onActionsPress={() => onActionsPress(data)}
     />
   );
 };
