@@ -18,11 +18,9 @@ import { getPercent, postprivacyoptions } from "../../middleware";
 import StandardHeader2 from "../../globalComponents/StandardHeader2/StandardHeader2";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { validate_post_details } from "../../middleware/firebase";
 import { useDispatch } from "react-redux";
 import { Image as ImageCompress } from "react-native-compressor";
 import PrivacyBottomSheet from "./components/PrivacyBottomSheet";
-import { Blurhash } from "react-native-blurhash";
 import { Entypo } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
@@ -30,7 +28,8 @@ import WaveAudioPlayer from "../../globalComponents/WaveAudioPlayer";
 import FindUserSheet from "./components/FindUserSheet";
 import ChallengeHeader from "./components/ChallengeHeader";
 import PostApi from "../../ApisManager/PostApi";
-import { useQueryClient } from "react-query";
+import useUserProfile from "../../Hooks/useUserProfile";
+import { validate_post_details } from "../../utils/validators";
 
 const EditPostDetails = (props) => {
   let {} = props;
@@ -38,14 +37,12 @@ const EditPostDetails = (props) => {
   let styles = _styles({ width, height });
   const [imageHashingLoad, setimageHashingLoad] = useState(false);
   const [loading, setLoading] = useState(false);
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_profile = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const [tempOpponent, setTempOpponent] = useState(null);
   const privacybottomSheetRef = useRef(null);
   const friendsbottomSheetRef = useRef(null);
   const voicebottomSheetRef = useRef(null);
-  const dispatch = useDispatch();
   const edit_post = useRoute().params?.edit_post;
   const [postForm, setPostForm] = useState();
   const postApi = new PostApi();
@@ -55,24 +52,6 @@ const EditPostDetails = (props) => {
       setPostForm(edit_post);
     }
   }, [edit_post]);
-
-  useEffect(() => {
-    if (postForm?.post_image && !postForm?.post_image_hash) {
-      const convertToblurhash = async () => {
-        setimageHashingLoad(true);
-        let _hash = await Blurhash.encode(postForm?.post_image, 4, 3);
-        setPostForm((prev) => {
-          return {
-            ...prev,
-            post_image_hash: _hash,
-          };
-        });
-        console.log("hash Added");
-        setimageHashingLoad(false);
-      };
-      convertToblurhash();
-    }
-  }, [postForm?.post_image]);
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -100,9 +79,6 @@ const EditPostDetails = (props) => {
   };
 
   const onPost = async () => {
-    if (postForm?.post_image && !postForm?.post_image_hash) {
-      return alert("Processing media.");
-    }
     await validate_post_details(postForm)
       .then(async (res) => {
         setLoading(true);
@@ -217,7 +193,7 @@ const EditPostDetails = (props) => {
           {postForm?.clashType == "challenge" && (
             <ChallengeHeader
               data={{
-                challenger: user_profile,
+                challenger: currentUser,
                 opponent: tempOpponent,
                 title: postForm?.title,
               }}

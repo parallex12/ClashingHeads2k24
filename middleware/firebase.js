@@ -35,7 +35,7 @@ export const validate_user_details = async (details, user_profile_details) => {
 export const validate_post_details = async (details) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const requiredFields = ["author", "title"];
+      const requiredFields = ["author", "title","post_audio"];
       const validation = validateRequiredFields(details, requiredFields);
       if (!validation.isValid) {
         reject({ err: validation.msg, field: validation.field });

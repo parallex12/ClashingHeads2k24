@@ -12,9 +12,9 @@ import { Entypo } from "@expo/vector-icons";
 import { getTimeElapsed } from "../../../utils";
 import { useNavigation } from "@react-navigation/native";
 import ActivityStatus from "../../ActivityStatus";
-import { useQueryClient } from "react-query";
 import FastImage from "react-native-fast-image";
 import { rms, rs } from "../../../utils/responsiveSizing";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const Profile = ({ source, profileStyles, user }) => {
   let { width, height } = useWindowDimensions();
@@ -27,6 +27,7 @@ const Profile = ({ source, profileStyles, user }) => {
           source={{ ...source, priority: FastImage.priority.normal }}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
+          defaultSource={require("../../../assets/icon.png")}
         />
       </View>
       <ActivityStatus user={user} />
@@ -40,9 +41,8 @@ const Header = (props) => {
   let styles = _styles({ width, height });
   let post_past_time = getTimeElapsed(createdAt);
   const navigation = useNavigation();
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_details = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
 
   return (
     <View style={styles.container}>
@@ -52,7 +52,7 @@ const Header = (props) => {
           flex: 1,
         }}
         onPress={() => {
-          if (author?._id == user_details?._id) {
+          if (author?._id == currentUser?._id) {
             navigation?.navigate("MyProfile");
           } else {
             navigation?.navigate("UserProfile", {
@@ -108,9 +108,10 @@ const _styles = ({ width, height }) =>
       height: rs(32),
       borderRadius: 100,
       zIndex: 1,
-      borderWidth: 2,
+      borderWidth: 1,
       overflow:'hidden',
       backgroundColor: "#fff",
+      borderColor:"#e1e1e1"
     },
     profileCont:{
     },

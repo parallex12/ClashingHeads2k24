@@ -4,7 +4,7 @@ import { ChallengeCardStyles as _styles } from "../../../styles/Global/main";
 import { calculateVotes } from "../../../utils";
 
 const VotingFooter = memo((data) => {
-  let { challenger, opponent,voteData } = data;
+  let { challenger, opponent, voteData } = data;
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
 

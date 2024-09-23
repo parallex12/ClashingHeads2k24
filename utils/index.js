@@ -264,11 +264,16 @@ export const firebaseConfig = {
 export const validateRequiredFields = (details, requiredFields) => {
   for (const field of requiredFields) {
     if (!details[field]) {
-      return { isValid: false, msg: `${field} is required`, field };
+      return {
+        isValid: false,
+        msg: `${field?.toUpperCase()} is required`,
+        field,
+      };
     }
   }
   return { isValid: true };
 };
+
 export function getTimeElapsed(createdAt) {
   const now = new Date();
   if (!createdAt) return "0min";
@@ -449,4 +454,23 @@ export const calculateVotes = (votes, challengerId, opponentId) => {
   };
 };
 
-export const baseURlDev = "https://clashingheads2024v3-57b569714f9e.herokuapp.com";
+export const baseURlDev =
+  "https://clashingheads2024v3-57b569714f9e.herokuapp.com";
+
+export const numberWithSuffix = (number, ) => {
+  const suffixes = ["", "k", "M", "B", "T"]; // '', 'k' (thousands), 'M' (millions), 'B' (billions), 'T' (trillions)
+  let i = 0;
+  // Handle numbers less than 1000 without suffix and without decimals
+  if (number < 1000) {
+    return number.toString();
+  }
+
+  // Divide the number by 1000 until it's below 1000, adjusting the suffix
+  while (number >= 1000 && i < suffixes.length - 1) {
+    number /= 1000;
+    i++;
+  }
+
+  // Format number to specified decimal places, removing decimal places if below 1
+  return number?.toFixed(1) + suffixes[i];
+};

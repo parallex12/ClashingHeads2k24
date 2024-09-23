@@ -10,15 +10,14 @@ import { ClashesResultStyles as _styles } from "../../../styles/Search/main";
 import { font } from "../../../styles/Global/main";
 import { useNavigation } from "@react-navigation/native";
 import { Blurhash } from "react-native-blurhash";
-import { useQueryClient } from "react-query";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const ChallengeHeader = (props) => {
   const { data, onPress } = props;
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const navigation = useNavigation();
   let { challenger, opponent } = data;
 

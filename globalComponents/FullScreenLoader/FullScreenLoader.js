@@ -1,48 +1,23 @@
-import { Animated, Image, Text, View, useWindowDimensions } from "react-native";
+import { Image, Text, View, useWindowDimensions } from "react-native";
 import { FullScreenLoaderStyles } from "../../styles/Global/main";
-import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { isAppLoading } from "../../state-management/features/screen_loader";
 import { getPercent } from "../../middleware";
 import * as Animatable from "react-native-animatable";
+import { useEffect } from "react";
+import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
+import { useDispatch } from "react-redux";
 
 const FullScreenLoader = (props) => {
-  const loading = useSelector(isAppLoading);
-  let { shouldSlide } = props;
   let { width, height } = useWindowDimensions();
   let styles = FullScreenLoaderStyles({ width, height });
-  const [paths, setPaths] = useState([-width, 0, width]);
-  const slideAnim = useRef(new Animated.Value(paths[0])).current;
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (loading == "default") {
-      return;
-    }
-
-    if (loading) {
-      Animated.timing(slideAnim, {
-        toValue: paths[1], // Slide in to cover the screen
-        duration: 500, // Animation duration
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(slideAnim, {
-        toValue: paths[2], // Slide out to the right
-        duration: 500, // Animation duration
-        useNativeDriver: true,
-      }).start(() => setPaths(paths.reverse()));
-    }
-  }, [loading, slideAnim]);
-
-  if (!loading || loading == "default") return null;
+    dispatch(onUpdateBottomSheet(1));
+    return () => dispatch(onUpdateBottomSheet(null));
+  }, []);
 
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        shouldSlide ? { transform: [{ translateX: slideAnim }] } : {},
-      ]}
-    >
+    <View style={styles.container}>
       <Image
         source={require("../../assets/logo.png")}
         style={{ width: getPercent(50, width), height: getPercent(10, height) }}
@@ -59,7 +34,7 @@ const FullScreenLoader = (props) => {
         </Animatable.Text>
       </View>
       <Text style={styles.slug}>(Patent Pending) (Beta Version 1.0)</Text>
-    </Animated.View>
+    </View>
   );
 };
 

@@ -11,20 +11,20 @@ import { getPercent } from "../middleware";
 import { font } from "../styles/Global/main";
 import { memo, useState } from "react";
 import ActivityStatus from "./ActivityStatus";
-import FastImage from "react-native-fast-image";
+import ImageViewer from "./ImageViewer/ImageViewer";
 
 const Profile = ({ source, user }) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.profileWrapper}>
-        <FastImage
-          source={{ ...source, priority: FastImage.priority.normal }}
+      <View style={styles.profileWrapper}>
+        <ImageViewer
+          source={source}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
         />
-      </TouchableOpacity>
+      </View>
       <ActivityStatus user={user} />
     </View>
   );
@@ -117,14 +117,14 @@ const _styles = ({ width, height }) =>
     },
     infoWrapper: {
       flex: 1,
-      paddingHorizontal: getPercent(5, width),
+      paddingHorizontal: getPercent(3, width),
     },
     infoTitleRow: {
       flexDirection: "row",
       alignItems: "center",
     },
-    titleName: font(17, "#111827", "Medium", 2, null, { marginRight: 10 }),
-    slugText: font(14, "#6B7280", "Regular"),
+    titleName: font(14, "#111827", "Medium", 2, null, { marginRight: 5 }),
+    slugText: font(12, "#6B7280", "Regular"),
   });
 
 export default memo(UserCard);

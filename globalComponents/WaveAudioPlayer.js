@@ -25,7 +25,7 @@ const WaveAudioPlayer = (props) => {
     localSource,
     afterAudioPlayed,
     audioResetFunc,
-    localAudio
+    localAudio,
   } = props;
   const { width, height } = useWindowDimensions();
   const waveAnime = useRef(new Animated.Value(0)).current;
@@ -56,7 +56,6 @@ const WaveAudioPlayer = (props) => {
       unloadAudio();
     };
   }, [localSource, source]);
-  
 
   const loadAudio = async () => {
     try {
@@ -81,8 +80,8 @@ const WaveAudioPlayer = (props) => {
       setIsBuffering(false); // Stop buffering on error
     }
   };
-
   const onPlay = async () => {
+    if (!source && !localSource) return alert("Can't play audio!");
     if (!soundRef.current) {
       await loadAudio();
     }

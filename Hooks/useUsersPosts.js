@@ -17,7 +17,8 @@ const useUsersPosts = (userId) => {
     return null; // Return null if there's no nextCursor, indicating no more pages
     },
     enabled: !!userId,
-    staleTime: 10000,
+    staleTime: 10 * 60 * 1000, // Data will stay fresh for 10 minutes
+    cacheTime: 10 * 60 * 1000, // Cache data for 10 minutes
     onSuccess: (data) => {
       console.log("Fetched users posts successfully:", data);
     },

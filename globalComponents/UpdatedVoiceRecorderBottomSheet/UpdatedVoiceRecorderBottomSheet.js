@@ -11,14 +11,14 @@ import BackDrop from "./BackDrop";
 import { Image } from "react-native";
 import Emojis from "./Emojis";
 import StandardButton from "../StandardButton";
-import { formatDuration, stickerArr } from "../../utils";
+import { stickerArr } from "../../utils";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Stickers from "./Stickers";
 import { getPercent } from "../../middleware";
 import RoundRecordingComponent from "./RoundRecordingComponent";
 import RecordingButton from "../RecordingButton";
 import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
-import { useQueryClient } from "react-query";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const UpdatedVoiceRecorderBottomSheet = (props) => {
   let {
@@ -42,9 +42,9 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
   const [isRecording, setIsRecording] = useState(false);
   const timerRef = useRef(null);
   const [recordingLimitReached, setrecordingLimitReached] = useState(false);
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_profile = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
+
   const dispatch = useDispatch();
   // variables
   const snapPoints = useMemo(() => ["25%", "60%"], []);
@@ -68,7 +68,7 @@ const UpdatedVoiceRecorderBottomSheet = (props) => {
       selectedSticker: selectedSticker,
       recording: recording || null,
       postId,
-      author: user_profile?._id,
+      author: currentUser?._id,
       clashTo: clashTo,
       createdAt: new Date().toISOString(),
     };

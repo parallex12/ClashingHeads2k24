@@ -31,7 +31,6 @@ import AccountSettings from "../screens/AccountSettings/AccountSettings";
 import SecuritySettings from "../screens/SecuritySettings/SecuritySettings";
 import NotificationSettings from "../screens/NotificationSettings/NotificationSettings";
 import PrivacySettings from "../screens/PrivacySettings/PrivacySettings";
-import FullScreenLoader from "../globalComponents/FullScreenLoader/FullScreenLoader";
 import { useDispatch } from "react-redux";
 import ChallengeRequests from "../screens/ChallengeRequests/ChallengeRequests";
 import ChallengeClash from "../screens/ChallengeClash/ChallengeClash";
@@ -122,7 +121,6 @@ const HomeScreens = () => {
 
 function AppNavigation() {
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
   const dispatch = useDispatch();
 
   React.useEffect(() => {
@@ -155,7 +153,6 @@ export const AppNavigator = () => {
     <NavigationContainer>
       <AppNavigation />
       <BottomMenu />
-      <FullScreenLoader />
     </NavigationContainer>
   );
 };

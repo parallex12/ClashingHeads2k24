@@ -1,34 +1,20 @@
-import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import {
-  useWindowDimensions,
-  ScrollView,
-  Text,
-  View,
-  RefreshControl,
-} from "react-native";
+import React, { useState, useCallback } from "react";
+import { useWindowDimensions, Text, View } from "react-native";
 import { styles as _styles } from "../../styles/News/main";
 import StandardHeader from "../../globalComponents/StandardHeader/StandardHeader";
 import NewsCard from "../../globalComponents/NewsCard";
-import { sortPostsByCreatedAt } from "../../utils";
 import { font } from "../../styles/Global/main";
 import SearchBar from "../../globalComponents/SearchBar";
 import { getPercent } from "../../middleware";
-import { Facebook } from "react-content-loader/native";
-import { useQueryClient } from "react-query";
-import NewsApi from "../../ApisManager/NewsApi";
-import FeedFlatlist from "../../globalComponents/FeedFlatlist/FeedFlatlist";
 import InfiniteFlatlist from "../../globalComponents/InfiniteFlatlist/InfiniteFlatlist";
 import { useNewsApi, useNewsSearchApi } from "../../Hooks/useNewsApi";
 import debounce from "lodash/debounce";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const News = () => {
   const [search, setSearch] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
   const newsQuery = useNewsApi();
@@ -58,21 +44,27 @@ const News = () => {
         </Text>
       </View>
 
-      {search?.length == 0 ? (
-        <InfiniteFlatlist
-          ListHeaderComponent={<SearchBar onChangeText={handleSearch} />}
-          query={newsQuery}
-          data={newsQuery?.newsData}
-          renderItem={({ item, index }) => <NewsCard key={index} data={item} />}
-        />
-      ) : (
-        <InfiniteFlatlist
-          ListHeaderComponent={<SearchBar onChangeText={handleSearch} />}
-          query={searchQuery}
-          data={searchQuery?.newsData}
-          renderItem={({ item, index }) => <NewsCard key={index} data={item} />}
-        />
-      )}
+      <View style={styles.content}>
+        {search?.length == 0 ? (
+          <InfiniteFlatlist
+            ListHeaderComponent={<SearchBar onChangeText={handleSearch} />}
+            query={newsQuery}
+            data={newsQuery?.newsData}
+            renderItem={({ item, index }) => (
+              <NewsCard key={index} data={item} />
+            )}
+          />
+        ) : (
+          <InfiniteFlatlist
+            ListHeaderComponent={<SearchBar onChangeText={handleSearch} />}
+            query={searchQuery}
+            data={searchQuery?.newsData}
+            renderItem={({ item, index }) => (
+              <NewsCard key={index} data={item} />
+            )}
+          />
+        )}
+      </View>
     </View>
   );
 };

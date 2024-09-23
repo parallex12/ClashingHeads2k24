@@ -9,7 +9,7 @@ export const styles = ({ width, height }) =>
       flex: 1,
       backgroundColor: "#ffffff",
     },
-    
+
     header2Wrapper: {
       paddingHorizontal: getPercent(3, width),
       flexDirection: "row",

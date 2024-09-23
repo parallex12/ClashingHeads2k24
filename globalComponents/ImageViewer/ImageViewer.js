@@ -30,12 +30,14 @@ const ImageViewer = (props) => {
             source={{ ...source, priority: FastImage.priority.normal }}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
+            defaultSource={require("../../assets/icon.png")}
           />
         ) : (
           <Image
             source={source}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
+            defaultSource={require("../../assets/icon.png")}
           />
         )}
       </TouchableOpacity>
@@ -56,12 +58,14 @@ const ImageViewer = (props) => {
                 source={{ ...source, priority: FastImage.priority.normal }}
                 resizeMode="contain"
                 style={{ width: "100%", height: "100%" }}
+                defaultSource={require("../../assets/icon.png")}
               />
             ) : (
               <Image
                 source={source}
                 resizeMode="contain"
                 style={{ width: "100%", height: "100%" }}
+                defaultSource={require("../../assets/icon.png")}
               />
             )}
           </TouchableOpacity>

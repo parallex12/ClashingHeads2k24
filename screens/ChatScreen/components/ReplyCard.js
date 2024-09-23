@@ -7,16 +7,18 @@ import {
 } from "react-native";
 import { TypingComponentExtraViewerStyles as _styles } from "../../../styles/Global/main";
 import { useQueryClient } from "react-query";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const ReplyCard = (props) => {
   let { content, onPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const current_user = userDataCached?.user;
+
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
+
   let username =
-    content?.sender == current_user?._id ? "You" : content?.sender?.username;
+    content?.sender == currentUser?._id ? "You" : content?.sender?.username;
   if (!content) return null;
 
   let isImage = content?.media?.image;

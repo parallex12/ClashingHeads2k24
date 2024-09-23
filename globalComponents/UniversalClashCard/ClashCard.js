@@ -1,5 +1,5 @@
 import { View, useWindowDimensions } from "react-native";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ClashCardStyles } from "../../styles/Global/main";
 import Header from "./components/Header";
 import Content from "./components/Content";
@@ -7,40 +7,33 @@ import ActionMenu from "./components/ActionMenu";
 import { stickerArr } from "../../utils";
 import { Instagram } from "react-content-loader/native";
 import ClashApi from "../../ApisManager/ClashApi";
-import { useQueryClient } from "react-query";
+import FlagReportSheetContext from "../BottomSheet/FlagReportSheetProvider";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const ClashCard = (props) => {
   let { data, onPostClashesPress, challengeClash, hrLine, onReportPress } =
     props;
   let { width, height } = useWindowDimensions();
   let styles = ClashCardStyles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const { _id } = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
 
-  const [singleUser, setAuthor] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { showBottomSheet: showReportSheet } = useContext(
+    FlagReportSheetContext
+  );
+
   const clashApi = new ClashApi();
 
   let localmedia =
     data?.clashType == "sticker" ? stickerArr[data?.selectedSticker] : null;
 
-  useEffect(() => {
-    (async () => {
-      setAuthor(data?.author);
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-    })();
-  }, [data]);
-
   const handleReaction = async (type) => {
-    let likes = data?.likes?.filter((e) => e != _id);
-    let dislikes = data?.dislikes?.filter((e) => e != _id);
+    let likes = data?.likes?.filter((e) => e != currentUser?._id);
+    let dislikes = data?.dislikes?.filter((e) => e != currentUser?._id);
     if (type == "like") {
-      likes.push(_id);
+      likes.push(currentUser?._id);
     } else {
-      dislikes.push(_id);
+      dislikes.push(currentUser?._id);
     }
 
     await clashApi.updateClashById(data?._id, {
@@ -51,24 +44,20 @@ const ClashCard = (props) => {
 
   const onAudioPlay = async () => {
     let audio_views = [...data?.listened];
-    if (audio_views?.includes(_id)) return;
-    audio_views.push(_id);
+    if (audio_views?.includes(currentUser?._id)) return;
+    audio_views.push(currentUser?._id);
     await clashApi.updateClashById(data?._id, { listened: audio_views });
   };
 
   let userMention =
     data?.clashTo != "post" ? data?.clashTo?.author?.username : null;
 
-  if (!data || loading) {
-    return <Instagram />;
-  }
-
   return (
     <View style={styles.container}>
-      {!data || (loading && <Instagram />)}
+      {!data && <Instagram />}
       {hrLine && <View style={styles.hrLine}></View>}
       <View style={styles.content}>
-        <Header author={singleUser || {}} createdAt={data?.createdAt} />
+        <Header author={data?.author || {}} createdAt={data?.createdAt} />
         <View style={styles.contentCardWrapper}>
           <Content
             userMention={userMention}
@@ -79,7 +68,7 @@ const ClashCard = (props) => {
           <ActionMenu
             onPostClashesPress={onPostClashesPress}
             {...data}
-            onReportPress={onReportPress}
+            onReportPress={() => showReportSheet(data)}
             handleReaction={handleReaction}
           />
         </View>

@@ -10,40 +10,40 @@ import { NotificationCardStyles as _styles } from "../../../styles/Notifications
 import { Entypo } from "@expo/vector-icons";
 import { font } from "../../../styles/Global/main";
 import { formatTime } from "../../../middleware";
+import ImageViewer from "../../../globalComponents/ImageViewer/ImageViewer";
 
 const NotificationCard = (props) => {
   let { data, isNew } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  let { origin, message, createdAt } = data;
-  let title = origin?.type == "App" ? "Clashing Heads" : null;
+  let { to, from, message, createdAt } = data;
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: isNew ? "#F8F8FA" : "#FFFFFF" },
+        { backgroundColor: !data?.read ? "#F8F8FA" : "#FFFFFF" },
       ]}
     >
       <View style={styles.bellIcon}>
-        <Image
-          source={require("../../../assets/icons/notificationWhite.png")}
+        <ImageViewer
+          source={{ uri: from?.profile_photo }}
           resizeMode="contain"
           style={{ width: "60%", height: "60%" }}
         />
       </View>
       <View style={styles.content}>
-        <Text style={font(16, "#7D7C7C", "Regular", 2)}>
-          <Text style={font(16, "#263238", "Semibold")}>{title} </Text>
+        <Text style={font(14, "#7D7C7C", "Regular", 2)}>
+          <Text style={font(14, "#263238", "Semibold")}>{from?.realName} </Text>
           {message}
         </Text>
-        <Text style={font(13, "#4B5563", "Regular", 5)}>
+        <Text style={font(12, "#4B5563", "Regular", 2)}>
           {formatTime(createdAt)}
         </Text>
       </View>
-      <TouchableOpacity style={styles.dotIconBtn}>
+      {/* <TouchableOpacity style={styles.dotIconBtn}>
         <Entypo name="dots-three-horizontal" size={18} color="#DB2727" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

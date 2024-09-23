@@ -95,7 +95,7 @@ export const ProfileCardstyles = ({ width, height }) =>
     },
     volumeIcon: {
       width: "20%",
-      height: "75%",
+      height: "70%",
       marginRight: 8,
     },
     settingsButton: {

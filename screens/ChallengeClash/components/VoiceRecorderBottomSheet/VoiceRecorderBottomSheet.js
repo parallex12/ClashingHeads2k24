@@ -26,7 +26,7 @@ import WaveAudioPlayer from "../../../../globalComponents/WaveAudioPlayer";
 import WaveAudioRecorder from "../../../../globalComponents/WaveAudioRecorder";
 import StandardButton from "../../../../globalComponents/StandardButton";
 import { addSubClashToChallenge, updateChallengeClash, updateSubClashDetails } from "../../../../state-management/features/challengeClash/challengeClashSlice";
-import { useQueryClient } from "react-query";
+import useUserProfile from "../../../../Hooks/useUserProfile";
 
 const VoiceRecorderBottomSheet = (props) => {
   let { bottomVoiceSheetRef, clashId, clashTo,currentChallenge } = props;
@@ -41,10 +41,8 @@ const VoiceRecorderBottomSheet = (props) => {
   // variables
   const snapPoints = useMemo(() => ["25%", "60%"], []);
   let duration = formatDuration(recordingDuration);
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_profile = userDataCached?.user;
-
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const onChangeMode = () => {
     setCurrentVoiceMode((prev) => (prev == "mic" ? "sticker" : "mic"));
   };
@@ -61,7 +59,7 @@ const VoiceRecorderBottomSheet = (props) => {
       dislikes: 0,
       clashes: 0,
       listened: 0,
-      author: user_profile?.id,
+      author: currentUser?.id,
       clashTo: clashTo,
       createdAt: new Date().toISOString(),
     };

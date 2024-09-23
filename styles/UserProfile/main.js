@@ -117,7 +117,6 @@ export const ProfileCardstyles = ({ width, height }) =>
     bioEditwrapper: {
       width:'100%',
       paddingVertical: getPercent(0.5, height),
-      paddingHorizontal: getPercent(3, width),
       alignItems: "center",
       flexDirection: "row",
     },

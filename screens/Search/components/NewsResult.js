@@ -41,11 +41,7 @@ const NewsResult = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerCont}>
-        <MaterialCommunityIcons name="fire" size={24} color="#4B4EFC" />
-        <Text style={font(14, "#111827", "Medium")}>Trending News</Text>
-      </View>
+    <ScrollView style={styles.container}>
       {loading ? (
         <Instagram />
       ) : (
@@ -53,7 +49,7 @@ const NewsResult = (props) => {
           return <NewsCard key={index} data={item} />;
         })
       )}
-    </View>
+    </ScrollView>
   );
 };
 

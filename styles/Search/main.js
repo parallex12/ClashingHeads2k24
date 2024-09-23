@@ -13,7 +13,10 @@ export const styles = ({ width, height }) =>
     },
     resultCardWrapper: {
       flex: 1,
-      paddingBottom: getPercent(2, height),
+    },
+    headerCont: {
+      flexDirection: "row",
+      alignItems: "center",
       paddingHorizontal: getPercent(3, width),
     },
   });
@@ -204,7 +207,9 @@ export const PostsResultStyles = ({ width, height }) =>
 //PeopleResultStyles  starts here
 export const PeopleResultStyles = ({ width, height }) =>
   StyleSheet.create({
-    container: {},
+    container: {
+      paddingHorizontal: getPercent(3, width),
+    },
   });
 
 //NewsResultStyles  starts here
@@ -212,6 +217,7 @@ export const NewsResultStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       flex: 1,
+      paddingHorizontal: getPercent(3, width),
     },
     headerCont: {
       flexDirection: "row",
@@ -297,7 +303,7 @@ export const headerStyles = ({ width, height }) =>
       alignItems: "center",
       justifyContent: "space-between",
       paddingHorizontal: getPercent(3, width),
-      paddingVertical:getPercent(0.5,height)
+      paddingVertical: getPercent(0.5, height),
     },
     filterItem: {
       paddingHorizontal: getPercent(6, width),

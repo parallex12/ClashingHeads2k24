@@ -1,8 +1,4 @@
-import {
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Text, View, useWindowDimensions } from "react-native";
 import { RecieverMessagestyles as _styles } from "../../../styles/Global/main";
 import {
   formatTime,
@@ -15,7 +11,13 @@ import ContextMenu from "react-native-context-menu-view";
 import ReplyCard from "./ReplyCard";
 
 const RecieverMessage = (props) => {
-  let { data, replyMsgContent, onMessageItemMenuSelect } = props;
+  let {
+    flatListRef,
+    data,
+    replyMsgContent,
+    onMessageItemMenuSelect,
+    replyIndex,
+  } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let time = formatTime(data?.createdAt);
@@ -28,6 +30,20 @@ const RecieverMessage = (props) => {
   const onContextMenuSelect = (e) => {
     const index = e.nativeEvent.index;
     onMessageItemMenuSelect(messageRecieverMenuOptions[index], data?._id);
+  };
+
+  const onReplyPress = () => {
+    try {
+      if (replyIndex !== -1) {
+        flatListRef.current.scrollToIndex({
+          index: replyIndex,
+          animated: true,
+        });
+      }
+    } catch (e) {
+      console.log(replyIndex);
+      console.log(e.message);
+    }
   };
 
   return (
@@ -52,7 +68,9 @@ const RecieverMessage = (props) => {
               />
             </View>
           )}
-          {media?.reply && <ReplyCard content={replyMsgContent} />}
+          {media?.reply && (
+            <ReplyCard onPress={onReplyPress} content={replyMsgContent} />
+          )}
           {media?.audio && <WaveAudioPlayer source={media?.audio} />}
           {data?.message?.length > 0 && (
             <Text style={styles.text}>{data?.message}</Text>

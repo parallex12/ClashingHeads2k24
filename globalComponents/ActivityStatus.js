@@ -3,6 +3,7 @@ import { useChatSocketService } from "../state-management/apiCalls/ChatSocketSer
 import { useState, useEffect } from "react";
 import { getPercent } from "../middleware";
 import { rms, rs, rvs } from "../utils/responsiveSizing";
+import { useSocket } from "../ContextProviders/SocketContext";
 
 const ActivityStatus = ({ user }) => {
   let { width, height } = useWindowDimensions();

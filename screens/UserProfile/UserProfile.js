@@ -14,46 +14,42 @@ import useOtherUserProfile from "../../Hooks/useOtherUserProfile";
 import useUsersPosts from "../../Hooks/useUsersPosts";
 import FeedFlatlist from "../../globalComponents/FeedFlatlist/FeedFlatlist";
 import { Instagram } from "react-content-loader/native";
+import { PostActionsSheetProvider } from "../../globalComponents/BottomSheet/PostActionsSheetProvider";
+import { FlagReportSheetProvider } from "../../globalComponents/BottomSheet/FlagReportSheetProvider";
 
 const UserProfile = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let user = props?.route?.params?.user;
-  const bottomFlagSheetRef = useRef();
   const userProfile = useOtherUserProfile(user?._id);
   const usersPosts = useUsersPosts(user?._id);
 
-  const onPostActionsPress = () => {
-    setPostInteraction(item);
-    postActionsbottomSheetRef?.current?.present();
-  };
-
-  const onPostReport = () => {
-    bottomFlagSheetRef?.current?.present();
-  };
-
   return (
-    <View style={styles.container}>
-      <StandardHeader
-        title={`@${userProfile?.data?.user?.username}`}
-        backButton
-        containerStyles={{ height: getPercent(15, height) }}
-      />
-      <FeedFlatlist
-        ListHeaderComponent={
-          !userProfile?.isLoading ? (
-            <ProfileCard user={userProfile?.data?.user} query={userProfile} />
-          ) : (
-            <Instagram />
-          )
-        }
-        query={usersPosts}
-        itemActions={{ onPostActionsPress, onPostReport }}
-      />
-
-      <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
-    </View>
+    <FlagReportSheetProvider>
+      <PostActionsSheetProvider>
+        <View style={styles.container}>
+          <StandardHeader
+            title={`@${userProfile?.data?.user?.username}`}
+            backButton
+            containerStyles={{ height: getPercent(15, height) }}
+          />
+          <FeedFlatlist
+            ListHeaderComponent={
+              !userProfile?.isLoading ? (
+                <ProfileCard
+                  user={userProfile?.data?.user}
+                  query={userProfile}
+                />
+              ) : (
+                <Instagram />
+              )
+            }
+            query={usersPosts}
+          />
+        </View>
+      </PostActionsSheetProvider>
+    </FlagReportSheetProvider>
   );
 };
 

@@ -8,6 +8,7 @@ export const styles = ({ width, height }) =>
     container: {
       flex: 1,
       backgroundColor: "#ffffff",
+      paddingBottom: getPercent(10, height),
     },
     content: {
       flex: 1,

@@ -10,6 +10,8 @@ import { uploadMedia } from "../../middleware/firebase";
 import ChallengeCard from "../../globalComponents/ChallengeCard/ChallengeCard";
 import PostApi from "../../ApisManager/PostApi";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { FlagReportSheetProvider } from "../../globalComponents/BottomSheet/FlagReportSheetProvider";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const ChallengeRequests = (props) => {
   let {} = props;
@@ -18,9 +20,9 @@ const ChallengeRequests = (props) => {
   const [activeFilter, setActiveFilter] = useState("Sent");
   let filtersOption = ["Sent", "Recieved"];
   const bottomVoiceSheetRef = useRef();
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user = userDataCached?.user;
   const [currentChallenge, setCurrentChallenge] = useState(null);
   const { getPostChallengesByUserId, deletePostById, updatePostById } =
     new PostApi();
@@ -31,10 +33,10 @@ const ChallengeRequests = (props) => {
     isError,
     refetch,
   } = useQuery(
-    ["currentUserChallenges", user?._id],
-    () => getPostChallengesByUserId(user?._id),
+    ["currentUserChallenges", currentUser?._id],
+    () => getPostChallengesByUserId(currentUser?._id),
     {
-      enabled: !!user?._id,
+      enabled: !!currentUser?._id,
     }
   );
 
@@ -52,17 +54,17 @@ const ChallengeRequests = (props) => {
 
   const memoizedRequestsRecieved = useMemo(() => {
     return data?.challenges?.filter((e) => {
-      const isReceived = e?.opponent?._id === user?._id;
+      const isReceived = e?.opponent?._id === currentUser?._id;
       return isReceived && e;
     });
-  }, [activeFilter, user?._id, data]);
+  }, [activeFilter, currentUser?._id, data]);
 
   const memoizedRequestsSent = useMemo(() => {
     return data?.challenges?.filter((e) => {
-      const isSent = e?.author?._id === user?._id;
+      const isSent = e?.author?._id === currentUser?._id;
       return isSent && e;
     });
-  }, [activeFilter, user?._id, data]);
+  }, [activeFilter, currentUser?._id, data]);
 
   const FilterItem = ({ data, index, count }) => {
     let conditional_style = {
@@ -88,7 +90,7 @@ const ChallengeRequests = (props) => {
     return activeFilter == "Sent"
       ? memoizedRequestsSent
       : memoizedRequestsRecieved;
-  }, [activeFilter, user?._id, data]);
+  }, [activeFilter, currentUser?._id, data]);
 
   const onPostChallenge = async (argData) => {
     if (!argData?.recording) return;
@@ -108,62 +110,68 @@ const ChallengeRequests = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <StandardHeader title="Challenge Requests" backButton />
-      <View style={styles.filtersWrapper}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {filtersOption?.map((item, index) => {
-            return (
-              <FilterItem
-                key={index}
-                index={index}
-                data={item}
-                count={
-                  item == "Sent"
-                    ? memoizedRequestsSent?.length
-                    : memoizedRequestsRecieved?.length
-                }
-              />
-            );
-          })}
-        </ScrollView>
-      </View>
-      <ScrollView>
-        <View style={styles.content}>
-          {isLoading ? (
-            <Instagram />
-          ) : (
-            memoizedRequests?.map((item, index) => {
+    <FlagReportSheetProvider>
+      <View style={styles.container}>
+        <StandardHeader title="Challenge Requests" backButton />
+        <View style={styles.filtersWrapper}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {filtersOption?.map((item, index) => {
               return (
-                <ChallengeCard
-                  onAcceptRequest={() => {
-                    alert("Record your opinion to accept the challenge.");
-                    setCurrentChallenge(item?._id);
-                    bottomVoiceSheetRef.current?.present();
-                  }}
-                  onPress={() =>
-                    props?.navigation?.navigate("ChallengeClash", { ...item })
-                  }
-                  onClashesPress={() =>
-                    props?.navigation?.navigate("ChallengeClash", { ...item })
-                  }
-                  onCancelRequest={() => onCancelRequest(item?._id)}
-                  request_type={activeFilter}
+                <FilterItem
                   key={index}
+                  index={index}
                   data={item}
+                  count={
+                    item == "Sent"
+                      ? memoizedRequestsSent?.length
+                      : memoizedRequestsRecieved?.length
+                  }
                 />
               );
-            })
-          )}
+            })}
+          </ScrollView>
         </View>
-      </ScrollView>
-      <UpdatedVoiceRecorderBottomSheet
-        clashTo={"challenge"}
-        postId={currentChallenge}
-        bottomVoiceSheetRef={bottomVoiceSheetRef}
-        onPostClash={onPostChallenge}
-      />
-    </View>
+        <ScrollView>
+          <View style={styles.content}>
+            {isLoading ? (
+              <Instagram />
+            ) : (
+              memoizedRequests?.map((item, index) => {
+                return (
+                  <ChallengeCard
+                    onAcceptRequest={() => {
+                      alert("Record your opinion to accept the challenge.");
+                      setCurrentChallenge(item?._id);
+                      bottomVoiceSheetRef.current?.present();
+                    }}
+                    onPress={() =>
+                      props?.navigation?.navigate("ChallengeClash", {
+                        ...item,
+                      })
+                    }
+                    onClashesPress={() =>
+                      props?.navigation?.navigate("ChallengeClash", {
+                        ...item,
+                      })
+                    }
+                    onCancelRequest={() => onCancelRequest(item?._id)}
+                    request_type={activeFilter}
+                    key={index}
+                    data={item}
+                  />
+                );
+              })
+            )}
+          </View>
+        </ScrollView>
+        <UpdatedVoiceRecorderBottomSheet
+          clashTo={"challenge"}
+          postId={currentChallenge}
+          bottomVoiceSheetRef={bottomVoiceSheetRef}
+          onPostClash={onPostChallenge}
+        />
+      </View>
+    </FlagReportSheetProvider>
   );
 };
 

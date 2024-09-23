@@ -100,7 +100,7 @@ const BottomMenuItem = ({ item, index, currentRouteName }) => {
 
       <Text
         style={font(
-          14,
+          11,
           isActiveItem || shouldActiveMenuIcon ? "#DB2727" : "#718093",
           "Regular",
           4

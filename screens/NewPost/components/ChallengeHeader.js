@@ -9,18 +9,16 @@ import {
 import { ClashesResultStyles as _styles } from "../../../styles/Search/main";
 import { font } from "../../../styles/Global/main";
 import { useNavigation } from "@react-navigation/native";
-import { Blurhash } from "react-native-blurhash";
-import { useSelector } from "react-redux";
-import { useQueryClient } from "react-query";
 import FastImage from "react-native-fast-image";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const ClashUserCard = memo(({ user, type, audio }) => {
   const [imageLoad, setImageLoad] = useState(true);
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
+
   const navigation = useNavigation();
 
   return (

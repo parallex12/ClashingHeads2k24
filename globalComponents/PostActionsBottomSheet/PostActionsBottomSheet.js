@@ -9,80 +9,36 @@ import { useDispatch, useSelector } from "react-redux";
 import { PostActionsBottomSheetStyles, font } from "../../styles/Global/main";
 import {
   BottomSheetModal,
-  BottomSheetView,
   BottomSheetModalProvider,
+  BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import BackDrop from "./BackDrop";
-import { useMemo, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import { MaterialIcons, FontAwesome, AntDesign } from "@expo/vector-icons";
 import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import PostApi from "../../ApisManager/PostApi";
 import { useQueryClient } from "react-query";
-
-const categories = [
-  {
-    key: "clash",
-    label: "Clash",
-    icon: (
-      <MaterialIcons
-        name="local-fire-department"
-        size={RFValue(16)}
-        color="#DB2727"
-      />
-    ),
-  },
-  // {
-  //   key: "message",
-  //   label: "Send via message",
-  //   icon: <FontAwesome name="send-o" size={RFValue(13)} color="#6B7280" />,
-  // },
-  // {
-  //   key: "invite_to_room",
-  //   label: "Invite user to clash room",
-  //   icon: <AntDesign name="adduser" size={RFValue(16)} color="#6B7280" />,
-  // },
-  {
-    key: "add_to_favorites",
-    label: "Add to favorites",
-    icon: (
-      <MaterialIcons
-        name="favorite-border"
-        size={RFValue(15)}
-        color="#6B7280"
-      />
-    ),
-  },
-  {
-    key: "remove_from_favorites",
-    label: "Remove from favorites",
-    icon: <MaterialIcons name="favorite" size={RFValue(15)} color="#DB2727" />,
-  },
-  {
-    key: "report_post",
-    label: "Report post",
-    icon: (
-      <MaterialIcons
-        name="report-gmailerrorred"
-        size={RFValue(16)}
-        color="#6B7280"
-      />
-    ),
-  },
-];
+import { actions_categories } from "./util";
+import PostActionsSheetContext from "../BottomSheet/PostActionsSheetProvider";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const PostActionsBottomSheet = (props) => {
-  let { bottomSheetRef, onRefresh, data } = props;
+  let { onRefresh, data } = props;
+  const { bottomSheetRef, closeBottomSheet } = useContext(
+    PostActionsSheetContext
+  );
+
   let { width, height } = useWindowDimensions();
   let styles = PostActionsBottomSheetStyles({ width, height });
   // variables
   const snapPoints = useMemo(() => ["25%", "30%"], []);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_details = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
+
   const postApi = new PostApi();
   const editList = [
     {
@@ -119,9 +75,8 @@ const PostActionsBottomSheet = (props) => {
     },
   ];
 
-  if (!data) return null;
-
-  let options = data?.author?._id == user_details?._id ? editList : categories;
+  let options =
+    data?.author?._id == currentUser?._id ? editList : actions_categories;
 
   const actionsBtnPress = (option) => {
     if (option?.key == "clash") {
@@ -131,7 +86,7 @@ const PostActionsBottomSheet = (props) => {
     if (option?.key == "message") {
       navigation.navigate("ChatScreen", {
         chat_data: {
-          participants: [user_details, data?.author],
+          participants: [currentUser, data?.author],
           messages: [],
           _id: null,
           sharedPost: data,
@@ -152,7 +107,7 @@ const PostActionsBottomSheet = (props) => {
       });
     }
 
-    bottomSheetRef.current.close();
+    closeBottomSheet();
   };
 
   return (
@@ -171,14 +126,14 @@ const PostActionsBottomSheet = (props) => {
               <View style={styles.categoriesWrapper}>
                 {options?.map((item, index) => {
                   if (
-                    user_details?.my_favorites?.includes(data?._id) &&
+                    currentUser?.my_favorites?.includes(data?._id) &&
                     item?.key == "add_to_favorites"
                   ) {
                     return null;
                   }
 
                   if (
-                    !user_details?.my_favorites?.includes(data?._id) &&
+                    !currentUser?.my_favorites?.includes(data?._id) &&
                     item?.key == "remove_from_favorites"
                   ) {
                     return null;
@@ -192,7 +147,7 @@ const PostActionsBottomSheet = (props) => {
                     >
                       {item?.icon}
                       <Text
-                        style={font(17, "#6B7280", "Regular", 0, 0, {
+                        style={font(14, "#6B7280", "Regular", 0, 0, {
                           marginLeft: 8,
                         })}
                       >

@@ -9,6 +9,7 @@ import {
 import { SettingsCardStyles as _styles } from "../../../styles/AccountSettings/main";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { rms } from "../../../utils/responsiveSizing";
 
 const SettingsCard = (props) => {
   let { data, onDeleteAccount } = props;
@@ -39,7 +40,7 @@ const SettingsCard = (props) => {
       )}
       <Text style={styles.title}>{data?.label}</Text>
       <View style={styles.rightChevronBtn}>
-        <Entypo name="chevron-right" size={20} color="#6B7280" />
+        <Entypo name="chevron-right" size={rms(14)} color="#6B7280" />
       </View>
     </TouchableOpacity>
   );

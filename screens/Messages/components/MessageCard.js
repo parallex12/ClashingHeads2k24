@@ -12,8 +12,8 @@ import { Facebook } from "react-content-loader/native";
 import ContextMenu from "react-native-context-menu-view";
 import { chatMenuOptions, formatTime, getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
-import { useQueryClient } from "react-query";
 import FastImage from "react-native-fast-image";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const Profile = ({ source, user, isUserMe }) => {
   const { width, height } = useWindowDimensions();
@@ -31,6 +31,7 @@ const Profile = ({ source, user, isUserMe }) => {
           source={{ ...source, priority: FastImage.priority.normal }}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
+          defaultSource={require("../../../assets/icon.png")}
         />
       </TouchableOpacity>
       {user?.status === "online" && <View style={styles.online} />}
@@ -41,14 +42,12 @@ const Profile = ({ source, user, isUserMe }) => {
 const MessageCard = ({ data, onChatItemMenuSelect, onCardPress }) => {
   const { width, height } = useWindowDimensions();
   const styles = createMessageCardStyles({ width, height });
-  const navigation = useNavigation();
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const [loading, setLoading] = useState(false);
-  const { messages, unreadMessagesCount, lastMessage, _id } = data || {};
+  const { unreadMessagesCount, lastMessage } = data || {};
   const currentUserId = currentUser?._id;
-  const otherUser = data?.participants?.find((e) => e?._id !== currentUserId);
+  const otherUser = data?.participants?.find((e) => e?._id !== currentUserId) || currentUser;
   const isUserMe = otherUser?._id === currentUserId;
   const unRead = unreadMessagesCount[currentUserId];
   const hasMedia = lastMessage?.media;
@@ -56,6 +55,7 @@ const MessageCard = ({ data, onChatItemMenuSelect, onCardPress }) => {
   const isChatBlockedForOtherUser = data?.blockedUsers?.includes(
     otherUser?._id
   );
+
   const blockedTexts = [
     "You have blocked this user.",
     "You have been blocked.",
@@ -105,9 +105,7 @@ const MessageCard = ({ data, onChatItemMenuSelect, onCardPress }) => {
       >
         <Profile
           source={{
-            uri:
-              otherUser?.profile_photo ||
-              "https://dentalia.orionthemes.com/demo-1/wp-content/uploads/2016/10/dentalia-demo-deoctor-3-1-750x750.jpg",
+            uri: otherUser?.profile_photo,
           }}
           user={otherUser}
           isUserMe={isUserMe}
@@ -180,13 +178,14 @@ const createMessageCardStyles = ({ width, height }) =>
       justifyContent: "space-between",
       marginVertical: getPercent(0.6, height),
       paddingVertical: getPercent(0.6, height),
+      paddingHorizontal: getPercent(3, width),
     },
     infoWrapper: {
       flex: 1,
       paddingHorizontal: getPercent(2, width),
     },
-    titleName: font(17, "#111827", "Medium", 2, null, { marginRight: 10 }),
-    slugText: font(15, "#111827", "Regular", 3),
+    titleName: font(14, "#111827", "Medium", 2, null, { marginRight: 10 }),
+    slugText: font(12, "#111827", "Regular", 3),
     rightActions: {
       flex: 0.3,
       height: getPercent(6, height),
@@ -194,7 +193,7 @@ const createMessageCardStyles = ({ width, height }) =>
       justifyContent: "space-between",
       paddingVertical: 1,
     },
-    timeText: font(14, "#6B7280", "Regular", 0),
+    timeText: font(11, "#6B7280", "Regular", 0),
     counterWrapper: {
       minWidth: getPercent(6, width),
       minHeight: getPercent(6, width),

@@ -91,7 +91,7 @@ const _styles = ({ width, height }) =>
       width: "100%",
       minHeight: getPercent(5, height),
       justifyContent: "space-around",
-      marginVertical: rs(10),
+      marginVertical: rs(5),
     },
     title: {
       fontSize: rms(16),
@@ -112,7 +112,6 @@ const _styles = ({ width, height }) =>
       color: "#111827",
       fontFamily: "Regular",
       marginVertical: rs(10),
-
     },
     bgTouchable: {
       width: "100%",

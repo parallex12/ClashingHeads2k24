@@ -10,7 +10,7 @@ import { getPercent } from "../../../../middleware";
 import { font } from "../../../../styles/Global/main";
 import { onShareApp } from "../../../../utils";
 import { useEffect, useState } from "react";
-import { useQueryClient } from "react-query";
+import useUserProfile from "../../../../Hooks/useUserProfile";
 
 const ActionMenu = (props) => {
   let {
@@ -26,9 +26,8 @@ const ActionMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [activeReaction, setActiveReaction] = useState({});
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
 
   useEffect(() => {
     if (!reactions) return;

@@ -15,6 +15,9 @@ import { AuthNavigator } from "./routes/AuthNavigator";
 import { firebaseapp } from "./utils/firebaseInitialize";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { SocketProvider } from "./ContextProviders/SocketContext";
+import { NotificationProvider } from "./ContextProviders/NotificationProvider";
+import FullScreenLoader from "./globalComponents/FullScreenLoader/FullScreenLoader";
+import { useNetInfo } from "@react-native-community/netinfo";
 
 function MainNavigator() {
   const { isLoggedIn, logout } = useAuth();
@@ -23,20 +26,7 @@ function MainNavigator() {
     (error) => {
       const { status } = error.response || {};
       if (status === 401) {
-        // Handle 401 Unauthorized error
-        Alert.alert(
-          "Session Expired",
-          "Your session has expired. Please log in again.",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                // Sign out the user and redirect to the login screen
-                logout();
-              },
-            },
-          ]
-        );
+        logout();
       }
     }
   );
@@ -45,19 +35,25 @@ function MainNavigator() {
 
 export default function App() {
   const [fontsLoaded] = useFonts(FontsConfig);
-  const queryClient = new QueryClient();
-  axios.defaults.baseURL = process.env.PROD_URL;
+  const net = useNetInfo();
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { staleTime: 10000 } },
+  });
+  axios.defaults.baseURL = process.env.PROD_URL;
 
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <SocketProvider>
-            <MainNavigator />
+            <NotificationProvider>
+              {!fontsLoaded || !net?.isConnected ? (
+                <FullScreenLoader />
+              ) : (
+                <MainNavigator />
+              )}
+            </NotificationProvider>
           </SocketProvider>
         </AuthProvider>
       </QueryClientProvider>

@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { RefreshControl, useWindowDimensions, View } from "react-native";
 import { FlatList } from "react-native";
 import { ClashFlatlistStyles as _styles } from "../../styles/Global/main";
 import { Instagram } from "react-content-loader/native";
 import ClashCard from "../UniversalClashCard/ClashCard";
+import FlagReportSheetContext from "../BottomSheet/FlagReportSheetProvider";
+import PostActionsSheetContext from "../BottomSheet/PostActionsSheetProvider";
 
 const FeedClashCardRender = (props) => {
   let { data, actions } = props;
-  let { onPostClashesPress, onReportPress, onActionsPress } = actions;
+  let { onPostClashesPress, onActionsPress } = actions;
+  const { showBottomSheet } = useContext(FlagReportSheetContext);
+  const { showBottomSheet: showActionSheet } = useContext(
+    PostActionsSheetContext
+  );
   return (
     <ClashCard
       postDateAndViews
@@ -15,7 +21,7 @@ const FeedClashCardRender = (props) => {
       desc_limit={1}
       data={data}
       onPostClashesPress={() => onPostClashesPress(data)}
-      onReportPress={onReportPress}
+      onReportPress={() => showBottomSheet(data)}
       onActionsPress={onActionsPress}
     />
   );

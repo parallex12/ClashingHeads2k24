@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { AppState } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "./AuthProvider";
 
 const SocketContext = createContext();
@@ -39,6 +38,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     (async () => {
       let token = await getToken();
+
       if (token && socket) {
         socket.emit("appjoin", { token });
 

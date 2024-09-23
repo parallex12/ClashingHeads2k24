@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useQueryClient } from "react-query";
 
 class UserApi {
   //Api method to getUserProfile
@@ -28,7 +27,7 @@ class UserApi {
   }
 
   //Api method to searchUsers
-  async searchUsers(query,cursor) {
+  async searchUsers(query, cursor) {
     try {
       let result = await axios.get(`/users/search?q=${query}`);
       return result?.data;

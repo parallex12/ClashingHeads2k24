@@ -45,7 +45,6 @@ class PostApi {
   //Api method to getAllPost by user
   async getUsersPosts(id, pageParam) {
     try {
-      console.log(id, pageParam);
       let result = await axios.get(`/posts/user/${id}?cursor=${pageParam}`);
       return result?.data;
     } catch (e) {

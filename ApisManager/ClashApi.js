@@ -32,7 +32,7 @@ class ClashApi {
   }
 
   //Api method to createClash
-  async createClash(details) {
+  async createClash(details, cb) {
     try {
       let { recording, clashType } = details;
       if (recording && clashType == "mic") {

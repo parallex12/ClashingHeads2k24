@@ -1,6 +1,7 @@
 import { Platform, StatusBar, StyleSheet } from "react-native";
 import { RFValue, RFValue as rf } from "react-native-responsive-fontsize";
 import { getPercent } from "../../middleware";
+import { rms } from "../../utils/responsiveSizing";
 
 //container Styles starts here
 export const styles = ({ width, height }) =>
@@ -46,7 +47,7 @@ export const SettingsCardStyles = ({ width, height }) =>
     title: {
       flex: 1,
       paddingHorizontal: 10,
-      fontSize: RFValue(14.5),
+      fontSize: rms(16),
       fontFamily: "Regular",
       color: "#111827",
     },

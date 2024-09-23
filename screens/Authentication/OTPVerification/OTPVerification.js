@@ -1,4 +1,10 @@
-import { ScrollView, Text, View, useWindowDimensions } from "react-native";
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { useDispatch } from "react-redux";
 import { styles as _styles } from "../../../styles/OTPVerification/main";
 import { font } from "../../../styles/Global/main";
@@ -51,38 +57,45 @@ const OTPVerification = (props) => {
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        style={{ flex: 1, flexDirection: "column", justifyContent: "center" }}
+        behavior="padding"
+        enabled
+        keyboardVerticalOffset={20}
       >
-        <View style={styles.content}>
-          <BackButton />
-          <View style={styles.formWrapper}>
-            <Text style={font(25, "#000000", "Semibold", 3)}>
-              Verification Code
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.content}>
+            <BackButton />
+            <View style={styles.formWrapper}>
+              <Text style={font(25, "#000000", "Semibold", 3)}>
+                Verification Code
+              </Text>
+              <Text style={font(14, "#6B7280", "Regular", 5)}>
+                Please enter 6 digit code
+              </Text>
+              <PinCodeInput setOtpCode={setOtpCode} />
+            </View>
+            <Text style={font(12, "#252525", "Regular", 3, 20)}>
+              You will receive your verification code on your given number{" "}
+              {phone}. If you didn’t get the number then you can change or edit
+              the number.{" "}
+              <Text style={font(12, "#8E70F5", "Regular", 3)}>Change</Text>
             </Text>
-            <Text style={font(17, "#6B7280", "Regular", 5)}>
-              Please enter 6 digit code
-            </Text>
-            <PinCodeInput setOtpCode={setOtpCode} />
+            <StandardButton
+              title="Continue"
+              loading={loading}
+              customStyles={{
+                height: getPercent(7, height),
+                marginVertical: getPercent(3, height),
+              }}
+              onPress={onContinue}
+            />
           </View>
-          <Text style={font(15, "#252525", "Regular", 3, 20)}>
-            You will receive your verification code on your given number {phone}
-            . If you didn’t get the number then you can change or edit the
-            number.{" "}
-            <Text style={font(15, "#8E70F5", "Regular", 3)}>Change</Text>
-          </Text>
-          <StandardButton
-            title="Continue"
-            loading={loading}
-            customStyles={{
-              height: getPercent(7, height),
-              marginVertical: getPercent(3, height),
-            }}
-            onPress={onContinue}
-          />
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 };

@@ -18,7 +18,6 @@ import { getPercent, postprivacyoptions } from "../../middleware";
 import StandardHeader2 from "../../globalComponents/StandardHeader2/StandardHeader2";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { validate_post_details } from "../../middleware/firebase";
 import { useDispatch } from "react-redux";
 import { Image as ImageCompress } from "react-native-compressor";
 import PrivacyBottomSheet from "./components/PrivacyBottomSheet";
@@ -30,15 +29,17 @@ import FindUserSheet from "./components/FindUserSheet";
 import ChallengeHeader from "./components/ChallengeHeader";
 import PostApi from "../../ApisManager/PostApi";
 import { useMutation, useQueryClient } from "react-query";
+import { validate_post_details } from "../../utils/validators";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const AddPostDetails = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [imageHashingLoad, setimageHashingLoad] = useState(false);
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_profile = userDataCached?.user;
   const [tempOpponent, setTempOpponent] = useState(null);
   const privacybottomSheetRef = useRef(null);
   const friendsbottomSheetRef = useRef(null);
@@ -46,13 +47,13 @@ const AddPostDetails = (props) => {
   const news_post = useRoute().params?.news_post;
   const edit_post = useRoute().params?.edit_post;
   const { createPost } = new PostApi();
-  const { mutate, isLoading ,isError} = useMutation({
+  const { mutate, isLoading, isError } = useMutation({
     mutationFn: async (data) => await createPost(data),
     onSettled: (data) => {
       queryClient.invalidateQueries(["userfeed"]); //  invalidating user feed
-      queryClient.resetQueries(["userfeed"]); // Reset query state including cursor
       queryClient.invalidateQueries(["currentUserProfile"]); //  invalidating currentUserProfile
-      queryClient.invalidateQueries(["currentUserposts"]); //  invalidating ucurrentUserposts
+      queryClient.invalidateQueries(["currentUserposts"]); //  invalidating user feed
+      queryClient.refetchQueries(["userfeed"])
       props?.navigation.navigate("Home");
     },
     onError: (error) => {
@@ -64,7 +65,7 @@ const AddPostDetails = (props) => {
     recording: null,
     post_image: null,
     createdAt: new Date().toISOString(),
-    author: user_profile?._id,
+    author: currentUser?._id,
     privacy: null,
     post_image_hash: null,
     postReference: "original",
@@ -80,7 +81,7 @@ const AddPostDetails = (props) => {
           description: news_post?.description,
           post_image: news_post?.urlToImage,
           createdAt: new Date().toISOString(),
-          author: user_profile?._id,
+          author: currentUser?._id,
           newsAuthor: news_post?.author,
           postReference: "news",
           newsUrl: news_post?.url,
@@ -204,7 +205,7 @@ const AddPostDetails = (props) => {
           >
             {postprivacyoptions[1]?.icon}
             <Text
-              style={font(15, "#111827", "Medium", 10, null, {
+              style={font(13, "#111827", "Medium", 10, null, {
                 marginHorizontal: 5,
               })}
             >
@@ -222,7 +223,7 @@ const AddPostDetails = (props) => {
           {postForm?.clashType == "challenge" && (
             <ChallengeHeader
               data={{
-                challenger: user_profile,
+                challenger: currentUser,
                 opponent: tempOpponent,
                 title: postForm?.title,
               }}

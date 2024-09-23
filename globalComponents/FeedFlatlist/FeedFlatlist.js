@@ -1,32 +1,24 @@
-import { useState } from "react";
-import {
-  ActivityIndicator,
-  RefreshControl,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { useContext, useState } from "react";
+import { RefreshControl, useWindowDimensions, View } from "react-native";
 import { FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { feedFlatlistStyles as _styles } from "../../styles/Global/main";
 import { Instagram } from "react-content-loader/native";
 import PostCard from "../PostCard/PostCard";
 import ChallengeCard from "../ChallengeCard/ChallengeCard";
-import { useQueryClient } from "react-query";
 
 const FeedPostCardRender = (props) => {
   const navigation = useNavigation();
-  let { data, actions } = props;
-  let { onReportPress, onActionsPress } = actions;
+  let { data } = props;
+
   return (
     <PostCard
       divider
-      desc_limit={1}
+      desc_limit={5}
       data={data}
       onPostClashesPress={() =>
         navigation?.navigate("ClashDetails", { ...data, openVoiceSheet: true })
       }
-      onReportPress={() => onReportPress(data)}
-      onActionsPress={() => onActionsPress(data)}
     />
   );
 };
@@ -36,9 +28,9 @@ const FeedChallengeCardRender = ({ data }, onReportPress) => {
   return (
     <ChallengeCard
       divider
+      desc_limit={5}
       onPress={() => navigation?.navigate("ChallengeClash", { ...data })}
       onClashesPress={() => navigation?.navigate("ChallengeClash", { ...data })}
-      onReportPress={onReportPress}
       data={data}
     />
   );
@@ -54,7 +46,7 @@ const RenderFooter = (props) => {
 };
 
 const FeedFlatlist = (props) => {
-  let { query, itemActions } = props;
+  let { query, customStyles } = props;
   const [refreshing, setRefreshing] = useState(false);
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
@@ -75,7 +67,7 @@ const FeedFlatlist = (props) => {
   };
 
   return (
-    <View style={styles.content}>
+    <View style={[styles.content, { ...customStyles }]}>
       <FlatList
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -84,21 +76,9 @@ const FeedFlatlist = (props) => {
         data={query?.data?.filter((e) => e != undefined)}
         renderItem={({ item, index }) => {
           if (item?.clashType == "challenge") {
-            return (
-              <FeedChallengeCardRender
-                data={item}
-                key={index}
-                actions={itemActions}
-              />
-            );
+            return <FeedChallengeCardRender data={item} key={index} />;
           } else {
-            return (
-              <FeedPostCardRender
-                data={item}
-                key={index}
-                actions={itemActions}
-              />
-            );
+            return <FeedPostCardRender data={item} key={index} />;
           }
         }}
         keyExtractor={(item, index) => item?._id + item?.updatedAt}

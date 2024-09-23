@@ -6,21 +6,22 @@ import { getPercent } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 import UserApi from "../../../ApisManager/UserApi";
+import useUserProfile from "../../../Hooks/useUserProfile";
 import { useQueryClient } from "react-query";
 
 const CommunityGuidelines = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [loading, setLoading] = useState(false);
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_profile_details = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const userApi = new UserApi();
+  const queryClient = useQueryClient();
 
   const onContinue = async () => {
     setLoading(true);
     try {
-      let result = await userApi.updateUserProfile(user_profile_details?._id, {
+      let result = await userApi.updateUserProfile(currentUser?._id, {
         tos: true,
         phone: user?.phoneNumber,
         username: "",
@@ -95,7 +96,7 @@ const CommunityGuidelines = (props) => {
               </Text>
             </View>
           </View>
-          {!user_profile_details?.tos && (
+          {!currentUser?.tos && (
             <StandardButton
               loading={loading}
               title="Agree & Continue"

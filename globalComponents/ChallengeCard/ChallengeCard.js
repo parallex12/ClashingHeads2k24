@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback, memo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  memo,
+  useContext,
+} from "react";
 import {
   TouchableOpacity,
   Text,
@@ -12,6 +18,8 @@ import Content from "../../globalComponents/PostCard/components/Content";
 import ClashUserCard from "./components/ClashUserCard";
 import CardFooter from "./components/CardFooter";
 import VotingFooter from "./components/VotingFooter";
+import PostActionsSheetContext from "../BottomSheet/PostActionsSheetProvider";
+import FlagReportSheetContext from "../BottomSheet/FlagReportSheetProvider";
 
 const ChallengeCard = (props) => {
   const {
@@ -73,31 +81,28 @@ const ChallengeCard = (props) => {
               />
             )}
             <Text style={styles.vsText}>VS</Text>
-            {opponent && (
-              <ClashUserCard
-                onAcceptRequest={onAcceptRequest}
-                onCancelRequest={onCancelRequest}
-                user={opponent}
-                type="Opponent"
-                audio={data?.opponent_audio}
-                hasAccepted={data?.status === "live"}
-                votes={voteData}
-                request_type={request_type}
-                showVoting={showVoting}
-                status={data?.status}
-                _id={data?._id}
-                setVoteData={setVoteData}
-              />
-            )}
+            <ClashUserCard
+              onAcceptRequest={onAcceptRequest}
+              onCancelRequest={onCancelRequest}
+              user={opponent}
+              type="Opponent"
+              audio={data?.opponent_audio}
+              hasAccepted={data?.status === "live"}
+              votes={voteData}
+              request_type={request_type}
+              showVoting={showVoting}
+              status={data?.status}
+              _id={data?._id}
+              setVoteData={setVoteData}
+            />
           </View>
-          <Content {...data} desc_limit={2} recording={null} title={null} />
+          <Content {...data} desc_limit={5} recording={null} title={null} />
         </View>
 
         <CardFooter
           votes={data?.votes}
           status={data?.status}
           clashes={data?.clashes}
-          onReportPress={onReportPress}
           onShareApp={onShareApp}
           onClashesPress={onClashesPress}
         />

@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Image,
+  KeyboardAvoidingView,
   ScrollView,
   Text,
   View,
@@ -52,58 +53,75 @@ const Signup = (props) => {
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        style={{ flex: 1, flexDirection: "column", justifyContent: "center" }}
+        behavior="padding"
+        enabled
+        keyboardVerticalOffset={20}
       >
-        <View style={styles.content}>
-          <View style={styles.logoWrapper}>
-            <Image
-              source={require("../../../assets/logo.png")}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-          </View>
-          <View style={styles.formWrapper}>
-            <Text style={font(25, "#000000", "Semibold", 3)}>Sign Up</Text>
-            <Text style={font(17, "#6B7280", "Regular", 5)}>
-              Enter Your Phone Number
-            </Text>
-            <CountryCodeField
-              setCountry={setCountry}
-              onChangeText={(val) => setPhoneNumber(val)}
-            />
-            <Text
-              style={font(15, "#252525", "Regular", 3, 20, {
-                textAlign: "justify",
-              })}
-            >
-              We will send a text with a verification code. Message and date
-              rates may apply, By continuing, you agree to our{" "}
-              <Text style={font(15, "#DB2727", "Regular", 3)}>
-                Terms of Services & Privacy Policy.
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.content}>
+            <View style={styles.logoWrapper}>
+              <Image
+                source={require("../../../assets/logo.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+            </View>
+            <View style={styles.formWrapper}>
+              <Text style={font(25, "#000000", "Semibold", 3)}>Sign Up</Text>
+              <Text style={font(14, "#6B7280", "Regular", 5)}>
+                Enter Your Phone Number
               </Text>
-            </Text>
-            <StandardButton
-              title="Continue"
-              loading={loading}
-              customStyles={{
-                height: getPercent(7, height),
-                marginVertical: getPercent(3, height),
-              }}
-              onPress={onContinue}
-            />
-            <Text
-              style={font(17, "#252525", "Regular", 3, null, styles.signupText)}
-            >
-              Already have an account?{" "}
-              <Text onPress={onLogin} style={font(17, "#DB2727", "Medium", 3)}>
-                Sign In
+              <CountryCodeField
+                setCountry={setCountry}
+                onChangeText={(val) => setPhoneNumber(val)}
+              />
+              <Text
+                style={font(12, "#252525", "Regular", 3, 20, {
+                  textAlign: "justify",
+                })}
+              >
+                We will send a text with a verification code. Message and date
+                rates may apply, By continuing, you agree to our{" "}
+                <Text style={font(12, "#DB2727", "Regular", 3)}>
+                  Terms of Services & Privacy Policy.
+                </Text>
               </Text>
-            </Text>
+              <StandardButton
+                title="Continue"
+                loading={loading}
+                customStyles={{
+                  height: getPercent(7, height),
+                  marginVertical: getPercent(3, height),
+                }}
+                onPress={onContinue}
+              />
+              <Text
+                style={font(
+                  14,
+                  "#252525",
+                  "Regular",
+                  3,
+                  null,
+                  styles.signupText
+                )}
+              >
+                Already have an account?{" "}
+                <Text
+                  onPress={onLogin}
+                  style={font(14, "#DB2727", "Medium", 3)}
+                >
+                  Sign In
+                </Text>
+              </Text>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 };

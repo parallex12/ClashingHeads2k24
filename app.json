@@ -2,7 +2,7 @@
   "expo": {
     "name": "ClashingHeads",
     "slug": "clashingheads",
-    "version": "1.12.1",
+    "version": "1.13.2",
     "orientation": "portrait",
     "scheme": "com.clubs.clashingheads",
     "icon": "./assets/icon.png",
@@ -12,24 +12,47 @@
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "buildNumber": "1.12.1",
+      "buildNumber": "1.13.2",
       "supportsTablet": false,
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to take selfies for profile.",
-        "NSLocationWhenInUseUsageDescription": "This app uses the location to show user near by matches for better experience.",
-        "NSPhotoLibraryUsageDescription": "This app uses the camera to let user put a photo in his profile page.",
-        "NSLocationAlwaysUsageDescription": "This app uses the location to show user near by matches for better experience.",
-        "NSLocationUsageDescription": "This app uses the location to show user near by matches for better experience.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses the location to show user near by matches for better experience.",
-        "UIBackgroundModes": ["audio"]
+        "NSLocationWhenInUseUsageDescription": "This app uses the location to show nearby matches for a better experience.",
+        "NSPhotoLibraryUsageDescription": "This app uses the photo library to let users upload profile photos.",
+        "NSLocationAlwaysUsageDescription": "This app uses location to show nearby matches for a better experience.",
+        "NSLocationUsageDescription": "This app uses location to show nearby matches for a better experience.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses location to show nearby matches for a better experience.",
+        "UIBackgroundModes": [
+          "audio"
+        ]
       },
-      "bundleIdentifier": "com.clubs.clashingheads"
+      "bundleIdentifier": "com.clubs.clashingheads",
+      "entitlements": {
+        "com.apple.developer.networking.wifi-info": true
+      },
+      "bitcode": false
     },
     "android": {
       "package": "com.clubs.clashingheads",
-      "versionCode": 1,
+      "versionCode": 2,
+      "permissions": [
+        "CAMERA",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CAMERA",
+        "android.permission.INTERNET",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.WAKE_LOCK",
+        "android.permission.BLUETOOTH"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -42,7 +65,8 @@
       "policy": "sdkVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/469b7b8f-311a-479e-b9c0-adc087acfcb0"
+      "url": "https://u.expo.dev/469b7b8f-311a-479e-b9c0-adc087acfcb0",
+      "channel":"development"
     },
     "plugins": [
       "expo-font",
@@ -57,9 +81,18 @@
         }
       ],
       [
+        "@stripe/stripe-react-native",
+        {
+          "enableGooglePay": true
+        }
+      ],
+      [
         "expo-asset",
         {
-          "assets": ["./assets/chatbg.jpg", "./assets/logo.png"]
+          "assets": [
+            "./assets/chatbg.jpg",
+            "./assets/logo.png"
+          ]
         }
       ]
     ],

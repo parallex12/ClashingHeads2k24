@@ -16,7 +16,7 @@ export const standardButtonStyles = ({ width, height }) =>
       justifyContent: "center",
     },
     text: {
-      fontSize: 16,
+      fontSize: rms(13),
       fontFamily: "Medium",
       color: "#fff",
     },
@@ -28,8 +28,8 @@ export const feedFlatlistStyles = ({ width, height }) =>
     content: {
       flex: 1,
       paddingTop: getPercent(1, height),
-      paddingBottom: getPercent(10, height),
       paddingHorizontal: getPercent(3, width),
+      paddingBottom: getPercent(9, height),
     },
     listCont: {},
   });
@@ -54,7 +54,6 @@ export const InfiniteFlatlistStyles = ({ width, height }) =>
       flex: 1,
       paddingTop: getPercent(1, height),
       paddingBottom: getPercent(10, height),
-      paddingHorizontal: getPercent(3, width),
     },
     listCont: {},
   });
@@ -93,7 +92,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       justifyContent: "center",
       paddingHorizontal: getPercent(3, width),
     },
-    clashesCardTitle: font(19, "#1F2937", "Medium", 5, null, {
+    clashesCardTitle: font(16, "#1F2937", "Medium", 5, null, {
       textAlign: "center",
       width: "90%",
     }),
@@ -110,7 +109,6 @@ export const ChallengeCardStyles = ({ width, height }) =>
       justifyContent: "center",
     },
     clashUserItemInner: {
-      flex: 1,
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: getPercent(1, width),
@@ -171,7 +169,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
     },
     cardFooterWrapper: {
       width: "100%",
-      height: getPercent(5, height),
+      height: getPercent(6, height),
       borderTopWidth: 1,
       borderColor: "#E5E7EB",
       flexDirection: "row",
@@ -180,13 +178,13 @@ export const ChallengeCardStyles = ({ width, height }) =>
       paddingHorizontal: getPercent(3, width),
     },
     cardFooterItem: {
-      flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: 5,
+      gap:5,
     },
     vsText: {
-      fontSize: 30,
+      fontSize: rms(28),
       color: "#DB2727",
       fontFamily: "BLP",
       alignSelf: "flex-start",
@@ -208,7 +206,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       paddingVertical: 5,
     },
     votingItemText: {
-      fontSize: 15,
+      fontSize: rms(11),
       fontFamily: "Semibold",
       color: "#000000",
     },
@@ -222,7 +220,7 @@ export const ChallengeCardStyles = ({ width, height }) =>
       paddingVertical: 5,
     },
     votingItemTextOpponent: {
-      fontSize: 15,
+      fontSize: rms(11),
       fontFamily: "Regular",
       color: "#000000",
     },
@@ -242,7 +240,6 @@ export const ImageViewerStyles = ({ width, height }) =>
       position: "relative",
       zIndex: 2,
       marginBottom: getPercent(1, height),
-      borderWidth: 1,
       borderColor: "#e5e5e5",
     },
     fullScreenContainer: {
@@ -423,17 +420,17 @@ export const TypingComponentExtraViewerStyles = ({ width, height }) =>
       alignItems: "flex-start",
       justifyContent: "space-between",
       borderColor: "#111827",
-      marginBottom: getPercent(0.5, height),
+      marginBottom: getPercent(1, height),
       paddingHorizontal: 5,
       paddingVertical: getPercent(0.2, height),
     },
     username: {
-      fontSize: 11,
+      fontSize: rms(12),
       color: "#111827",
       fontFamily: "Semibold",
     },
     msg: {
-      fontSize: 13,
+      fontSize: rms(11),
       color: "#111827",
       fontFamily: "Medium",
       marginTop: 5,
@@ -515,15 +512,12 @@ export const LogoutPressStyles = ({ width, height }) =>
 export const FullScreenLoaderStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
-      position: "absolute",
-      top: 0,
-      left: 0,
       width: "100%",
       height: "100%",
-      zIndex: 1000,
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: "#DB2727",
+      zIndex: 999999,
     },
     title: {
       fontSize: 25,
@@ -1173,7 +1167,47 @@ export const PostCardStyles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal: getPercent(3, width),
+    },
+    post_statics_wrapper: {
+      width: "100%",
+      paddingVertical: rms(8),
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    emojiWrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-start",
+    },
+    emojiItem: {
+      width: getPercent(5, width),
+      height: getPercent(5, width),
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#DB2727",
+    },
+    emojiItem2: {
+      width: getPercent(5, width),
+      height: getPercent(5, width),
+      borderRadius: 100,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#6FCF97",
+      right:10
+    },
+    total_reactions_text: {
+      fontSize: rms(12),
+      color: "#6B7280",
+      fontFamily: "Regular",
+    },
+    statics_text_wrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: rms(10),
     },
   });
 
@@ -1202,8 +1236,8 @@ export const BottomMenuStyles = ({ width, height }) =>
       justifyContent: "center",
     },
     itemIconWrapper: {
-      width: getPercent(3.2, height),
-      height: getPercent(3.2, height),
+      width: getPercent(3, height),
+      height: getPercent(3, height),
     },
   });
 

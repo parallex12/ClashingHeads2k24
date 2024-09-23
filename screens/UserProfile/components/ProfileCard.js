@@ -12,7 +12,6 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
 import { download } from "react-native-compressor";
 import CardHeader from "./CardHeader";
 import UserApi from "../../../ApisManager/UserApi";
@@ -24,27 +23,25 @@ const ProfileCard = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
-
+  const queryClient = useQueryClient();
   const [isPlaying, setIsPlaying] = useState(false);
   const sound = useRef(new Audio.Sound());
   // Access cached data directly
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const current_user = userDataCached?.user;
+  const userProfile = useUserProfile();
+  const currentUser = userProfile?.data?.user;
   const followButtonTypes = ["Following", "Follow", "Follow back"];
   const [currentFollowButtonState, setCurrentFollowButtonState] = useState();
   const [isCurrentUserFollower, setIsCurrentUserFollower] = useState();
   const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState();
   const [downloadedAudio, setDownloadedAudio] = useState(null);
   const { followUser, unfollowUser } = new UserApi();
-  const userProfile = useUserProfile();
 
   useEffect(() => {
     setIsCurrentUserFollower(
-      user?.followers?.find((e) => e?._id == current_user?._id)
+      user?.followers?.find((e) => e?._id == currentUser?._id)
     );
     setIsCurrentUserFollowing(
-      user?.following?.find((e) => e?._id == current_user?._id)
+      user?.following?.find((e) => e?._id == currentUser?._id)
     );
   }, [user?.following, user?.followers]);
 
@@ -97,13 +94,13 @@ const ProfileCard = (props) => {
   };
 
   const onFollow = async () => {
-    if (!current_user || !user) return;
+    if (!currentUser || !user) return;
     if (
       currentFollowButtonState == "Follow" ||
       currentFollowButtonState == "Follow back"
     ) {
-      setIsCurrentUserFollower(current_user);
-      await followUser(current_user?._id, user?._id);
+      setIsCurrentUserFollower(currentUser);
+      await followUser(currentUser?._id, user?._id);
       await queryClient.invalidateQueries({
         queryKey: ["currentUserProfile"],
         stale: true,
@@ -115,7 +112,7 @@ const ProfileCard = (props) => {
 
     if (currentFollowButtonState == "Following") {
       setIsCurrentUserFollower(null);
-      await unfollowUser(current_user?._id, user?._id);
+      await unfollowUser(currentUser?._id, user?._id);
       await queryClient.invalidateQueries({
         queryKey: ["currentUserProfile"],
         stale: true,
@@ -127,10 +124,10 @@ const ProfileCard = (props) => {
   };
 
   const onMessage = () => {
-    let chatId = generateChatId([user?._id, current_user?._id]);
+    let chatId = generateChatId([user?._id, currentUser?._id]);
     navigation.navigate("ChatScreen", {
       chat_data: {
-        participants: [current_user, user],
+        participants: [currentUser, user],
         _id: chatId,
         user,
       },
@@ -142,8 +139,8 @@ const ProfileCard = (props) => {
       <CardHeader user={user} />
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
-          <Text style={font(19, "#111827", "Medium", 2)}>
-            <Text style={font(19, "#DB2727", "Semibold", 2)}>
+          <Text style={font(16, "#111827", "Medium", 2)}>
+            <Text style={font(16, "#DB2727", "Semibold", 2)}>
               #{user?.clashHash}{" "}
             </Text>
             {user?.realName || ""}
@@ -158,24 +155,24 @@ const ProfileCard = (props) => {
             }}
           />
         </View>
-        <Text style={font(15, "#6B7280", "Regular", 2)}>{user?.politics}</Text>
-        <Text style={font(13, "#DB2727", "Semibold", 2)}>
+        <Text style={font(12, "#6B7280", "Regular", 2)}>{user?.politics}</Text>
+        <Text style={font(12, "#DB2727", "Semibold", 2)}>
           @{user?.username}{" "}
         </Text>
       </View>
       {user?.bio && (
         <View style={styles.bioEditwrapper}>
-          <Text style={font(14, "#6B7280", "Regular")}>{user?.bio}</Text>
+          <Text style={font(13, "#6B7280", "Regular")}>{user?.bio}</Text>
         </View>
       )}
       {user?.school && (
         <View style={styles.bioEditwrapper}>
-          <Text style={font(14, "#6B7280", "Regular")}>{user?.school}</Text>
+          <Text style={font(13, "#6B7280", "Regular")}>{user?.school}</Text>
         </View>
       )}
       {user?.employment && (
         <View style={styles.bioEditwrapper}>
-          <Text style={font(14, "#6B7280", "Regular")}>{user?.employment}</Text>
+          <Text style={font(13, "#6B7280", "Regular")}>{user?.employment}</Text>
         </View>
       )}
       <View style={styles.action_buttons_wrapper}>

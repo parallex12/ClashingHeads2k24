@@ -1,18 +1,17 @@
-import { View, useWindowDimensions } from "react-native";
+import { ScrollView, View, useWindowDimensions } from "react-native";
 import { PeopleResultStyles as _styles } from "../../../styles/Search/main";
 import UserCard from "../../../globalComponents/UserCard";
 import { memo } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useQueryClient } from "react-query";
 import { useUserSearch } from "../../../Hooks/useSearch";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const PeopleResult = (props) => {
   let { searchQuery, onPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_details = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const navigation = useNavigation();
   const userQuery = useUserSearch(searchQuery);
 
@@ -20,7 +19,7 @@ const PeopleResult = (props) => {
     if (onPress) {
       return onPress(item);
     }
-    if (item?._id == user_details?._id) {
+    if (item?._id == currentUser?._id) {
       navigation?.navigate("MyProfile");
     } else {
       navigation?.navigate("UserProfile", {
@@ -30,7 +29,7 @@ const PeopleResult = (props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {userQuery?.data?.map((item, index) => {
         return (
           <UserCard
@@ -41,7 +40,7 @@ const PeopleResult = (props) => {
           />
         );
       })}
-    </View>
+    </ScrollView>
   );
 };
 

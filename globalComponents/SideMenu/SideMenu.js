@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { onUpdateMenu } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 import CacheImage from "../CacheImage";
 import { useQueryClient } from "react-query";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const ListItem = ({ data }) => {
   let { width, height } = useWindowDimensions();
@@ -36,7 +37,7 @@ const ListItem = ({ data }) => {
             style={{ width: "100%", height: "100%" }}
           />
         </View>
-        <Text style={font(16, "#FFFFFF", "Regular", 0, null, { flex: 1 })}>
+        <Text style={font(14, "#FFFFFF", "Regular", 0, null, { flex: 1 })}>
           {data?.title}
         </Text>
         <Entypo name="chevron-right" size={20} color="#ffffff" />
@@ -58,7 +59,7 @@ const ListItem = ({ data }) => {
           style={{ width: "100%", height: "100%" }}
         />
       </View>
-      <Text style={font(16, "#FFFFFF", "Regular", 0, null, { flex: 1 })}>
+      <Text style={font(14, "#FFFFFF", "Regular", 0, null, { flex: 1 })}>
         {data?.title}
       </Text>
       <Entypo name="chevron-right" size={20} color="#ffffff" />
@@ -70,10 +71,9 @@ const SideMenu = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = SideMenuStyles({ width, height });
   const dispatch = useDispatch();
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_details = userDataCached?.user;
-  let profile = user_details?.profile_photo;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
+  let profile = currentUser?.profile_photo;
   const navigation = useNavigation();
   const isDrawerOpen = useDrawerStatus();
 
@@ -95,7 +95,7 @@ const SideMenu = (props) => {
               source={{ uri: profile }}
               resizeMode="cover"
               style={{ width: "100%", height: "100%" }}
-              hash={user_details?.profile_hash}
+              hash={currentUser?.profile_hash}
             />
           </View>
           <TouchableOpacity
@@ -104,12 +104,12 @@ const SideMenu = (props) => {
           >
             <View style={styles.userName}>
               <Text style={font(16, "#FFFFFF", "Semibold", 3)}>
-                {user_details?.realName}
+                {currentUser?.realName}
               </Text>
             </View>
             <View style={styles.viewProfileBtn}>
               <Text style={font(13, "#FFFFFF", "Regular")}>
-                @{user_details?.username}
+                @{currentUser?.username}
               </Text>
             </View>
           </TouchableOpacity>

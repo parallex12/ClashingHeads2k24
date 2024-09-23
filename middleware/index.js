@@ -299,13 +299,7 @@ export const messageMenuOptions = [
     onPress: (props, next) =>
       props?.setMedia((prev) => ({ ...prev, reply: props?._id })),
   },
-  {
-    title: "Report",
-    onPress: (props, next) => {
-      props?.ref?.current?.present();
-      next();
-    },
-  },
+  
   {
     title: "Delete",
     onPress: (props, next) => {
@@ -315,20 +309,13 @@ export const messageMenuOptions = [
   },
 ];
 
-
 export const messageRecieverMenuOptions = [
   {
     title: "Reply",
     onPress: (props, next) =>
       props?.setMedia((prev) => ({ ...prev, reply: props?._id })),
   },
-  {
-    title: "Report",
-    onPress: (props, next) => {
-      props?.ref?.current?.present();
-      next();
-    },
-  },
+ 
 ];
 
 export const chatMenuOptions = [
@@ -338,10 +325,6 @@ export const chatMenuOptions = [
       await update_user_chat(props?._id, { blockedUsers: props?.blockedUsers });
       next();
     },
-  },
-  {
-    title: "Report",
-    onPress: (props) => props?.ref.current.present(),
   },
   {
     title: "Delete chat",
@@ -361,4 +344,3 @@ export const checkUserOnlineStatus = async (status_func) => {
     return false; // Return false in case of an error
   }
 };
-

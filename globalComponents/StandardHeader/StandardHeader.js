@@ -5,7 +5,7 @@ import SearchIcon from "./components/SearchIcon";
 import Logo from "./components/Logo";
 import BackButton from "../BackButton";
 import { StatusBar } from "expo-status-bar";
-import { useQueryClient } from "react-query";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const StandardHeader = (props) => {
   let {
@@ -20,9 +20,8 @@ const StandardHeader = (props) => {
   } = props;
   let { width, height } = useWindowDimensions();
   let styles = StandardHeaderStyles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_profile = userDataCached?.user;
+  const { data } = useUserProfile();
+  const user_profile = data?.user;
 
   return (
     <ImageBackground
@@ -47,7 +46,11 @@ const StandardHeader = (props) => {
       </View>
       <View style={styles.col2}>
         {logo && <Logo />}
-        {title && <Text style={styles.title}>{title}</Text>}
+        {title && (
+          <Text style={styles.title} numberOfLines={1}>
+            {title}
+          </Text>
+        )}
       </View>
       <View style={styles.col3}>
         {searchIcon && <SearchIcon />}

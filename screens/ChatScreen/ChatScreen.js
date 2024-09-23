@@ -1,9 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
   ImageBackground,
-  Keyboard,
   KeyboardAvoidingView,
   View,
   useWindowDimensions,
@@ -15,21 +12,17 @@ import { useRoute } from "@react-navigation/native";
 import Header from "./components/Header";
 import { uploadMedia } from "../../middleware/firebase";
 import UpdatedVoiceRecorderBottomSheet from "../../globalComponents/UpdatedVoiceRecorderBottomSheet/UpdatedVoiceRecorderBottomSheet";
-import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
 import { useSocket } from "../../ContextProviders/SocketContext";
 import useChatMessages from "../../Hooks/useChatMessages";
 import useChatSocket from "../../Hooks/useChatSocket";
 import useUserProfile from "../../Hooks/useUserProfile";
 import MessagesFlatlist from "../../globalComponents/MessagesFlatlist/MessagesFlatlist";
-import { useAssets } from "expo-asset";
-import crypto from "crypto-js";
 
 const ChatScreen = (props) => {
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
   const socket = useSocket();
   const route = useRoute();
-  const [assets, error] = useAssets([require("../../assets/chatbg.jpg")]);
   const loaded_chat_data = route.params?.chat_data;
   let { _id: roomId, user: otherUserData, participants } = loaded_chat_data;
   const currentUserId = useUserProfile()?.data?.user?._id;
@@ -41,7 +34,6 @@ const ChatScreen = (props) => {
   const [messages, setMessages] = useState([]);
   const chatMessagesQuery = useChatMessages(roomId);
   const voicebottomSheetRef = useRef(null);
-  const bottomFlagSheetRef = useRef(null);
   const [media, setMedia] = useState({});
 
   useEffect(() => {
@@ -61,6 +53,7 @@ const ChatScreen = (props) => {
       });
     };
   }, []);
+
   const handleSend = async (messageData) => {
     let { newMessage, media } = messageData;
     try {
@@ -94,7 +87,6 @@ const ChatScreen = (props) => {
   const onMessageItemMenuSelect = (item, _id) => {
     let funcProps = {
       _id,
-      ref: bottomFlagSheetRef,
       socket,
       setMedia,
     };
@@ -118,16 +110,18 @@ const ChatScreen = (props) => {
           rightIcon={null}
         />
         <ImageBackground
-          source={assets && assets[0]}
+          source={require("../../assets/chatbg.jpg")}
           style={styles.content}
           resizeMode="cover"
         >
-          <MessagesFlatlist
-            query={chatMessagesQuery}
-            data={messages}
-            currentUserId={currentUserId}
-            onMenuSelect={onMessageItemMenuSelect}
-          />
+          {!chatMessagesQuery?.isLoading && (
+            <MessagesFlatlist
+              query={chatMessagesQuery}
+              data={messages}
+              currentUserId={currentUserId}
+              onMenuSelect={onMessageItemMenuSelect}
+            />
+          )}
           <TypingComponent
             setMedia={setMedia}
             replyMsgContent={[chatMessagesQuery?.data, messages]
@@ -151,7 +145,6 @@ const ChatScreen = (props) => {
         bottomVoiceSheetRef={voicebottomSheetRef}
         postBtnTitle="Confirm"
       />
-      <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
     </View>
   );
 };

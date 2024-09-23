@@ -12,11 +12,10 @@ import { font } from "../../../styles/Global/main";
 import WaveAudioPlayer from "../../../globalComponents/WaveAudioPlayer";
 import StandardButton from "../../../globalComponents/StandardButton";
 import { FontAwesome5 } from "@expo/vector-icons";
-import CacheImage from "../../../globalComponents/CacheImage";
 import { useNavigation } from "@react-navigation/native";
 import PostApi from "../../../ApisManager/PostApi";
-import { useQueryClient } from "react-query";
 import FastImage from "react-native-fast-image";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const ClashUserCard = memo((data) => {
   let {
@@ -36,9 +35,8 @@ const ClashUserCard = memo((data) => {
 
   const { width, height } = useWindowDimensions();
   const styles = _styles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const navigation = useNavigation();
   const [hasCurrentUserVoted, setHasCurrentUserVoted] = useState(null);
   const postApi = new PostApi();
@@ -89,18 +87,19 @@ const ClashUserCard = memo((data) => {
             }}
             resizeMode="contain"
             style={{ width: "100%", height: "100%" }}
+            defaultSource={require("../../../assets/icon.png")}
           />
         </View>
-        <Text style={font(17, "#000000", "Semibold", 3)}>{user?.realName}</Text>
-        <Text style={font(15, "#9CA3AF", "Medium")}>{type}</Text>
+        <Text style={font(13, "#000000", "Semibold", 3)}>
+          {user?.realName || "CH User"}
+        </Text>
+        <Text style={font(11, "#9CA3AF", "Medium")}>{type}</Text>
       </TouchableOpacity>
-      {audio && (
-        <WaveAudioPlayer
-          showDuration={showAudioDuration}
-          iconSize={15}
-          source={audio}
-        />
-      )}
+      <WaveAudioPlayer
+        showDuration={showAudioDuration}
+        iconSize={15}
+        source={audio}
+      />
       {!hasAccepted &&
         (request_type === "Recieved" ? (
           <View style={styles.actionBtnRow}>

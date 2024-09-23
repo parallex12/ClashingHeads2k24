@@ -24,6 +24,7 @@ import { useQuery, useQueryClient } from "react-query";
 import MessageApi from "../../ApisManager/MessageApi";
 import ChatApi from "../../ApisManager/ChatApi";
 import { useSocket } from "../../ContextProviders/SocketContext";
+import useUserProfile from "./Hooks/useUserProfile";
 
 const ChatScreen = (props) => {
   const socket = useSocket();
@@ -34,9 +35,9 @@ const ChatScreen = (props) => {
     receiveMessage,
     sendMessage,
   } = useChatSocketService();
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
+  const { data } = useUserProfile();
+  const currentUser = data?.user;
+
   const currentUserId = currentUser?._id;
   const route = useRoute();
   const loaded_chat_data = route.params?.chat_data;

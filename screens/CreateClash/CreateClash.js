@@ -15,16 +15,14 @@ import UserCard from "../../globalComponents/UserCard";
 import PeopleResult from "../Search/components/PeopleResult";
 import { validate_clash_details } from "../../middleware/firebase";
 import PostApi from "../../ApisManager/PostApi";
-import { useQueryClient } from "react-query";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const CreateClash = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_details = userDataCached?.user;
-
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const [recordedVoice, setRecordedVoice] = useState(null);
   const [loading, setLoading] = useState(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
@@ -36,7 +34,7 @@ const CreateClash = (props) => {
 
   const [clashForm, setClashForm] = useState({
     title: null,
-    challenger: user_details?._id, // The user who initiates the challenge
+    challenger: currentUser?._id, // The user who initiates the challenge
     opponent: null, // The user who is being challenged
     challenger_audio: recordedVoice?.getURI(),
     opponent_audio: null,

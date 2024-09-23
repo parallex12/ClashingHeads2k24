@@ -10,6 +10,7 @@ import { NewsCardStyles, font } from "../styles/Global/main";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import * as WebBrowser from "expo-web-browser";
 import FastImage from "react-native-fast-image";
+import { rms } from "../utils/responsiveSizing";
 
 const CardFooter = ({ publishedAt, urlToImage, source }) => {
   let { width, height } = useWindowDimensions();
@@ -23,11 +24,17 @@ const CardFooter = ({ publishedAt, urlToImage, source }) => {
             priority: FastImage.priority.normal,
           }}
           resizeMode="cover"
-          style={{ width: "100%", height: "100%" }}
+          defaultSource={require("../assets/icon.png")}
+          style={{
+            width: rms(25),
+            height: rms(25),
+            borderRadius: 100,
+            marginRight: rms(5),
+          }}
         />
         <Text style={font(13, "#6B7287", "Regular")}>{source?.name}</Text>
       </View>
-      <Text style={font(12, "#6B7287", "Regular")}>
+      <Text style={font(15, "#6B7287", "Regular")}>
         {publishedAt && new Date(publishedAt).toDateString()}
       </Text>
     </View>
@@ -64,6 +71,7 @@ const NewsCard = (props) => {
               uri: data?.urlToImage,
               priority: FastImage.priority.normal,
             }}
+            defaultSource={require("../assets/icon.png")}
             resizeMode="cover"
             style={{ width: "100%", height: "100%" }}
           />

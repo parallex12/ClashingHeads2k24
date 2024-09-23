@@ -14,28 +14,29 @@ import MessageCard from "./components/MessageCard";
 import { useEffect, useRef } from "react";
 import ContactsSheet from "../../globalComponents/ContactsSheet/ContactsSheet";
 import { useNavigation } from "@react-navigation/native";
-import FlagReportBottomSheet from "../../globalComponents/FlagReportBottomSheet/FlagReportBottomSheet";
-import { useQueryClient } from "react-query";
 import useChat from "../../Hooks/useChat";
 import InfiniteFlatlist from "../../globalComponents/InfiniteFlatlist/InfiniteFlatlist";
 import { useSocket } from "../../ContextProviders/SocketContext";
+import { FlagReportSheetProvider } from "../../globalComponents/BottomSheet/FlagReportSheetProvider";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const Messages = (props) => {
   let {} = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
-  const currentUserId = currentUser?._id;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
+  const currentUserId = currentUser?._id || "";
   const navigation = useNavigation();
   const contactsbottomSheetRef = useRef();
-  const bottomFlagSheetRef = useRef();
-  const chatQuery = useChat(currentUserId);
+  const chatQuery = useChat(currentUser?._id);
   const socket = useSocket();
 
   useEffect(() => {
     socket.on("screenchats", (chat) => chatQuery.refetch());
+    return () => {
+      socket.off("screenchats");
+    };
   }, []);
 
   const PlusIconButton = () => {
@@ -54,7 +55,6 @@ const Messages = (props) => {
   const onChatItemMenuSelect = (index, chat_data) => {
     let funcProps = {
       _id: chat_data?._id,
-      ref: bottomFlagSheetRef,
       blockedUsers: chat_data?.blockedUsers,
     };
     let b_users = [...chat_data?.blockedUsers];
@@ -92,52 +92,53 @@ const Messages = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <StandardHeader
-        title="Direct Message"
-        containerStyles={{ height: getPercent(15, height) }}
-        rightIcon={<PlusIconButton />}
-      />
+    <FlagReportSheetProvider>
+      <View style={styles.container}>
+        <StandardHeader
+          title="Direct Message"
+          containerStyles={{ height: getPercent(15, height) }}
+          rightIcon={<PlusIconButton />}
+        />
 
-      <InfiniteFlatlist
-        ListHeaderComponent={
-          <>
-            <View style={styles.searchHeader}>
-              <SearchBar />
-              {/* <TouchableOpacity style={styles.sortIcon}>
+        <InfiniteFlatlist
+          ListHeaderComponent={
+            <>
+              <View style={styles.searchHeader}>
+                <SearchBar />
+                {/* <TouchableOpacity style={styles.sortIcon}>
               <Ionicons name="filter" size={RFValue(22)} color="#111827" />
             </TouchableOpacity> */}
-            </View>
-            <View style={styles.buttonsWrapper}>
-              <Text style={font(15, "#6B7280", "Medium")}>
-                Unread messages ({unReadMsgs || 0})
-              </Text>
-              <TouchableOpacity style={styles.groupsBtn}>
-                <Text style={font(15, "#000000", "Medium")}>Groups</Text>
-                <View style={styles.groupsBtnNumberWrapper}>
-                  <Text style={font(13, "#fff", "Medium")}>0</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </>
-        }
-        query={chatQuery}
-        renderItem={({ item, index }) => (
-          <MessageCard
-            onChatItemMenuSelect={onChatItemMenuSelect}
-            data={item}
-            key={index}
-            onCardPress={onConnectUserChat}
-          />
-        )}
-      />
+              </View>
+              <View style={styles.buttonsWrapper}>
+                <Text style={font(14, "#6B7280", "Medium")}>
+                  Unread messages ({unReadMsgs || 0})
+                </Text>
+                <TouchableOpacity style={styles.groupsBtn}>
+                  <Text style={font(14, "#000000", "Medium")}>Groups</Text>
+                  <View style={styles.groupsBtnNumberWrapper}>
+                    <Text style={font(10, "#fff", "Medium")}>0</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </>
+          }
+          query={chatQuery}
+          renderItem={({ item, index }) => (
+            <MessageCard
+              onChatItemMenuSelect={onChatItemMenuSelect}
+              data={item}
+              key={index}
+              onCardPress={onConnectUserChat}
+            />
+          )}
+        />
 
-      <FlagReportBottomSheet bottomSheetRef={bottomFlagSheetRef} />
-      <ContactsSheet
-        callBackUser={onConnectUserChat}
-        bottomSheetRef={contactsbottomSheetRef}
-      />
-    </View>
+        <ContactsSheet
+          callBackUser={onConnectUserChat}
+          bottomSheetRef={contactsbottomSheetRef}
+        />
+      </View>
+    </FlagReportSheetProvider>
   );
 };
 

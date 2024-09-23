@@ -26,7 +26,7 @@ const MenuItem = (props) => {
       ]}
       onPress={() => setActive(index)}
     >
-      <Text style={font(17, color, active == index ? "Medium" : "Regular")}>
+      <Text style={font(14, color, active == index ? "Medium" : "Regular")}>
         {item?.total} {item?.label}
       </Text>
     </TouchableOpacity>

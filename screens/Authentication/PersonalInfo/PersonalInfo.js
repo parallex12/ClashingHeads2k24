@@ -12,11 +12,11 @@ import { getPercent, registrationFields } from "../../../middleware";
 import BackButton from "../../../globalComponents/BackButton";
 import { useState } from "react";
 import StandardInput from "../../../globalComponents/StandardInput";
-import { validate_user_details } from "../../../middleware/firebase";
 import { Entypo } from "@expo/vector-icons";
 import UserApi from "../../../ApisManager/UserApi";
 import useUserProfile from "../../../Hooks/useUserProfile";
 import { useQueryClient } from "react-query";
+import { validate_user_details } from "../../../utils/validators";
 
 const PersonalInfo = (props) => {
   let { width, height } = useWindowDimensions();

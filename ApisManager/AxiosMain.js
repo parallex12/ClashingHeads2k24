@@ -5,7 +5,7 @@ import { useAuth } from "../ContextProviders/AuthProvider";
 
 // Create an instance of axios
 const api = axios.create({
-  baseURL: process.env.DEV_URL, // Replace with your API base URL
+  baseURL: process.env.DEV_URL, 
 });
 
 // Custom hook to configure and use Axios

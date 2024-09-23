@@ -27,9 +27,8 @@ import StandardButton from "../../../globalComponents/StandardButton";
 import UserCard from "../../../globalComponents/UserCard";
 import { AntDesign } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useSelector } from "react-redux";
 import UserApi from "../../../ApisManager/UserApi";
-import { useQueryClient } from "react-query";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const FindUserSheet = (props) => {
   let { bottomSheetRef, callBackUser } = props;
@@ -39,10 +38,9 @@ const FindUserSheet = (props) => {
   const [searched_users, setSearched_users] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("a");
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const current_user = userDataCached?.user;
-  let { following, followers } = current_user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
+  let { following, followers } = currentUser;
   const userApi = new UserApi();
 
   useEffect(() => {
@@ -105,7 +103,7 @@ const FindUserSheet = (props) => {
             <FlatList
               data={memoizedUsers}
               renderItem={({ item, index }) => {
-                if (item?._id == current_user?._id) return null;
+                if (item?._id == currentUser?._id) return null;
                 return (
                   <UserCard
                     icon

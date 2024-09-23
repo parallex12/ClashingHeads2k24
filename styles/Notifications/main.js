@@ -21,7 +21,7 @@ export const NotificationCardStyles = ({ width, height }) =>
   StyleSheet.create({
     container: {
       width: "100%",
-      minHeight: getPercent(10, height),
+      minHeight: getPercent(8, height),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
@@ -41,7 +41,7 @@ export const NotificationCardStyles = ({ width, height }) =>
     },
     content: {
       flex: 0.95,
-      paddingHorizontal: 10,
+      paddingHorizontal: 5,
       justifyContent: "center",
       alignItems: "flex-start",
     },

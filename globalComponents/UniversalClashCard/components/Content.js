@@ -38,7 +38,6 @@ const Content = memo((props) => {
   let { onAudioPlay, sticker, recording, userMention } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  
   return (
     <View style={styles.container} activeOpacity={1}>
       {/* <Text style={font(12, "#c5c5c5", "Medium", 10)}>@{userMention}</Text> */}

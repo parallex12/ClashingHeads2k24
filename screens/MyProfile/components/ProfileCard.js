@@ -16,13 +16,13 @@ import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import { download } from "react-native-compressor";
 import ImageViewer from "../../../globalComponents/ImageViewer/ImageViewer";
+import { numberWithSuffix } from "../../../utils";
 
 const CardHeader = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const navigation = useNavigation();
-  let { followers, following, posts, profile_photo, profile_hash } = props;
-
+  let { followers, posts, following, profile_photo, profile_hash } = props;
   const onFollowView = () => {
     navigation.navigate("Connections", { user: props });
   };
@@ -47,28 +47,28 @@ const CardHeader = (props) => {
       </View>
       <View style={styles.post_following_followers_cont}>
         <View style={styles.post_following_followers_Item}>
-          <Text style={font(19, "#121212", "Bold", 2)}>
-            {posts?.length || 0}
+          <Text style={font(16, "#121212", "Bold", 2)}>
+            {numberWithSuffix(posts)}
           </Text>
-          <Text style={font(17, "#121212", "Regular", 2)}>Posts</Text>
+          <Text style={font(14, "#121212", "Regular", 2)}>Posts</Text>
         </View>
         <TouchableOpacity
           style={styles.post_following_followers_Item}
           onPress={onFollowView}
         >
-          <Text style={font(19, "#121212", "Bold", 2)}>
-            {followers?.length}
+          <Text style={font(16, "#121212", "Bold", 2)}>
+            {numberWithSuffix(followers?.length)}
           </Text>
-          <Text style={font(17, "#121212", "Regular", 3)}>Followers</Text>
+          <Text style={font(14, "#121212", "Regular", 3)}>Followers</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.post_following_followers_Item}
           onPress={onFollowView}
         >
-          <Text style={font(19, "#121212", "Bold", 3)}>
-            {following?.length}
+          <Text style={font(16, "#121212", "Bold", 3)}>
+            {numberWithSuffix(following?.length)}
           </Text>
-          <Text style={font(17, "#121212", "Regular", 3)}>Following</Text>
+          <Text style={font(14, "#121212", "Regular", 3)}>Following</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -98,7 +98,7 @@ const ProfileCard = (props) => {
     const downloadFileUrl = await download(about_voice, (progress) => {});
     setDownloadedAudio(downloadFileUrl);
   };
-  
+
   useEffect(() => {
     if (about_voice) {
       downloadCompressedAudio();
@@ -144,8 +144,8 @@ const ProfileCard = (props) => {
       <CardHeader {...user_details} />
       <View style={styles.userInfoWrapper}>
         <View style={styles.usernameWrapper}>
-          <Text style={font(19, "#111827", "Medium", 2)}>
-            <Text style={font(19, "#DB2727", "Semibold")}>#{clashHash} </Text>
+          <Text style={font(16, "#111827", "Medium", 2)}>
+            <Text style={font(16, "#DB2727", "Semibold")}>#{clashHash} </Text>
             {realName || ""}
           </Text>
           <Image
@@ -156,11 +156,10 @@ const ProfileCard = (props) => {
               height: getPercent(2, height),
               marginLeft: 5,
             }}
-            y
           />
         </View>
-        <Text style={font(13, "#6B7280", "Regular", 2)}>{politics}</Text>
-        <Text style={font(13, "#DB2727", "Semibold", 2)}>@{username} </Text>
+        <Text style={font(12, "#6B7280", "Regular", 2)}>{politics}</Text>
+        <Text style={font(12, "#DB2727", "Semibold", 2)}>@{username} </Text>
       </View>
       <TouchableOpacity style={styles.bioEditwrapper} onPress={onBioEditPress}>
         {!bio && (
@@ -175,7 +174,7 @@ const ProfileCard = (props) => {
             />
           </View>
         )}
-        <Text style={font(14, "#6B7280", "Regular", 3)}>
+        <Text style={font(12, "#6B7280", "Regular", 3)}>
           {bio || "Add your bio."}
         </Text>
       </TouchableOpacity>
@@ -192,7 +191,7 @@ const ProfileCard = (props) => {
             />
           </View>
         )}
-        <Text style={font(14, "#6B7280", "Regular", 3)}>
+        <Text style={font(12, "#6B7280", "Regular", 3)}>
           {school || "Add School"}
         </Text>
       </TouchableOpacity>
@@ -209,7 +208,7 @@ const ProfileCard = (props) => {
             />
           </View>
         )}
-        <Text style={font(14, "#6B7280", "Regular", 2)}>
+        <Text style={font(12, "#6B7280", "Regular", 2)}>
           {employment || "Add Employment"}
         </Text>
       </TouchableOpacity>

@@ -13,8 +13,7 @@ export const styles = ({ width, height }) =>
       flex: 1,
       paddingTop: getPercent(1, height),
       zIndex: 9,
-      paddingBottom: getPercent(12, height),
-      paddingHorizontal: getPercent(5, width),
+      paddingHorizontal: getPercent(3, width),
     },
     titleHeaderWrapper: {
       paddingHorizontal: getPercent(5, width),

@@ -16,14 +16,15 @@ import StandardInput from "../../../globalComponents/StandardInput";
 import { Entypo } from "@expo/vector-icons";
 import UserApi from "../../../ApisManager/UserApi";
 import { useQueryClient } from "react-query";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const AddBio = (props) => {
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user = userDataCached?.user;
-  const [form, setForm] = useState(user);
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
+
+  const [form, setForm] = useState(currentUser);
   const [errorField, setErrorField] = useState({});
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ const AddBio = (props) => {
         employment: form?.employment || null,
       };
       setLoading(true);
-      let result = await userApi.updateUserProfile(user?._id, updateDetails);
+      let result = await userApi.updateUserProfile(currentUser?._id, updateDetails);
       if (result?.user?._id) {
         alert("Updated");
       }

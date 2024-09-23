@@ -71,6 +71,9 @@ const SenderMessage = (props) => {
             media?.image || media?.audio ? expandWidth : null,
           ]}
         >
+          {media?.reply && (
+            <ReplyCard onPress={onReplyPress} content={replyMsgContent} />
+          )}
           {media?.image && (
             <View style={styles.mediaWrapper}>
               <ImageViewer
@@ -79,9 +82,7 @@ const SenderMessage = (props) => {
               />
             </View>
           )}
-          {media?.reply && (
-            <ReplyCard onPress={onReplyPress} content={replyMsgContent} />
-          )}
+
           {media?.audio && <WaveAudioPlayer source={media?.audio} />}
           {data?.message?.length > 0 && (
             <Text style={styles.text}>{data?.message}</Text>

@@ -10,10 +10,9 @@ import { getPercent } from "../../../middleware";
 import { font } from "../../../styles/Global/main";
 import { getTimeElapsed } from "../../../utils";
 import { useNavigation } from "@react-navigation/native";
-import CacheImage from "../../CacheImage";
 import ActivityStatus from "../../ActivityStatus";
-import { useQueryClient } from "react-query";
 import FastImage from "react-native-fast-image";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const Profile = ({ source, profileStyles, author, onProfilePress }) => {
   let { width, height } = useWindowDimensions();
@@ -38,9 +37,8 @@ const Header = (props) => {
   let styles = _styles({ width, height });
   let user_author = author;
   let post_past_time = getTimeElapsed(createdAt);
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const user_details = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const navigation = useNavigation();
 
   return (
@@ -50,7 +48,7 @@ const Header = (props) => {
           flexDirection: "row",
         }}
         onPress={() => {
-          if (user_author?._id == user_details?._id) {
+          if (user_author?._id == currentUser?._id) {
             navigation?.navigate("MyProfile");
           } else {
             navigation?.navigate("UserProfile", {
@@ -128,8 +126,8 @@ const _styles = ({ width, height }) =>
       flexDirection: "row",
       alignItems: "center",
     },
-    titleName: font(17, "#111827", "Medium", 2, null, { marginRight: 10 }),
-    slugText: font(15, "#6B7280", "Regular"),
+    titleName: font(14, "#111827", "Medium", 2, null, { marginRight: 10 }),
+    slugText: font(12, "#6B7280", "Regular"),
   });
 
 export default Header;

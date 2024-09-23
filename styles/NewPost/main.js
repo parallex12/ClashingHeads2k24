@@ -72,6 +72,7 @@ export const FindFriendsSheetStyles = ({ width, height }) =>
     },
     newGroupBtn: {
       width: getPercent(30, width),
+      height: getPercent(4, height),
     },
   });
 

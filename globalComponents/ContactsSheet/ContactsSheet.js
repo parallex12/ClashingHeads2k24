@@ -12,11 +12,11 @@ import { Text } from "react-native";
 import StandardButton from "../../globalComponents/StandardButton";
 import UserCard from "../../globalComponents/UserCard";
 import { AntDesign } from "@expo/vector-icons";
-import { RFValue } from "react-native-responsive-fontsize";
 import { useDispatch, useSelector } from "react-redux";
 import { onUpdateBottomSheet } from "../../state-management/features/bottom_menu/bottom_menuSlice";
 import UserApi from "../../ApisManager/UserApi";
-import { useQueryClient } from "react-query";
+import { rms } from "../../utils/responsiveSizing";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const ContactsSheet = (props) => {
   let { bottomSheetRef, callBackUser } = props;
@@ -25,15 +25,15 @@ const ContactsSheet = (props) => {
   const snapPoints = useMemo(() => ["25%", "80%"], []);
   const [user_friends, setUser_friends] = useState([]);
   const [searchQuery, setSearchQuery] = useState("a");
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const current_user = userDataCached?.user;
-  let { following, followers } = current_user;
+  const { data } = useUserProfile();
+  const currentUser = data?.user;
+
+  let { following, followers } = currentUser;
   const dispatch = useDispatch();
   const userApi = new UserApi();
 
   useEffect(() => {
-      searchUsers(searchQuery);
+    searchUsers(searchQuery);
   }, [searchQuery, following, followers]);
 
   const mergeAndRemoveDuplicates = (arr1, arr2) => {
@@ -49,12 +49,19 @@ const ContactsSheet = (props) => {
     callBackUser(item);
     bottomSheetRef.current.close();
   };
+  const mergedUsers = mergeAndRemoveDuplicates(following, followers);
 
   const searchUsers = async (searchQuery) => {
-    const mergedUsers = mergeAndRemoveDuplicates(following, followers);
-    let searched_users = await userApi.searchUsers(searchQuery);
-    let filtered = searched_users?.filter((e) => e?._id != current_user?._id);
-    setUser_friends([...mergedUsers, ...filtered]);
+    let query = searchQuery?.toLowerCase();
+    console.log(query);
+    // let searched_users = await userApi.searchUsers(searchQuery);
+    let filtered = mergedUsers?.filter((e) => {
+      let username = e?.username?.toLowerCase();
+      let realName = e?.realName?.toLowerCase();
+      return username?.includes(query) || realName?.includes(query);
+    });
+    // const mergedArr = mergeAndRemoveDuplicates(mergedUsers, filtered);
+    setUser_friends(filtered);
   };
 
   const memoizedUsers = useMemo(() => {
@@ -73,16 +80,16 @@ const ContactsSheet = (props) => {
       >
         <BottomSheetView style={styles.content}>
           <View style={styles.headerWrapper}>
-            <Text style={font(22, "#111827", "Semibold")}>New Chat</Text>
+            <Text style={font(18, "#111827", "Semibold")}>New Chat</Text>
             <StandardButton
               title="New Group"
               customStyles={styles.newGroupBtn}
             />
           </View>
           <View style={styles.searchInputWrapper}>
-            <AntDesign name="search1" size={RFValue(15)} color="#9CA3AF" />
+            <AntDesign name="search1" size={rms(15)} color="#9CA3AF" />
             <TextInput
-              style={font(15, "#9CA3AF", "Regular", 0, null, {
+              style={font(14, "#9CA3AF", "Regular", 0, null, {
                 marginLeft: 8,
                 flex: 1,
               })}

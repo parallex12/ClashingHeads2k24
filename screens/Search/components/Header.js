@@ -29,7 +29,7 @@ const FilterItem = (props) => {
         styles.filterItem,
         { backgroundColor: conditional_style?.backgroundColor },
       ]}
-      onPress={() => setActiveFilter(index)}
+      onPress={() => setActiveFilter({ index, data })}
     >
       <Text style={font(14, conditional_style?.textColor, "Medium")}>
         {data}

@@ -5,21 +5,18 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { getPercent } from "../../../middleware";
-import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import ActivityStatus from "../../ActivityStatus";
-import { useQueryClient } from "react-query";
 import FastImage from "react-native-fast-image";
+import useUserProfile from "../../../Hooks/useUserProfile";
 
 const Profile = (props) => {
   let { data, source, menu, profile_hash, customStyles } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   let navigation = useNavigation();
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const currentUser = userDataCached?.user;
-
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   let userId = data?._id;
   let profileImg = {
     uri: source,
@@ -42,13 +39,10 @@ const Profile = (props) => {
           source={{ ...profileImg, priority: FastImage.priority.normal }}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
+          defaultSource={require("../../../assets/icon.png")}
         />
       </View>
-      {menu && (
-        <View style={styles.menu}>
-          <Entypo name="menu" size={getPercent(1.8, height)} color="#DB2727" />
-        </View>
-      )}
+
       <ActivityStatus user={data} />
     </TouchableOpacity>
   );

@@ -12,15 +12,15 @@ import CacheImage from "../../../globalComponents/CacheImage";
 import ActivityStatus from "../../../globalComponents/ActivityStatus";
 import UserApi from "../../../ApisManager/UserApi";
 import { useEffect, useState } from "react";
-import { useQueryClient } from "react-query";
+import useUserProfile from "../../../Hooks/useUserProfile";
+import ImageViewer from "../../../globalComponents/ImageViewer/ImageViewer";
 
 const UserCard = (props) => {
   let { user, isDisplayedUserMe, onPress } = props;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const current_user = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
   const followButtonTypes = ["Following", "Follow", "Follow back"];
   const [currentFollowButtonState, setCurrentFollowButtonState] = useState();
   const [isCurrentUserFollower, setIsCurrentUserFollower] = useState();
@@ -29,8 +29,8 @@ const UserCard = (props) => {
   const userapi = new UserApi();
 
   useEffect(() => {
-    setIsCurrentUserFollower(followers?.includes(current_user?._id));
-    setIsCurrentUserFollowing(following?.includes(current_user?._id));
+    setIsCurrentUserFollower(followers?.includes(currentUser?._id));
+    setIsCurrentUserFollowing(following?.includes(currentUser?._id));
   }, [following, followers]);
 
   useEffect(() => {
@@ -44,30 +44,29 @@ const UserCard = (props) => {
   }, [isCurrentUserFollowing, isCurrentUserFollower]);
 
   const onFollow = async () => {
-    if (!current_user || !user) return;
+    if (!currentUser || !user) return;
     if (
       currentFollowButtonState == "Follow" ||
       currentFollowButtonState == "Follow back"
     ) {
-      setIsCurrentUserFollower(current_user);
-      await userapi.followUser(current_user?._id, _id);
+      setIsCurrentUserFollower(currentUser);
+      await userapi.followUser(currentUser?._id, _id);
       return;
     }
 
     if (currentFollowButtonState == "Following") {
       setIsCurrentUserFollower(null);
-      await userapi.unfollowUser(current_user?._id, _id);
+      await userapi.unfollowUser(currentUser?._id, _id);
     }
   };
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.profile}>
-        <CacheImage
+        <ImageViewer
           source={{ uri: user?.profile_photo }}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
-          hash={user?.profile_hash}
         />
         <ActivityStatus user={user} />
       </View>

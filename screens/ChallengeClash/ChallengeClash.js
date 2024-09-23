@@ -12,6 +12,7 @@ import usePostClashes from "../../Hooks/usePostClashes";
 import ClashFlatlist from "../../globalComponents/ClashFlatlist/ClashFlatlist";
 import { useFeedPost } from "../../Hooks/useUserFeed";
 import { Instagram } from "react-content-loader/native";
+import { FlagReportSheetProvider } from "../../globalComponents/BottomSheet/FlagReportSheetProvider";
 
 const ChallengeClash = (props) => {
   let {} = props;
@@ -53,53 +54,51 @@ const ChallengeClash = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <StandardHeader
-        containerStyles={{ height: getPercent(15, height) }}
-        backButton
-        title="Clash"
-        searchIcon={false}
-      />
-      <ClashFlatlist
-        ListHeaderComponent={
-          !feedPost?.isLoading ? (
-            <>
-              <ChallengeCard
-                showVoting
-                data={feedPost?.data?.post}
-                onClashesPress={onPostClashesPress}
-                onReportPress={onReportPress}
-              />
-              <View style={styles.postDateAndViews}>
-                <Text style={font(13, "#9CA3AF", "Regular")}>
-                  Posted on {createdAtDate}
-                </Text>
-                <Text style={font(13, "#111827", "Bold")}>
-                  {feedPost?.data?.post?.views?.length || 0}{" "}
-                  <Text style={font(13, "#9CA3AF", "Regular")}>Views</Text>
-                </Text>
-              </View>
-            </>
-          ) : (
-            <Instagram />
-          )
-        }
-        query={postClashes}
-        itemActions={{ onPostClashesPress, onReportPress }}
-      />
+    <FlagReportSheetProvider>
+      <View style={styles.container}>
+        <StandardHeader
+          containerStyles={{ height: getPercent(15, height) }}
+          backButton
+          title="Clash"
+          searchIcon={false}
+        />
+        <ClashFlatlist
+          ListHeaderComponent={
+            !feedPost?.isLoading ? (
+              <>
+                <ChallengeCard
+                  showVoting
+                  data={feedPost?.data?.post}
+                  onClashesPress={onPostClashesPress}
+                  onReportPress={onReportPress}
+                />
+                <View style={styles.postDateAndViews}>
+                  <Text style={font(12, "#9CA3AF", "Regular")}>
+                    Posted on {createdAtDate}
+                  </Text>
+                  <Text style={font(12, "#111827", "Bold")}>
+                    {feedPost?.data?.post?.views?.length || 0}{" "}
+                    <Text style={font(12, "#9CA3AF", "Regular")}>Views</Text>
+                  </Text>
+                </View>
+              </>
+            ) : (
+              <Instagram />
+            )
+          }
+          query={postClashes}
+          itemActions={{ onPostClashesPress, onReportPress }}
+        />
 
-      <UpdatedVoiceRecorderBottomSheet
-        clashTo={clashTo}
-        postId={postId}
-        bottomVoiceSheetRef={bottomVoiceSheetRef}
-        onPostClash={onPostClash}
-        stickers
-      />
-      <FlagReportBottomSheet
-        postId={postId}
-        bottomSheetRef={bottomFlagSheetRef}
-      />
-    </View>
+        <UpdatedVoiceRecorderBottomSheet
+          clashTo={clashTo}
+          postId={postId}
+          bottomVoiceSheetRef={bottomVoiceSheetRef}
+          onPostClash={onPostClash}
+          stickers
+        />
+      </View>
+    </FlagReportSheetProvider>
   );
 };
 

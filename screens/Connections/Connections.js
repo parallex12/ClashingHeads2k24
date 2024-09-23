@@ -11,17 +11,16 @@ import TabSelector from "./components/TabSelector";
 import UserCard from "./components/UserCard";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useQueryClient } from "react-query";
+import useUserProfile from "../../Hooks/useUserProfile";
 
 const Connections = (props) => {
-  let { onPress } = props;
   const { user } = props?.route?.params;
   let { width, height } = useWindowDimensions();
   let styles = _styles({ width, height });
   const [active, setActive] = useState(0);
-  const queryClient = useQueryClient();
-  const userDataCached = queryClient.getQueryData(["currentUserProfile"]);
-  const current_user = userDataCached?.user;
+  const { data: userProfile } = useUserProfile();
+  const currentUser = userProfile?.user;
+
   const loading = false;
   let following = [...user?.following];
   let followers = [...user?.followers];
@@ -42,7 +41,7 @@ const Connections = (props) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             {usersToShow[active]?.map((item, index) => {
-              let isDisplayedUserMe = current_user?._id == item?._id;
+              let isDisplayedUserMe = currentUser?._id == item?._id;
               return (
                 <UserCard
                   isDisplayedUserMe={isDisplayedUserMe}

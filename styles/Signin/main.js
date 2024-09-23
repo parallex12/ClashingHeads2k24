@@ -10,10 +10,10 @@ export const styles = ({ width, height }) =>
       backgroundColor: "#FFFFFF",
       paddingHorizontal: getPercent(5, width),
     },
-    content:{
+    content: {
       flex: 1,
       alignItems: "center",
-      justifyContent:'center',
+      justifyContent: "center",
     },
     logoWrapper: {
       width: "100%",
@@ -25,9 +25,8 @@ export const styles = ({ width, height }) =>
     },
     formWrapper: {
       width: "100%",
-      flex:0.5,
+      flex: 0.5,
       paddingTop: getPercent(4, height),
-
     },
     formTitle: {
       marginBottom: 10,
